@@ -30,7 +30,7 @@ require([
   Menu, Lattice, Snapshot, Hud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents
 ) {
   // Scenes
-  var crystalScene = Explorer.getInstance();
+  var crystalScene = Explorer.getInstance(); /* test*/
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
 
