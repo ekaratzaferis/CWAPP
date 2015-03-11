@@ -1539,6 +1539,9 @@ define([
         _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
         i++;
       } 
+      var scene = UnitCellExplorer.getInstance().object3d;
+      var object = scene.getObjectByName('solidvoid');
+      if(!_.isUndefined(object)) scene.remove(object);
     }
     else if(mode === 'SolidVoid'){   
 
@@ -1547,14 +1550,14 @@ define([
       while(i < _this.unitCellAtoms.length ) {  
         _this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
-        mesh.position.x =  _this.unitCellAtoms[i].object3d.position.x;//, _this.unitCellAtoms[i].object3d.position.y, _this.unitCellAtoms[i].object3d.position.z);
-        mesh.updateMatrix();
-        geometry.merge( mesh.geometry, mesh.geometry.matrix );
-        _this.unitCellAtoms[i].object3d.visible = false;  
+        mesh.position.set( _this.unitCellAtoms[i].object3d.position.x, _this.unitCellAtoms[i].object3d.position.y, _this.unitCellAtoms[i].object3d.position.z);
+        mesh.updateMatrix();  
+        geometry.merge( mesh.geometry, mesh.matrix );
+        _this.unitCellAtoms[i].object3d.visible = false;   
 
         i++;
       } 
-       
+
       var cube = THREE.CSG.toCSG(box);
       var spheres = THREE.CSG.toCSG(geometry);
       var geometryCSG = cube.subtract(spheres);
@@ -1562,8 +1565,11 @@ define([
       var finalGeom = assignUVs(geom);
  
       var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
-
+      solidBox.name = 'solidvoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
+    }
+    else if(mode === 'gradeLimited'){   
+
     }
     else if(mode === 'Classic'){ 
       while(i < _this.unitCellAtoms.length ) { 
@@ -1571,6 +1577,9 @@ define([
         _this.unitCellAtoms[i].classicView(); 
         i++;
       } 
+      var scene = UnitCellExplorer.getInstance().object3d;
+      var object = scene.getObjectByName('solidvoid');
+      if(!_.isUndefined(object)) scene.remove(object);
     }
 
     var b = performance.now();
