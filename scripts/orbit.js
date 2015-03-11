@@ -10,10 +10,15 @@ define([
   THREE,
   jQuery
 ) {
-  
-  function Orbit(camera, domElement, type, deactivate ) {
+  var mutualCamPosParam = new THREE.Vector3();
+
+  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera ) {
     var $rendererContainer = jQuery(domElement);
-    
+    this.sync = false;
+    this.camera = camera; 
+    this.camName = camName; 
+    this.syncedCamera = syncedCamera; 
+    this.currPos = new THREE.Vector3(0,0,0); 
     if(type == "perspective" ) {
       this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
     }
@@ -23,8 +28,20 @@ define([
   }
 
   Orbit.prototype.update = function() {
-    this.control.update();
-  };
 
+    this.control.update(); 
+    var dx = Math.abs(this.camera.position.x - this.currPos.x ) ;
+    var dy = Math.abs(this.camera.position.y - this.currPos.y ) ;
+    var dz = Math.abs(this.camera.position.z - this.currPos.z ) ;
+ 
+    if(this.sync && (this.camName === 'cell' || this.camName ==='crystal') && (dx!=0) && (dy!=0) && (dz!=0) ) {  
+      this.syncedCamera.position.x = this.camera.position.x ;
+      this.syncedCamera.position.y = this.camera.position.y ;
+      this.syncedCamera.position.z = this.camera.position.z ;
+      this.currPos.x = this.camera.position.x ;
+      this.currPos.y = this.camera.position.y ;
+      this.currPos.z = this.camera.position.z ; 
+    }
+  }; 
   return Orbit;
 });

@@ -27,7 +27,7 @@ define([
 
     var texture = THREE.ImageUtils.loadTexture('Images/logo.png');
      
-    logo = new THREE.Mesh( new THREE.PlaneGeometry(200,200 ), new THREE.MeshBasicMaterial( {map: texture, color:0xFAFFFF} )); 
+    logo = new THREE.Mesh( new THREE.PlaneBufferGeometry(200,200 ), new THREE.MeshBasicMaterial( {map: texture, color:0xFAFFFF} )); 
     logo.visible = false;
     logo.name="logo";
     myHud.add(logo);

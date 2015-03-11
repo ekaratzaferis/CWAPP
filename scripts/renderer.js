@@ -143,6 +143,7 @@ define([
     return _this.cameras[x];
   };
   Renderer.prototype.onAnimationUpdate = function(callback) {
+
     PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback);
   };
    Renderer.prototype.renderHud = function(callback) {

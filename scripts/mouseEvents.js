@@ -136,21 +136,19 @@ define([
     var _this =this;
 
     event.preventDefault();
-
-    raycaster.setFromCamera( mouse, _this.camera );
-    
-    var intersects = raycaster.intersectObjects( _this.getAtoms() );
-
-    if ( intersects.length > 0 &&  intersects[0].object.parent.name ==='atom') {
-          
-      _this.SELECTED = intersects[0].object.parent;
-
-      var intersects = raycaster.intersectObject( _this.plane.object3d );
+    if(!(_this.motifEditor.editorState.state === 'initial')) {
+      raycaster.setFromCamera( mouse, _this.camera );
       
-      _this.offset.copy( intersects[ 0 ].point ).sub( _this.plane.object3d.position );
+      var intersects = raycaster.intersectObjects( _this.getAtoms() );
 
-      document.getElementById(_this.container).style.cursor = 'none';
+      if ( intersects.length > 0 &&  intersects[0].object.parent.name ==='atom') {
+            
+        _this.SELECTED = intersects[0].object.parent; 
+        var intersects = raycaster.intersectObject( _this.plane.object3d ); 
+        _this.offset.copy( intersects[ 0 ].point ).sub( _this.plane.object3d.position ); 
+        document.getElementById(_this.container).style.cursor = 'none';
 
+      }
     }
      
   };
@@ -162,8 +160,8 @@ define([
     if ( _this.INTERSECTED ) {
 
       _this.plane.object3d.position.copy( _this.INTERSECTED.position );
-
       _this.SELECTED = null;
+      _this.motifEditor.rotateAroundAtom();
 
     }
 

@@ -3,18 +3,21 @@
 define([
   'three',
   'unitCellExplorer',
-  'underscore'
+  'underscore',
+  'csg',
+  'threeCSG'
 ], function(
   THREE,
   UnitCellExplorer,
-  _
+  _,
+  csg,
+  ThreeCSG
 ) {
  
  
   function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex) {
 
-    var _this = this;
-    //console.log(latticeIndex);
+    var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
     this.material;
     this.latticeIndex = latticeIndex;
@@ -24,17 +27,15 @@ define([
     this.myID = id; 
     this.elementName = elementName; 
     this.userOffset = {"x":0, "y":0, "z":0};
-    this.latticeOffset = {"x":0, "y":0, "z":0};
-    this.latticePosIndex ;
-
+    this.helperPos = {"x":0, "y":0, "z":0};
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
 
     var textureLoader = new THREE.TextureLoader();
     //textureLoader.load("Images/atoms/"+elementName+".png",
       textureLoader.load("Images/atoms/Be.png",
         function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, geometry, color, position) ;
+          tex.mapping = THREE.SphericalReflectionMapping;
+          _this.addMaterial(tex, geometry, color, position) ;
         }
     ); 
    
@@ -45,8 +46,8 @@ define([
     _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true,opacity:1  }) ;
 
     _this.materials =  [  
-    _this.materialLetter,
-    _this.colorMaterial
+      _this.materialLetter,
+      _this.colorMaterial
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
@@ -56,7 +57,50 @@ define([
     UnitCellExplorer.add(_this); 
 
   };
+ 
+  UnitCellAtom.prototype.subtractedSolidView = function(box, pos) {
+    var _this = this; 
 
+    UnitCellExplorer.remove({'object3d':_this.object3d}); 
+     
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshBasicMaterial() );
+    atomMesh.position.set(pos.x, pos.y, pos.z);
+    
+    var cube = THREE.CSG.toCSG(box);
+    var sphere = THREE.CSG.toCSG(atomMesh);
+    var geometry = sphere.intersect(cube);
+    var geom = THREE.CSG.fromCSG(geometry);
+    var finalGeom = assignUVs(geom);
+    
+    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
+    _this.object3d = sphereCut; 
+    UnitCellExplorer.add(_this);
+    _this.helperPos.x = pos.x ;
+    _this.helperPos.y = pos.y ;
+    _this.helperPos.z = pos.z ;
+ 
+  };
+  UnitCellAtom.prototype.SolidVoid = function( pos) {
+    var _this = this; 
+    _this.helperPos.x = pos.x ;
+    _this.helperPos.y = pos.y ;
+    _this.helperPos.z = pos.z ;
+ 
+  };
+  UnitCellAtom.prototype.classicView = function() {
+    var _this = this;
+    var toDestroy = _this.object3d;
+    var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
+
+    var geometry = new THREE.SphereGeometry(_this.radius,32, 32);  
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, [_this.materialLetter, _this.colorMaterial ]);
+    _this.object3d = sphere;
+    _this.object3d.position.x = _this.helperPos.x ;
+    _this.object3d.position.y = _this.helperPos.y ;
+    _this.object3d.position.z = _this.helperPos.z ;
+    UnitCellExplorer.add(_this); 
+    UnitCellExplorer.remove({'object3d':toDestroy}); 
+  };
   UnitCellAtom.prototype.getUserOffset = function() {
     var _this = this ;
     return _this.userOffset ;
@@ -64,27 +108,8 @@ define([
   UnitCellAtom.prototype.setUserOffset = function(axes, val) {
     var _this = this ;
     _this.userOffset[axes] = val ;
-  };
-  UnitCellAtom.prototype.getLattOffset = function() {
-    var _this = this ;
-    return _this.latticeOffset ;
-  };
-  UnitCellAtom.prototype.setLatticePosIndex = function( val) {
-    var _this = this ;
-    _this.latticePosIndex = val ;
-  };
-  UnitCellAtom.prototype.getLatticePosIndex = function() {
-    var _this = this ;
-    return _this.latticePosIndex ;
-  };
-
-  UnitCellAtom.prototype.setLattOffset = function(pos) {
-    var _this = this ; 
-    _this.latticeOffset["x"] = pos.x ;
-    _this.latticeOffset["y"] = pos.y ;
-    _this.latticeOffset["z"] = pos.z ;
-  };
-
+  }; 
+ 
   UnitCellAtom.prototype.getID = function() {
     var _this = this ;
     return _this.myID ;
@@ -129,5 +154,36 @@ define([
   UnitCellAtom.prototype.destroy = function() {
     UnitCellExplorer.remove(this);
   };
+  function assignUVs( geometry ){ //todo maybe it doesn't work right
+     
+    geometry.computeBoundingBox();
+
+    var max     = geometry.boundingBox.max;
+    var min     = geometry.boundingBox.min;
+
+    var offset  = new THREE.Vector2(0 - min.x, 0 - min.y);
+    var range   = new THREE.Vector2(max.x - min.x, max.y - min.y);
+
+    geometry.faceVertexUvs[0] = [];
+    var faces = geometry.faces;
+
+    for (var i = 0; i < geometry.faces.length ; i++) {
+
+      var v1 = geometry.vertices[faces[i].a];
+      var v2 = geometry.vertices[faces[i].b];
+      var v3 = geometry.vertices[faces[i].c];
+
+      geometry.faceVertexUvs[0].push([
+        new THREE.Vector2( ( v1.x + offset.x ) / range.x , ( v1.y + offset.y ) / range.y ),
+        new THREE.Vector2( ( v2.x + offset.x ) / range.x , ( v2.y + offset.y ) / range.y ),
+        new THREE.Vector2( ( v3.x + offset.x ) / range.x , ( v3.y + offset.y ) / range.y )
+      ]);
+
+    }
+
+    geometry.uvsNeedUpdate = true;
+
+    return geometry;
+  }
   return UnitCellAtom;
 });

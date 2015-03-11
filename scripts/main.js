@@ -10,13 +10,16 @@ require.config({
     'threejs-controls/OrbitAndPanControls': '../vendor/threejs-controls/OrbitAndPanControls',
     'underscore': '../vendor/underscore',
     'jquery': '../vendor/jquery',
-    'jquery-ui': '../vendor/jquery-ui/jquery-ui'
-   
+    'jquery-ui': '../vendor/jquery-ui/jquery-ui',
+    'csg': '../vendor/csg',
+    'threeCSG': '../vendor/ThreeCSG' 
   },
   shim: {
     'three': { exports: 'THREE' },
     'threejs-controls/OrbitControls': { deps: [ 'three' ] },
-    'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] }
+    'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] },
+    'scg': { deps: [ 'three' ] },
+    'threeCSG': { deps: [ 'three' ] }
   }
 });
 
@@ -30,7 +33,7 @@ require([
   Menu, Lattice, Snapshot, Hud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents
 ) {
   // Scenes
-  var crystalScene = Explorer.getInstance(); /* test*/
+  var crystalScene = Explorer.getInstance();
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
 
@@ -42,7 +45,7 @@ require([
 
   //  WebGL Renderers and cameras
   var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
-  crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 10,10,20, 15);
+  crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
 
   var unitCellRenderer = new Renderer(unitCellScene.object3d, 'unitCellRenderer', 'cell');
   unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
@@ -63,14 +66,14 @@ require([
   motifRenderer.startAnimation();
 
   // Orbit Controls
-  var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(), '#crystalRenderer', "perspective", false);
-  var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRenderer', "perspective", false);
-  var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "orthographic");
-  var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "orthographic");
-  var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "orthographic");
+  var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(), '#crystalRenderer', "perspective", false, 'crystal',unitCellRenderer.getMainCamera() );
+  var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRenderer', "perspective", false, 'cell', crystalRenderer.getMainCamera());
+  var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "orthographic", false, 'motifX');
+  var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "orthographic", false, 'motifY');
+  var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "orthographic", false, 'motifZ');
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
-  unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell));
+  unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
   motifRenderer.onAnimationUpdate(cameraControls1.update.bind(cameraControls1));
   motifRenderer.onAnimationUpdate(cameraControls2.update.bind(cameraControls2));
   motifRenderer.onAnimationUpdate(cameraControls3.update.bind(cameraControls3));
@@ -196,6 +199,9 @@ require([
     motifEditor.editorState_(state);
   });
   menu.onAtomSubmit(function(message, atomParam) {
+    if(atomParam.button === 'saveChanges'){
+      lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions())  ;
+    }
     motifEditor.submitAtom(atomParam);
   });
   menu.savedAtomSelection(function(message, which) { 
@@ -214,7 +220,27 @@ require([
     motifEditor.fixedLengthMode(param); 
   }); 
   menu.onCameraSyncChange(function(message, param) { 
-    motifEditor.cameraSync(param);
+    var cellCamera = unitCellRenderer.getMainCamera();
+    var crystalCamera = crystalRenderer.getMainCamera();
+
+    if(param.syncCameras){    
+      crystalCamera.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z ); 
+
+     
+      orbitCrystal.currPos.x = cellCamera.position.x ;
+      orbitCrystal.currPos.y = cellCamera.position.y ;
+      orbitCrystal.currPos.z = cellCamera.position.z ;
+     
+      orbitUnitCell.currPos.x = cellCamera.position.x ;
+      orbitUnitCell.currPos.y = cellCamera.position.y ;
+      orbitUnitCell.currPos.z = cellCamera.position.z ; 
+      orbitCrystal.sync = true;
+      orbitUnitCell.sync = true; 
+    }
+    else{
+      orbitCrystal.sync = false;
+      orbitUnitCell.sync = false; 
+    }
   });  
   menu.onCameraDistortionChange(function(message, mode){
     motifEditor.cameraDist(mode, crystalRenderer) ;
@@ -228,7 +254,12 @@ require([
   menu.setDragMode(function(message, param){
     motifEditor.setDraggableAtom(param)  ;
   });
-
+  menu.onRotatingAngleChange(function(message, param){ 
+    motifEditor.changeRotatingAngle(param)  ;
+  }); 
+  menu.onCellViewChange(function(message, which) { 
+    motifEditor.setCSGmode(which);
+  });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults);
@@ -237,10 +268,4 @@ require([
   });
   
 });
-
-/*
-TODO :
  
-2. Improve Performance with web workers
-
-*/

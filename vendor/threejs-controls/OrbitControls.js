@@ -22,7 +22,7 @@
 // Simple substitute "OrbitControls" and the control should work as-is.
 
 THREE.OrbitControls = function ( object, domElement, deactivate ) {
-
+	this.updating = false ;
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
@@ -226,8 +226,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate ) {
 
 		scale *= dollyScale;
 
-	};
-
+	}; 
 	this.update = function () {
 
 		var position = this.object.position;
@@ -286,12 +285,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate ) {
 
 		if ( lastPosition.distanceToSquared( this.object.position ) > EPS ) {
 
-			this.dispatchEvent( changeEvent );
+			this.dispatchEvent( changeEvent ); 
 
 			lastPosition.copy( this.object.position );
 
-		}
-
+		} 
 	};
 
 
@@ -322,7 +320,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate ) {
 
 		if ( scope.enabled === false ) return;
 		event.preventDefault();
-
+ 
 		if ( event.button === 0 ) {
 			if ( scope.noRotate === true ) return;
 

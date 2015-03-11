@@ -33,7 +33,9 @@ define([
     MOTIF_CAMERASYNC_CHANGE : 'menu.motif_camerasync_change',
     MOTIF_CELLDIMENSIONS_CHANGE : 'menu.motif_celldimensions_change',
     MOTIF_TO_LATTICE: 'menu.motif_to_lattice',
-    DRAG_ATOM: 'menu.drag_atom'
+    DRAG_ATOM: 'menu.drag_atom',
+    SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
+    UNIT_CELL_VIEW: 'menu.unit_cell_view',
   };
 
   // lattice parameters
@@ -180,7 +182,17 @@ define([
     'atomPosY' : $atomPosY, 
     'atomPosZ' : $atomPosZ
   };
+
+  var $rotAngleY = jQuery('#rotAngleY');
+  var $rotAngleZ = jQuery('#rotAngleZ');
+  var $rotAngleX = jQuery('#rotAngleX');
+  var rotatingAngles = {
+    'rotAngleY' : $rotAngleY,
+    'rotAngleZ' : $rotAngleZ, 
+    'rotAngleX' : $rotAngleX
+  };
  
+  var $unitCellView = jQuery('#unitCellView');
 
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
@@ -350,7 +362,19 @@ define([
       var argument = {};
       argument["dragMode"]= ($('#dragMode').is(':checked')) ? true : false ;
       PubSub.publish(events.DRAG_ATOM, argument);           
+    }); 
+    _.each(rotatingAngles, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {};
+        argument[k] = $parameter.val();
+        PubSub.publish(events.SET_ROTATING_ANGLE, argument);
+      });
     });
+    $unitCellView.on('change', function() {
+      var id = jQuery(this).val()  ; 
+      return PubSub.publish(events.UNIT_CELL_VIEW, id);
+    });
+
 
     this.restrictionEvents = []; 
      
@@ -511,6 +535,12 @@ define([
   };
   Menu.prototype.setDragMode = function(callback) {
     PubSub.subscribe(events.DRAG_ATOM, callback);
+  };
+  Menu.prototype.onRotatingAngleChange = function(callback) {
+    PubSub.subscribe(events.SET_ROTATING_ANGLE, callback);
+  };
+  Menu.prototype.onCellViewChange = function(callback) { 
+    PubSub.subscribe(events.UNIT_CELL_VIEW, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

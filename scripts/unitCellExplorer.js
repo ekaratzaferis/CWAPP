@@ -47,7 +47,7 @@ define([
       new THREE.Vector3( 0,0,-1000 )
     );
      
-    var mesh1 = new THREE.Line( geometry1, new THREE.LineBasicMaterial({ color: '#99FF33'   }) );
+    var mesh1 = new THREE.Line( geometry1, new THREE.LineBasicMaterial({ color: '#99FF33' }) );
     var mesh2 = new THREE.Line( geometry2, new THREE.LineBasicMaterial({ color: '#0099FF' }) );
     var mesh3 = new THREE.Line( geometry3, new THREE.LineBasicMaterial({ color: '#FF7519' }) ); 
 
@@ -55,7 +55,7 @@ define([
     this.object3d.add(mesh2);
     this.object3d.add(mesh3);
 
-  }
+  };
 
   UnitCellExplorer.prototype.add = function(object) { 
     this.object3d.add(object.object3d);

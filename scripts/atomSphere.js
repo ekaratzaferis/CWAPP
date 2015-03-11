@@ -18,7 +18,7 @@ define([
     this.materials;
     this.tangency = tangency; 
     this.myID = id; 
-    
+    this.blinking;
     this.elementName = elementName;
     
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
@@ -77,15 +77,15 @@ define([
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
-  AtomSphere.prototype.collided = function() {
+  AtomSphere.prototype.changeColor = function(color) {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ color:"#FF0000",side: THREE.DoubleSide  });
+    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
     _this.object3d.children[1].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[1].material = _this.colorMaterial;
       _this.object3d.children[1].material.needsUpdate = true;
 
-    },200);
+    },250);
   };
   AtomSphere.prototype.getTangency = function() {
     var _this = this; 
@@ -97,6 +97,21 @@ define([
   };
   AtomSphere.prototype.destroy = function() {
     MotifExplorer.remove(this);
+  };
+  AtomSphere.prototype.blinkMode = function(bool, color) {
+    var _this = this; 
+    if(bool){
+      this.blinking = setInterval(function() { 
+        _this.changeColor(color);
+
+      }, 500);
+    }
+    else{
+      clearInterval(this.blinking);
+      _this.object3d.children[1].material = _this.colorMaterial;
+      _this.object3d.children[1].material.needsUpdate = true;
+    }
+
   };
   return AtomSphere;
 });

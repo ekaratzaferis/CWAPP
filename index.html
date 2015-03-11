@@ -339,14 +339,13 @@
                               <input type="text" class="col-sm-2 " id="fixedZ" value="1" >
                               <div class="col-sm-2 ">
                                 <input id="fixedLength"  type="checkbox" name="fixedLength" value="1" >
-                              </div>
-
+                              </div> 
                             </div> 
                             <div class="row">
                               <div class="col-sm-4"></div>
                               <label for="" class="col-sm-5 ">Sync Cameras</label>
                               <div class="col-sm-2 ">
-                                <input id="syncCameras"  type="checkbox" name="syncCameras" value="1" checked="checked">
+                                <input id="syncCameras"  type="checkbox" name="syncCameras" >
                               </div>
                             </div>
                             <div class="row">
@@ -354,6 +353,16 @@
                               <label for="" class="col-sm-5 ">Distortion in Crystal</label>
                               <div class="col-sm-2 ">
                                 <input id="distortion"  type="checkbox" name="distortion" value="1"  >
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-8 ">
+                                <label for="unitCellView">Unit Cell View</label>
+                                <select class="form-control" id="unitCellView">
+                                  <option value="Classic" id="Classic">Classic</option>
+                                  <option value="Subtracted" id="Subtracted">Subtracted</option>
+                                  <option value="SolidVoid" id="SolidVoid">Solid Void Space</option>
+                                </select>
                               </div>
                             </div>
                           </div>
@@ -368,7 +377,7 @@
                                     </button>
 
                                     <div class="dropdown-menu" role="menu">
-                                      <table class="tg"><div class="periodic">
+                                      <table class="tg"> 
                                         <tr>
                                           <th class="tg-wy1i"><div class="periodic">H</th>
                                           <th class="tg-2ro4"><div class="periodic"></th>
@@ -625,11 +634,20 @@
                                   <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" >
                                 </div> 
 
-                                <label for="dragMode" class="col-sm-10 control-label atomInput">Drag Mode </label>
-                                <div class="col-sm-2 atomInput">
-                                  <input id="dragMode"  type="checkbox" name="dragMode"     >
-                                </div> 
+                                <div class="row col-sm-12 atomInput"
+                                  <label for="dragMode" class="col-sm-12 control-label atomInput">Drag Mode </label>
+                                  <div class="col-sm-2 atomInput">
+                                    <input id="dragMode"  type="checkbox" name="dragMode" >
+                                  </div> 
+                                </div>
+                                    
+                                <div class="row col-sm-12 atomInput" id = 'rotatingAngles'  >
 
+                                  <input type="text" class="col-sm-3 " id="rotAngleX" value="-" >
+                                  <input type="text" class="col-sm-3 " id="rotAngleY" value="-" >
+                                  <input type="text" class="col-sm-3 " id="rotAngleZ" value="-" >
+                                  
+                                </div> 
                                 <div class=" btn-toolbar col-sm-12 input-lg" role="toolbar">
                                   <button type="button" id="previewChanges" class="btn btn-primary btn-sm atomInput "  >Preview Changes</button>
                                   <button type="button" id="saveChanges" class="btn btn-primary btn-sm atomInput" >Save Changes</button>
