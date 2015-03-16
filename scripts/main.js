@@ -198,6 +198,9 @@ require([
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
   });
+  motifEditor.onViewStateChange(function(message, state) {
+    motifEditor.viewState_(state);
+  });
   menu.onAtomSubmit(function(message, atomParam) {
     if(atomParam.button === 'saveChanges'){
       lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions())  ;
@@ -259,6 +262,9 @@ require([
   }); 
   menu.onCellViewChange(function(message, which) { 
     motifEditor.setCSGmode(which);
+  });
+  menu.onCrystalViewChange(function(message, which) { 
+    lattice.changeView(which);
   });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {

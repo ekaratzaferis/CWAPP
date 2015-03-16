@@ -14,14 +14,14 @@ define([
 ) {
   var events = {
     LOAD: 'motifeditor.load',
-    EDITOR_STATE: 'motifeditor.editor_state'
+    EDITOR_STATE: 'motifeditor.editor_state',
+    VIEW_STATE: 'motifeditor.view_state'
   }; 
 
   function Motifeditor(menu) {
     this.motifeditor = null;
 
-    this.menu = menu ;
-    this.lattice ;  
+    this.menu = menu ; 
     this.cellParameters = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
 
     this.motifParameters ;  
@@ -29,7 +29,7 @@ define([
     this.motifsAtoms = [];
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
-
+    this.viewState = 'Classic';
     this.editorState = {state : "initial", fixed: false } ;
     this.atomsData ;
     this.isEmpty = true ;
@@ -96,6 +96,9 @@ define([
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
   };
+  Motifeditor.prototype.onViewStateChange = function(callback) {
+    PubSub.subscribe(events.VIEW_STATE, callback);
+  };
   Motifeditor.prototype.selectElem = function(params) {
 
     var _this = this ;
@@ -113,6 +116,11 @@ define([
       return;
     }
     else{ 
+      if(_this.viewState!='Classic') {
+        _this.setCSGmode('Classic');
+        $('option:selected', 'select[id="unitCellView"]').removeAttr('selected'); 
+        $('select[id="unitCellView"]').find('option[id="Classic"]').attr("selected",true);
+      }
       var state = _this.editorState.state ;
       var p = _this.findNewAtomsPos(_this.lastSphereAdded, _this.atomsData[params.element].radius/100);
       _this.menu.setSliderValue("atomPosX", p.x );
@@ -581,6 +589,16 @@ define([
         break;
     }
   };
+  Motifeditor.prototype.viewState_ = function (state){
+    var _this = this ; 
+     
+    if(state !== "Classic") {  
+      $("disableME").prop("disabled",true);
+    }
+    else{
+      $("disableME").prop("disabled",false); 
+    }
+  };
   Motifeditor.prototype.updateAtomList = function(id, radius, name, create)  {
     var _this = this ;
     var text =  name+" - radius : "+radius ; 
@@ -790,11 +808,12 @@ define([
           
         _this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; }); 
         var newPos = _this.findNewAtomsPos(_this.tangentToThis, _this.newSphere.getRadius(), true);  
-        
+         
         _this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
         _this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
         _this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
         _this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
+        _this.configureCellPoints();
 
         _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
         _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
@@ -1524,16 +1543,58 @@ define([
    
     return (sign*offset);
   };
+  function customBox(points) { 
+
+    var vertices = [];
+    var faces = [];
+
+    vertices.push(points['_000'].position); // 0
+    vertices.push(points['_010'].position); // 1
+    vertices.push(points['_011'].position); // 2
+
+    vertices.push(points['_001'].position); // 3
+    vertices.push(points['_101'].position); // 4
+    vertices.push(points['_111'].position); // 5
+    vertices.push(points['_110'].position); // 6
+    vertices.push(points['_100'].position); // 7
+
+    faces.push(new THREE.Face3(0,1,2));
+    faces.push(new THREE.Face3(0,2,3));
+
+    faces.push(new THREE.Face3(3,2,5));
+    faces.push(new THREE.Face3(3,5,4));
+ 
+    faces.push(new THREE.Face3(4,5,6));
+    faces.push(new THREE.Face3(4,6,7));
+
+    faces.push(new THREE.Face3(7,6,1));
+    faces.push(new THREE.Face3(7,1,0));
+
+    faces.push(new THREE.Face3(7,0,3));
+    faces.push(new THREE.Face3(7,3,4));
+
+    faces.push(new THREE.Face3(2,1,6));
+    faces.push(new THREE.Face3(2,6,5)); 
+
+    var geom = new THREE.Geometry();
+    geom.vertices = vertices;
+    geom.faces = faces;
+
+    geom.mergeVertices();
+
+    return geom;
+  }
   Motifeditor.prototype.setCSGmode = function(mode){ 
     var _this = this, i = 0;
 
     var a = performance.now();
+    _this.viewState = mode;
 
-    var dims = _this.getDimensions();
-    var box = new THREE.Mesh( new THREE.BoxGeometry(dims.x, dims.y, dims.z  ), new THREE.MeshBasicMaterial()  );
-    box.position.set(dims.x/2, dims.y/2, dims.z/2);
-    
-    if(mode === 'Subtracted'){
+    var g = customBox(_this.unitCellPositions);
+
+    var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
+
+    if(_this.viewState === 'Subtracted'){
       while(i < _this.unitCellAtoms.length ) {
         _this.unitCellAtoms[i].object3d.visible = true; 
         _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
@@ -1542,8 +1603,10 @@ define([
       var scene = UnitCellExplorer.getInstance().object3d;
       var object = scene.getObjectByName('solidvoid');
       if(!_.isUndefined(object)) scene.remove(object);
+      PubSub.publish(events.VIEW_STATE,"Subtracted"); 
+       
     }
-    else if(mode === 'SolidVoid'){   
+    else if(_this.viewState === 'SolidVoid'){   
 
       var geometry = new THREE.Geometry();  
   
@@ -1555,10 +1618,11 @@ define([
         geometry.merge( mesh.geometry, mesh.matrix );
         _this.unitCellAtoms[i].object3d.visible = false;   
 
-        i++;
+        i++; 
       } 
 
-      var cube = THREE.CSG.toCSG(box);
+      var cube = THREE.CSG.toCSG(box); 
+      cube = cube.inverse();
       var spheres = THREE.CSG.toCSG(geometry);
       var geometryCSG = cube.subtract(spheres);
       var geom = THREE.CSG.fromCSG(geometryCSG);
@@ -1567,11 +1631,12 @@ define([
       var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
       solidBox.name = 'solidvoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
+      PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
     }
-    else if(mode === 'gradeLimited'){   
-
+    else if(_this.viewState === 'GradeLimited'){   
+      PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
     }
-    else if(mode === 'Classic'){ 
+    else if(_this.viewState === 'Classic'){ 
       while(i < _this.unitCellAtoms.length ) { 
         _this.unitCellAtoms[i].object3d.visible = true;
         _this.unitCellAtoms[i].classicView(); 
@@ -1580,6 +1645,7 @@ define([
       var scene = UnitCellExplorer.getInstance().object3d;
       var object = scene.getObjectByName('solidvoid');
       if(!_.isUndefined(object)) scene.remove(object);
+      PubSub.publish(events.VIEW_STATE,"Classic");
     }
 
     var b = performance.now();

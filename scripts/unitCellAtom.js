@@ -67,6 +67,7 @@ define([
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);
+    cube = cube.inverse();
     var sphere = THREE.CSG.toCSG(atomMesh);
     var geometry = sphere.intersect(cube);
     var geom = THREE.CSG.fromCSG(geometry);

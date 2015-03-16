@@ -3,10 +3,10 @@
 
 define([
   'pubsub', 'three', 'underscore',
-  'point', 'grid','face','millervector','millerplane', 'crystalAtom'
+  'point', 'grid','face','millervector','millerplane', 'crystalAtom', 'explorer'
 ], function(
   PubSub, THREE, _,
-  Point, Grid, Face, MillerVector, MillerPlane, CrystalAtom
+  Point, Grid, Face, MillerVector, MillerPlane, CrystalAtom, Explorer
 ) {
   var events = {
     LOAD: 'lattice.load',
@@ -59,9 +59,75 @@ define([
     this.tempDirs = [] ;
 
     this.actualAtoms = []; 
+    this.viewBox = [];
+    this.viewMode = 'Classic';
+  };
+  Lattice.prototype.changeView = function(arg) {
+    var _this = this, i =0;
+    _this.viewMode = arg ;
+    if(this.actualAtoms.length!==0){
+      var geometry = new THREE.Geometry();  
+      var scene = Explorer.getInstance().object3d;
+      while(i < _this.viewBox.length ) {  
+        _this.viewBox[i].object3d.updateMatrix();  
+        geometry.merge( _this.viewBox[i].object3d.geometry, _this.viewBox[i].object3d.matrix ); 
+        i++; 
+      } 
 
-  }
+      var box = new THREE.Mesh(customBox(_this.viewBox), new THREE.MeshBasicMaterial({color:"#FF0000" }) );
+      
+      if(_this.viewMode === 'Subtracted'){
+        i = 0 ;
+        while(i < _this.actualAtoms.length ) {
+          _this.actualAtoms[i].object3d.visible = true; 
+          _this.actualAtoms[i].subtractedSolidView(box, _this.actualAtoms[i].object3d.position); 
+          i++;
+        } 
+        var object = scene.getObjectByName('solidvoid');
+        if(!_.isUndefined(object)) scene.remove(object);
+       
+      }
+      else if(_this.viewMode === 'SolidVoid'){   
 
+        var geometry = new THREE.Geometry();  
+         
+        while(i < _this.actualAtoms.length ) {  
+          _this.actualAtoms[i].SolidVoid(_this.actualAtoms[i].object3d.position);  
+          var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
+          mesh.position.set( _this.actualAtoms[i].object3d.position.x, _this.actualAtoms[i].object3d.position.y, _this.actualAtoms[i].object3d.position.z);
+          mesh.updateMatrix();  
+          geometry.merge( mesh.geometry, mesh.matrix );
+          _this.actualAtoms[i].object3d.visible = false;   
+
+          i++; 
+        } 
+
+        var cube = THREE.CSG.toCSG(box); 
+        cube = cube.inverse();
+        var spheres = THREE.CSG.toCSG(geometry);
+        var geometryCSG = cube.subtract(spheres);
+        var geom = THREE.CSG.fromCSG(geometryCSG);
+        var finalGeom = assignUVs(geom);
+   
+        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
+        solidBox.name = 'solidvoid';
+        Explorer.add({'object3d' : solidBox}); 
+      }
+      else if(_this.viewMode === 'gradeLimited'){   
+
+      }
+      else if(_this.viewMode === 'Classic'){ 
+        while(i < _this.actualAtoms.length ) { 
+          _this.actualAtoms[i].object3d.visible = true;
+          _this.actualAtoms[i].classicView(); 
+          i++;
+        }  
+        var object = scene.getObjectByName('solidvoid');
+        if(!_.isUndefined(object)) scene.remove(object);
+      }
+
+    }
+  };
   Lattice.prototype.destroyPoints = function() {
     var _this = this; 
     _.each(this.points, function(point, reference) {
@@ -472,8 +538,9 @@ define([
 
       _.each(this.faces, function(face, reference) {
         face.destroy();
-        delete _this.faces[reference];
       });
+      _this.faces.splice(0);
+      _this.viewBox.splice(0);
 
       for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
            
@@ -488,7 +555,19 @@ define([
               visible 
               )
           );
-
+          
+          if(_z == 0) {   
+             _this.viewBox['_000'] = _this.points['r_0_0_'+_z+'_0'].object3d; 
+             _this.viewBox['_010'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+             _this.viewBox['_100'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d;
+             _this.viewBox['_110'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+          }
+          else if(_z == parameters.repeatZ){  
+            _this.viewBox['_001'] = _this.points['r_0_0_'+_z+'_0'].object3d ; 
+            _this.viewBox['_011'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+            _this.viewBox['_101'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d ;
+            _this.viewBox['_111'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+          }
         };
          
 
@@ -505,7 +584,7 @@ define([
               visible 
               )
           );
-
+           
         };
 
         for (var _x = 0; _x <= parameters.repeatX; _x++) {   
@@ -521,7 +600,7 @@ define([
               visible  
               )
           );
-
+           
         };
       
   };
@@ -1392,7 +1471,78 @@ define([
   function generateKey(){
     return key++; 
   }
+  function assignUVs( geometry ){ //todo maybe it doesn't work right
+     
+    geometry.computeBoundingBox();
+
+    var max     = geometry.boundingBox.max;
+    var min     = geometry.boundingBox.min;
+
+    var offset  = new THREE.Vector2(0 - min.x, 0 - min.y);
+    var range   = new THREE.Vector2(max.x - min.x, max.y - min.y);
+
+    geometry.faceVertexUvs[0] = [];
+    var faces = geometry.faces;
+
+    for (var i = 0; i < geometry.faces.length ; i++) {
+
+      var v1 = geometry.vertices[faces[i].a];
+      var v2 = geometry.vertices[faces[i].b];
+      var v3 = geometry.vertices[faces[i].c];
+
+      geometry.faceVertexUvs[0].push([
+        new THREE.Vector2( ( v1.x + offset.x ) / range.x , ( v1.y + offset.y ) / range.y ),
+        new THREE.Vector2( ( v2.x + offset.x ) / range.x , ( v2.y + offset.y ) / range.y ),
+        new THREE.Vector2( ( v3.x + offset.x ) / range.x , ( v3.y + offset.y ) / range.y )
+      ]);
+
+    }
+
+    geometry.uvsNeedUpdate = true;
+
+    return geometry;
+  }
+  function customBox(points) { 
+
+    var vertices = [];
+    var faces = [];
+
+    vertices.push(points['_000'].position); // 0
+    vertices.push(points['_010'].position); // 1
+    vertices.push(points['_011'].position); // 2
+
+    vertices.push(points['_001'].position); // 3
+    vertices.push(points['_101'].position); // 4
+    vertices.push(points['_111'].position); // 5
+    vertices.push(points['_110'].position); // 6
+    vertices.push(points['_100'].position); // 7
+
+    faces.push(new THREE.Face3(0,1,2));
+    faces.push(new THREE.Face3(0,2,3));
+
+    faces.push(new THREE.Face3(3,2,5));
+    faces.push(new THREE.Face3(3,5,4));
  
+    faces.push(new THREE.Face3(4,5,6));
+    faces.push(new THREE.Face3(4,6,7));
+
+    faces.push(new THREE.Face3(7,6,1));
+    faces.push(new THREE.Face3(7,1,0));
+
+    faces.push(new THREE.Face3(7,0,3));
+    faces.push(new THREE.Face3(7,3,4));
+
+    faces.push(new THREE.Face3(2,1,6));
+    faces.push(new THREE.Face3(2,6,5)); 
+
+    var geom = new THREE.Geometry();
+    geom.vertices = vertices;
+    geom.faces = faces;
+
+    geom.mergeVertices();
+
+    return geom;
+  }
   return Lattice;
 
 });

@@ -356,14 +356,19 @@
                               </div>
                             </div>
                             <div class="row">
-                              <div class="col-sm-8 ">
+                              <div class="col-sm-12 ">
                                 <label for="unitCellView">Unit Cell View</label>
                                 <select class="form-control" id="unitCellView">
                                   <option value="Classic" id="Classic">Classic</option>
                                   <option value="Subtracted" id="Subtracted">Subtracted</option>
                                   <option value="SolidVoid" id="SolidVoid">Solid Void Space</option>
+                                  <option value="GradeLimited" id="GradeLimited">Grade Limited</option>
                                 </select>
+                                <div class="col-sm-4 " style="bottom:0px;">
+                                <button type="button" id="showViewInCrystal" class="btn btn-primary btn-sm ">Show in Crystal</button>
                               </div>
+                              </div> 
+                              
                             </div>
                           </div>
                           <div id="motif">
@@ -599,7 +604,7 @@
                                 <div class="form-group col-md-12">
                                   <label for="atomPosX" class="col-md-1 control-label atomInput">Y</label>
                                   <div class="col-md-4 ">
-                                    <input type="text" class="form-control atomInput" id="atomPosX" value="0">
+                                    <input type="text" class="form-control atomInput disableME" id="atomPosX" value="0">
                                   </div> 
                                   <div class="col-md-6 vcenter atomInput">
                                     <div id="atomPosXSlider"></div>
@@ -609,7 +614,7 @@
                                  <div class="form-group col-md-12">
                                   <label for="atomPosY" class="col-md-1 control-label atomInput">Z</label>
                                   <div class="col-md-4 ">
-                                    <input type="text" class="form-control atomInput" id="atomPosY" value="0">
+                                    <input type="text" class="form-control atomInput disableME" id="atomPosY" value="0">
                                   </div> 
                                   <div class="col-md-6 vcenter atomInput">
                                     <div id="atomPosYSlider"></div>
@@ -619,7 +624,7 @@
                                 <div class="form-group  col-md-12">
                                   <label for="atomPosZ" class="col-md-1 control-label atomInput">X</label>
                                   <div class="col-md-4 ">
-                                    <input type="text" class="form-control atomInput" id="atomPosZ" value="0">
+                                    <input type="text" class="form-control atomInput disableME" id="atomPosZ" value="0">
                                   </div> 
                                   <div class="col-md-6 vcenter atomInput">
                                     <div id="atomPosZSlider"></div>
@@ -637,7 +642,7 @@
                                 <div class="row col-sm-12 atomInput"
                                   <label for="dragMode" class="col-sm-12 control-label atomInput">Drag Mode </label>
                                   <div class="col-sm-2 atomInput">
-                                    <input id="dragMode"  type="checkbox" name="dragMode" >
+                                    <input id="dragMode" class="disableME" type="checkbox" name="dragMode" >
                                   </div> 
                                 </div>
                                     

@@ -36,6 +36,7 @@ define([
     DRAG_ATOM: 'menu.drag_atom',
     SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
     UNIT_CELL_VIEW: 'menu.unit_cell_view',
+    CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal'
   };
 
   // lattice parameters
@@ -191,8 +192,9 @@ define([
     'rotAngleZ' : $rotAngleZ, 
     'rotAngleX' : $rotAngleX
   };
- 
+  
   var $unitCellView = jQuery('#unitCellView');
+  var $showViewInCrystal = jQuery('#showViewInCrystal');
 
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
@@ -375,7 +377,10 @@ define([
       return PubSub.publish(events.UNIT_CELL_VIEW, id);
     });
 
-
+    $showViewInCrystal.on('click', function(){ 
+      var arg = jQuery('#unitCellView :selected').val();  
+      PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, arg); 
+    });
     this.restrictionEvents = []; 
      
   }; 
@@ -541,6 +546,9 @@ define([
   };
   Menu.prototype.onCellViewChange = function(callback) { 
     PubSub.subscribe(events.UNIT_CELL_VIEW, callback);
+  };
+  Menu.prototype.onCrystalViewChange = function(callback) { 
+    PubSub.subscribe(events.CHANGE_VIEW_IN_CRYSTAL, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');
