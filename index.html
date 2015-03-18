@@ -71,20 +71,20 @@
                                   <div class="form-group"> 
                                     <select class="form-control" id="bravaisLattice">
                                       <option value="">None</option>
-                                      <option value="cubic_primitive">Cubic Primitive</option>
+                                      <option value="cubic_primitive">Cubic Simple</option>
                                       <option value="cubic_body_centered">Cubic Body-centered</option>
                                       <option value="cubic_face_centered">Cubic Face-centered</option>
-                                      <option value="tetragonal_primitive">Tetragonal Primitive</option>
+                                      <option value="tetragonal_primitive">Tetragonal Simple</option>
                                       <option value="tetragonal_body_centered">Tetragonal Body-centered</option>
-                                      <option value="orthorhombic_primitive">Orthorhombic Primitive</option>
+                                      <option value="orthorhombic_primitive">Orthorhombic Simple</option>
                                       <option value="orthorhombic_body_centered">Orthorhombic Body-centered</option>
                                       <option value="orthorhombic_face_centered">Orthorhombic Face-centered</option>
                                       <option value="orthorhombic_base_centered">Orthorhombic Base-centered</option>
-                                      <option value="hexagonal_primitive">Hexagonal Primitive</option>
-                                      <option value="rhombohedral_primitive">Rhombohedral Primitive</option>
-                                      <option value="monoclinic_primitive">Monoclinic Primitive</option>
+                                      <option value="hexagonal_primitive">Hexagonal</option>
+                                      <option value="rhombohedral_primitive">Rhombohedral Simple</option>
+                                      <option value="monoclinic_primitive">Monoclinic Simple</option>
                                       <option value="monoclinic_base_centered">Monoclinic Base-centered</option>
-                                      <option value="triclinic_primitive">Triclinic Primitive</option>
+                                      <option value="triclinic_primitive">Triclinic Simple</option>
                                     </select>
                                   </div>
                                 </form>
@@ -99,19 +99,19 @@
                                   <div class="col-md-12">  
                                     <div class="col-md-4">
                                       <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">a</span>
+                                        <span class="input-group-addon">x</span>
                                         <input type="text" class="form-control" id="repeatZ" value="1">
                                       </div>
                                     </div>  
                                     <div class="col-md-4">
                                       <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">b</span>
+                                        <span class="input-group-addon">y</span>
                                         <input type="text" class="form-control" id="repeatX" value="1">
                                       </div>
                                     </div>
                                     <div class="col-md-4">
                                       <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">c</span>
+                                        <span class="input-group-addon">z</span>
                                         <input type="text" class="form-control" id="repeatY" value="1">
                                       </div>
                                     </div>
@@ -287,154 +287,160 @@
                                 <h3 class="panel-title">Planes</h3>
                               </div> 
                               <div class="panel-body">
-                                <form role="form" action="#">
-                                  <div class="form-group ">
-                                    <label for="planes">Saved Planes</label>
-                                    <select class="form-control " id="planes">
-                                      <option value="">---</option>
-                                    </select>
-                                  </div>
-                                </form>  
-                                <div class="row">  
-                                  <div class="col-md-12">  
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">h</span>
-                                        <input type="text" class="form-control col-md-4 planeInput" id="millerH"  disabled>
+                                <div class="row"> 
+                                  <form role="form" action="#">
+                                    <div class="form-group ">
+                                      <div class="col-md-6"> 
+                                        <label for="planes">Saved Planes</label>
                                       </div>
-                                    </div>  
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">k</span>
-                                        <input type="text" class="form-control col-md-4 planeInput" id="millerK" disabled>
+                                      <div class="col-md-6"> 
+                                        <select class="form-control " id="planes">
+                                          <option value="">---</option>
+                                        </select>
                                       </div>
                                     </div>
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">l</span>
-                                        <input type="text" class="form-control col-md-4 planeInput" id="millerL" disabled>
+                                  </form>  
+                                  <div class="row">  
+                                    <div class="col-md-12">  
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">h</span>
+                                          <input type="text" class="form-control col-md-4 planeInput" id="millerH"  disabled>
+                                        </div>
+                                      </div>  
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">k</span>
+                                          <input type="text" class="form-control col-md-4 planeInput" id="millerK" disabled>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">l</span>
+                                          <input type="text" class="form-control col-md-4 planeInput" id="millerL" disabled>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </div>  
-                                <div class="col-md-12">
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">Color</span> 
-                                        <input class="color" id='planeColor' > 
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-4"></div> 
-                                  </div>
-                                </div>  
-                                <div class="col-md-12">
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">Name</span> 
-                                        <input class="planeInput" id='planeName' placeholder="Enter a name" disabled> 
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-4"></div> 
-                                  </div>
-                                </div> 
-                                <div class="row">
+                                  </div>  
                                   <div class="col-md-12">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">Opacity</span>
-                                        <input type="text" class="form-control" id="planeOpacity" value="1" min="1" max="10" step="1">
-                                      </div>
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">Color</span> 
+                                          <input class="color" id='planeColor' > 
+                                        </div>
+                                      </div> 
+                                      <div class="col-md-4"></div> 
                                     </div>
-                                    <div class="col-md-6" style="padding-top:7px;">
-                                      <div id="planeOpacitySlider"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="row" style="padding: 5px 5px 5px 5px;">
+                                  </div>  
                                   <div class="col-md-12">
-                                    <button type="button" id="previewPlane" class="btn btn-primary btn-sm " disabled>Preview</button>
-                                    <button type="button" id="savePlane" class="btn btn-primary btn-sm " disabled>Save</button>
-                                    <button type="button" id="newPlane" class="btn btn-primary btn-sm " >Create new</button>
-                                    <button type="button" id="deletePlane" class="btn btn-primary btn-sm " disabled>Delete</button>
-                                  </div>
-                                </div> 
-                              </div> 
-                            </div>  
-                            <div class="panel panel-info">
-                              <div class="panel-heading">
-                                <h3 class="panel-title">Directions</h3>
-                              </div> 
-                              <div class="panel-body">
-                                <form role="form" action="#">
-                                  <div class="form-group ">
-                                    <label for="vectors">Saved Directions</label>
-                                    <select class="form-control" id="vectors">
-                                      <option value="">---</option>
-                                    </select>
-                                  </div>
-                                </form>
-                                <div class="row">  
-                                  <div class="col-md-12">  
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">h</span>
-                                        <input type="text" class="form-control col-md-4 dirInput" id="millerU"  disabled>
-                                      </div>
-                                    </div>  
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">k</span>
-                                        <input type="text" class="form-control col-md-4 dirInput" id="millerV" disabled>
-                                      </div>
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">Name</span> 
+                                          <input class="planeInput" id='planeName' placeholder="Enter a name" disabled> 
+                                        </div>
+                                      </div> 
+                                      <div class="col-md-4"></div> 
                                     </div>
-                                    <div class="col-md-4">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">l</span>
-                                        <input type="text" class="form-control col-md-4 dirInput" id="millerW" disabled>
+                                  </div> 
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">Opacity</span>
+                                          <input type="text" class="form-control" id="planeOpacity" value="1" >
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6" style="padding-top:7px;">
+                                        <div id="planeOpacitySlider"></div>
                                       </div>
                                     </div>
                                   </div>
-                                </div> 
-                                <div class="col-md-12">
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">Color</span> 
-                                        <input class="color dirInput" id='directionColor' > 
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-4"></div> 
-                                  </div>
-                                </div>  
-                                <div class="col-md-12">
-                                  <div class="row">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-sm">
-                                        <span class="input-group-addon">Name</span> 
-                                        <input class="dirInput" id='directionName' placeholder="Enter a name" disabled> 
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-4"></div> 
-                                  </div>
-                                </div> 
-                                <div class="row" style="padding: 5px 5px 5px 5px;">
-                                  <div class="col-md-12">
-                                    <button type="button" id="previewDirection" class="btn btn-primary btn-sm "  disabled>Preview</button>
-                                    <button type="button" id="saveDirection" class="btn btn-primary btn-sm " disabled>Save</button>
-                                    <button type="button" id="newDirection" class="btn btn-primary btn-sm " >Create new</button>
-                                    <button type="button" id="deleteDirection" class="btn btn-primary btn-sm " disabled>Delete</button>
-                                  </div>
+                                  <div class="row" style="padding: 5px 5px 5px 5px;">
+                                    <div class="col-md-12">
+                                      <button type="button" id="previewPlane" class="btn btn-primary btn-sm " disabled>Preview</button>
+                                      <button type="button" id="savePlane" class="btn btn-primary btn-sm " disabled>Save</button>
+                                      <button type="button" id="newPlane" class="btn btn-primary btn-sm " >Create new</button>
+                                      <button type="button" id="deletePlane" class="btn btn-primary btn-sm " disabled>Delete</button>
+                                    </div>
+                                  </div>  
                                 </div>  
                               </div>  
                             </div>
+                            <div class="panel panel-info">
+                            <div class="panel-heading">
+                              <h3 class="panel-title">Directions</h3>
+                            </div> 
+                            <div class="panel-body">
+                              <form role="form" action="#">
+                                <div class="form-group ">
+                                  <label for="vectors">Saved Directions</label>
+                                  <select class="form-control" id="vectors">
+                                    <option value="">---</option>
+                                  </select>
+                                </div>
+                              </form>
+                              <div class="row">  
+                                <div class="col-md-12">  
+                                  <div class="col-md-4">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">h</span>
+                                      <input type="text" class="form-control col-md-4 dirInput" id="millerU"  disabled>
+                                    </div>
+                                  </div>  
+                                  <div class="col-md-4">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">k</span>
+                                      <input type="text" class="form-control col-md-4 dirInput" id="millerV" disabled>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-4">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">l</span>
+                                      <input type="text" class="form-control col-md-4 dirInput" id="millerW" disabled>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div> 
+                              <div class="col-md-12">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">Color</span> 
+                                      <input class="color dirInput" id='directionColor' > 
+                                    </div>
+                                  </div> 
+                                  <div class="col-md-4"></div> 
+                                </div>
+                              </div>  
+                              <div class="col-md-12">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">Name</span> 
+                                      <input class="dirInput" id='directionName' placeholder="Enter a name" disabled> 
+                                    </div>
+                                  </div> 
+                                  <div class="col-md-4"></div> 
+                                </div>
+                              </div> 
+                              <div class="row" style="padding: 5px 5px 5px 5px;">
+                                <div class="col-md-12">
+                                  <button type="button" id="previewDirection" class="btn btn-primary btn-sm "  disabled>Preview</button>
+                                  <button type="button" id="saveDirection" class="btn btn-primary btn-sm " disabled>Save</button>
+                                  <button type="button" id="newDirection" class="btn btn-primary btn-sm " >Create new</button>
+                                  <button type="button" id="deleteDirection" class="btn btn-primary btn-sm " disabled>Delete</button>
+                                </div>
+                              </div>  
+                            </div>  
+                            </div> 
                           </div> 
                         </div>
                       </div> 
                     </div> 
                   </div>
-                </div> 
+                </div>  
                 <div id="MotifEditor" class="tab-pane ">
                   <div class="row">
                     <div class="col-md-12">
@@ -449,47 +455,79 @@
                             <div class="panel panel-info">
                               <div class="panel-heading">
                                 <h3 class="panel-title">Unit Cell Parameters</h3>
-                              </div>  
-                              <div class="panel-body" style="padding:5px 5px 5px 5px;">
-                                <div class="row">
-                                  <label  class="col-sm-4 ">Fixed Length (yzx)</label>
-                                  <input type="text" class="col-sm-2 " id="fixedX" value="1" >
-                                  <input type="text" class="col-sm-2 " id="fixedY" value="1" >
-                                  <input type="text" class="col-sm-2 " id="fixedZ" value="1" >
-                                  <div class="col-sm-2 ">
-                                    <input id="fixedLength"  type="checkbox" name="fixedLength" value="1" >
+                              </div>   
+                              <div class="panel-body">    
+                                <div class="panel-body">   
+                                  <div class="row"> 
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input type="checkbox" name="fixedLength" id="fixedLength" value="off"> 
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Fixed Length</strong></h3>
+                                    </div>
+                                  </div>    
+                                  <div  class= "row" style=" margin-bottom: 15px;">  
+                                    <div class="col-md-12">
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">a</span>
+                                          <input type="text" class="form-control " id="fixedZ" value="1">
+                                        </div>
+                                      </div>  
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">b</span>
+                                          <input type="text" class="form-control" id="fixedX" value="1">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">c</span>
+                                          <input type="text" class="form-control" id="fixedY" value="1">
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row col-md-12" style=" margin-bottom: 5px;">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input type="checkbox" name="syncCameras" id="syncCameras" value="off"> 
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Sync Cameras</strong></h3>
+                                    </div>
+                                  </div>
+                                  <div class="row col-md-12" style=" margin-bottom: 5px;">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input type="checkbox" name="distortion" id="distortion" value="off"> 
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Enable Distortion</strong></h3>
+                                    </div>
+                                  </div> 
+                                  <div class="row"> 
+                                    <div class="row col-md-12" style="margin-top: 5; margin-bottom: 5;">
+                                      <div class="col-md-2" style="margin-top:5px;">
+                                        <label for="unitCellView">View:</label>
+                                      </div>
+                                      <div class="col-md-5 "> 
+                                        <select class="form-control " id="unitCellView">
+                                          <option value="Classic" id="Classic">Classic</option>
+                                          <option value="Subtracted" id="Subtracted">Subtracted</option>
+                                          <option value="SolidVoid" id="SolidVoid">Solid Void Space</option>
+                                          <option value="GradeLimited" id="GradeLimited">Grade Limited</option>
+                                        </select>
+                                      </div> 
+                                      <div class="col-md-5">
+                                        <button type="button" id="showViewInCrystal" class="btn btn-primary btn-sm ">Apply in Crystal</button>
+                                      </div>
+                                    </div> 
                                   </div> 
                                 </div> 
-                                <div class="row">
-                                  <div class="col-sm-4"></div>
-                                  <label class="col-sm-5 ">Sync Cameras</label>
-                                  <div class="col-sm-2 ">
-                                    <input id="syncCameras"  type="checkbox" name="syncCameras" >
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-sm-4"></div>
-                                  <label class="col-sm-5 ">Distortion in Crystal</label>
-                                  <div class="col-sm-2 ">
-                                    <input id="distortion"  type="checkbox" name="distortion" value="1"  >
-                                  </div>
-                                </div>
-                                <div class="row">
-                                  <div class="col-sm-12 ">
-                                    <label for="unitCellView">Unit Cell View</label>
-                                    <select class="form-control" id="unitCellView">
-                                      <option value="Classic" id="Classic">Classic</option>
-                                      <option value="Subtracted" id="Subtracted">Subtracted</option>
-                                      <option value="SolidVoid" id="SolidVoid">Solid Void Space</option>
-                                      <option value="GradeLimited" id="GradeLimited">Grade Limited</option>
-                                    </select>
-                                    <div class="col-sm-4 " style="bottom:0px;">
-                                      <button type="button" id="showViewInCrystal" class="btn btn-primary btn-sm ">Show in Crystal</button>
-                                    </div>  
-                                  </div>  
-                                </div>
                               </div>
-                            </div>
+                            </div>  
                           </div>
                           <div id="motif">
                             <div class="panel-body">
@@ -502,7 +540,7 @@
                                     <div class="btn-group col-sm-6 " >
                                       <strong>Periodic Table</strong>
                                       <button type="button" id="atomPalette" class="btn btn-primary col-sm-12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                        Choose atom <span class="caret"></span>
+                                        Choose Atom <span class="caret"></span>
                                       </button> 
                                       <div class="dropdown-menu" role="menu">
                                         <table class="tg"> 
@@ -721,65 +759,106 @@
 
                                   <label for="atomName" class="col-md-6 control-label atomInput">Name </label>
                                   <input type="text" class="col-md-6 atomInput" id="atomName" placeholder="enter name..." >
-
-                                  <div class="form-group col-md-12">
-                                    <label for="atomPosX" class="col-md-1 control-label atomInput">Y</label>
-                                    <div class="col-md-4 ">
-                                      <input type="text" class="form-control atomInput disableME" id="atomPosX" value="0">
-                                    </div> 
-                                    <div class="col-md-6 vcenter atomInput">
-                                      <div id="atomPosXSlider"></div>
-                                    </div>
-                                  </div>
-
-                                  <div class="form-group col-md-12">
-                                    <label for="atomPosY" class="col-md-1 control-label atomInput">Z</label>
-                                    <div class="col-md-4 ">
-                                      <input type="text" class="form-control atomInput disableME" id="atomPosY" value="0">
-                                    </div> 
-                                    <div class="col-md-6 vcenter atomInput">
-                                      <div id="atomPosYSlider"></div>
+                                  <div class="form-group">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">a</span>
+                                          <input type="text" id="atomPosZ" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="atomPosZSlider"></div>
+                                      </div>
                                     </div>
                                   </div> 
-
-                                  <div class="form-group  col-md-12">
-                                    <label for="atomPosZ" class="col-md-1 control-label atomInput">X</label>
-                                    <div class="col-md-4 ">
-                                      <input type="text" class="form-control atomInput disableME" id="atomPosZ" value="0">
-                                    </div> 
-                                    <div class="col-md-6 vcenter atomInput">
-                                      <div id="atomPosZSlider"></div>
+                                  <div class="form-group">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">b</span>
+                                          <input type="text" id="atomPosX" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="atomPosXSlider"></div>
+                                      </div>
                                     </div>
                                   </div>
-   
-                                  <label for="atomColor" class="col-sm-5 control-label atomInput"> Color </label>
-                                  <input class="color col-sm-7 atomInput" id='atomColor' >
-
-                                  <label for="tangency" class="col-sm-10 control-label atomInput"> Automatic Tangency </label>
-                                  <div class="col-sm-2 atomInput">
-                                    <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" >
+                                  <div class="form-group">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">c</span>
+                                          <input type="text" id="atomPosY" class="form-control atomInput disableME"  value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="atomPosYSlider"></div>
+                                      </div>
+                                    </div>
                                   </div> 
-
-                                  <div class="row col-sm-12 atomInput">
-                                    <label for="dragMode" class="col-sm-12 control-label atomInput">Drag Mode </label>
-                                    <div class="col-sm-2 atomInput">
-                                      <input id="dragMode" class="disableME" type="checkbox" name="dragMode" >
+                                  <div class="col-md-12">
+                                    <div class="col-md-6">
+                                      <div class="input-group input-group-md atomInput">
+                                        <span class="input-group-addon">Color</span> 
+                                        <input class="color atomInput" id='atomColor' > 
+                                      </div>
                                     </div> 
                                   </div>
-                                      
-                                  <div class="row col-sm-12 atomInput" id = 'rotatingAngles'  >
-
-                                    <input type="text" class="col-sm-3 " id="rotAngleX" value="-" >
-                                    <input type="text" class="col-sm-3 " id="rotAngleY" value="-" >
-                                    <input type="text" class="col-sm-3 " id="rotAngleZ" value="-" > 
+                                  <div class="col-md-12 atomInput">
+                                    <div class="col-md-12">
+                                      <div class="input-group input-group-md atomInput">
+                                        <span class="input-group-addon"> Automatic Tangency</span> 
+                                        <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" > 
+                                      </div>
+                                    </div> 
+                                  </div>
+                                  <div class="col-md-12 atomInput">
+                                    <div class="col-md-12">
+                                      <div class="input-group input-group-md atomInput">
+                                        <span class="input-group-addon"> Drag Mode</span> 
+                                        <input id="dragMode" class="disableME" type="checkbox" name="dragMode" >
+                                      </div>
+                                    </div> 
+                                  </div>  
+                                  <div class="row atomInput" id = 'rotatingAngles'  > 
+                                    <div class="col-md-12" style=" margin-bottom: 15px;">  
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">a</span>
+                                          <input type="text" class="form-control" id="rotAngleX" value="-">
+                                        </div>
+                                      </div>  
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">b</span>
+                                          <input type="text" class="form-control" id="rotAngleY" value="-">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">c</span>
+                                          <input type="text" class="form-control" id="rotAngleZ" value="-">
+                                        </div>
+                                      </div>
+                                    </div>   
                                   </div> 
-                                  <div class=" btn-toolbar col-sm-12 input-lg" role="toolbar">
-                                    <button type="button" id="previewChanges" class="btn btn-primary btn-sm atomInput "  >Preview Changes</button>
-                                    <button type="button" id="saveChanges" class="btn btn-primary btn-sm atomInput" >Save Changes</button> 
+                                  <div class=" btn-toolbar col-md-12 " role="toolbar" style=" margin-bottom: 5px;">
+                                    <div class="col-md-6">
+                                      <button type="button" id="previewChanges" class="btn btn-primary btn-sm atomInput "  >Preview Changes</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <button type="button" id="saveChanges" class="btn btn-primary btn-sm atomInput" >Save Changes</button> 
+                                    </div>
                                   </div> 
-                                  <div class=" btn-toolbar col-sm-12 input-lg" role="toolbar">
-                                    <button type="button" id="deleteAtom" class="btn btn-primary btn-sm atomInput" >Delete Atom</button>
-                                    <button type="button" id="cancel" class="btn btn-primary btn-sm atomInput" >Cancel</button>
+                                  <div class=" btn-toolbar col-md-12 " role="toolbar">
+                                    <div class="col-md-6">
+                                      <button type="button" id="deleteAtom" class="btn btn-primary btn-sm atomInput" >Delete Atom</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                      <button type="button" id="cancel" class="btn btn-primary btn-sm atomInput" >Cancel</button>
+                                    </div>
                                   </div>  
                                 </div>
                               </div>    
@@ -806,8 +885,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
-           
+              </div> 
             </section>
           </div>
         </div>

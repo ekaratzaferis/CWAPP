@@ -807,6 +807,7 @@ define([
       if(_this.dragMode) { 
           
         _this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; }); 
+        console.log(_this.tangentToThis);
         var newPos = _this.findNewAtomsPos(_this.tangentToThis, _this.newSphere.getRadius(), true);  
          
         _this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
