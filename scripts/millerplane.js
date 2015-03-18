@@ -38,7 +38,7 @@ define([
 
     geom.mergeVertices();
 
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { shading: THREE.FlatShading,side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
+    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
 
     this.object3d = mesh;
     Explorer.add(this);

@@ -26,40 +26,29 @@ define([
     geom.vertices = vertices;
     geom.faces = faces;
 
-    geom.mergeVertices();
-
-    var materials = [
-        new THREE.MeshBasicMaterial( { shading: THREE.FlatShading,side:  THREE.DoubleSide, color:("0x"+color),opacity:opacity/10,  transparent: true } ) 
-    ];
+    geom.mergeVertices(); 
     
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { shading: THREE.FlatShading,side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
+    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( {  depthWrite: false, depthTest: false, side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     this.object3d = mesh;
      
     Explorer.add(this);
   }
-  Face.prototype.setVisible = function( x) {
-      
-    this.object3d.visible = x ;
-
+  Face.prototype.setVisible = function( x) { 
+    this.object3d.visible = x ; 
   };
-  Face.prototype.setOpacity = function( opacity) {
-      
-      if(_.isUndefined(opacity)) return;
-      this.opacity = opacity;
-      this.object3d.material.needsUpdate = true;
-      this.object3d.material.opacity= opacity/10;
-
+  Face.prototype.setOpacity = function( opacity) { 
+    if(_.isUndefined(opacity)) return;
+    this.opacity = opacity;
+    this.object3d.material.needsUpdate = true;
+    this.object3d.material.opacity= opacity/10; 
   };
   Face.prototype.setColor = function(color) {
-      if(_.isUndefined(color)) return;
-      this.color = color;
-      this.object3d.material.needsUpdate = true;
-      this.object3d.material.color.setHex( "0x"+color );
-       
- 
-  };
-
+    if(_.isUndefined(color)) return;
+    this.color = color;
+    this.object3d.material.needsUpdate = true;
+    this.object3d.material.color.setHex( "0x"+color ); 
+  }; 
   Face.prototype.destroy = function() {
     Explorer.remove(this);
   };
