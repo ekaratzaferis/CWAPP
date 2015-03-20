@@ -193,12 +193,10 @@ define([
     _this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
     if(_.isUndefined(_this.newSphere) ) _this.newSphere = tempObj ; //in case he drags the _this.newSphere already
 
-    if(axis === 'x' ) { 
-
+    if(axis === 'x' ) {  
       _this.newSphere.object3d.position.set(pos.x,pos.y,_this.newSphere.object3d.position.z);  
       _this.translateCellAtoms("x",  pos.x , _this.newSphere.getID());
-      _this.translateCellAtoms("y",  pos.y , _this.newSphere.getID());
-
+      _this.translateCellAtoms("y",  pos.y , _this.newSphere.getID()); 
     }
     else if(axis === 'y' ) {   
       _this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
@@ -615,43 +613,44 @@ define([
   Motifeditor.prototype.removeAtomFromList = function(id)  { 
     $("#savedAtoms option[value='"+id+"']").remove();
   }; 
+  var arg_ = {'rotAngleX' : 0, 'rotAngleY' : 0, 'rotAngleZ' : 0};
   Motifeditor.prototype.changeRotatingAngle = function(arg){
     var _this = this ;  
+
     if(_this.dragMode){ 
       if(!_.isUndefined(arg.rotAngleX)) {
-        _this.rotateAroundAtom(arg.rotAngleX); 
-
-        // to update other textboxes
-        _this.rotAxis = 'y';
-        _this.rotateAroundAtom();
+        arg_.rotAngleX = arg.rotAngleX ;
         _this.rotAxis = 'x';
-        _this.rotateAroundAtom(); 
+        _this.rotateAroundAtom(arg_.rotAngleX);  
+        _this.rotAxis = 'y';
+        _this.rotateAroundAtom(arg_.rotAngleY);
+        _this.rotAxis = 'z';
+        _this.rotateAroundAtom(arg_.rotAngleZ);  
       }
       else if(!_.isUndefined(arg.rotAngleY)) {
-        _this.rotateAroundAtom(arg.rotAngleY);
-
-        // to update other textboxes
+        arg_.rotAngleY = arg.rotAngleY ;
         _this.rotAxis = 'y';
-        _this.rotateAroundAtom();
+        _this.rotateAroundAtom(arg_.rotAngleY);  
+        _this.rotAxis = 'z';
+        _this.rotateAroundAtom(arg_.rotAngleZ);
         _this.rotAxis = 'x';
-        _this.rotateAroundAtom(); 
+        _this.rotateAroundAtom(arg_.rotAngleX);
       }
       else if(!_.isUndefined(arg.rotAngleZ)) {
-        _this.rotateAroundAtom(arg.rotAngleZ);
-        // to update other textboxes
+        arg_.rotAngleZ = arg.rotAngleZ ;
+        _this.rotAxis = 'z';
+        _this.rotateAroundAtom(arg_.rotAngleZ); 
         _this.rotAxis = 'x';
-        _this.rotateAroundAtom();
+        _this.rotateAroundAtom(arg_.rotAngleX);
         _this.rotAxis = 'y';
-        _this.rotateAroundAtom();
+        _this.rotateAroundAtom(arg_.rotAngleY);
       }
-
-
     }
 
   };
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this; 
-     
+      
     if(_this.dragMode){ 
       var axis = this.rotAxis;
       var movingAtom = this.newSphere;
@@ -681,6 +680,9 @@ define([
 
         $("#rotAngleX").val( angle);
  
+        _this.configureCellPoints();
+        _this.findAngles('y');
+        _this.findAngles('z');
       }
       else if(axis === 'y'){
 
@@ -702,6 +704,9 @@ define([
 
         $("#rotAngleY").val( angle); 
  
+        _this.configureCellPoints();
+        _this.findAngles('x');
+        _this.findAngles('z');
       }
       else if(axis === 'z'){
         var thirdPoint = new THREE.Vector3(stillPoint.x, movingPoint.y, movingPoint.z); 
@@ -722,15 +727,14 @@ define([
 
         $("#rotAngleZ").val( angle); 
 
+        _this.configureCellPoints();
+        _this.findAngles('x');
+        _this.findAngles('y'); 
       }
       _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
       _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
       _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
        
-      _this.configureCellPoints();
-      _this.findAngles('x');
-      _this.findAngles('y');
-      _this.findAngles('z');
     }
   };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
@@ -768,8 +772,7 @@ define([
       var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
       var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
       var position = new THREE.Vector3(movingPoint.x  , stillPoint.y + verticalSide,  (stillPoint.z - horizontalSide) );
-      $("#rotAngleY").val( angle); 
-
+      $("#rotAngleY").val( angle);  
     }
     else if(axis === 'z'){
       var thirdPoint = new THREE.Vector3(stillPoint.x, movingPoint.y, movingPoint.z); 
@@ -806,15 +809,14 @@ define([
        
       if(_this.dragMode) { 
           
-        _this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; }); 
-        console.log(_this.tangentToThis);
+        _this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });  
         var newPos = _this.findNewAtomsPos(_this.tangentToThis, _this.newSphere.getRadius(), true);  
          
         _this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
         _this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
         _this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
         _this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
-        _this.configureCellPoints();
+        _this.configureCellPoints(); 
 
         _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
         _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
@@ -850,11 +852,15 @@ define([
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else{ 
-      dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
+      if(_this.newSphere === undefined){
+        dimensions = _this.findMotifsDimensions(undefined,undefined);   
+      }
+      else{
+        dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
+      }
     } 
 
-    _this.cellPointsWithScaling(dimensions, true); // todo fix that true 
-      
+    _this.cellPointsWithScaling(dimensions, true); // todo fix that true  
     _this.cellPointsWithAngles();
 
     switch(_this.latticeType) {
@@ -1319,13 +1325,14 @@ define([
   };
   Motifeditor.prototype.findMotifsDimensions = function(pos, radius){
     var _this = this, offsets = {x : 0, y : 0, z : 0 } ;   
-    
+     
     var now = performance.now();
-
-
+ 
     if(_.isUndefined(_this.newSphere.object3d)){
-      var helperObj = {"object3d" : {"position" : { "x": pos.x, "y":pos.y, "z": pos.z}}, getRadius: function() { return radius; } } ; 
-      this.motifsAtoms.push(helperObj); 
+      if(!_.isUndefined(pos) ){ 
+        var helperObj = {"object3d" : {"position" : { "x": pos.x, "y":pos.y, "z": pos.z}}, getRadius: function() { return radius; } } ; 
+        this.motifsAtoms.push(helperObj); 
+      }
     }
     else{  
       _this.motifsAtoms.push(_this.newSphere);
