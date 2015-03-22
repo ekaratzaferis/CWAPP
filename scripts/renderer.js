@@ -37,14 +37,12 @@ define([
     this.renderer.setClearColor( 0x000000);
     this.renderer.setSize( width, height);
     this.renderer.shadowMapEnabled = true;
-    this.renderer.shadowMapSoft = true;
-    this.renderer.shadowMapEnabled = true;
-    this.renderer.shadowMapSoft = true;
-
+    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    this.renderer.physicallyBasedShading = true; 
+    this.renderer.shadowMapSoft = true; 
     this.renderer.shadowCameraNear = 0.1;
-    this.renderer.shadowCameraFar = 100;
-    this.renderer.shadowCameraFov = 50;
-
+    this.renderer.shadowCameraFar = 400;
+    this.renderer.shadowCameraFov = 200;
     this.renderer.shadowMapBias = 0.0039;
     this.renderer.shadowMapDarkness = 0.5;
     this.renderer.shadowMapWidth = 1024;

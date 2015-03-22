@@ -31,16 +31,36 @@ define([
       function(tex){
         tex.mapping = THREE.SphericalReflectionMapping;
         _this.addMaterial(tex, geometry, color, position, opacity, wireframe) ;
-        }
-    ); 
-   
+      }
+    );  
   }
+  CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe) {
+    var _this = this ;
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:opacity    }) ;
+    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:opacity  }) ;
+    var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
+    if(wireframe) wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, transparent:false}) ;
+  
+    _this.materials =  [  
+      _this.colorMaterial,
+      _this.materialLetter,
+      wireMat
+    ];
+
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true; 
+    _this.object3d = sphere;
+    _this.object3d.position.set(position.x, position.y, position.z);
+    Explorer.add(_this); 
+
+  };  
   CrystalAtom.prototype.subtractedSolidView = function(box, pos) {
     var _this = this; 
 
     Explorer.remove({'object3d':_this.object3d}); 
      
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshLambertMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box); 
@@ -51,8 +71,9 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
-    sphereCut.receiveShadow=false;
-    sphereCut.castShadow=false;
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true; 
+
     _this.object3d = sphereCut; 
     Explorer.add(_this); 
     _this.helperPos.x = pos.x ;
@@ -73,35 +94,18 @@ define([
 
     var geometry = new THREE.SphereGeometry(_this.radius,32, 32);  
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, [_this.materialLetter, _this.colorMaterial ]);
-    sphere.receiveShadow=false;
-    sphere.castShadow=false;
+   
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true; 
+
     _this.object3d = sphere;
     _this.object3d.position.x = _this.helperPos.x ;
     _this.object3d.position.y = _this.helperPos.y ;
     _this.object3d.position.z = _this.helperPos.z ;
+
     Explorer.add(_this); 
     Explorer.remove({'object3d':toDestroy}); 
   };
-  CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe) {
-    var _this = this ;
-    _this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide, transparent:true,opacity:opacity    }) ;
-    _this.materialLetter = new THREE.MeshLambertMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true,opacity:opacity  }) ;
-    var wireMat = new THREE.MeshLambertMaterial({transparent:true, opacity:0});
-    if(wireframe) wireMat = new THREE.MeshLambertMaterial({color : "#000000", wireframe: true, transparent:false}) ;
-    _this.materials =  [  
-      _this.colorMaterial,
-      _this.materialLetter,
-      wireMat
-    ];
-
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
-    sphere.castShadow = true;
-    sphere.receiveShadow = true;
-    _this.object3d = sphere;
-    _this.object3d.position.set(position.x, position.y, position.z);
-    Explorer.add(_this); 
-
-  };  
   CrystalAtom.prototype.getID = function() {
     var _this = this ;
     return _this.myID ;
@@ -120,14 +124,14 @@ define([
   }; 
   CrystalAtom.prototype.setMaterial = function(color) {
     var _this = this;
-    _this.colorMaterial = new THREE.MeshLambertMaterial({ color:color,side: THREE.DoubleSide  });
-    _this.object3d.children[1].material  = new THREE.MeshLambertMaterial({ color:color,side: THREE.DoubleSide  });
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   CrystalAtom.prototype.collided = function() {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshLambertMaterial({ color:"#FF0000",side: THREE.DoubleSide  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000",side: THREE.FrontSide  });
     _this.object3d.children[1].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[1].material = _this.colorMaterial;

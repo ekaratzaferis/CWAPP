@@ -286,7 +286,7 @@ define([
       return PubSub.publish(events.PLANE_SELECTION, id);
     });
 
-    this.setSlider("planeOpacity",1,1,10,1);
+    this.setSlider("planeOpacity",1,10,10,1); 
 
     // Motif
     _.each(motifSliders, function(name) {

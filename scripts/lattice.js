@@ -147,6 +147,7 @@ define([
     this.parameters.scaleX = dimensions.x ;
     this.parameters.scaleY = dimensions.y ;
     this.parameters.scaleZ = dimensions.z ;
+
     _this.forwardTransformations();  
  
     _.each(_this.points, function(point,kk) { 
@@ -167,7 +168,8 @@ define([
             p,
             atom.object3d.children[1].material.map.image.currentSrc,
             atom.object3d.children[0].material.opacity,
-            wireframe
+            atom.object3d.children[2].material.wireframe
+
           )  
         );
       });
@@ -390,7 +392,7 @@ define([
             p,
             atom.object3d.children[1].material.map.image.currentSrc,
             atom.object3d.children[0].material.opacity,
-            wireframe
+            atom.object3d.children[2].material.wireframe
           )  
         );
       });
@@ -775,6 +777,7 @@ define([
   };
   Lattice.prototype.reCreateMillers = function() {
     var _this = this;
+    console.log('ppp');
     if(this.millerPlanes.length>0) {
       _.each(_this.millerPlanes, function(plane, reference) {
         var params = {

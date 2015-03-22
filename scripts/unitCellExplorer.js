@@ -28,17 +28,20 @@ define([
     PubSub.subscribe(events.REMOVE, function(message, object) {
       _this.remove(object);
     });
-    var dirLight = new THREE.DirectionalLight( 0xF5F6CE, 1 );
-    dirLight.color.setHSL( 1,1,1 );
-    dirLight.castShadow = true;
-    dirLight.shadowDarkness = 0.7; 
-    dirLight.position.set( 10, 10, 2 ); 
-    dirLight.position.multiplyScalar( 50 );
-    dirLight.shadowCameraRight     =  100;
-    dirLight.shadowCameraLeft     = -100;
-    dirLight.shadowCameraTop      =  100;
-    dirLight.shadowCameraBottom   = -100;
-    this.object3d.add( dirLight ); 
+    var light = new THREE.SpotLight( 0xF5F6CE, 1 );
+    light.position.set( 300, 300, 60 );
+    light.castShadow = true;
+    light.shadowMapWidth = 1024;    // power of 2
+    light.shadowMapHeight = 1024;
+
+    light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
+    light.shadowCameraFar = 450;    // shadows not cast past the far plane
+    light.shadowCameraFov = 20;
+    light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
+    light.shadowDarkness = 0.7;
+
+    //light.shadowCameraVisible = true;
+    this.object3d.add( light );
 
     var geometry1 = new THREE.Geometry();
     geometry1.vertices.push(

@@ -39,7 +39,7 @@ define([
     geom.mergeVertices();
 
     var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
-
+    mesh.renderOrder = 1 ;
     this.object3d = mesh;
     Explorer.add(this);
 

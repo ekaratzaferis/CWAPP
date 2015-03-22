@@ -51,13 +51,13 @@ define([
   };
   UnitCellAtom.prototype.updateText = function(texture){
     var _this = this; 
-    _this.object3d.children[1].material  = new THREE.MeshLambertMaterial({ map : texture, side: THREE.DoubleSide, transparent:true,opacity:1  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, side: THREE.FrontSide, transparent:true,opacity:1  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   UnitCellAtom.prototype.setOpacity = function( opacity) { 
     if(_.isUndefined(opacity)) return;
-    this.colorMaterial = new THREE.MeshLambertMaterial({ color:this.colorMaterial.color,side: THREE.DoubleSide, transparent: true, opacity: opacity/10  });
+    this.colorMaterial = new THREE.MeshPhongMaterial({ color:this.colorMaterial.color,side: THREE.FrontSide, transparent: true, opacity: opacity/10  });
     this.object3d.children[0].material.opacity = opacity/10  ;
     this.object3d.children[1].material.opacity = opacity/10  ;
     this.object3d.children[0].material.needsUpdate = true;
@@ -65,22 +65,20 @@ define([
   };
   UnitCellAtom.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide, transparent:true,opacity:1   }) ;
-    _this.materialLetter = new THREE.MeshLambertMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true,opacity:1  }) ;
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:1   }) ;
+    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:1  }) ;
 
     _this.materials =  [  
       _this.colorMaterial,
       _this.materialLetter,
-      new THREE.MeshLambertMaterial({color : "#000000", wireframe: true})
+      new THREE.MeshBasicMaterial({color : "#000000", wireframe: true})
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
-    sphere.traverse( function ( child ) { 
-      if ( child.geometry !== undefined ) { 
-        child.receiveShadow=false;
-        child.castShadow=false;
-      } 
-    });
+   
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true; 
+    
     _this.object3d = sphere;
     _this.object3d.position.fromArray(position.toArray()); 
     UnitCellExplorer.add(_this); 
@@ -88,10 +86,10 @@ define([
   };
   UnitCellAtom.prototype.wireframeMat = function(bool){
     if(bool){ 
-      this.object3d.children[2].material  = new THREE.MeshLambertMaterial({color : "#000000", wireframe: true}) ;
+      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true}) ;
     }
     else{
-      this.object3d.children[2].material  = new THREE.MeshLambertMaterial({transparent:true, opacity:0}) ;
+      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({transparent:true, opacity:0}) ;
     }
     this.object3d.children[2].material.needsUpdate = true;  
   };
@@ -100,7 +98,7 @@ define([
 
     UnitCellExplorer.remove({'object3d':_this.object3d}); 
      
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshLambertMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);
@@ -111,12 +109,9 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
-    sphereCut.traverse( function ( child ) { 
-      if ( child.geometry !== undefined ) { 
-        child.receiveShadow=false;
-        child.castShadow=false;
-      } 
-    });
+    sphereCut.children[0].receiveShadow = true; 
+    sphereCut.children[0].castShadow = true; 
+
     _this.object3d = sphereCut; 
     UnitCellExplorer.add(_this);
     _this.helperPos.x = pos.x ;
@@ -138,12 +133,8 @@ define([
 
     var geometry = new THREE.SphereGeometry(_this.radius,32, 32);  
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, [_this.materialLetter, _this.colorMaterial ]);
-    sphere.traverse( function ( child ) { 
-      if ( child.geometry !== undefined ) { 
-        child.receiveShadow=false;
-        child.castShadow=false;
-      } 
-    });
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true; 
     _this.object3d = sphere;
     _this.object3d.position.x = _this.helperPos.x ;
     _this.object3d.position.y = _this.helperPos.y ;
@@ -178,13 +169,13 @@ define([
   }; 
   UnitCellAtom.prototype.setMaterial = function(color, opacity) {
     var _this = this;
-    _this.colorMaterial = new THREE.MeshLambertMaterial({ color:color,side: THREE.DoubleSide  });
-    _this.object3d.children[0].material  = new THREE.MeshLambertMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity/10  });
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
+    _this.object3d.children[0].material  = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide, transparent: true, opacity : opacity/10  });
     _this.object3d.children[0].material.needsUpdate = true; 
   }; 
   UnitCellAtom.prototype.collided = function() {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshLambertMaterial({ color:"#FF0000",side: THREE.DoubleSide  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000",side: THREE.FrontSide  });
     _this.object3d.children[1].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[1].material = _this.colorMaterial;
