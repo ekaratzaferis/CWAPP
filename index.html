@@ -81,7 +81,7 @@
                                       <option value="orthorhombic_face_centered">Orthorhombic Face-centered</option>
                                       <option value="orthorhombic_base_centered">Orthorhombic Base-centered</option>
                                       <option value="hexagonal_primitive">Hexagonal</option>
-                                      <option value="rhombohedral_primitive">Rhombohedral Simple</option>
+                                      <option value="rhombohedral_primitive">Rhombohedral / Trigonal</option>
                                       <option value="monoclinic_primitive">Monoclinic Simple</option>
                                       <option value="monoclinic_base_centered">Monoclinic Base-centered</option>
                                       <option value="triclinic_primitive">Triclinic Simple</option>
@@ -756,10 +756,20 @@
                                       </div> 
                                     </div>
                                   </div>
-
-                                  <label for="atomName" class="col-md-6 control-label atomInput">Name </label>
-                                  <input type="text" class="col-md-6 atomInput" id="atomName" placeholder="enter name..." >
-                                  <div class="form-group">
+                                  <div class="row form-group">
+                                    <div class="col-md-12 atomInput">
+                                      <div class="row">
+                                        <div class="col-md-6">
+                                          <div class="input-group input-group-sm">
+                                            <span class="input-group-addon">Name</span> 
+                                            <input  id="atomName" placeholder="Enter a name" > 
+                                          </div>
+                                        </div> 
+                                        <div class="col-md-4"></div> 
+                                      </div>
+                                    </div> 
+                                  </div> 
+                                  <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-5">
                                         <div class="input-group input-group-sm">
@@ -772,7 +782,7 @@
                                       </div>
                                     </div>
                                   </div> 
-                                  <div class="form-group">
+                                  <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-5">
                                         <div class="input-group input-group-sm">
@@ -785,7 +795,7 @@
                                       </div>
                                     </div>
                                   </div>
-                                  <div class="form-group">
+                                  <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-5">
                                         <div class="input-group input-group-sm">
@@ -798,57 +808,96 @@
                                       </div>
                                     </div>
                                   </div> 
-                                  <div class="col-md-12">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-md atomInput">
-                                        <span class="input-group-addon">Color</span> 
-                                        <input class="color atomInput" id='atomColor' > 
-                                      </div>
+                                  <div class="row form-group">
+                                    <div class="col-md-12">
+                                      <div class="col-md-6">
+                                        <div class="input-group input-group-md atomInput">
+                                          <span class="input-group-addon">Color</span> 
+                                          <input class="color atomInput" id='atomColor' > 
+                                        </div>
+                                      </div> 
                                     </div> 
                                   </div>
-                                  <div class="col-md-12 atomInput">
+                                  <div class="row form-group atomInput">
                                     <div class="col-md-12">
+                                      <div class="col-md-6">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">Opacity</span>
+                                          <input type="text" class="form-control" id="atomOpacity" value="10">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6" style="padding-top:7px;">
+                                        <div id="atomOpacitySlider"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row form-group atomInput ">  
+                                    <div class="col-md-12">
+                                      <div class="col-md-6 input-group input-group-sm"  >
+                                        <span class="input-group-addon">Texture</span>
+                                        <select class="form-control " id="atomTexture">
+                                          <option value="None" id="None">None</option>
+                                          <option value="Lines" id="Lines">Lines</option>
+                                          <option value="Dots" id="Dots">Dots</option>
+                                          <option value="Stars" id="Stars">Stars</option>
+                                          <option value="CrystalWalk" id="CrystalWalk">CrystalWalk</option>
+                                        </select>
+                                      </div>
+                                      <div class="col-md-5 input-group input-group-md ">
+                                        <span class="input-group-addon">Wireframe</span> 
+                                        <input id="wireframe" type="checkbox" name="wireframe" value="1" checked="checked" >
+                                      </div>   
+                                    </div>
+                                  </div> 
+                                  <div class="row col-md-12 atomInput">
+                                    <div class="col-md-6">
                                       <div class="input-group input-group-md atomInput">
-                                        <span class="input-group-addon"> Automatic Tangency</span> 
+                                        <span class="input-group-addon"> Do not Overlap</span> 
                                         <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" > 
                                       </div>
                                     </div> 
-                                  </div>
-                                  <div class="col-md-12 atomInput">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-md atomInput">
+                                    <div class="col-md-6 ">                                  
+                                      <div class="input-group input-group-md ">
                                         <span class="input-group-addon"> Drag Mode</span> 
                                         <input id="dragMode" class="disableME" type="checkbox" name="dragMode" >
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-6 ">
-                                      <div class="input-group input-group-md ">
-                                        <button type="button" id="applyAnglesInTangent" class="btn btn-info btn-sm ">Apply Angles</button>
-                                      </div>
-                                    </div>  
-                                  </div>  
-                                  <div class="row atomInput" id = 'rotatingAngles'  > 
-                                    <div class="col-md-12" style=" margin-bottom: 15px;">  
-                                      <div class="col-md-4" style="margin-left:0px; ">
+                                      </div> 
+                                    </div>
+                                  </div> 
+                                  <div class="row rotatingAngles" style="display: none;">
+                                    <div class="col-md-12 atomInput"> 
+                                      <div class="col-md-6">
                                         <div class="input-group input-group-sm">
-                                          <span class="input-group-addon">&alpha;</span>
-                                          <input type="text" class="form-control" id="rotAngleX" value="-">
+                                          <span title="&theta; &isin; [0, &pi;]" class="input-group-addon">&theta; (polar) </span>
+                                          <input type="text" class=" form-control" id="rotAngleTheta" value="0">
                                         </div>
                                       </div>  
-                                      <div class="col-md-4">
+                                      <div class="col-md-6">
                                         <div class="input-group input-group-sm">
-                                          <span class="input-group-addon">&beta;</span>
-                                          <input type="text" class="form-control" id="rotAngleY" value="-">
+                                          <span title="&phi; &isin; [0, 2&pi;)" class="input-group-addon">&phi; (azim)</span>
+                                          <input type="text" class="form-control" id="rotAnglePhi" value="0">
                                         </div>
-                                      </div>
-                                      <div class="col-md-4">
-                                        <div class="input-group input-group-sm">
-                                          <span class="input-group-addon">&gamma;</span>
-                                          <input type="text" class="form-control" id="rotAngleZ" value="-">
-                                        </div>
-                                      </div>
-                                    </div>   
+                                      </div>   
+                                    </div> 
                                   </div> 
+                                  <div class="row rotatingAngles" style="margin-bottom:5px; display: none;">
+                                    <div class="col-md-12 atomInput">
+                                       <div class="col-md-4">
+                                        <span  class="input-group-addon">&alpha; : <span id="rotAngleX">-</span></span>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <span class="input-group-addon">&beta; : <span id="rotAngleY">-</span></span>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <span class="  input-group-addon">&gamma; : <span id="rotAngleZ">-</span></span>
+                                      </div>
+                                    </div>
+                                  </div> 
+                                  <div id="helperImage">
+                                    <div id="helperImage"  style="float:left; border: 1px solid red;background-size: 130px 130px;background-image: url(../crystalwalk/Images/sphericalCoords.png); height: 130px; width: 130px;">  
+                                      </div>
+                                    <div id="helperImage2"  style="float:right; border: 1px solid red;background-size: 130px 130px;background-image: url(../crystalwalk/Images/sphericalCoords2.gif); height: 130px; width: 130px;">  
+                                    </div>
+                                  </div>
                                   <div class=" btn-toolbar col-md-12 " role="toolbar" style=" margin-bottom: 5px;">
                                     <div class="col-md-6">
                                       <button type="button" id="previewChanges" class="btn btn-primary btn-sm atomInput "  >Preview Changes</button>

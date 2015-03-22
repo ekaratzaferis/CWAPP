@@ -28,6 +28,18 @@ define([
       _this.remove(object);
     });
 
+    var dirLight = new THREE.DirectionalLight( 0xF5F6CE, 1 );
+    dirLight.color.setHSL( 0.1, 3, 0.95 );
+    dirLight.castShadow = true;
+    dirLight.shadowDarkness = 0.7; 
+    dirLight.position.set( 10, 10, 2 ); 
+    dirLight.position.multiplyScalar( 50 );
+    dirLight.shadowCameraRight     =  100;
+    dirLight.shadowCameraLeft     = -100;
+    dirLight.shadowCameraTop      =  100;
+    dirLight.shadowCameraBottom   = -100;
+    this.object3d.add( dirLight );
+
     var geometry1 = new THREE.Geometry();
     geometry1.vertices.push(
       new THREE.Vector3( 1000,0,0 ),

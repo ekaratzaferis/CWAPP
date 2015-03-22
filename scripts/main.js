@@ -66,8 +66,8 @@ require([
   motifRenderer.startAnimation();
 
   // Orbit Controls
-  var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(), '#crystalRenderer', "perspective", false, 'crystal',unitCellRenderer.getMainCamera() );
-  var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRenderer', "perspective", false, 'cell', crystalRenderer.getMainCamera());
+  var orbitCrystal = new Orbit(crystalRenderer.getMainCamera(), '#crystalRenderer', "perspective", false, 'crystal',unitCellRenderer.getMainCamera() );
+  var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRenderer', "perspective", false, 'cell', crystalRenderer.getMainCamera());
   var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "orthographic", false, 'motifX');
   var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "orthographic", false, 'motifY');
   var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "orthographic", false, 'motifZ');

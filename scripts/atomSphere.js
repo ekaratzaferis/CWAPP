@@ -25,22 +25,30 @@ define([
 
     var textureLoader = new THREE.TextureLoader();
     //textureLoader.load("Images/atoms/"+elementName+".png",
-      textureLoader.load("Images/atoms/Be.png",
-        function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, geometry, color, position) ;
-        }
+    textureLoader.load("Images/atoms/None.png",
+      function(tex){ 
+      tex.mapping = THREE.SphericalReflectionMapping;
+      _this.addMaterial(tex, geometry, color, position) ;
+      }
     ); 
-   
   }
+  AtomSphere.prototype.setOpacity = function( opacity) { 
+    if(_.isUndefined(opacity)) return;
+    this.colorMaterial = new THREE.MeshBasicMaterial({ color:this.colorMaterial.color,side: THREE.DoubleSide, transparent: true, opacity: opacity/10  });
+    this.object3d.children[0].material.opacity = opacity/10  ;
+    this.object3d.children[1].material.opacity = opacity/10  ;
+    this.object3d.children[0].material.needsUpdate = true;
+    this.object3d.children[1].material.needsUpdate = true;
+  };
   AtomSphere.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide   }) ;
+    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true,opacity:1    }) ;
     _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true,opacity:1  }) ;
 
     _this.materials =  [  
+      _this.colorMaterial,
       _this.materialLetter,
-      _this.colorMaterial
+      new THREE.MeshBasicMaterial({color : "#000000", wireframe: true})
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
@@ -50,14 +58,19 @@ define([
     MotifExplorer.add(_this); 
 
   };  
-  AtomSphere.prototype.getID = function() {
-    var _this = this ;
-    return _this.myID ;
-  }; 
-  AtomSphere.prototype.getID = function() {
-    var _this = this ;
-    return _this.myID ;
+  AtomSphere.prototype.wireframeMat = function(bool){
+    if(bool){ 
+      this.object3d.children[2].material  = new THREE.MeshBasicMaterial({color : "#000000", wireframe: bool}) ;
+    }
+    else{
+      this.object3d.children[2].material  = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+    }
+    this.object3d.children[2].material.needsUpdate = true;  
   };
+  AtomSphere.prototype.getID = function() {
+    var _this = this ;
+    return _this.myID ;
+  };  
   AtomSphere.prototype.getName = function() {
     var _this = this ;
     return _this.elementName ;
@@ -70,20 +83,36 @@ define([
     var _this = this ;
     return _this.radius ;
   }; 
-  AtomSphere.prototype.setMaterial = function(color) {
+  AtomSphere.prototype.setMaterial = function(color, opacity) {
     var _this = this;
     _this.colorMaterial = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide  });
-    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide  });
+    _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity/10  });
+    _this.object3d.children[0].material.needsUpdate = true;
+
+  };
+  AtomSphere.prototype.setMaterialTexture = function(texture) {
+    var _this = this;
+    var textureLoader = new THREE.TextureLoader();
+    textureLoader.load("Images/atoms/"+texture+".png",
+      function(tex){ 
+        tex.mapping = THREE.SphericalReflectionMapping;
+        _this.updateText(tex) ;
+      }
+    );  
+  };
+  AtomSphere.prototype.updateText = function(texture){
+    var _this = this;
+    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide, transparent:true,opacity:1  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   AtomSphere.prototype.changeColor = function(color) {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
-    _this.object3d.children[1].material.needsUpdate = true;
+    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
+    _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
-      _this.object3d.children[1].material = _this.colorMaterial;
-      _this.object3d.children[1].material.needsUpdate = true;
+      _this.object3d.children[0].material = _this.colorMaterial;
+      _this.object3d.children[0].material.needsUpdate = true;
 
     },250);
   };
@@ -108,8 +137,8 @@ define([
     }
     else{
       clearInterval(this.blinking);
-      _this.object3d.children[1].material = _this.colorMaterial;
-      _this.object3d.children[1].material.needsUpdate = true;
+      _this.object3d.children[0].material = _this.colorMaterial;
+      _this.object3d.children[0].material.needsUpdate = true;
     }
 
   };

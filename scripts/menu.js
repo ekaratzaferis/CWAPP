@@ -172,11 +172,17 @@ define([
   var $atomPosZ = jQuery('#atomPosZ');
   var $atomName = jQuery('#atomName');
   var $atomColor = jQuery('#atomColor');
+  var $atomOpacity = jQuery('#atomOpacity');
   var $tangency = jQuery('#tangency');
+  var $atomTexture = jQuery('#atomTexture');
+  var $wireframe = jQuery('#wireframe');
 
   var atomParameters = {
     'atomName': $atomName,
-    'atomColor': $atomColor
+    'atomColor': $atomColor,
+    'atomOpacity': $atomOpacity,
+    'atomTexture': $atomTexture,
+    'wireframe': $wireframe
   };
   var motifInputs = {
     'atomPosX' : $atomPosX,
@@ -184,13 +190,11 @@ define([
     'atomPosZ' : $atomPosZ
   };
 
-  var $rotAngleY = jQuery('#rotAngleY');
-  var $rotAngleZ = jQuery('#rotAngleZ');
-  var $rotAngleX = jQuery('#rotAngleX');
+  var $rotAngleTheta = jQuery('#rotAngleTheta');
+  var $rotAnglePhi = jQuery('#rotAnglePhi'); 
   var rotatingAngles = {
-    'rotAngleY' : $rotAngleY,
-    'rotAngleZ' : $rotAngleZ, 
-    'rotAngleX' : $rotAngleX
+    'rotAngleTheta' : $rotAngleTheta,
+    'rotAnglePhi' : $rotAnglePhi 
   };
   
   var $unitCellView = jQuery('#unitCellView');
@@ -319,6 +323,7 @@ define([
       $parameter.on('change', function() {
         argument = {};
         argument[k] = $parameter.val();
+        if(k=='wireframe') argument[k]= ($('#wireframe').is(':checked')) ? true : false ;
         PubSub.publish(events.ATOM_PARAMETER_CHANGE, argument);
       });
     }); 
@@ -376,11 +381,27 @@ define([
       var id = jQuery(this).val()  ; 
       return PubSub.publish(events.UNIT_CELL_VIEW, id);
     });
-
     $showViewInCrystal.on('click', function(){ 
       var arg = jQuery('#unitCellView :selected').val();  
       PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, arg); 
     });
+    this.setSlider("atomOpacity",10,0,10,1); 
+    $('#helperImage').hide(); 
+    $('#rotAnglePhi').on('focusin', function(e) { 
+        $('#helperImage').css( 'position', 'relative' ); 
+        $('#helperImage').show(); 
+    });
+    $('#rotAngleTheta').on('focusin', function(e) { 
+        $('#helperImage').css( 'position', 'relative' ); 
+        $('#helperImage').show();
+    });
+    $('#rotAnglePhi').on('focusout', function(e) {
+      $('#helperImage').hide();
+    });
+    $('#rotAngleTheta').on('focusout', function(e) {
+      $('#helperImage').hide();
+    });
+
     this.restrictionEvents = []; 
      
   }; 

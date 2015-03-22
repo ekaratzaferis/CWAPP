@@ -74,7 +74,7 @@ define([
         i++; 
       } 
 
-      var box = new THREE.Mesh(customBox(_this.viewBox), new THREE.MeshBasicMaterial({color:"#FF0000" }) );
+      var box = new THREE.Mesh(customBox(_this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
       
       if(_this.viewMode === 'Subtracted'){
         i = 0 ;
@@ -93,7 +93,7 @@ define([
          
         while(i < _this.actualAtoms.length ) {  
           _this.actualAtoms[i].SolidVoid(_this.actualAtoms[i].object3d.position);  
-          var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
+          var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshLambertMaterial() );
           mesh.position.set( _this.actualAtoms[i].object3d.position.x, _this.actualAtoms[i].object3d.position.y, _this.actualAtoms[i].object3d.position.z);
           mesh.updateMatrix();  
           geometry.merge( mesh.geometry, mesh.matrix );
@@ -109,7 +109,7 @@ define([
         var geom = THREE.CSG.fromCSG(geometryCSG);
         var finalGeom = assignUVs(geom);
    
-        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
+        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
         solidBox.name = 'solidvoid';
         Explorer.add({'object3d' : solidBox}); 
       }
@@ -153,17 +153,21 @@ define([
       var p = point.object3d.position.clone(); 
       _.each(motif, function(atom) {   
         var a = atom.object3d.position.clone(); 
+        var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
             atom.getRadius(), 
-            atom.object3d.children[1].material.color,
+            atom.object3d.children[0].material.color,
             atom.elementName, 
             atom.getID(),
             a.x,
             a.y,
             a.z,
-            p
+            p,
+            atom.object3d.children[1].material.map.image.currentSrc,
+            atom.object3d.children[0].material.opacity,
+            wireframe
           )  
         );
       });
@@ -372,17 +376,21 @@ define([
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) {   
         var a = atom.object3d.position; 
+        var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
             atom.getRadius(), 
-            atom.object3d.children[1].material.color,
+            atom.object3d.children[0].material.color,
             atom.elementName, 
             atom.getID(),
             a.x,
             a.y,
             a.z,
-            p
+            p,
+            atom.object3d.children[1].material.map.image.currentSrc,
+            atom.object3d.children[0].material.opacity,
+            wireframe
           )  
         );
       });

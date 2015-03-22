@@ -52,12 +52,12 @@ define([
     this.dragMode = arg.dragMode;
     if(arg.dragMode) {  
       if(!_.isUndefined(this.newSphere)) this.newSphere.blinkMode(true, '#58D3F7'); 
-      $("#rotatingAngles").css("visibility", "visible");
+      $(".rotatingAngles").show();
       $("#savedAtomsCont").css("visibility", "visible");
       $("#savedAtomsLbl").html("<span style='color:blue '>Choose Atom</span>");
     }
     else if(!arg.dragMode){
-      $("#rotatingAngles").css("visibility", "hidden");
+      $(".rotatingAngles").hide();
       $("#savedAtomsCont").css("visibility", "hidden");
       $("#savedAtomsLbl").text("Saved Atoms");
       if(!_.isUndefined(this.newSphere)) this.newSphere.blinkMode(false);
@@ -106,12 +106,12 @@ define([
     // first time
     if(_this.isEmpty) {  
       var newId = "_"+Math.random() ;
-      var a = new AtomSphere( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , "#FFFFFF", params.tangency, params.element, newId);
+      var a = new AtomSphere( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
       _this.newSphere = a ;
       _this.isEmpty = false;
       $("#atomName").val(params.element+" ");
       PubSub.publish(events.EDITOR_STATE,"creating");
-      _this.addAtomInCell( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , "#FFFFFF", params.tangency, params.element, newId); 
+      _this.addAtomInCell( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 ,  _this.atomsData[params.element].color, params.tangency, params.element, newId); 
        
       return;
     }
@@ -130,9 +130,9 @@ define([
       $("#atomPosY").val( p.y);
       $("#atomPosZ").val( p.z);
       var newId = "_"+Math.random();
-      var a = new AtomSphere( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , "#FFFFFF",params.tangency, params.element, newId);
+      var a = new AtomSphere( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId);
       _this.newSphere = a;
-      _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , "#FFFFFF", params.tangency, params.element, newId);
+      _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
       PubSub.publish(events.EDITOR_STATE,"creating");
       $("#atomName").val(params.element+" ");  
     }
@@ -408,8 +408,24 @@ define([
   }; 
   Motifeditor.prototype.setAtomsParameter = function(param){
     var _this = this; 
-    _this.newSphere.setMaterial("#"+param.atomColor);
-    _this.colorUnitCellAtoms(_this.newSphere.getID(), "#"+param.atomColor);
+    console.log(param);
+    if(!_.isUndefined(param.atomOpacity) ) { 
+      _this.newSphere.setOpacity(param.atomOpacity);
+      _this.unitCellAtomsOpacity(_this.newSphere.getID(),param.atomOpacity);
+    }
+    else if(!_.isUndefined(param.atomColor)){ 
+      var op =  parseInt($("#atomOpacity").val());
+      _this.newSphere.setMaterial("#"+param.atomColor, op);
+      _this.colorUnitCellAtoms(_this.newSphere.getID(), "#"+param.atomColor);
+    }
+    else if(!_.isUndefined(param.atomTexture)){ 
+      _this.newSphere.setMaterialTexture(param.atomTexture);
+      _this.unitCellAtomsTexture(_this.newSphere.getID(), param.atomTexture);
+    } 
+    else if(!_.isUndefined(param.wireframe)){ 
+      _this.newSphere.wireframeMat(param.wireframe);
+      _this.unitCellAtomsWireframe(_this.newSphere.getID(), param.wireframe);
+    }  
   }; 
   Motifeditor.prototype.calculateCellsPoints = function (){
     var _this = this ; 
@@ -571,19 +587,16 @@ define([
         $('select[id="savedAtoms"]').find('option[id="---"]').attr("selected",true);
         $("#savedAtomsCont").css("visibility", "visible");
         $('input[name=dragMode]').attr('checked', false);
-        $("#rotatingAngles").css("visibility", "hidden");
         break;
       case "creating":
         $("#atomPalette").prop("disabled",true);
         $(".atomInput").css("visibility", "visible");
         $("#savedAtomsCont").css("visibility", "hidden");
-        $("#rotatingAngles").css("visibility", "hidden");
         break;
       case "editing":
         $("#atomPalette").prop("disabled",true);
         $(".atomInput").css("visibility", "visible");
         $("#savedAtomsCont").css("visibility", "hidden");
-        $("#rotatingAngles").css("visibility", "hidden");
         break;
     }
   };
@@ -613,40 +626,43 @@ define([
   Motifeditor.prototype.removeAtomFromList = function(id)  { 
     $("#savedAtoms option[value='"+id+"']").remove();
   }; 
-  var arg_ = {'rotAngleX' : 0, 'rotAngleY' : 0, 'rotAngleZ' : 0};
+
   Motifeditor.prototype.changeRotatingAngle = function(arg){
     var _this = this ;  
-
+    var pos = new THREE.Vector3();
+    var r = this.newSphere.getRadius() + this.tangentToThis.getRadius() ;
+   
+    var polar = parseFloat( $('#rotAngleTheta').val() );
+    var azimuthal = parseFloat( $('#rotAnglePhi').val() );
     if(_this.dragMode){ 
-      if(!_.isUndefined(arg.rotAngleX)) {
-        arg_.rotAngleX = arg.rotAngleX ;
-        _this.rotAxis = 'x';
-        _this.rotateAroundAtom(arg_.rotAngleX);  
-        _this.rotAxis = 'y';
-        _this.rotateAroundAtom(arg_.rotAngleY);
-        _this.rotAxis = 'z';
-        _this.rotateAroundAtom(arg_.rotAngleZ);  
-      }
-      else if(!_.isUndefined(arg.rotAngleY)) {
-        arg_.rotAngleY = arg.rotAngleY ;
-        _this.rotAxis = 'y';
-        _this.rotateAroundAtom(arg_.rotAngleY);  
-        _this.rotAxis = 'z';
-        _this.rotateAroundAtom(arg_.rotAngleZ);
-        _this.rotAxis = 'x';
-        _this.rotateAroundAtom(arg_.rotAngleX);
-      }
-      else if(!_.isUndefined(arg.rotAngleZ)) {
-        arg_.rotAngleZ = arg.rotAngleZ ;
-        _this.rotAxis = 'z';
-        _this.rotateAroundAtom(arg_.rotAngleZ); 
-        _this.rotAxis = 'x';
-        _this.rotateAroundAtom(arg_.rotAngleX);
-        _this.rotAxis = 'y';
-        _this.rotateAroundAtom(arg_.rotAngleY);
-      }
+      pos = _this.sphericalCoords( r, azimuthal *  (Math.PI/180) , polar *  (Math.PI/180) );  
     }
-
+    pos.x += this.tangentToThis.object3d.position.x ;
+    pos.y += this.tangentToThis.object3d.position.y ;
+    pos.z += this.tangentToThis.object3d.position.z ;
+    _this.newSphere.object3d.position.set(pos.x , pos.y, pos.z); 
+    _this.translateCellAtoms("x",  pos.x , _this.newSphere.getID());
+    _this.translateCellAtoms("y",  pos.y , _this.newSphere.getID());
+    _this.translateCellAtoms("z",  pos.z , _this.newSphere.getID());
+    _this.configureCellPoints();
+    _this.findAngles('x');
+    _this.findAngles('y');
+    _this.findAngles('z'); 
+  };
+  Motifeditor.prototype.sphericalCoords = function(r, azimuthalPhi , polarTheta){   
+    var pos = new THREE.Vector3();
+    pos.x = r * Math.sin(polarTheta) * Math.sin(azimuthalPhi);
+    pos.y = r * Math.cos(polarTheta);
+    pos.z = r * Math.sin(polarTheta) * Math.cos(azimuthalPhi); 
+    return pos;
+  };
+  Motifeditor.prototype.findPolarAngles = function(p){   
+     
+    var angles = {'theta': 0 , 'phi': 0};
+    var n = Math.sqrt(p.x*p.x + p.y*p.y + p.z*p.z );
+    angles.theta = Math.acos(p.y/n) * (180/Math.PI);
+    angles.phi = Math.atan(p.x/p.z) * (180/Math.PI);
+    return angles;
   };
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this; 
@@ -678,7 +694,7 @@ define([
         _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
         _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
 
-        $("#rotAngleX").val( angle);
+        $("#rotAngleX").text( angle.toFixed(3));
  
         _this.configureCellPoints();
         _this.findAngles('y');
@@ -701,8 +717,9 @@ define([
         _this.newSphere.object3d.position.z = position.z ;  
         _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
         _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
-
-        $("#rotAngleY").val( angle); 
+        var a = parseFloat((180 -angle).toFixed(3)) ;
+        if(a<0) a = 360 + a ;
+        $("#rotAngleY").text(a);  
  
         _this.configureCellPoints();
         _this.findAngles('x');
@@ -724,8 +741,9 @@ define([
         _this.newSphere.object3d.position.z = position.z ;  
         _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
         _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
-
-        $("#rotAngleZ").val( angle); 
+        var a = (360 - angle).toFixed(3) ;
+        if(a==360) a=0.000;
+        $("#rotAngleZ").text(a); 
 
         _this.configureCellPoints();
         _this.findAngles('x');
@@ -734,7 +752,14 @@ define([
       _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
       _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
       _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
-       
+      var p = new THREE.Vector3(
+        _this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
+        _this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
+        _this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
+        );
+      var angles = _this.findPolarAngles(p);
+      $("#rotAngleTheta").val((angles.theta).toFixed(3));
+      $("#rotAnglePhi").val((angles.phi).toFixed(3));
     }
   };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
@@ -758,7 +783,7 @@ define([
       var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
       var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
       var position = new THREE.Vector3(stillPoint.x + horizontalSide, stillPoint.y + verticalSide, movingPoint.z );
-      $("#rotAngleX").val( angle);
+      $("#rotAngleX").text( angle.toFixed(3));
 
     }
     else if(axis === 'y'){
@@ -772,7 +797,9 @@ define([
       var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
       var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
       var position = new THREE.Vector3(movingPoint.x  , stillPoint.y + verticalSide,  (stillPoint.z - horizontalSide) );
-      $("#rotAngleY").val( angle);  
+      var a = parseFloat((180 -angle).toFixed(3)) ;
+      if(a<0) a = 360 + a ;
+      $("#rotAngleY").text(a); 
     }
     else if(axis === 'z'){
       var thirdPoint = new THREE.Vector3(stillPoint.x, movingPoint.y, movingPoint.z); 
@@ -785,20 +812,20 @@ define([
       var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
       var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) ); 
       var position = new THREE.Vector3(stillPoint.x + horizontalSide  , movingPoint.y ,  (stillPoint.z - verticalSide) );
-      $("#rotAngleZ").val( angle); 
+      var a = (360 - angle).toFixed(3) ;
+      if(a==360) a=0.000;
+      $("#rotAngleZ").text(a); 
     } 
           
   };
-  function calculateAngle(vec1, vec2){
-     
+  function calculateAngle(vec1, vec2){ 
     vec1.normalize();
     vec2.normalize(); 
     var angle = Math.atan2( vec2.y,vec2.x) -  Math.atan2(vec1.y,vec1.x); 
     var f = angle* (180/Math.PI);  
     if(f < 0 ) f = 360 + f ; 
      
-    return f;       
-     
+    return f;  
   }
   Motifeditor.prototype.selectAtom = function (which){ 
     if(which==="---") {
@@ -825,6 +852,14 @@ define([
         _this.findAngles('x');
         _this.findAngles('y');
         _this.findAngles('z');
+        var p = new THREE.Vector3(
+          _this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
+          _this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
+          _this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
+        );
+        var angles = _this.findPolarAngles(p);
+        $("#rotAngleTheta").val((angles.theta).toFixed(3));
+        $("#rotAnglePhi").val((angles.phi).toFixed(3));
 
       }
       else if(!_this.dragMode){ 
@@ -842,8 +877,6 @@ define([
       }
     }
   };
- 
-
   Motifeditor.prototype.configureCellPoints = function(){  
     var _this = this; 
     if(_this.isEmpty) return; 
@@ -1757,12 +1790,37 @@ define([
       var factor = distance/currDistance; 
       crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
     }
-  }
+  } 
   Motifeditor.prototype.colorUnitCellAtoms = function(id, color){   
     var _this = this; 
     for (var i = 0; i<_this.unitCellAtoms.length; i++) { 
       if(_this.unitCellAtoms[i].myID === id ){
-        _this.unitCellAtoms[i].setMaterial(color);
+        var op =  parseInt($("#atomOpacity").val());
+        _this.unitCellAtoms[i].setMaterial(color, op);
+      }
+    }
+  }; 
+  Motifeditor.prototype.unitCellAtomsWireframe = function(id, bool){   
+    var _this = this; 
+    for (var i = 0; i<_this.unitCellAtoms.length; i++) { 
+      if(_this.unitCellAtoms[i].myID === id ){ 
+        _this.unitCellAtoms[i].wireframeMat(bool);
+      }
+    }
+  };
+  Motifeditor.prototype.unitCellAtomsTexture = function(id, texture){   
+    var _this = this; 
+    for (var i = 0; i<_this.unitCellAtoms.length; i++) { 
+      if(_this.unitCellAtoms[i].myID === id ){
+        _this.unitCellAtoms[i].setMaterialTexture(texture);
+      }
+    }
+  };
+  Motifeditor.prototype.unitCellAtomsOpacity = function(id, opacity){   
+    var _this = this; 
+    for (var i = 0; i<_this.unitCellAtoms.length; i++) { 
+      if(_this.unitCellAtoms[i].myID === id ){
+        _this.unitCellAtoms[i].setOpacity(opacity);
       }
     }
   }; 
