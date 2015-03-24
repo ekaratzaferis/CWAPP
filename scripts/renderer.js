@@ -28,9 +28,10 @@ define([
     this.viewportColors = ['#00000C', '#000600', '#100000'];
     this.cameras = [];
     this.motifView = false;
-    this.HudScene = null;
-    this.HudCamera = new THREE.OrthographicCamera( width / -2,  width / 2, height / 2, height / -2, 0.1, 10000);
-    this.HudCamera.position.z = 1;
+
+    this.hudScene ; 
+    this.hudCamera;
+
     this.animateAtom = false;
     this.atom;
     this.renderer = new THREE.WebGLRenderer({ antialias: true,preserveDrawingBuffer: true }); // preserveDrawingBuffer: true
@@ -44,21 +45,18 @@ define([
     this.renderer.shadowCameraFar = 400;
     this.renderer.shadowCameraFov = 200;
     this.renderer.shadowMapBias = 0.0039;
-    this.renderer.shadowMapDarkness = 0.5;
+    this.renderer.shadowMapDarkness = 0.7;
     this.renderer.shadowMapWidth = 1024;
     this.renderer.shadowMapHeight = 1024; 
+    this.renderer.autoClear = false; // 2 scenes render
 
     this.animationIsActive = false;
   
     jQuery('#'+container).append(this.renderer.domElement);
-  };
-  Renderer.prototype.mouseEvents = function(objects) {
-     
-
-  }
+  }; 
   Renderer.prototype.createPerspectiveCamera = function(lookat,xPos, yPos, zPos, fov){ 
-    var _this = this ;
-    var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 10000);
+    var _this = this ; 
+    var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 1000);
     camera.lookAt(lookat);
     camera.position.set(xPos, yPos, zPos); 
     _this.cameras.push(camera);
@@ -87,29 +85,19 @@ define([
   };
   Renderer.prototype.stopAtomAnimation = function() {
     this.animateAtom = false;
-  };
-  Renderer.prototype.atomAnimation = function(atom) {
-    this.atom = atom;
-    this.animateAtom = true;
-  };
+  }; 
   Renderer.prototype.getRenderer = function() {
     return this.renderer;
   };
-  Renderer.prototype.initHud = function(scene) {  
-    this.HudScene = scene; 
-  };
-
   Renderer.prototype.startAnimation = function() {
     if (this.animationIsActive === false) {
       this.animationIsActive = true;
       this.animate();
     } 
-  };
-
+  }; 
   Renderer.prototype.stopAnimation = function() {
     this.animationIsActive = false;
-  };
-
+  }; 
   Renderer.prototype.animate = function() {
     var _this = this;
     if (this.animationIsActive === false) {
@@ -122,9 +110,12 @@ define([
       _this.cameras[0].aspect =_this.containerWidth/_this.containerHeight;
       _this.renderer.clear();
       _this.cameras[0].updateProjectionMatrix();
-      _this.cameras[0].updateProjectionMatrix();
-      _this.renderer.setClearColor( 0x000000 );
       _this.renderer.render( _this.scene,_this.cameras[0]);  
+
+      // Render Hud
+      if(!_.isUndefined(this.hudScene)){  
+        _this.renderHud('full');
+      } 
     }
     else if(_this.cameras.length>1){
       for ( var i = 0; i < _this.cameras.length; ++i ) {
@@ -141,9 +132,21 @@ define([
         _this.renderer.clear();
         _this.renderer.render( _this.scene, camera);
       }
-    }
-    
+
+      // Render Hud
+      if(!_.isUndefined(this.hudScene)){  
+        _this.renderHud('part');
+      }  
+    } 
   };
+  Renderer.prototype.initHud = function(scene) {  
+    this.hudScene = scene; 
+    this.hudCamera = new THREE.OrthographicCamera( this.containerWidth / -2,  this.containerWidth / 2, this.containerHeight / 2, this.containerHeight / -2, 0.1, 10000); 
+    this.hudCamera.position.set(0,0,1); 
+    this.hudScene.add(this.hudCamera);
+
+    
+  }; 
   Renderer.prototype.getMainCamera = function() {
     var _this = this;
     return _this.cameras[0];
@@ -152,17 +155,11 @@ define([
     var _this = this;
     return _this.cameras[x];
   };
-  Renderer.prototype.onAnimationUpdate = function(callback) {
-
+  Renderer.prototype.onAnimationUpdate = function(callback) { 
     PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback);
   };
-   Renderer.prototype.renderHud = function(callback) {
-
-    this.renderer.setViewport( 0, 0, this.containerWidth, this.containerHeight );
-    this.renderer.setScissor( 0, 0, this.containerWidth, this.containerHeight );
-    this.renderer.enableScissorTest ( true );
-    this.HudCamera.updateProjectionMatrix();
-    this.renderer.render( this.HudScene, this.HudCamera);
+   Renderer.prototype.renderHud = function(mode) {  
+    this.renderer.render( this.hudScene, this.hudCamera);
   };
 
   return Renderer;

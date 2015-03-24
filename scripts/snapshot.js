@@ -6,19 +6,19 @@ define([
   'three',
   'underscore',
   'jquery',
-  'hud',
+  'hudExplorer',
   'renderer'
 ], function(
   THREE,
   _,
   jQuery,
-  Hud,
+  HudExplorer,
   Renderer
 ) {
    
   var $bravaisLatticeInp = jQuery('#bravaisLattice');
   var logo;
-  var myHud  = Hud.getInstance();
+  var myHud  = HudExplorer.getInstance();
   var theRenderer;
 
   function Snapshot(renderer) {

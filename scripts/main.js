@@ -26,11 +26,11 @@ require.config({
 require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
-  'menu', 'lattice', 'snapshot','hud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents'
+  'menu', 'lattice', 'snapshot','hudExplorer','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'hud'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
-  Menu, Lattice, Snapshot, Hud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents
+  Menu, Lattice, Snapshot, HudExplorer, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, Hud
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -55,12 +55,6 @@ require([
   motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200, 12,  0,  0);
   motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200,  0, 12,  0);
 
-  // HUD
-  var hudExplorer = Hud.getInstance();
-  crystalRenderer.initHud(hudExplorer.object3d);
-
-  var canvasSnapshot = new Snapshot(crystalRenderer);
-
   crystalRenderer.startAnimation();
   unitCellRenderer.startAnimation();
   motifRenderer.startAnimation();
@@ -72,6 +66,8 @@ require([
   var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "orthographic", false, 'motifY');
   var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "orthographic", false, 'motifZ');
 
+   
+
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
   unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
   motifRenderer.onAnimationUpdate(cameraControls1.update.bind(cameraControls1));
@@ -80,6 +76,13 @@ require([
  
   var menu = new Menu();
   var lattice = new Lattice();
+
+  // HUD
+  var hudExplorer = HudExplorer.getInstance();
+  crystalRenderer.initHud(hudExplorer.object3d);
+  var hud = new Hud(hudExplorer.object3d, crystalRenderer.getMainCamera(), lattice);
+
+  var canvasSnapshot = new Snapshot(crystalRenderer);
 
   // Motif editor
   var motifEditor = new Motifeditor(menu);

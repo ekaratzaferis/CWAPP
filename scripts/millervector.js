@@ -15,7 +15,7 @@ define([
 
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
-    var arrow = new THREE.ArrowHelper( direction , start, length , "#"+color, 0.1, 0.1);
+    var arrow = new THREE.ArrowHelper( direction , start, length , "#"+color, 0.4, 0.15);
 
     this.object3d = arrow;
     Explorer.add(this);
