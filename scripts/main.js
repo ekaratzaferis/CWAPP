@@ -43,9 +43,19 @@ require([
   $('#crystalRenderer').width(width);
   $('#crystalRenderer').height(height);
 
+  var menu = new Menu();
+  var lattice = new Lattice();
+
+  // HUD  
+  var hudScene = HudExplorer.getInstance();  
+  var hud = new Hud(hudScene.object3d, lattice);
+   
+  var canvasSnapshot = new Snapshot(crystalRenderer);
+
   //  WebGL Renderers and cameras
   var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
+  crystalRenderer.initHud(hudScene.object3d);
 
   var unitCellRenderer = new Renderer(unitCellScene.object3d, 'unitCellRenderer', 'cell');
   unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
@@ -58,31 +68,24 @@ require([
   crystalRenderer.startAnimation();
   unitCellRenderer.startAnimation();
   motifRenderer.startAnimation();
-
+ 
+ 
   // Orbit Controls
-  var orbitCrystal = new Orbit(crystalRenderer.getMainCamera(), '#crystalRenderer', "perspective", false, 'crystal',unitCellRenderer.getMainCamera() );
-  var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRenderer', "perspective", false, 'cell', crystalRenderer.getMainCamera());
-  var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "orthographic", false, 'motifX');
-  var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "orthographic", false, 'motifY');
-  var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "orthographic", false, 'motifZ');
+  //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
-   
+  var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera() );
+  var orbitHud        = new Orbit(crystalRenderer.hudCamera,          '#crystalRenderer',   "perspective",  false, 'hud'      );
+  var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
+  var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
+  var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
+  var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ',         "orthographic", false, 'motifZ'   );
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
+
   unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
   motifRenderer.onAnimationUpdate(cameraControls1.update.bind(cameraControls1));
   motifRenderer.onAnimationUpdate(cameraControls2.update.bind(cameraControls2));
   motifRenderer.onAnimationUpdate(cameraControls3.update.bind(cameraControls3));
- 
-  var menu = new Menu();
-  var lattice = new Lattice();
-
-  // HUD
-  var hudExplorer = HudExplorer.getInstance();
-  crystalRenderer.initHud(hudExplorer.object3d);
-  var hud = new Hud(hudExplorer.object3d, crystalRenderer.getMainCamera(), lattice);
-
-  var canvasSnapshot = new Snapshot(crystalRenderer);
 
   // Motif editor
   var motifEditor = new Motifeditor(menu);

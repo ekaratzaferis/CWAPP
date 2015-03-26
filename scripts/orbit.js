@@ -20,7 +20,12 @@ define([
     this.syncedCamera = syncedCamera; 
     this.currPos = new THREE.Vector3(0,0,0); 
     if(type == "perspective" ) {
-      this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
+      if( camName=== 'hud') {
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
+      }
+      else{
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
+      }
     }
     else if (type == "orthographic"){
       this.control = new THREE.OrbitAndPanControls(camera, $rendererContainer[0]);

@@ -14,53 +14,42 @@ define([
   _
 ) { 
 
-  function Hud( scene, camera, latticeParams) {
+  function Hud( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     var offsetX = 70 ;
     var offsetY = 70 ;
     var arrowLength = 70 ;
+ 
+    var startA = new THREE.Vector3(0,0,0);
+    var endA = new THREE.Vector3(0,0,9);
+    var length =  startA.distanceTo(endA) ; 
+    var directionA = new THREE.Vector3().subVectors( endA,  startA).normalize();
+    var arrowA = new THREE.ArrowHelper( directionA , startA, length , "#04B404", 1, 1);
 
-    console.log(camera);
-    var startB = new THREE.Vector3(-width/2 + offsetX , -height/2 + offsetY, -100);
-    var endB = new THREE.Vector3(-width/2 + offsetX + arrowLength, -height/2 + offsetY, -100);
+    var startB = new THREE.Vector3(0,0,0);
+    var endB = new THREE.Vector3(9,0,0);
     var length =  startB.distanceTo(endB) ; 
     var directionB = new THREE.Vector3().subVectors( endB,  startB).normalize();
-    var arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000", 10, 10);
+    var arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000", 1, 1);
 
-    var startC = new THREE.Vector3(-width/2 + offsetX, -height/2 + offsetY, -100);
-    var endC = new THREE.Vector3(-width/2 + offsetX, -height/2 + offsetY + arrowLength, -100);
+    var startC = new THREE.Vector3(0,0,0);
+    var endC = new THREE.Vector3(0,9,0);
+    var length =  startC.distanceTo(endC) ; 
     var directionC = new THREE.Vector3().subVectors( endC,  startC).normalize();
-    var arrowC = new THREE.ArrowHelper( directionC , startC, length , "#80FF00", 10, 10);
-
-    var startA = new THREE.Vector3(-width/2 + offsetX, -height/2 + offsetY, -100);
-    var endA = new THREE.Vector3(-width/2 + offsetX - 30 , -height/2 + offsetY - 30 , -100 + arrowLength);
-    var directionA = new THREE.Vector3().subVectors( endA,  startA).normalize();
-    var arrowA = new THREE.ArrowHelper( directionA , startA, length , "#2E64FE", 10, 10);
-    
-    var mesh = new THREE.Mesh(new THREE.BoxGeometry( 110,110,110, 1, 1, 1), new THREE.MeshBasicMaterial({ color:"#FFFFBE",     wireframe: true}) );
-
-    //mesh.position.set(0,0,-560 );
-    //mesh.rotation.set(camera.rotation.x,camera.rotation.y,camera.rotation.z  );
-     
-    //scene.add(mesh); 
-
-    var group = new THREE.Object3D();//create an empty container
-
-    group.add( arrowC );//add a mesh with geometry to it
-    group.add( arrowB );//add a mesh with geometry to it
-    group.add( arrowA );//add a mesh with geometry to it
-    scene.add( group );//when done, add the group to the scene
-
-    mesh.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/4);
-
+    var arrowC = new THREE.ArrowHelper( directionC, startC, length , "#045FB4", 1, 1);
+  
+    scene.add( arrowC ); 
+    scene.add( arrowB ); 
+    scene.add( arrowA );  
+   
     var aLabel = THREE.ImageUtils.loadTexture( "Images/a.png" );  
     var aMaterial = new THREE.SpriteMaterial( { map: aLabel, color: 0xffffff, fog: true } );
     var spriteA = new THREE.Sprite( aMaterial );
      
     spriteA.position.set(endA.x - 5, endA.y - 5, endA.z);
     spriteA.scale.set(20,20,20);
-    scene.add( spriteA );
+    //scene.add( spriteA );
 
     var bLabel = THREE.ImageUtils.loadTexture( "Images/b.png" );
     var bMaterial = new THREE.SpriteMaterial( { map: bLabel, color: 0xffffff, fog: true } );
@@ -68,7 +57,7 @@ define([
      
     spriteB.position.set(endB.x + 10, endB.y , endB.z);
     spriteB.scale.set(20,20,20);
-    scene.add( spriteB );
+    //scene.add( spriteB );
 
     var cLabel = THREE.ImageUtils.loadTexture( "Images/c.png" );  
     var cMaterial = new THREE.SpriteMaterial( { map: cLabel, color: 0xffffff, fog: true } );
@@ -76,23 +65,23 @@ define([
      
     spriteC.position.set(endC.x +5, endC.y + 10, endC.z);
     spriteC.scale.set(20,20,20);
-    scene.add( spriteC );
+    //scene.add( spriteC );
 
     // angles
     var alpha = makeTextSprite( " α : 90° ", 
       { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:99, g:34, b:99, a:1.0} } );
     alpha.position.set(-width/2 + offsetX + 55, -height/2 + offsetY, -100);
-    scene.add( alpha );
+    //scene.add( alpha );
     
     var beta = makeTextSprite( " β : 90° ", 
       { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:22, g:110, b:2, a:1.0} } );
     beta.position.set(-width/2 + offsetX, -height/2 + offsetY - 10, -100);
-    scene.add( beta );
+   // scene.add( beta );
     
     var gamma = makeTextSprite( " γ : 90° ", 
       { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:234, g:0, b:2, a:1.0}  } );
     gamma.position.set(-width/2 + offsetX + 50, -height/2 + offsetY - 30, -100);
-    scene.add( gamma );
+    //scene.add( gamma );
 
   };
   function makeTextSprite( message, parameters )

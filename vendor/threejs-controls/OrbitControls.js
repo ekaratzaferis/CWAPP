@@ -21,7 +21,7 @@
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
 
-THREE.OrbitControls = function ( object, domElement, deactivate ) {
+THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) {
 	this.updating = false ;
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -41,6 +41,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate ) {
 	// This option actually enables dollying in and out; left as "zoom" for
 	// backwards compatibility
 	this.noZoom = false;
+	if(onlyRotation !== undefined) this.noZoom = true;
 	this.zoomSpeed = 1.0;
 
 	// Limits to how far you can dolly in and out
@@ -54,6 +55,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate ) {
 	// Set to true to disable this control
 	this.noPan = deactivate;
 	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+	if(onlyRotation !== undefined) this.noPan = true;
 
 	// Set to true to automatically rotate around the target
 	this.autoRotate = false;
