@@ -17,73 +17,242 @@ define([
   function Hud( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    var offsetX = 70 ;
-    var offsetY = 70 ;
-    var arrowLength = 70 ;
- 
+    this.arrowLength = 8 ;
+    this.scene = scene ;
+    this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
+
+    // arrows
     var startA = new THREE.Vector3(0,0,0);
-    var endA = new THREE.Vector3(0,0,9);
+    var endA = new THREE.Vector3(0,0,this.arrowLength);
     var length =  startA.distanceTo(endA) ; 
     var directionA = new THREE.Vector3().subVectors( endA,  startA).normalize();
-    var arrowA = new THREE.ArrowHelper( directionA , startA, length , "#04B404", 1, 1);
+    this.arrowA = new THREE.ArrowHelper( directionA , startA, length , "#045FB4", 1, 0.4);
 
     var startB = new THREE.Vector3(0,0,0);
-    var endB = new THREE.Vector3(9,0,0);
+    var endB = new THREE.Vector3(this.arrowLength,0,0);
     var length =  startB.distanceTo(endB) ; 
     var directionB = new THREE.Vector3().subVectors( endB,  startB).normalize();
-    var arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000", 1, 1);
+    this.arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000", 1, 0.4);
 
     var startC = new THREE.Vector3(0,0,0);
-    var endC = new THREE.Vector3(0,9,0);
+    var endC = new THREE.Vector3(0,this.arrowLength,0);
     var length =  startC.distanceTo(endC) ; 
     var directionC = new THREE.Vector3().subVectors( endC,  startC).normalize();
-    var arrowC = new THREE.ArrowHelper( directionC, startC, length , "#045FB4", 1, 1);
+    this.arrowC = new THREE.ArrowHelper( directionC, startC, length , "#04B404", 1, 0.4);
   
-    scene.add( arrowC ); 
-    scene.add( arrowB ); 
-    scene.add( arrowA );  
-   
+    scene.add( this.arrowC ); 
+    scene.add( this.arrowB ); 
+    scene.add( this.arrowA );  
+    
+    var startOfAxis = new THREE.Mesh( new THREE.SphereGeometry( 0.15, 8,8), new THREE.MeshBasicMaterial({color: 0xFFFFBE}));
+    scene.add(startOfAxis);
+
+    // a,b,c lengths
     var aLabel = THREE.ImageUtils.loadTexture( "Images/a.png" );  
     var aMaterial = new THREE.SpriteMaterial( { map: aLabel, color: 0xffffff, fog: true } );
-    var spriteA = new THREE.Sprite( aMaterial );
+    this.spriteA = new THREE.Sprite( aMaterial );
      
-    spriteA.position.set(endA.x - 5, endA.y - 5, endA.z);
-    spriteA.scale.set(20,20,20);
-    //scene.add( spriteA );
+    this.spriteA.position.set(0,-1,9);
+    this.spriteA.scale.set(1.8,1.8,1.8);
+    scene.add( this.spriteA );
 
     var bLabel = THREE.ImageUtils.loadTexture( "Images/b.png" );
     var bMaterial = new THREE.SpriteMaterial( { map: bLabel, color: 0xffffff, fog: true } );
-    var spriteB = new THREE.Sprite( bMaterial );
+    this.spriteB = new THREE.Sprite( bMaterial );
      
-    spriteB.position.set(endB.x + 10, endB.y , endB.z);
-    spriteB.scale.set(20,20,20);
-    //scene.add( spriteB );
+    this.spriteB.position.set(9,0,0);
+    this.spriteB.scale.set(1.8,1.8,1.8);
+    scene.add( this.spriteB );
 
     var cLabel = THREE.ImageUtils.loadTexture( "Images/c.png" );  
     var cMaterial = new THREE.SpriteMaterial( { map: cLabel, color: 0xffffff, fog: true } );
-    var spriteC = new THREE.Sprite( cMaterial );
+    this.spriteC = new THREE.Sprite( cMaterial );
      
-    spriteC.position.set(endC.x +5, endC.y + 10, endC.z);
-    spriteC.scale.set(20,20,20);
-    //scene.add( spriteC );
+    this.spriteC.position.set(0,9,0);
+    this.spriteC.scale.set(1.8,1.8,1.8);
+    scene.add( this.spriteC );
 
-    // angles
-    var alpha = makeTextSprite( " α : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:99, g:34, b:99, a:1.0} } );
-    alpha.position.set(-width/2 + offsetX + 55, -height/2 + offsetY, -100);
-    //scene.add( alpha );
+    // angles and their curves
+    this.alpha = makeTextSprite( "             α : 90° ", 
+      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+    this.alpha.position.set(1,1,0);
+    scene.add( this.alpha );
     
-    var beta = makeTextSprite( " β : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:22, g:110, b:2, a:1.0} } );
-    beta.position.set(-width/2 + offsetX, -height/2 + offsetY - 10, -100);
-   // scene.add( beta );
+    this.beta = makeTextSprite( " β : 90° ", 
+      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+    this.beta.position.set( -0.5,0,0);
+   scene.add( this.beta );
     
-    var gamma = makeTextSprite( " γ : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0}, fontColor: {r:234, g:0, b:2, a:1.0}  } );
-    gamma.position.set(-width/2 + offsetX + 50, -height/2 + offsetY - 30, -100);
-    //scene.add( gamma );
+    this.gamma = makeTextSprite( "         γ : 90° ", 
+      { fontsize: 40, fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+    this.gamma.position.set(1,-3.3, endA.z/3 );
+    scene.add( this.gamma );
 
+    this.alphaCurve = curve(
+        10, 
+        new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5          ),  
+        new THREE.Vector3(endB.x/8, endC.y/5 - 0.5, endC.z/5    ),  
+        new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5          ),  
+        0xEE8D05
+    );  
+    this.betaCurve = curve(
+        10, 
+        new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5),  
+        new THREE.Vector3(endC.x/8, endC.y/5 - 0.5, endA.z/10 ),  
+        new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5),  
+        0xEFA0FEE 
+    );
+    this.gammaCurve = curve(
+        10, 
+        new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5          ),  
+        new THREE.Vector3(endB.x/8, endA.y/5, endA.z/5 - 0.5    ),  
+        new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5          ),  
+        0xF4D1AA
+    );
+    scene.add(this.alphaCurve);
+    scene.add(this.betaCurve);
+    scene.add(this.gammaCurve);
   };
+  Hud.prototype.updateAngles = function(angle) {
+    var l = this.arrowLength ;
+    var _this = this; 
+    var matrix;
+ 
+    if(angle.alpha !== undefined) _this.angles.alpha = parseInt(angle.alpha);  
+    if(angle.beta  !== undefined) _this.angles.beta  = parseInt(angle.beta);  
+    if(angle.gamma !== undefined) _this.angles.gamma = parseInt(angle.gamma);  
+  
+    var endA = new THREE.Vector3(0,0,l);  
+    var endC = new THREE.Vector3(0,l,0); 
+      
+    _.each(_this.angles, function(angle, a ) {
+        var argument ={};
+        argument[a] = angle;
+        matrix = transformationMatrix(argument);
+        endA.applyMatrix4(matrix);
+        endC.applyMatrix4(matrix);
+    });
+    
+    var startA = new THREE.Vector3(0,0,0);  
+    var directionA = new THREE.Vector3().subVectors(endA,  startA).normalize(); 
+    this.arrowA.position.set(startA.x, startA.y, startA.z);
+    this.arrowA.setDirection(directionA.normalize()); 
+    this.arrowA.setLength(l);
+
+    var startC = new THREE.Vector3(0,0,0); 
+    var directionC = new THREE.Vector3().subVectors(endC,  startC).normalize(); 
+    this.arrowC.position.set(startC.x, startC.y, startC.z);
+    this.arrowC.setDirection(directionC.normalize()); 
+    this.arrowC.setLength(l);
+    
+    var cPos = directionC.setLength(l);
+    var aPos = directionA.setLength(l);
+
+    // sprites
+    this.spriteA.position.set(aPos.x, aPos.y, aPos.z + 1);
+    this.spriteC.position.set(cPos.x, cPos.y + 1, cPos.z );
+
+    // curves 
+ 
+    this.scene.remove(this.alphaCurve);
+    this.alphaCurve = 
+    curve(
+        10, 
+        new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5    ),  
+        new THREE.Vector3(8/8, endC.y/5 - 0.5, endC.z/5   ),  
+        new THREE.Vector3(8/5, 0/5, 0/5                   ),  
+        0xEE8D05
+    );  
+    this.scene.add(this.alphaCurve);
+    this.scene.remove(this.betaCurve);
+    this.betaCurve = 
+    curve(
+        10, 
+        new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5),  
+        new THREE.Vector3(endC.x/8, endC.y/5 - 0.5, endA.z/10 ),  
+        new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5),  
+        0xEFA0FEE 
+    ); 
+    this.scene.add(this.betaCurve); 
+    this.scene.remove(this.gammaCurve);
+    this.gammaCurve = 
+    curve(
+        10, 
+        new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5          ),  
+        new THREE.Vector3(8/5, endA.y/5, endA.z/5 - 0.5    ),  
+        new THREE.Vector3(8/5, 0/5, 0/5          ),  
+        0xF4D1AA
+    );  
+    this.scene.add(this.gammaCurve);
+
+    // sprites
+    if(angle.alpha !== undefined)  { 
+        this.scene.remove(this.alpha);
+        this.alpha = makeTextSprite( "             α : "+angle.alpha+"° ", 
+          { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+        this.alpha.position.set(1,1,0);
+        this.scene.add( this.alpha );
+    }
+    if(angle.beta  !== undefined)  {  
+        this.scene.remove(this.beta);
+        this.beta = makeTextSprite( " β : "+angle.beta+"° ", 
+          { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+        this.beta.position.set( -0.5,0,0);
+        this.scene.add( this.beta );
+    }
+    if(angle.gamma !== undefined)  {  
+        this.scene.remove(this.gamma);
+        this.gamma = makeTextSprite( "         γ : "+angle.gamma+"° ", 
+          { fontsize: 40, fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+        this.gamma.position.set(1,-3.3, endA.z/3 );
+        this.scene.add( this.gamma ); 
+    }
+
+};
+var transformationMatrix = function(parameter) {
+      
+    // According to wikipedia model
+    var ab = Math.tan((90 - ((parameter.beta) || 90)) * Math.PI / 180);
+    var ac = Math.tan((90 - (parameter.gamma || 90)) * Math.PI / 180);
+    var xy = 0;
+    var zy = 0;
+    var xz = 0;
+    var bc = Math.tan((90 - (( parameter.alpha) || 90)) * Math.PI / 180);
+
+    var sa = parameter.scaleX || 1; 
+    var sb = parameter.scaleY || 1;
+    var sc = parameter.scaleZ || 1; 
+    
+    var m = new THREE.Matrix4();
+    m.set(
+      sa, ab, ac,  0,
+      xy, sb, zy,  0,
+      xz, bc, sc,  0,
+       0,  0,  0,  1
+    );
+    return m;
+  };
+  function curve(numPoints, a, b, c , mat){
+    // smooth my curve over this many points
+
+    var spline = new THREE.SplineCurve3([
+       a, b, c
+    ]);
+
+    var material = new THREE.LineBasicMaterial({
+        color: mat,
+    });
+
+    var geometry = new THREE.Geometry();
+    var splinePoints = spline.getPoints(numPoints);
+
+    for(var i = 0; i < splinePoints.length; i++){
+        geometry.vertices.push(splinePoints[i]);  
+    }
+
+    var line = new THREE.Line(geometry, material);
+    return line;
+  }
   function makeTextSprite( message, parameters )
   {
     if ( parameters === undefined ) parameters = {};
@@ -111,7 +280,7 @@ define([
     //roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
     // 1.4 is extra height factor for text below baseline: g,j,p,q.
     
-    // text color
+    // text color 
     context.fillStyle = "rgba("+parameters.fontColor.r+", "+parameters.fontColor.g+", "+parameters.fontColor.b+", 1.0)";
 
     context.fillText( message, borderThickness, fontsize + borderThickness);
@@ -123,7 +292,7 @@ define([
     var spriteMaterial = new THREE.SpriteMaterial( 
       { map: texture, useScreenCoordinates: false, transparent:true, opacity:1 } );
     var sprite = new THREE.Sprite( spriteMaterial );
-    sprite.scale.set(100,50,1.0);
+    sprite.scale.set(10,5,1.0);
     return sprite;  
   }
 

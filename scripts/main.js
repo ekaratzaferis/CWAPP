@@ -103,7 +103,9 @@ require([
     lattice.setParameters(latticeParameters); 
     motifEditor.updateFixedDimensions(latticeParameters);
   });
-
+  menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
+    hud.updateAngles(latticeParameters);
+  });
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) {
     lattice.setGrade(gradeParameters);

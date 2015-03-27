@@ -44,12 +44,12 @@ define([
   var $repeatX = jQuery('#repeatX');
   var $repeatY = jQuery('#repeatY');
   var $repeatZ = jQuery('#repeatZ');
-  var $scaleX = jQuery('#scaleX');
-  var $scaleY = jQuery('#scaleY');
-  var $scaleZ = jQuery('#scaleZ');
-  var $alpha = jQuery('#alpha');
-  var $beta = jQuery('#beta');
-  var $gamma = jQuery('#gamma');
+  var $scaleX  = jQuery('#scaleX');
+  var $scaleY  = jQuery('#scaleY');
+  var $scaleZ  = jQuery('#scaleZ');
+  var $alpha   = jQuery('#alpha');
+  var $beta    = jQuery('#beta');
+  var $gamma   = jQuery('#gamma');
   
   var latticeParameters = {
     'repeatX': $repeatX,
@@ -506,6 +506,9 @@ define([
     PubSub.subscribe(events.LATTICE_CHANGE, callback);
   };
   Menu.prototype.onLatticeParameterChange = function(callback) {
+    PubSub.subscribe(events.LATTICE_PARAMETER_CHANGE, callback);
+  };
+  Menu.prototype.onLatticeParameterChangeForHud = function(callback) {
     PubSub.subscribe(events.LATTICE_PARAMETER_CHANGE, callback);
   };
   Menu.prototype.onGradeParameterChange = function(callback) {

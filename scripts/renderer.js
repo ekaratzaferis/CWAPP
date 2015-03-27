@@ -117,9 +117,17 @@ define([
       // hud 
       if(_this.hudCamera !== undefined){  
         _this.renderer.clearDepth(); 
-        _this.hudCamera.aspect = (_this.containerWidth/5)/(_this.containerHeight/5);
-        _this.renderer.setViewport(0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
-        _this.renderer.setScissor( 0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
+        if(_this.containerWidth < 800 ){
+          _this.hudCamera.aspect = (_this.containerWidth)/(_this.containerHeight);
+          _this.renderer.setViewport(0, 0,  _this.containerWidth/3, _this.containerHeight/3 );
+          _this.renderer.setScissor( 0, 0,  _this.containerWidth/3, _this.containerHeight/3 );
+        }
+        else{
+          _this.hudCamera.aspect = (_this.containerWidth/5)/(_this.containerHeight/5);
+          _this.renderer.setViewport(0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
+          _this.renderer.setScissor( 0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
+        }
+        
         _this.renderer.enableScissorTest ( true );  
         _this.renderer.setClearColor( 0x000000, 1 ); 
         _this.renderer.render( _this.hudScene, _this.hudCamera );

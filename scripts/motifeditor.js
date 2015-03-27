@@ -1946,12 +1946,12 @@ define([
   var transformationMatrix = function(parameter) {
      
     // According to wikipedia model
-    var ab = Math.tan((90 - ((180-parameter.beta) || 90)) * Math.PI / 180);
+    var ab = Math.tan((90 - ((parameter.beta) || 90)) * Math.PI / 180);
     var ac = Math.tan((90 - (parameter.gamma || 90)) * Math.PI / 180);
     var xy = 0;
     var zy = 0;
     var xz = 0;
-    var bc = Math.tan((90 - ((180-parameter.alpha) || 90)) * Math.PI / 180);
+    var bc = Math.tan((90 - ((parameter.alpha) || 90)) * Math.PI / 180);
 
     var sa = parameter.scaleX || 1; 
     var sb = parameter.scaleZ || 1;
