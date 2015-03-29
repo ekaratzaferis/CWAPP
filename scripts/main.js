@@ -105,6 +105,7 @@ require([
   });
   menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
     hud.updateAngles(latticeParameters);
+    crystalScene.updateAbcAxes(latticeParameters);
   });
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) {
@@ -273,6 +274,9 @@ require([
   });
   menu.onCrystalViewChange(function(message, which) { 
     lattice.changeView(which);
+  }); 
+  menu.onAxisModeChange(function(message, arg) { 
+    crystalScene.axisMode(arg);
   });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {

@@ -36,7 +36,8 @@ define([
     DRAG_ATOM: 'menu.drag_atom',
     SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
     UNIT_CELL_VIEW: 'menu.unit_cell_view',
-    CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal'
+    CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
+    AXIS_MODE: 'menu.axis_mode'
   };
 
   // lattice parameters
@@ -301,7 +302,7 @@ define([
       });
       argument["tangency"]= ($('#tangency').is(':checked')) ? true : false ;
       PubSub.publish(events.ATOM_SELECTION, argument);
-    });
+    }); 
     _.each(atomButtons, function($select, k ) {
       $select.on('click', function(){
         argument = {};
@@ -401,7 +402,16 @@ define([
     $('#rotAngleTheta').on('focusout', function(e) {
       $('#helperImage').hide();
     });
-
+    $("#xyzAxes").click(function(){
+      argument = {}; 
+      argument["xyzAxes"]= ($('#xyzAxes').is(':checked')) ? true : false ;
+      PubSub.publish(events.AXIS_MODE, argument);
+    }); 
+    $("#abcAxes").click(function(){
+      argument = {}; 
+      argument["abcAxes"]= ($('#abcAxes').is(':checked')) ? true : false ;
+      PubSub.publish(events.AXIS_MODE, argument);
+    }); 
     this.restrictionEvents = []; 
      
   }; 
@@ -573,6 +583,9 @@ define([
   };
   Menu.prototype.onCrystalViewChange = function(callback) { 
     PubSub.subscribe(events.CHANGE_VIEW_IN_CRYSTAL, callback);
+  };
+  Menu.prototype.onAxisModeChange = function(callback) { 
+    PubSub.subscribe(events.AXIS_MODE, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');
