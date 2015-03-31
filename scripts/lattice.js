@@ -38,6 +38,8 @@ define([
     this.points = {}; 
     this.mutex = false;
     this.currentMotif = [];
+    this.latticeName;
+
     // grade
     this.gradeChoice = {"face":"off", "grid":"off"};
     this.gridPointsPos = [];
@@ -58,6 +60,7 @@ define([
     this.directionalList =[];
     this.tempDirs = [] ;
 
+    //view
     this.actualAtoms = []; 
     this.viewBox = [];
     this.viewMode = 'Classic';
@@ -168,8 +171,7 @@ define([
             p,
             atom.object3d.children[1].material.map.image.currentSrc,
             atom.object3d.children[0].material.opacity,
-            atom.object3d.children[2].material.wireframe
-
+            atom.object3d.children[2].material.wireframe 
           )  
         );
       });
@@ -177,150 +179,149 @@ define([
   }; 
   Lattice.prototype.createGrid = function() {
   
-      var gridPoints = this.lattice.gridPoints;
-      var usedGridOrigins = [];
+    var gridPoints = this.lattice.gridPoints;
+    var usedGridOrigins = [];
 
-      if (_.isUndefined(gridPoints)) { 
-        return;
-      }
+    if (_.isUndefined(gridPoints)) { 
+      return;
+    }
 
-      var parameters = this.parameters;
-      var origin, g,destinationReference;
-      var destination;
-      var _this = this;
-      var visible = (this.gradeChoice.grid === "on" ) ;
+    var parameters = this.parameters;
+    var origin, g,destinationReference;
+    var destination;
+    var _this = this;
+    var visible = (this.gradeChoice.grid === "on" ) ;
 
-      // erase previous grid 
-      _.each(_this.grids, function(grid) {
-          grid.grid.destroy(); 
-      });
-      while(_this.grids.length > 0) {
-          _this.grids.pop();
-      };
+    // erase previous grid 
+    _.each(_this.grids, function(grid) {
+        grid.grid.destroy(); 
+    });
+    while(_this.grids.length > 0) {
+        _this.grids.pop();
+    };
+     
+    _.times(parameters.repeatX , function(_x) {
+      _.times(parameters.repeatY , function(_y) {
+        _.times(parameters.repeatZ , function(_z) {
+             
+          _.each(gridPoints, function(xyz, which){
 
-      _.times(parameters.repeatX , function(_x) {
-        _.times(parameters.repeatY , function(_y) {
-          _.times(parameters.repeatZ , function(_z) {
-               
-            _.each(gridPoints, function(xyz, which){
- 
-              switch(which) {
-                case 'first':  
-                  var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) + '_'+ (xyz[2]+_z) + '_0';
-                   
-                  if (_.isUndefined(usedGridOrigins[originReference])) {
-                      
-                      origin = _this.points[originReference];
+            switch(which) {
+              case 'first':  
+                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) + '_'+ (xyz[2]+_z) + '_0';
+                 
+                if (_.isUndefined(usedGridOrigins[originReference])) {
+                    
+                    origin = _this.points[originReference];
 
-                      destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0';
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
-                      
-                      destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0';
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+                    
+                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      usedGridOrigins[originReference] = 1;
-                       
-                  }
-                  
-                  break;
+                    usedGridOrigins[originReference] = 1;
+                     
+                }
+                
+                break;
 
-                case 'left':
-                  var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
+              case 'left':
+                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
 
-                  if (_.isUndefined(usedGridOrigins[originReference])) { 
+                if (_.isUndefined(usedGridOrigins[originReference])) { 
 
-                      origin = _this.points[originReference];
+                    origin = _this.points[originReference];
 
-                      destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      usedGridOrigins[originReference] = 1;
-                  }
-                  break;
-                case 'right':
-                  var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
+                    usedGridOrigins[originReference] = 1;
+                }
+                break;
+              case 'right':
+                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
 
-                  if (_.isUndefined(usedGridOrigins[originReference])) { 
+                if (_.isUndefined(usedGridOrigins[originReference])) { 
 
-                      origin = _this.points[originReference];
+                    origin = _this.points[originReference];
 
-                      destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ; 
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ; 
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      usedGridOrigins[originReference] = 1;
-                  }
-                  break;
-                case 'front':
-                  var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
-                  if (_.isUndefined(usedGridOrigins[originReference])) { 
+                    usedGridOrigins[originReference] = 1;
+                }
+                break;
+              case 'front':
+                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
+                if (_.isUndefined(usedGridOrigins[originReference])) { 
 
-                      origin = _this.points[originReference];
+                    origin = _this.points[originReference];
 
-                      destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0';
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0';
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ;
-                      destination = _this.points[destinationReference];
-                      g = new Grid(origin.object3d.position, destination.object3d.position, visible);
-                      _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ;
+                    destination = _this.points[destinationReference];
+                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
-                      usedGridOrigins[originReference] = 1;
-                  }
-                  break;
-                   
-              }
-
-            });
+                    usedGridOrigins[originReference] = 1;
+                }
+                break; 
+            }
 
           });
+
         });
-      }); 
- 
+      });
+    }); 
+       
   };
 
   Lattice.prototype.updatePoints = function() {  
     var lattice = this.lattice;
-  
+     
     this.destroyPoints();
 
     if (_.isEmpty(lattice)) {
@@ -338,15 +339,15 @@ define([
     );
     var index;
     var originLength = lattice.originArray.length;    
-    var position;
-    var reference;
-    var _this = this;
-
      
-    _.times(parameters.repeatX + 1, function(_x) {
-      _.times(parameters.repeatY + 1, function(_y) {
-        _.times(parameters.repeatZ + 1, function(_z) {
-
+    var _this = this;
+    
+    if(_this.latticeName !== 'hexagonal'){
+      var position;
+      var reference;
+      _.times(parameters.repeatX + 1, function(_x) {
+        _.times(parameters.repeatY + 1, function(_y) {
+          _.times(parameters.repeatZ + 1, function(_z) {  
             for (index = 0; index < originLength; index++) {
               origin = lattice.originArray[index];
               position = new THREE.Vector3(
@@ -363,11 +364,47 @@ define([
                 }
               }                   
             }
+          }); // repeat X
+        }); // repeat Y
+      }); // repeat Z
+    }
+    else{ 
+      var a = parameters.scaleZ ;
+      var c = parameters.scaleY ;
+      var co = 0 ;
 
-        }); // repeat X
-      }); // repeat Y
-    }); // repeat Z
-    
+      var vertDist = a*Math.sqrt(3);
+      
+      _.times(parseInt(parameters.repeatY) + 1, function(_y) {
+        _.times(parseInt(parameters.repeatX)  , function(_x) {
+          _.times(parseInt(parameters.repeatZ)  , function(_z) {
+            _.times(6 , function(_r) {
+
+              var v = new THREE.Vector3( a, 0, 0 );
+
+              var axis = new THREE.Vector3( 0, 1, 0 );
+              var angle = (Math.PI / 3) * _r ; 
+              v.applyAxisAngle( axis, angle );
+
+               
+              var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+              var y =  v.y + _y*c ;
+              var x = v.x + _x*a*1.5 ;
+                
+              var position = new THREE.Vector3( x, y, z);
+              z = z.toFixed(2) ;
+              if(z==0) z = 0.00; // check for negative zeros  
+
+              var reference = 'h_'+(y).toFixed(2)+'_'+(x).toFixed(2)+'_'+z ;
+              
+              if (_.isUndefined( _this.points[reference])) { 
+                _this.points[reference] = new Point(position);   
+              }  
+            });
+          });
+        });
+      }); 
+    };   
   };
   Lattice.prototype.recreateMotif = function() {
     
@@ -420,7 +457,7 @@ define([
     }
 
     var _this = this;
-
+    _this.latticeName = latticeName;
     require(['lattice/' + latticeName], function(lattice) {
       _this.lattice = lattice;
       _this.update();
@@ -541,77 +578,77 @@ define([
 
 
   Lattice.prototype.createFaces = function(){ 
-      var _this = this;
-      var parameters = this.parameters;
-      var gradeParameters = this.gradeParameters;
-      var visible = (this.gradeChoice.face === "on" );
+    var _this = this;
+    var parameters = this.parameters;
+    var gradeParameters = this.gradeParameters;
+    var visible = (this.gradeChoice.face === "on" );
 
-      _.each(this.faces, function(face, reference) {
-        face.destroy();
-      });
-      _this.faces.splice(0);
-      _this.viewBox.splice(0);
-
-      for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
-           
-          _this.faces.push(
-            new Face(
-              _this.points['r_0_0_'+_z+'_0'].object3d.position , 
-              _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d.position , 
-              _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d.position ,
-              _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d.position,
-              gradeParameters.faceOpacity, 
-              gradeParameters.faceColor,
-              visible 
-              )
-          );
-          
-          if(_z == 0) {   
-             _this.viewBox['_000'] = _this.points['r_0_0_'+_z+'_0'].object3d; 
-             _this.viewBox['_010'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
-             _this.viewBox['_100'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d;
-             _this.viewBox['_110'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
-          }
-          else if(_z == parameters.repeatZ){  
-            _this.viewBox['_001'] = _this.points['r_0_0_'+_z+'_0'].object3d ; 
-            _this.viewBox['_011'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
-            _this.viewBox['_101'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d ;
-            _this.viewBox['_111'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
-          }
-        };
+    _.each(this.faces, function(face, reference) {
+      face.destroy();
+    });
+    _this.faces.splice(0);
+    _this.viewBox.splice(0);
+ 
+    for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
          
+        _this.faces.push(
+          new Face(
+            _this.points['r_0_0_'+_z+'_0'].object3d.position , 
+            _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d.position , 
+            _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d.position ,
+            _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d.position,
+            gradeParameters.faceOpacity, 
+            gradeParameters.faceColor,
+            visible 
+            )
+        );
+        
+        if(_z == 0) {   
+           _this.viewBox['_000'] = _this.points['r_0_0_'+_z+'_0'].object3d; 
+           _this.viewBox['_010'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+           _this.viewBox['_100'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d;
+           _this.viewBox['_110'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+        }
+        else if(_z == parameters.repeatZ){  
+          _this.viewBox['_001'] = _this.points['r_0_0_'+_z+'_0'].object3d ; 
+          _this.viewBox['_011'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+          _this.viewBox['_101'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d ;
+          _this.viewBox['_111'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+        }
+    };
+        
+    for (var _y = 0; _y <= parameters.repeatY; _y++) {   
+       
+      _this.faces.push(
+        new Face(
+          _this.points['r_0_'+_y+'_0_0'].object3d.position , 
+          _this.points['r_'+parameters.repeatX+'_'+_y+'_0_0'].object3d.position , 
+          _this.points['r_0_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position ,
+          _this.points['r_'+parameters.repeatX+'_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position,
+          gradeParameters.faceOpacity, 
+          gradeParameters.faceColor,
+          visible 
+          )
+      );
+       
+    };
 
-        for (var _y = 0; _y <= parameters.repeatY; _y++) {   
-           
-          _this.faces.push(
-            new Face(
-              _this.points['r_0_'+_y+'_0_0'].object3d.position , 
-              _this.points['r_'+parameters.repeatX+'_'+_y+'_0_0'].object3d.position , 
-              _this.points['r_0_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position ,
-              _this.points['r_'+parameters.repeatX+'_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position,
-              gradeParameters.faceOpacity, 
-              gradeParameters.faceColor,
-              visible 
-              )
-          );
-           
-        };
-
-        for (var _x = 0; _x <= parameters.repeatX; _x++) {   
-           
-          _this.faces.push(
-            new Face(
-              _this.points['r_'+_x+'_0_0_0'].object3d.position , 
-              _this.points['r_'+_x+'_'+parameters.repeatY+'_0_0'].object3d.position , 
-              _this.points['r_'+_x+'_0_'+parameters.repeatZ+'_0'].object3d.position ,
-              _this.points['r_'+_x+'_'+parameters.repeatY+'_'+parameters.repeatZ+'_0'].object3d.position,
-              gradeParameters.faceOpacity, 
-              gradeParameters.faceColor,
-              visible  
-              )
-          );
-           
-        };
+    for (var _x = 0; _x <= parameters.repeatX; _x++) {   
+       
+      _this.faces.push(
+        new Face(
+          _this.points['r_'+_x+'_0_0_0'].object3d.position , 
+          _this.points['r_'+_x+'_'+parameters.repeatY+'_0_0'].object3d.position , 
+          _this.points['r_'+_x+'_0_'+parameters.repeatZ+'_0'].object3d.position ,
+          _this.points['r_'+_x+'_'+parameters.repeatY+'_'+parameters.repeatZ+'_0'].object3d.position,
+          gradeParameters.faceOpacity, 
+          gradeParameters.faceColor,
+          visible  
+          )
+      );
+       
+    };
+       
       
   };
     
@@ -664,10 +701,15 @@ define([
     });
   };
 
-  Lattice.prototype.update = function() { 
-    this.backwardTransformations();
-    this.updatePoints();
-    this.forwardTransformations();
+  Lattice.prototype.update = function() {  
+    if(this.latticeName !== 'hexagonal'){
+      this.backwardTransformations();
+      this.updatePoints();
+      this.forwardTransformations();
+    }
+    else{
+      this.updatePoints();
+    }
   };
 
   Lattice.prototype.setGrade = function(gradeParameters) { 
@@ -707,14 +749,14 @@ define([
 
       this.gradeChoice.grid = gradeChoices["gridCheckButton"];
       if(this.gradeChoice.grid == "off"){
-         _.each(this.grids, function(grid) {
-            grid.grid.setVisible(false);
-         });
+        _.each(this.grids, function(grid) {
+          grid.grid.setVisible(false);
+        });
       }
       else{
-          _.each(this.grids, function(grid) {
-            grid.grid.setVisible(true);
-         });
+        _.each(this.grids, function(grid) {
+          grid.grid.setVisible(true);
+        });
       }
       
     };
@@ -742,7 +784,8 @@ define([
   }
 
   Lattice.prototype.setParameters = function(latticeParameters) {  
-        
+    console.log('00');
+    if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
       var deltaKeys = _.keys(delta); // keys : retrieve all names of object properties
@@ -767,6 +810,14 @@ define([
       }
       
       this.setGradeChoices(this.gradeChoice);
+    }
+    else{
+      var delta = calculateDelta(this.parameters, latticeParameters);
+      var _this = this;
+      var deltaKeys = _.keys(delta);  
+      _.extend(this.parameters, delta); 
+      this.updatePoints();
+    }
        
   };
   Lattice.prototype.getParameters = function() {
@@ -777,7 +828,7 @@ define([
   };
   Lattice.prototype.reCreateMillers = function() {
     var _this = this;
-    console.log('ppp');
+    
     if(this.millerPlanes.length>0) {
       _.each(_this.millerPlanes, function(plane, reference) {
         var params = {

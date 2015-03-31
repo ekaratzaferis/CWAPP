@@ -25,12 +25,7 @@ define(function() {
       'gamma': {
         'gamma': '='
       }
-    },
-    gridPoints: { 
-      'first' : [0,0,0],
-      'left'  : [1,1,0],
-      'right' : [1,0,1],
-      'front' : [0,1,1],
     }
+     
   };
 });
