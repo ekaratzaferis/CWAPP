@@ -28,7 +28,7 @@ define([
     PubSub.subscribe(events.REMOVE, function(message, object) {
       _this.remove(object);
     });
-    var light = new THREE.SpotLight( 0xF5F6CE, 1 );
+    var light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
     light.position.set( 300, 300, 60 );
     light.castShadow = true;
     light.shadowMapWidth = 1024;    // power of 2
@@ -38,10 +38,13 @@ define([
     light.shadowCameraFar = 450;    // shadows not cast past the far plane
     light.shadowCameraFov = 20;
     light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
-    light.shadowDarkness = 0.7;
+    light.shadowDarkness = 0.3;
 
-    //light.shadowCameraVisible = true;
-    this.object3d.add( light );
+    var AmbLight = new THREE.AmbientLight( 0x20211F );
+
+    light.shadowCameraVisible = true;
+    this.object3d.add(light);
+    this.object3d.add(AmbLight);
 
     var geometry1 = new THREE.Geometry();
     geometry1.vertices.push(

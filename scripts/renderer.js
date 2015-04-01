@@ -42,7 +42,7 @@ define([
     this.renderer.shadowCameraFar = 400;
     this.renderer.shadowCameraFov = 200;
     this.renderer.shadowMapBias = 0.0039;
-    this.renderer.shadowMapDarkness = 0.7;
+    this.renderer.shadowMapDarkness = 0.4;
     this.renderer.shadowMapWidth = 1024;
     this.renderer.shadowMapHeight = 1024; 
     this.renderer.autoClear = false; // 2 scenes render 

@@ -38,7 +38,7 @@ define([
     this.points = {}; 
     this.mutex = false;
     this.currentMotif = [];
-    this.latticeName;
+    this.latticeName = 'none';
 
     // grade
     this.gradeChoice = {"face":"off", "grid":"off"};
@@ -178,27 +178,27 @@ define([
     });  
   }; 
   Lattice.prototype.createGrid = function() {
-  
+    
     var gridPoints = this.lattice.gridPoints;
     var usedGridOrigins = [];
-
-    if (_.isUndefined(gridPoints)) { 
+ 
+    if (_.isUndefined(gridPoints) && (this.latticeName !== 'hexagonal')) { 
       return;
     }
-
+    
     var parameters = this.parameters;
     var origin, g,destinationReference;
     var destination;
     var _this = this;
     var visible = (this.gradeChoice.grid === "on" ) ;
-
+  
     // erase previous grid 
     _.each(_this.grids, function(grid) {
         grid.grid.destroy(); 
-    });
+    });  
     while(_this.grids.length > 0) {
         _this.grids.pop();
-    };
+    }; 
      
     _.times(parameters.repeatX , function(_x) {
       _.times(parameters.repeatY , function(_y) {
@@ -316,9 +316,8 @@ define([
         });
       });
     }); 
-       
-  };
-
+ 
+  }; 
   Lattice.prototype.updatePoints = function() {  
     var lattice = this.lattice;
      
@@ -338,7 +337,7 @@ define([
       parameters.repeatZ * vector.z + origin.z
     );
     var index;
-    var originLength = lattice.originArray.length;    
+    var originLength = lattice.originArray.length, currentPoint, previousPoint;    
      
     var _this = this;
     
@@ -369,15 +368,23 @@ define([
       }); // repeat Z
     }
     else{ 
+      _.each(_this.grids, function(grid) {
+        grid.grid.destroy(); 
+      });  
+      while(_this.grids.length > 0) {
+          _this.grids.pop();
+      }; 
+
       var a = parameters.scaleZ ;
       var c = parameters.scaleY ;
-      var co = 0 ;
+      var co = 0 , previousPoint, currentPoint;
 
       var vertDist = a*Math.sqrt(3);
       
       _.times(parseInt(parameters.repeatY) + 1, function(_y) {
-        _.times(parseInt(parameters.repeatX)  , function(_x) {
+        _.times(parseInt(parameters.repeatX)   , function(_x) {
           _.times(parseInt(parameters.repeatZ)  , function(_z) {
+           /* var hexPoints = [];
             _.times(6 , function(_r) {
 
               var v = new THREE.Vector3( a, 0, 0 );
@@ -400,11 +407,59 @@ define([
               if (_.isUndefined( _this.points[reference])) { 
                 _this.points[reference] = new Point(position);   
               }  
+            });*/
+            var hexPoints = [];
+            _.times(6 , function(_r) {
+
+              var v = new THREE.Vector3( a, 0, 0 );
+
+              var axis = new THREE.Vector3( 0, 1, 0 );
+              var angle = (Math.PI / 3) * _r ; 
+              v.applyAxisAngle( axis, angle );
+
+               
+              var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+              var y =  v.y + _y*c ;
+              var x = v.x + _x*a*1.5 ;
+                
+              var position = new THREE.Vector3( x, y, z);
+              z = z.toFixed(2) ;
+              if(z==0) z = 0.00; // check for negative zeros  
+
+              var reference = 'h_'+(y).toFixed(2)+'_'+(x).toFixed(2)+'_'+z ;
+              hexPoints.push(position);
+              if (_.isUndefined( _this.points[reference])) { 
+                _this.points[reference] = new Point(position);   
+                if(_y>0) _this.createHexGrid([position, new THREE.Vector3(position.x, position.y - c, position.z)],true);
+              }  
             });
+            _this.createHexGrid(hexPoints,false);
           });
         });
       }); 
-    };   
+    };
+        
+  };
+  Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
+    var _this = this;
+    var visible = (this.gradeChoice.grid === "on" );
+    if(vertical){
+      var g = new Grid(hexPoints[0], hexPoints[1],  visible);
+
+      _this.grids.push({ grid:g, a:hexPoints[0], b:hexPoints[1] });
+      updateGrid(_this.grids[_this.grids.length-1]);
+         
+    }
+    else{
+      for (var i = 0 ; i< hexPoints.length ; i++) {
+        var a = hexPoints[i];
+        var b = (i === 5 ) ? hexPoints[0] : hexPoints[i+1];
+        var g = new Grid(a,b,  visible);
+        _this.grids.push({ grid:g, a:a, b:b });
+        updateGrid(_this.grids[_this.grids.length-1]);
+      };
+    }
+        
   };
   Lattice.prototype.recreateMotif = function() {
     
@@ -463,7 +518,7 @@ define([
       _this.update();
       PubSub.publish(events.LOAD, lattice);
     });
-    
+    console.log(_this.grids);
   };
 
   var transformationMatrix = function(parameter) {
@@ -588,67 +643,71 @@ define([
     });
     _this.faces.splice(0);
     _this.viewBox.splice(0);
- 
-    for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
+    
+    if(this.latticeName !== 'hexagonal'){
+      for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
+           
+          _this.faces.push(
+            new Face(
+              _this.points['r_0_0_'+_z+'_0'].object3d.position , 
+              _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d.position , 
+              _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d.position ,
+              _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d.position,
+              gradeParameters.faceOpacity, 
+              gradeParameters.faceColor,
+              visible 
+              )
+          );
+          
+          if(_z == 0) {   
+             _this.viewBox['_000'] = _this.points['r_0_0_'+_z+'_0'].object3d; 
+             _this.viewBox['_010'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+             _this.viewBox['_100'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d;
+             _this.viewBox['_110'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+          }
+          else if(_z == parameters.repeatZ){  
+            _this.viewBox['_001'] = _this.points['r_0_0_'+_z+'_0'].object3d ; 
+            _this.viewBox['_011'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
+            _this.viewBox['_101'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d ;
+            _this.viewBox['_111'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
+          }
+      };
+          
+      for (var _y = 0; _y <= parameters.repeatY; _y++) {   
          
         _this.faces.push(
           new Face(
-            _this.points['r_0_0_'+_z+'_0'].object3d.position , 
-            _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d.position , 
-            _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d.position ,
-            _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d.position,
+            _this.points['r_0_'+_y+'_0_0'].object3d.position , 
+            _this.points['r_'+parameters.repeatX+'_'+_y+'_0_0'].object3d.position , 
+            _this.points['r_0_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position ,
+            _this.points['r_'+parameters.repeatX+'_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position,
             gradeParameters.faceOpacity, 
             gradeParameters.faceColor,
             visible 
             )
         );
-        
-        if(_z == 0) {   
-           _this.viewBox['_000'] = _this.points['r_0_0_'+_z+'_0'].object3d; 
-           _this.viewBox['_010'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
-           _this.viewBox['_100'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d;
-           _this.viewBox['_110'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
-        }
-        else if(_z == parameters.repeatZ){  
-          _this.viewBox['_001'] = _this.points['r_0_0_'+_z+'_0'].object3d ; 
-          _this.viewBox['_011'] = _this.points['r_0_'+parameters.repeatY+'_'+_z+'_0'].object3d; 
-          _this.viewBox['_101'] = _this.points['r_'+parameters.repeatX+'_0_'+_z+'_0'].object3d ;
-          _this.viewBox['_111'] = _this.points['r_'+parameters.repeatX+'_'+parameters.repeatY+'_'+_z+'_0'].object3d;
-        }
-    };
-        
-    for (var _y = 0; _y <= parameters.repeatY; _y++) {   
-       
-      _this.faces.push(
-        new Face(
-          _this.points['r_0_'+_y+'_0_0'].object3d.position , 
-          _this.points['r_'+parameters.repeatX+'_'+_y+'_0_0'].object3d.position , 
-          _this.points['r_0_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position ,
-          _this.points['r_'+parameters.repeatX+'_'+_y+'_'+parameters.repeatZ+'_0'].object3d.position,
-          gradeParameters.faceOpacity, 
-          gradeParameters.faceColor,
-          visible 
-          )
-      );
-       
-    };
+         
+      };
 
-    for (var _x = 0; _x <= parameters.repeatX; _x++) {   
-       
-      _this.faces.push(
-        new Face(
-          _this.points['r_'+_x+'_0_0_0'].object3d.position , 
-          _this.points['r_'+_x+'_'+parameters.repeatY+'_0_0'].object3d.position , 
-          _this.points['r_'+_x+'_0_'+parameters.repeatZ+'_0'].object3d.position ,
-          _this.points['r_'+_x+'_'+parameters.repeatY+'_'+parameters.repeatZ+'_0'].object3d.position,
-          gradeParameters.faceOpacity, 
-          gradeParameters.faceColor,
-          visible  
-          )
-      );
-       
-    };
-       
+      for (var _x = 0; _x <= parameters.repeatX; _x++) {   
+         
+        _this.faces.push(
+          new Face(
+            _this.points['r_'+_x+'_0_0_0'].object3d.position , 
+            _this.points['r_'+_x+'_'+parameters.repeatY+'_0_0'].object3d.position , 
+            _this.points['r_'+_x+'_0_'+parameters.repeatZ+'_0'].object3d.position ,
+            _this.points['r_'+_x+'_'+parameters.repeatY+'_'+parameters.repeatZ+'_0'].object3d.position,
+            gradeParameters.faceOpacity, 
+            gradeParameters.faceColor,
+            visible  
+            )
+        );
+         
+      }; 
+    }
+    else{
+
+    }
       
   };
     
@@ -745,8 +804,7 @@ define([
 
     };
 
-    if(!_.isUndefined(gradeChoices["gridCheckButton"])) {
-
+    if(!_.isUndefined(gradeChoices["gridCheckButton"])) { 
       this.gradeChoice.grid = gradeChoices["gridCheckButton"];
       if(this.gradeChoice.grid == "off"){
         _.each(this.grids, function(grid) {
@@ -757,8 +815,7 @@ define([
         _.each(this.grids, function(grid) {
           grid.grid.setVisible(true);
         });
-      }
-      
+      } 
     };
 
   };
@@ -772,8 +829,14 @@ define([
     if(_.isUndefined(_this.gradeParameters)) return;
      
      _.each(this.grids, function(grid) {
+      if(_this.latticeName !== 'hexagonal'){  
         grid.grid.setRadius(_this.gradeParameters.radius);
         grid.grid.setColor( _this.gradeParameters.cylinderColor);
+      }
+      else{
+        grid.grid.setRadius(_this.gradeParameters.radius);
+        grid.grid.setColor( _this.gradeParameters.cylinderColor);
+      }
     });
 
     _.each(this.faces, function(face) {
@@ -784,7 +847,7 @@ define([
   }
 
   Lattice.prototype.setParameters = function(latticeParameters) {  
-    console.log('00');
+     
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
@@ -807,8 +870,7 @@ define([
       }
       else{
         this.forwardTransformations();  
-      }
-      
+      } 
       this.setGradeChoices(this.gradeChoice);
     }
     else{
@@ -816,9 +878,11 @@ define([
       var _this = this;
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
-      this.updatePoints();
-    }
-       
+      this.updatePoints();   
+      this.createFaces();
+      this.setGradeChoices(this.gradeChoice);
+      
+    } 
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1514,7 +1578,7 @@ define([
     
     var _grid = grid.grid.object3d;
     var pointA = grid.a;
-    var pointB = grid.b;
+    var pointB = grid.b; 
     var distance = pointA.distanceTo(pointB) ; 
     var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
 
