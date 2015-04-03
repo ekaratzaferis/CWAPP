@@ -20,15 +20,21 @@ define([
     vertices.push(new THREE.Vector3(c.x,c.y,c.z));
     vertices.push(new THREE.Vector3(d.x,d.y,d.z));
 
-    if(e !== undefined){
+    if(f !== undefined){
       vertices.push(new THREE.Vector3(e.x,e.y,e.z));
-      vertices.push(new THREE.Vector3(f.x,f.y,f.z));    
-    }
-    faces.push(new THREE.Face3(0,1,2));
-    faces.push(new THREE.Face3(0,2,3));
-    if(e !== undefined){
+      vertices.push(new THREE.Vector3(f.x,f.y,f.z));     
+      faces.push(new THREE.Face3(0,1,2));
+      faces.push(new THREE.Face3(0,2,3));
       faces.push(new THREE.Face3(3,0,4));
       faces.push(new THREE.Face3(5,0,4));
+    }
+    else if(e !== undefined){  
+      faces.push(new THREE.Face3(0,1,2));
+      faces.push(new THREE.Face3(0,2,3));
+    }
+    else{
+      faces.push(new THREE.Face3(0,2,1));
+      faces.push(new THREE.Face3(2,3,1));
     }
 
     var geom = new THREE.Geometry();

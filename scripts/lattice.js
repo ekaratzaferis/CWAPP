@@ -148,7 +148,8 @@ define([
     _this.actualAtoms.splice(0); 
 
     _this.backwardTransformations();
-    this.parameters.scaleX = dimensions.x ;
+
+    this.parameters.scaleX = dimensions.z ;
     this.parameters.scaleY = dimensions.y ;
     this.parameters.scaleZ = dimensions.z ;
 
@@ -403,7 +404,7 @@ define([
               z = z.toFixed(2) ;
               if(z==0) z = 0.00; // check for negative zeros  
 
-              var reference = 'h_'+(y).toFixed(2)+'_'+(x).toFixed(2)+'_'+z ;
+              var reference = 'h_'+(x).toFixed(2)+(y).toFixed(2)+z ;
               hexPoints.push(position);
               if (_.isUndefined( _this.points[reference])) { 
                 _this.points[reference] = new Point(position);   
@@ -421,9 +422,25 @@ define([
     var _this = this;
     var visible = (this.gradeChoice.grid === "on" ); //recreate motif inm lattice and add atom in motif
     if(vertical){
+      var a = hexPoints[0];
+      var b = hexPoints[1];
+
+      var x = (a.x).toFixed(2);
+      var y = (a.y).toFixed(2);
+      var z = (a.z).toFixed(2);
+
+      var k = (b.x).toFixed(2);
+      var l = (b.y).toFixed(2);
+      var m = (b.z).toFixed(2); 
+          
+      if(z==0) z = 0.00;
+      if(m==0) m = 0.00; 
+
+      var originReference = 'h_'+x+y+z ;
+      var destinationReference = 'h_'+k+l+m ; 
       var g = new Grid(hexPoints[0], hexPoints[1],  visible);
 
-      _this.grids.push({ grid:g, a:hexPoints[0], b:hexPoints[1] });
+      _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0 });
       updateGrid(_this.grids[_this.grids.length-1]);
          
     }
@@ -432,11 +449,12 @@ define([
         var a = hexPoints[i];
         var b = (i === 5 ) ? hexPoints[0] : hexPoints[i+1];
 
-        var z = (a.x).toFixed(2);;
-        var y = (a.y).toFixed(2);;
-        var x = (a.z).toFixed(2);;
-        var k = (b.x).toFixed(2);;
-        var l = (b.y).toFixed(2);;
+        var x = (a.x).toFixed(2);
+        var y = (a.y).toFixed(2);
+        var z = (a.z).toFixed(2);
+
+        var k = (b.x).toFixed(2);
+        var l = (b.y).toFixed(2);
         var m = (b.z).toFixed(2); 
             
         if(z==0) z = 0.00;
@@ -444,13 +462,16 @@ define([
 
         var reference = 'h_'+x+y+z+k+l+m ;
         var reference2 = 'h_'+k+l+m+x+y+z ;
+        var originReference = 'h_'+x+y+z ;
+        var destinationReference = 'h_'+k+l+m ;
          
         if(_this.hexGrids[reference] == undefined) _this.hexGrids[reference] = false;
 
         if(_this.hexGrids[reference] === false && _this.hexGrids[reference2] === undefined){  
           _this.hexGrids[reference] = true; 
+  
           var g = new Grid(a,b, visible);
-          _this.grids.push({ grid:g, a:a, b:b });
+          _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
           updateGrid(_this.grids[_this.grids.length-1]);
         }
       };
@@ -557,57 +578,47 @@ define([
     var parameters = this.parameters;
     var _this = this;
 
-    _.each(parameterKeys, function(k) {
-
-      if (_.isUndefined(parameters[k]) === false) {
-
+    _.each(parameterKeys, function(k) { 
+      if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
         argument[k] = operation(parameters[k]);
-        matrix = transformationMatrix(argument); 
-            
+        matrix = transformationMatrix(argument);  
         _.each(_this.actualAtoms, function(atom) {   
           atom.centerOfMotif.applyMatrix4(matrix);  
           atom.object3d.position.x = atom.centerOfMotif.x + atom.offsetX;  
           atom.object3d.position.y = atom.centerOfMotif.y + atom.offsetY;  
           atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ;  
-        });
-         
-        _.each(points, function(point, reference) {
-         
-          var pos = point.object3d.position.applyMatrix4(matrix); // 4x3 mult 3x1
-          
-          if(caller==0) {
-            _.filter(_this.grids, function(grid){  
-              if(grid.origin == reference) {
+        }); 
+        _.each(points, function(point, reference) { 
+          var pos = point.object3d.position.applyMatrix4(matrix);   
+          if(caller==0) { 
+            _.each(_this.grids, function(grid){ 
+              if(grid.origin == reference) {  
                 grid.a = pos;
-                grid.updated++;
-
-                if(grid.updated==2) {
-                    grid.updated = 0;
-                    updateGrid(grid);
+                grid.updated++; 
+                if(grid.updated==2) { 
+                  grid.updated = 0;
+                  updateGrid(grid);
                 }
               }
-              else if(grid.destination == reference){
+              else if(grid.destination == reference){ 
                 grid.b = pos;
-                grid.updated++;
-
-                if(grid.updated==2){
-                    grid.updated = 0;
-                    updateGrid(grid);
+                grid.updated++; 
+                if(grid.updated==2){ 
+                  grid.updated = 0;
+                  updateGrid(grid);
                 } 
               }
             }); 
           } 
-        });  
-        
+        });   
         _.each(_this.faces, function(face, k) {
           _.each(face.object3d.geometry.vertices, function(vertex , k){
             face.object3d.geometry.verticesNeedUpdate = true ;
             vertex.applyMatrix4(matrix); 
           });   
         });             
-      }
-
+      } 
       _.each(_this.millerPlanes, function(plane, reference) {
         plane.plane.object3d.geometry.verticesNeedUpdate = true ;
         var vertices = plane.plane.object3d.geometry.vertices;
@@ -619,10 +630,8 @@ define([
         directional.startPoint.applyMatrix4(matrix);
         directional.endpointPoint.applyMatrix4(matrix)
         updateMillerVector(directional);        
-      });
-
-    });
- 
+      }); 
+    }); 
   };
 
 
@@ -734,7 +743,8 @@ define([
             new THREE.Vector3(hexagon[i].x, hexagon[i].y - parameters.scaleY, hexagon[i].z) ,  
             faceOpacity, 
             faceColor,
-            visible   
+            visible ,
+            0  
           )
         );
       }; 

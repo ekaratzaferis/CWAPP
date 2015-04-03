@@ -1291,10 +1291,7 @@ define([
                   pos.z + position.z), 
                   radius, color, tang, name, id, reference
                 ) 
-              ); 
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
+              );  
 
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1666,7 +1663,18 @@ define([
     _this.cellParameters.scaleX = cell.xDim ;
     _this.cellParameters.scaleY = cell.yDim ;
     _this.cellParameters.scaleZ = cell.zDim ; 
-
+    
+    if(_this.latticeName === 'hexagonal'){
+      if(cell.zDim > cell.xDim){
+        _this.cellParameters.scaleX = cell.zDim ;
+        cell.xDim = cell.zDim ;
+      }
+      else{
+        _this.cellParameters.scaleZ = cell.xDim ;
+        cell.zDim = cell.xDim ; 
+      }
+    }
+     
     _this.motifsAtoms.pop();
 
     var after = performance.now();
@@ -1986,96 +1994,93 @@ define([
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Angle Handling - lattice.js code
   Motifeditor.prototype.cellPointsWithScaling = function(dimensions, recreate){ 
-    var _this = this;
-    if(this.latticeName !== 'hexagonal'){ 
-      switch(_this.latticeType) {
-          case "primitive":    
-            _.times(2 , function(_x) {
-              _.times(2 , function(_y) {
-                _.times(2 , function(_z) {
-                  if(recreate){
-                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                  }
-                  else{
-                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z) ;
-                  }
-                });
+    var _this = this; 
+    switch(_this.latticeType) {
+        case "primitive":    
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                if(recreate){
+                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                }
+                else{
+                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z) ;
+                }
               });
-            }); 
-            break;
-          case "face":   
-            _.times(2 , function(_x) {
-              _.times(2 , function(_y) {
-                _.times(2 , function(_z) {
-                  if(recreate){
-                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                  }
-                  else{
-                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
-                  }
-                });
+            });
+          }); 
+          break;
+        case "face":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                if(recreate){
+                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                }
+                else{
+                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
+                }
               });
-            }); 
-            for (var i = 0; i <= 1; i ++) {
-              if(recreate){
-                _this.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
-                _this.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
-                _this.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
-              }
-              else{
-                _this.unitCellPositions["_"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5) ;
-                _this.unitCellPositions["__"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5) ;
-                _this.unitCellPositions["___"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i) ;
-              }
-            };
-            break;
-          case "body":  
-            _.times(2 , function(_x) {
-              _.times(2 , function(_y) {
-                _.times(2 , function(_z) {
-                  if(recreate){
-                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                  }
-                  else{
-                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z) ;
-                  }
-                });
-              });
-            }); 
+            });
+          }); 
+          for (var i = 0; i <= 1; i ++) {
             if(recreate){
-              _this.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
+              _this.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
+              _this.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
+              _this.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
             }
             else{
-              _this.unitCellPositions["_c"].position = new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ) ;
+              _this.unitCellPositions["_"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5) ;
+              _this.unitCellPositions["__"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5) ;
+              _this.unitCellPositions["___"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i) ;
             }
-            break;
-          case "base":   
-            _.times(2 , function(_x) {
-              _.times(2 , function(_y) {
-                _.times(2 , function(_z) {
-                  if(recreate){
-                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                  }
-                  else{
-                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
-                  }
-                });
+          };
+          break;
+        case "body":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                if(recreate){
+                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                }
+                else{
+                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z) ;
+                }
               });
-            }); 
-             
-            if(recreate){
-              _this.unitCellPositions["_up"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2 ,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
-              _this.unitCellPositions["_down"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2, 0 , Math.sqrt(2) * dimensions.zDim /2), "latticeIndex" : "_down" } ;  
-            }
-            else{
-              _this.unitCellPositions["_up"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2) ;
-              _this.unitCellPositions["_down"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  0, Math.sqrt(2) * dimensions.zDim /2) ;
-            }  
+            });
+          }); 
+          if(recreate){
+            _this.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
+          }
+          else{
+            _this.unitCellPositions["_c"].position = new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ) ;
+          }
+          break;
+        case "base":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                if(recreate){
+                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                }
+                else{
+                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
+                }
+              });
+            });
+          }); 
+           
+          if(recreate){
+            _this.unitCellPositions["_up"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2 ,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
+            _this.unitCellPositions["_down"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2, 0 , Math.sqrt(2) * dimensions.zDim /2), "latticeIndex" : "_down" } ;  
+          }
+          else{
+            _this.unitCellPositions["_up"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2) ;
+            _this.unitCellPositions["_down"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  0, Math.sqrt(2) * dimensions.zDim /2) ;
+          }  
 
-            break;
-      }
-    }
-    
+          break;
+    } 
   };
   Motifeditor.prototype.cellPointsWithAngles = function() {    
     this.transform( reverseShearing,            function(value) {  return value; }                       );
