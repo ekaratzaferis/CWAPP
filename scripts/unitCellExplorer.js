@@ -42,7 +42,7 @@ define([
 
     var AmbLight = new THREE.AmbientLight( 0x20211F );
 
-    light.shadowCameraVisible = true;
+    //light.shadowCameraVisible = true;
     this.object3d.add(light);
     this.object3d.add(AmbLight);
 

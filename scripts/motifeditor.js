@@ -33,6 +33,7 @@ define([
     this.editorState = {state : "initial", fixed: false } ;
     this.atomsData ;
     this.isEmpty = true ;
+    this.latticeName = 'none';
 
     this.newSphere ;
     this.newCellSphere ;
@@ -65,28 +66,42 @@ define([
   };
   Motifeditor.prototype.updateCellDimens = function(arg){
     if(this.editorState.fixed){ 
+
       if(!_.isUndefined(arg.x)) {
-        this.cellParameters.scaleX = arg.x ; 
-        $('#scaleX').val(arg.x);
+        if(this.latticeName !== 'hexagonal'){
+          this.cellParameters.scaleX = arg.x ; 
+          $('#scaleX').val(arg.x);
+        }
       } 
       else if(!_.isUndefined(arg.y)) { 
         this.cellParameters.scaleY = arg.y ; 
         $('#scaleY').val(arg.y);
       }
-      else if(!_.isUndefined(arg.z)) { 
+      else if(!_.isUndefined(arg.z)) {  
         this.cellParameters.scaleZ = arg.z ;
         $('#scaleZ').val(arg.z); 
-      }
+      } 
       this.configureCellPoints();
     }
       
   };
-  Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType) {
+  Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName) {
+    
     this.latticeType = latticeType; 
-    this.cellParameters.alpha = anglesScales.alpha ;
-    this.cellParameters.beta = anglesScales.beta ;
-    this.cellParameters.gamma = anglesScales.gamma ;
-    this.cellParameters.scaleX = anglesScales.scaleX ;
+    this.latticeName = latticeName;   
+    
+    if(this.latticeName === 'hexagonal'){
+      this.cellParameters.alpha = 90 ;
+      this.cellParameters.beta = 90 ;
+      this.cellParameters.gamma = 120 ;
+      this.cellParameters.scaleX = anglesScales.scaleZ ;
+    }
+    else{
+      this.cellParameters.alpha = anglesScales.alpha ;
+      this.cellParameters.beta = anglesScales.beta ;
+      this.cellParameters.gamma = anglesScales.gamma ;
+      this.cellParameters.scaleX = anglesScales.scaleX ;
+    }
     this.cellParameters.scaleY = anglesScales.scaleY ;
     this.cellParameters.scaleZ = anglesScales.scaleZ ;
  
@@ -192,21 +207,22 @@ define([
     var tempObj = _this.newSphere ;  
     _this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
     if(_.isUndefined(_this.newSphere) ) _this.newSphere = tempObj ; //in case he drags the _this.newSphere already
-
+    var theID = _this.newSphere.getID(); 
+ 
     if(axis === 'x' ) {  
       _this.newSphere.object3d.position.set(pos.x,pos.y,_this.newSphere.object3d.position.z);  
-      _this.translateCellAtoms("x",  pos.x , _this.newSphere.getID());
-      _this.translateCellAtoms("y",  pos.y , _this.newSphere.getID()); 
+      _this.translateCellAtoms("x",  pos.x , theID);
+      _this.translateCellAtoms("y",  pos.y , theID); 
     }
     else if(axis === 'y' ) {   
       _this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , _this.newSphere.getID());
-      _this.translateCellAtoms("y",  pos.y , _this.newSphere.getID());
+      _this.translateCellAtoms("z",  pos.z , theID);
+      _this.translateCellAtoms("y",  pos.y , theID);
     }
     else if(axis === 'z' ) { 
       _this.newSphere.object3d.position.set(pos.x, _this.newSphere.object3d.position.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , _this.newSphere.getID());
-      _this.translateCellAtoms("x",  pos.x , _this.newSphere.getID());
+      _this.translateCellAtoms("z",  pos.z , theID);
+      _this.translateCellAtoms("x",  pos.x , theID);
     } 
 
     _this.newSphere = tempObj ;
@@ -408,7 +424,7 @@ define([
   }; 
   Motifeditor.prototype.setAtomsParameter = function(param){
     var _this = this; 
-    console.log(param);
+     
     if(!_.isUndefined(param.atomOpacity) ) { 
       _this.newSphere.setOpacity(param.atomOpacity);
       _this.unitCellAtomsOpacity(_this.newSphere.getID(),param.atomOpacity);
@@ -460,8 +476,10 @@ define([
   Motifeditor.prototype.updateFixedDimensions = function (latticeParams) {
 
     if(!_.isUndefined(latticeParams.scaleX) ) { 
-      $("#fixedX").val(parseFloat(latticeParams.scaleX));
-      this.cellParameters.scaleX = parseFloat(latticeParams.scaleX) ; 
+      if(this.latticeName !== 'hexagonal'){
+        $("#fixedX").val(parseFloat(latticeParams.scaleX));
+        this.cellParameters.scaleX = parseFloat(latticeParams.scaleX) ; 
+      }
     } 
     if(!_.isUndefined(latticeParams.scaleY) ) {
       $("#fixedY").val(parseFloat(latticeParams.scaleY));
@@ -886,7 +904,7 @@ define([
     } 
     else{ 
       if(_this.newSphere === undefined){
-        dimensions = _this.findMotifsDimensions(undefined,undefined);   
+        dimensions = _this.findMotifsDimensions(undefined, undefined);   
       }
       else{
         dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
@@ -894,165 +912,209 @@ define([
     } 
 
     _this.cellPointsWithScaling(dimensions, true); // todo fix that true  
-    _this.cellPointsWithAngles();
+    
 
-    switch(_this.latticeType) {
-      case "primitive":  // primitive  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset();
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-                    _this.unitCellAtoms[i].object3d.position.set( 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                    );
+    if(_this.latticeName !== 'hexagonal'){
+
+      _this.cellPointsWithAngles();
+
+      switch(_this.latticeType) {
+        case "primitive":  // primitive  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset();
+                    if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                      _this.unitCellAtoms[i].object3d.position.set( 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                      );
+                    } 
                   } 
-                } 
-              }   
+                }   
+              });
             });
-          });
-        }); 
-        break;
-      case "face":   
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset();
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-                    _this.unitCellAtoms[i].object3d.position.set( 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                    );
+          }); 
+          break;
+        case "face":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset();
+                    if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                      _this.unitCellAtoms[i].object3d.position.set( 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                      );
+                    } 
                   } 
                 } 
+              });
+            });
+          }); 
+          for (var i = 0; i <= 1; i ++) { 
+            for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
+              if(_this.unitCellAtoms[j].latticeIndex === ("_"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
+                  _this.unitCellAtoms[j].object3d.position.set( 
+                    _this.unitCellPositions["_"+i].position.x + offset.x , 
+                    _this.unitCellPositions["_"+i].position.y + offset.y , 
+                    _this.unitCellPositions["_"+i].position.z + offset.z 
+                  );
+                }  
               } 
+              if(_this.unitCellAtoms[j].latticeIndex === ("__"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
+                  _this.unitCellAtoms[j].object3d.position.set( 
+                    _this.unitCellPositions["__"+i].position.x + offset.x , 
+                    _this.unitCellPositions["__"+i].position.y + offset.y , 
+                    _this.unitCellPositions["__"+i].position.z + offset.z 
+                  );
+                }  
+              } 
+              if(_this.unitCellAtoms[j].latticeIndex === ("___"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
+                  _this.unitCellAtoms[j].object3d.position.set( 
+                    _this.unitCellPositions["___"+i].position.x + offset.x , 
+                    _this.unitCellPositions["___"+i].position.y + offset.y , 
+                    _this.unitCellPositions["___"+i].position.z + offset.z 
+                  );
+                }  
+              }  
+            }
+          };
+          break;
+        case "body":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset();
+                    if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                      _this.unitCellAtoms[i].object3d.position.set( 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                      );
+                    } 
+                  } 
+                }   
+              });
             });
-          });
-        }); 
-        for (var i = 0; i <= 1; i ++) { 
+          }); 
+          for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+            if(_this.unitCellAtoms[i].latticeIndex === ("_c") ){  
+              var offset = _this.unitCellAtoms[i].getUserOffset();
+              if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                _this.unitCellAtoms[i].object3d.position.set( 
+                  _this.unitCellPositions["_c"].position.x + offset.x , 
+                  _this.unitCellPositions["_c"].position.y + offset.y , 
+                  _this.unitCellPositions["_c"].position.z + offset.z 
+                );
+              } 
+            } 
+          }  
+          break;
+         case "base":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset();
+                    if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                      _this.unitCellAtoms[i].object3d.position.set( 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                        _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                      );
+                    } 
+                  } 
+                } 
+              });
+            });
+          });   
           for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-            if(_this.unitCellAtoms[j].latticeIndex === ("_"+i) ){  
+            if(_this.unitCellAtoms[j].latticeIndex === ("_up") ){  
               var offset = _this.unitCellAtoms[j].getUserOffset(); 
               if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
                 _this.unitCellAtoms[j].object3d.position.set( 
-                  _this.unitCellPositions["_"+i].position.x + offset.x , 
-                  _this.unitCellPositions["_"+i].position.y + offset.y , 
-                  _this.unitCellPositions["_"+i].position.z + offset.z 
+                  _this.unitCellPositions["_up"].position.x + offset.x , 
+                  _this.unitCellPositions["_up"].position.y + offset.y , 
+                  _this.unitCellPositions["_up"].position.z + offset.z 
                 );
               }  
             } 
-            if(_this.unitCellAtoms[j].latticeIndex === ("__"+i) ){  
+            if(_this.unitCellAtoms[j].latticeIndex === ("_down") ){  
               var offset = _this.unitCellAtoms[j].getUserOffset(); 
               if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
                 _this.unitCellAtoms[j].object3d.position.set( 
-                  _this.unitCellPositions["__"+i].position.x + offset.x , 
-                  _this.unitCellPositions["__"+i].position.y + offset.y , 
-                  _this.unitCellPositions["__"+i].position.z + offset.z 
-                );
-              }  
-            } 
-            if(_this.unitCellAtoms[j].latticeIndex === ("___"+i) ){  
-              var offset = _this.unitCellAtoms[j].getUserOffset(); 
-              if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
-                _this.unitCellAtoms[j].object3d.position.set( 
-                  _this.unitCellPositions["___"+i].position.x + offset.x , 
-                  _this.unitCellPositions["___"+i].position.y + offset.y , 
-                  _this.unitCellPositions["___"+i].position.z + offset.z 
+                  _this.unitCellPositions["_down"].position.x + offset.x , 
+                  _this.unitCellPositions["_down"].position.y + offset.y , 
+                  _this.unitCellPositions["_down"].position.z + offset.z 
                 );
               }  
             }  
           }
-        };
-        break;
-      case "body":  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset();
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-                    _this.unitCellAtoms[i].object3d.position.set( 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                    );
-                  } 
-                } 
-              }   
-            });
-          });
-        }); 
-        for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-          if(_this.unitCellAtoms[i].latticeIndex === ("_c") ){  
-            var offset = _this.unitCellAtoms[i].getUserOffset();
-            if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-              _this.unitCellAtoms[i].object3d.position.set( 
-                _this.unitCellPositions["_c"].position.x + offset.x , 
-                _this.unitCellPositions["_c"].position.y + offset.y , 
-                _this.unitCellPositions["_c"].position.z + offset.z 
-              );
-            } 
-          } 
-        }  
-        break;
-       case "base":   
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset();
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-                    _this.unitCellAtoms[i].object3d.position.set( 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                    );
-                  } 
-                } 
-              } 
-            });
-          });
-        });   
-        for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-          if(_this.unitCellAtoms[j].latticeIndex === ("_up") ){  
-            var offset = _this.unitCellAtoms[j].getUserOffset(); 
-            if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
-              _this.unitCellAtoms[j].object3d.position.set( 
-                _this.unitCellPositions["_up"].position.x + offset.x , 
-                _this.unitCellPositions["_up"].position.y + offset.y , 
-                _this.unitCellPositions["_up"].position.z + offset.z 
-              );
-            }  
-          } 
-          if(_this.unitCellAtoms[j].latticeIndex === ("_down") ){  
-            var offset = _this.unitCellAtoms[j].getUserOffset(); 
-            if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
-              _this.unitCellAtoms[j].object3d.position.set( 
-                _this.unitCellPositions["_down"].position.x + offset.x , 
-                _this.unitCellPositions["_down"].position.y + offset.y , 
-                _this.unitCellPositions["_down"].position.z + offset.z 
-              );
-            }  
-          }  
-        }
 
-        break;
+          break;
+      }
     }
-     
+    else{
+      var a = _this.cellParameters.scaleZ ;
+      var c = _this.cellParameters.scaleY ; 
+
+      var vertDist = a*Math.sqrt(3);
+
+      _.times(2, function(_y) {
+        _.times(1 , function(_x) {
+          _.times(1 , function(_z) { 
+            _.times(6 , function(_r) {
+              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                var v = new THREE.Vector3( a, 0, 0 );
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                var angle = (Math.PI / 3) * _r ; 
+                v.applyAxisAngle( axis, angle );
+
+                var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+                var y =  v.y + _y*c ;
+                var x = v.x + _x*a*1.5 ;
+                  
+                var position = new THREE.Vector3( x, y, z);  
+
+                var reference = 'h_'+_x+_y+_z+_r ;
+                if(_this.unitCellAtoms[i].latticeIndex === (reference) ){  
+                  var offset = _this.unitCellAtoms[i].getUserOffset();
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      position.x + offset.x , 
+                      position.y + offset.y , 
+                      position.z + offset.z 
+                    );
+                  } 
+                } 
+              }    
+            });
+          });
+        });
+      });
+    } 
   };
-    Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id){  
+  Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id){  
     var _this = this;  
     var dimensions;
- 
+
     if( _this.editorState.fixed){
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
@@ -1064,136 +1126,185 @@ define([
     
     _this.cellPointsWithAngles();
 
-    switch(_this.latticeType) {
-      case "primitive":  // primitive  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
-              _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-                pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
-                pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
-                pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
-              ); 
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
-           });
-          });
-        });
-
-        break;
-      case "face":   
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-                pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
-                pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
-                pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
-              ); 
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+    if(_this.latticeName !== 'hexagonal'){
+      switch(_this.latticeType) {
+        case "primitive":  // primitive  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+                  pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
+                  pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
+                  pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                ); 
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
+             });
             });
           });
-        }); 
-        for (var i = 0; i <= 1; i ++) {
-         
+
+          break;
+        case "face":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+                  pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
+                  pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
+                  pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                ); 
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+              });
+            });
+          }); 
+          for (var i = 0; i <= 1; i ++) {
+           
+            _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+                pos.x + _this.unitCellPositions["_"+i].position.x, 
+                pos.y + _this.unitCellPositions["_"+i].position.y, 
+                pos.z + _this.unitCellPositions["_"+i].position.z), 
+                radius, color, tang, name, id,  ("_"+i)) 
+            ); 
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+            _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+              pos.x + _this.unitCellPositions["__"+i].position.x, 
+              pos.y + _this.unitCellPositions["__"+i].position.y, 
+              pos.z + _this.unitCellPositions["__"+i].position.z), 
+              radius, color, tang, name, id,  ("__"+i)) 
+            ); 
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+            _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+              pos.x + _this.unitCellPositions["___"+i].position.x, 
+              pos.y + _this.unitCellPositions["___"+i].position.y, 
+              pos.z + _this.unitCellPositions["___"+i].position.z), 
+              radius, color, tang, name, id,  ("___"+i)) 
+            ); 
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
+          };
+          break;
+        case "body":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+                  pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
+                  pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
+                  pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                ); 
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
+             });
+            });
+          });
           _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-              pos.x + _this.unitCellPositions["_"+i].position.x, 
-              pos.y + _this.unitCellPositions["_"+i].position.y, 
-              pos.z + _this.unitCellPositions["_"+i].position.z), 
-              radius, color, tang, name, id,  ("_"+i)) 
-          ); 
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
-          _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-            pos.x + _this.unitCellPositions["__"+i].position.x, 
-            pos.y + _this.unitCellPositions["__"+i].position.y, 
-            pos.z + _this.unitCellPositions["__"+i].position.z), 
-            radius, color, tang, name, id,  ("__"+i)) 
-          ); 
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
-          _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-            pos.x + _this.unitCellPositions["___"+i].position.x, 
-            pos.y + _this.unitCellPositions["___"+i].position.y, 
-            pos.z + _this.unitCellPositions["___"+i].position.z), 
-            radius, color, tang, name, id,  ("___"+i)) 
+            pos.x + _this.unitCellPositions["_c"].position.x, 
+            pos.y + _this.unitCellPositions["_c"].position.y, 
+            pos.z + _this.unitCellPositions["_c"].position.z), 
+            radius, color, tang, name, id,  ("_c")) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
-        };
-        break;
-      case "body":  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
-              _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-                pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
-                pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
-                pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+          break;
+        case "base":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+                  pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
+                  pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
+                  pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                ); 
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+                _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+              });
+            });
+          }); 
+          
+          _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+              pos.x + _this.unitCellPositions["_up"].position.x, 
+              pos.y + _this.unitCellPositions["_up"].position.y, 
+              pos.z + _this.unitCellPositions["_up"].position.z), 
+              radius, color, tang, name, id,  ("_up")) 
+          ); 
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+
+          _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
+            pos.x + _this.unitCellPositions["_down"].position.x, 
+            pos.y + _this.unitCellPositions["_down"].position.y, 
+            pos.z + _this.unitCellPositions["_down"].position.z), 
+            radius, color, tang, name, id,  ("_down")) 
+          ); 
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+          _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+   
+          break;
+      }
+    }
+    else{  
+      var a = _this.cellParameters.scaleZ ;
+      var c = _this.cellParameters.scaleY ; 
+
+      var vertDist = a*Math.sqrt(3);
+
+      _.times(2, function(_y) {
+        _.times(1 , function(_x) {
+          _.times(1 , function(_z) { 
+            _.times(6 , function(_r) {
+
+              var v = new THREE.Vector3( a, 0, 0 );
+
+              var axis = new THREE.Vector3( 0, 1, 0 );
+              var angle = (Math.PI / 3) * _r ; 
+              v.applyAxisAngle( axis, angle );
+
+              var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+              var y =  v.y + _y*c ;
+              var x = v.x + _x*a*1.5 ;
+                
+              var position = new THREE.Vector3( x, y, z); 
+
+              var reference = 'h_'+_x+_y+_z+_r ;
+                
+              _this.unitCellAtoms.push(new UnitCellAtom( 
+                new THREE.Vector3(
+                  pos.x + position.x, 
+                  pos.y + position.y, 
+                  pos.z + position.z), 
+                  radius, color, tang, name, id, reference
+                ) 
               ); 
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
-           });
-          });
-        });
-        _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-          pos.x + _this.unitCellPositions["_c"].position.x, 
-          pos.y + _this.unitCellPositions["_c"].position.y, 
-          pos.z + _this.unitCellPositions["_c"].position.z), 
-          radius, color, tang, name, id,  ("_c")) 
-        ); 
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z ); 
-        break;
-      case "base":  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-                pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
-                pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
-                pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
-              ); 
+
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
               _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+              _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );    
+               
             });
           });
-        }); 
-        
-        _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-            pos.x + _this.unitCellPositions["_up"].position.x, 
-            pos.y + _this.unitCellPositions["_up"].position.y, 
-            pos.z + _this.unitCellPositions["_up"].position.z), 
-            radius, color, tang, name, id,  ("_up")) 
-        ); 
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
-
-        _this.unitCellAtoms.push(new UnitCellAtom( new THREE.Vector3(
-          pos.x + _this.unitCellPositions["_down"].position.x, 
-          pos.y + _this.unitCellPositions["_down"].position.y, 
-          pos.z + _this.unitCellPositions["_down"].position.z), 
-          radius, color, tang, name, id,  ("_down")) 
-        ); 
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
-        _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
+        });
+      });
  
-        break;
     }
     _this.reconstructCellPoints();  
      
@@ -1201,140 +1312,182 @@ define([
   Motifeditor.prototype.reconstructCellPoints = function(){
     var _this = this; 
     if(_this.isEmpty) return ;
-    switch(_this.latticeType) {
-      case "primitive":  // primitive  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset(); 
-                  _this.unitCellAtoms[i].object3d.position.set( 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                  ); 
-                }
-              }   
+    if(_this.latticeName !== 'hexagonal'){
+      switch(_this.latticeType) {
+        case "primitive":  // primitive  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                    ); 
+                  }
+                }   
+              });
             });
           });
-        });
-        
-        break;
-      case "face":   
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset(); 
-                  _this.unitCellAtoms[i].object3d.position.set( 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                  ); 
-                }
-              }  
+          
+          break;
+        case "face":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                    ); 
+                  }
+                }  
+              });
             });
-          });
-        }); 
-        for (var i = 0; i <= 1; i ++) { 
-          for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-            if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_"+i) ){  
-              var offset = _this.unitCellAtoms[j].getUserOffset(); 
-              _this.unitCellAtoms[j].object3d.position.set( 
-                _this.unitCellPositions["_"+i].position.x + offset.x , 
-                _this.unitCellPositions["_"+i].position.y + offset.y , 
-                _this.unitCellPositions["_"+i].position.z + offset.z 
-              ); 
-            } 
-            if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("__"+i) ){  
-              var offset = _this.unitCellAtoms[j].getUserOffset(); 
-              _this.unitCellAtoms[j].object3d.position.set( 
-                _this.unitCellPositions["__"+i].position.x + offset.x , 
-                _this.unitCellPositions["__"+i].position.y + offset.y , 
-                _this.unitCellPositions["__"+i].position.z + offset.z 
-              ); 
-            } 
-            if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("___"+i) ){  
-              var offset = _this.unitCellAtoms[j].getUserOffset(); 
-              _this.unitCellAtoms[j].object3d.position.set( 
+          }); 
+          for (var i = 0; i <= 1; i ++) { 
+            for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
+              if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                _this.unitCellAtoms[j].object3d.position.set( 
+                  _this.unitCellPositions["_"+i].position.x + offset.x , 
+                  _this.unitCellPositions["_"+i].position.y + offset.y , 
+                  _this.unitCellPositions["_"+i].position.z + offset.z 
+                ); 
+              } 
+              if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("__"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                _this.unitCellAtoms[j].object3d.position.set( 
+                  _this.unitCellPositions["__"+i].position.x + offset.x , 
+                  _this.unitCellPositions["__"+i].position.y + offset.y , 
+                  _this.unitCellPositions["__"+i].position.z + offset.z 
+                ); 
+              } 
+              if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("___"+i) ){  
+                var offset = _this.unitCellAtoms[j].getUserOffset(); 
+                _this.unitCellAtoms[j].object3d.position.set( 
 
-                _this.unitCellPositions["___"+i].position.x + offset.x , 
-                _this.unitCellPositions["___"+i].position.y + offset.y , 
-                _this.unitCellPositions["___"+i].position.z + offset.z 
+                  _this.unitCellPositions["___"+i].position.x + offset.x , 
+                  _this.unitCellPositions["___"+i].position.y + offset.y , 
+                  _this.unitCellPositions["___"+i].position.z + offset.z 
+                ); 
+              } 
+            }
+          };
+          break;
+        case "body":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) { 
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                    ); 
+                  }
+                }   
+              });
+            });
+          });
+          for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+            if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_c") ){  
+              var offset = _this.unitCellAtoms[i].getUserOffset(); 
+              _this.unitCellAtoms[i].object3d.position.set( 
+                _this.unitCellPositions["_c"].position.x + offset.x , 
+                _this.unitCellPositions["_c"].position.y + offset.y , 
+                _this.unitCellPositions["_c"].position.z + offset.z 
+              ); 
+            }
+          }
+          break;
+        case "base":  
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
+                      _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                    ); 
+                  }
+                }  
+              });
+            });
+          }); 
+          for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
+            if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_up") ){  
+              var offset = _this.unitCellAtoms[j].getUserOffset(); 
+              _this.unitCellAtoms[j].object3d.position.set( 
+                _this.unitCellPositions["_up"].position.x + offset.x , 
+                _this.unitCellPositions["_up"].position.y + offset.y , 
+                _this.unitCellPositions["_up"].position.z + offset.z 
               ); 
             } 
+            if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_down") ){  
+              var offset = _this.unitCellAtoms[j].getUserOffset(); 
+              _this.unitCellAtoms[j].object3d.position.set( 
+                _this.unitCellPositions["_down"].position.x + offset.x , 
+                _this.unitCellPositions["_down"].position.y + offset.y , 
+                _this.unitCellPositions["_down"].position.z + offset.z 
+              ); 
+            }  
           }
-        };
-        break;
-      case "body":  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) { 
+           
+          break;
+      }
+    }
+    else{
+      var a = _this.cellParameters.scaleZ ;
+      var c = _this.cellParameters.scaleY ; 
+
+      var vertDist = a*Math.sqrt(3);
+
+      _.times(2, function(_y) {
+        _.times(1 , function(_x) {
+          _.times(1 , function(_z) { 
+            _.times(6 , function(_r) {
+              var v = new THREE.Vector3( a, 0, 0 );
+
+              var axis = new THREE.Vector3( 0, 1, 0 );
+              var angle = (Math.PI / 3) * _r ; 
+              v.applyAxisAngle( axis, angle );
+
+              var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+              var y =  v.y + _y*c ;
+              var x = v.x + _x*a*1.5 ;
+                
+              var position = new THREE.Vector3( x, y, z);  
+
+              var reference = 'h_'+_x+_y+_z+_r ;
+
               for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
+               
+                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === reference ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset(); 
                   _this.unitCellAtoms[i].object3d.position.set( 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
+                    position.x + offset.x ,  
+                    position.y + offset.y , 
+                    position.z + offset.z 
                   ); 
                 }
               }   
             });
           });
         });
-        for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-          if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_c") ){  
-            var offset = _this.unitCellAtoms[i].getUserOffset(); 
-            _this.unitCellAtoms[i].object3d.position.set( 
-              _this.unitCellPositions["_c"].position.x + offset.x , 
-              _this.unitCellPositions["_c"].position.y + offset.y , 
-              _this.unitCellPositions["_c"].position.z + offset.z 
-            ); 
-          }
-        }
-        break;
-      case "base":  
-        _.times(2 , function(_x) {
-          _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) ){  
-                  var offset = _this.unitCellAtoms[i].getUserOffset(); 
-                  _this.unitCellAtoms[i].object3d.position.set( 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
-                    _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
-                  ); 
-                }
-              }  
-            });
-          });
-        }); 
-        for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-          if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_up") ){  
-            var offset = _this.unitCellAtoms[j].getUserOffset(); 
-            _this.unitCellAtoms[j].object3d.position.set( 
-              _this.unitCellPositions["_up"].position.x + offset.x , 
-              _this.unitCellPositions["_up"].position.y + offset.y , 
-              _this.unitCellPositions["_up"].position.z + offset.z 
-            ); 
-          } 
-          if(!_.isUndefined(_this.unitCellAtoms[j].object3d) && _this.unitCellAtoms[j].latticeIndex === ("_down") ){  
-            var offset = _this.unitCellAtoms[j].getUserOffset(); 
-            _this.unitCellAtoms[j].object3d.position.set( 
-              _this.unitCellPositions["_down"].position.x + offset.x , 
-              _this.unitCellPositions["_down"].position.y + offset.y , 
-              _this.unitCellPositions["_down"].position.z + offset.z 
-            ); 
-          }  
-        }
-         
-        break;
+      });
     }
-  };
+  }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
     for (var i = 0; i<_this.unitCellAtoms.length; i++) {
@@ -1506,8 +1659,7 @@ define([
 
       j++;
     }*/
- 
-
+  
     cell.xDim = (cell.xDim + theXOffset + offsets.x);
     cell.yDim = (cell.yDim + theYOffset + offsets.y);
     cell.zDim = (cell.zDim + theZOffset + offsets.z);
@@ -1745,8 +1897,15 @@ define([
     }
     _this.editorState.fixed = arg.fixedLength;
     if(arg.x.length>0) {
-      _this.cellParameters.scaleX = parseFloat(arg.x) ;
-      $('#scaleX').val(arg.x);
+      
+      if(_this.latticeName === 'hexagonal'){
+        $('#scaleX').val(arg.z);
+        _this.cellParameters.scaleX = parseFloat(arg.z) ;
+      }
+      else{
+        $('#scaleX').val(arg.x);
+        _this.cellParameters.scaleX = parseFloat(arg.x) ;
+      }
     }
     if(arg.y.length>0) {
       _this.cellParameters.scaleY = parseFloat(arg.y) ;
@@ -1826,95 +1985,97 @@ define([
   }; 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Angle Handling - lattice.js code
-  Motifeditor.prototype.cellPointsWithScaling = function(dimensions, recreate){
-    var _this = this; 
-    switch(_this.latticeType) {
-        case "primitive":    
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                if(recreate){
-                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                }
-                else{
-                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z) ;
-                }
+  Motifeditor.prototype.cellPointsWithScaling = function(dimensions, recreate){ 
+    var _this = this;
+    if(this.latticeName !== 'hexagonal'){ 
+      switch(_this.latticeType) {
+          case "primitive":    
+            _.times(2 , function(_x) {
+              _.times(2 , function(_y) {
+                _.times(2 , function(_z) {
+                  if(recreate){
+                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                  }
+                  else{
+                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z) ;
+                  }
+                });
               });
-            });
-          }); 
-          break;
-        case "face":   
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                if(recreate){
-                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                }
-                else{
-                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
-                }
+            }); 
+            break;
+          case "face":   
+            _.times(2 , function(_x) {
+              _.times(2 , function(_y) {
+                _.times(2 , function(_z) {
+                  if(recreate){
+                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                  }
+                  else{
+                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x, Math.sqrt(2) * dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
+                  }
+                });
               });
-            });
-          }); 
-          for (var i = 0; i <= 1; i ++) {
+            }); 
+            for (var i = 0; i <= 1; i ++) {
+              if(recreate){
+                _this.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
+                _this.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
+                _this.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
+              }
+              else{
+                _this.unitCellPositions["_"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5) ;
+                _this.unitCellPositions["__"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5) ;
+                _this.unitCellPositions["___"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i) ;
+              }
+            };
+            break;
+          case "body":  
+            _.times(2 , function(_x) {
+              _.times(2 , function(_y) {
+                _.times(2 , function(_z) {
+                  if(recreate){
+                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                  }
+                  else{
+                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z) ;
+                  }
+                });
+              });
+            }); 
             if(recreate){
-              _this.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
-              _this.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
-              _this.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
+              _this.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
             }
             else{
-              _this.unitCellPositions["_"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *i, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *0.5) ;
-              _this.unitCellPositions["__"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *i, Math.sqrt(2) * dimensions.zDim *0.5) ;
-              _this.unitCellPositions["___"+i].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *0.5, Math.sqrt(2) * dimensions.yDim *0.5, Math.sqrt(2) * dimensions.zDim *i) ;
+              _this.unitCellPositions["_c"].position = new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ) ;
             }
-          };
-          break;
-        case "body":  
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                if(recreate){
-                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                }
-                else{
-                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( (2/Math.sqrt(3)) * dimensions.xDim *_x, (2/Math.sqrt(3)) * dimensions.yDim *_y, (2/Math.sqrt(3)) * dimensions.zDim *_z) ;
-                }
+            break;
+          case "base":   
+            _.times(2 , function(_x) {
+              _.times(2 , function(_y) {
+                _.times(2 , function(_z) {
+                  if(recreate){
+                    _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                  }
+                  else{
+                    _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
+                  }
+                });
               });
-            });
-          }); 
-          if(recreate){
-            _this.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
-          }
-          else{
-            _this.unitCellPositions["_c"].position = new THREE.Vector3( (1/Math.sqrt(3)) * dimensions.xDim , (1/Math.sqrt(3)) * dimensions.yDim , (1/Math.sqrt(3)) * dimensions.zDim ) ;
-          }
-          break;
-        case "base":   
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                if(recreate){
-                  _this.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                }
-                else{
-                  _this.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim *_x,  dimensions.yDim *_y, Math.sqrt(2) * dimensions.zDim *_z) ;
-                }
-              });
-            });
-          }); 
-           
-          if(recreate){
-            _this.unitCellPositions["_up"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2 ,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
-            _this.unitCellPositions["_down"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2, 0 , Math.sqrt(2) * dimensions.zDim /2), "latticeIndex" : "_down" } ;  
-          }
-          else{
-            _this.unitCellPositions["_up"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2) ;
-            _this.unitCellPositions["_down"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  0, Math.sqrt(2) * dimensions.zDim /2) ;
-          }  
+            }); 
+             
+            if(recreate){
+              _this.unitCellPositions["_up"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2 ,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
+              _this.unitCellPositions["_down"] = {"position" : new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2, 0 , Math.sqrt(2) * dimensions.zDim /2), "latticeIndex" : "_down" } ;  
+            }
+            else{
+              _this.unitCellPositions["_up"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  dimensions.yDim , Math.sqrt(2) * dimensions.zDim /2) ;
+              _this.unitCellPositions["_down"].position = new THREE.Vector3( Math.sqrt(2) * dimensions.xDim /2,  0, Math.sqrt(2) * dimensions.zDim /2) ;
+            }  
 
-          break;
+            break;
       }
-
+    }
+    
   };
   Motifeditor.prototype.cellPointsWithAngles = function() {    
     this.transform( reverseShearing,            function(value) {  return value; }                       );

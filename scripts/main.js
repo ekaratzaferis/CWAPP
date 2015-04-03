@@ -163,12 +163,10 @@ require([
       
       crystalRenderer.changeContainerDimensions(width/2, height/2);
       unitCellRenderer.changeContainerDimensions(width/2, height/2);
-      motifRenderer.changeContainerDimensions(width, height/2);
-
+      motifRenderer.changeContainerDimensions(width, height/2);  
       unitCellRenderer.startAnimation();
-      motifRenderer.startAnimation();
-
-      motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType());
+      motifRenderer.startAnimation();  
+      motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName());
 
     }
     else{  
