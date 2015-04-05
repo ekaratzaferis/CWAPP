@@ -139,6 +139,13 @@ define([
       delete _this.points[reference];
     });
   }; 
+  Lattice.prototype.destroyGrids = function() {
+    var _this = this; 
+    _.each(this.grids, function(grid, reference) {
+      grid.grid.destroy();
+      delete _this.grids[reference];
+    });
+  }; 
   Lattice.prototype.setMotif = function(motif, dimensions){
     var _this = this ; 
     _this.currentMotif = motif ;
@@ -195,12 +202,7 @@ define([
     var visible = (this.gradeChoice.grid === "on" ) ;
   
     // erase previous grid 
-    _.each(_this.grids, function(grid) {
-        grid.grid.destroy(); 
-    });  
-    while(_this.grids.length > 0) {
-        _this.grids.pop();
-    }; 
+    this.destroyGrids();
      
     _.times(parameters.repeatX , function(_x) {
       _.times(parameters.repeatY , function(_y) {
@@ -324,7 +326,8 @@ define([
 
     var lattice = this.lattice; 
     this.destroyPoints();
-
+    this.destroyGrids();
+     
     if (_.isEmpty(lattice)) return; 
 
     var parameters = this.parameters;
@@ -390,8 +393,7 @@ define([
             var hexPoints = [];
             _.times(6 , function(_r) {
 
-              var v = new THREE.Vector3( a, 0, 0 );
-
+              var v = new THREE.Vector3( a, 0, 0 ); 
               var axis = new THREE.Vector3( 0, 1, 0 );
               var angle = (Math.PI / 3) * _r ; 
               v.applyAxisAngle( axis, angle );
@@ -402,7 +404,7 @@ define([
                 
               var position = new THREE.Vector3( x, y, z);
               z = z.toFixed(2) ;
-              if(z==0) z = 0.00; // check for negative zeros  
+              if(z==0) z = '0.00'; // check for negative zeros  
 
               var reference = 'h_'+(x).toFixed(2)+(y).toFixed(2)+z ;
               hexPoints.push(position);
@@ -412,11 +414,11 @@ define([
               }  
             });
             _this.createHexGrid(hexPoints,false);
-            _this.hexagonalShapes.push(hexPoints);
+            _this.hexagonalShapes.push(hexPoints); 
           });
         });
       }); 
-    }; 
+    };   
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -433,8 +435,8 @@ define([
       var l = (b.y).toFixed(2);
       var m = (b.z).toFixed(2); 
           
-      if(z==0) z = 0.00;
-      if(m==0) m = 0.00; 
+      if(z==0) z = '0.00';
+      if(m==0) m = '0.00'; 
 
       var originReference = 'h_'+x+y+z ;
       var destinationReference = 'h_'+k+l+m ; 
@@ -457,23 +459,23 @@ define([
         var l = (b.y).toFixed(2);
         var m = (b.z).toFixed(2); 
             
-        if(z==0) z = 0.00;
-        if(m==0) m = 0.00;
+        if(z==0) z = '0.00';
+        if(m==0) m = '0.00';
 
         var reference = 'h_'+x+y+z+k+l+m ;
         var reference2 = 'h_'+k+l+m+x+y+z ;
         var originReference = 'h_'+x+y+z ;
         var destinationReference = 'h_'+k+l+m ;
          
-        if(_this.hexGrids[reference] == undefined) _this.hexGrids[reference] = false;
+        /*if(_this.hexGrids[reference] == undefined) _this.hexGrids[reference] = false;
 
         if(_this.hexGrids[reference] === false && _this.hexGrids[reference2] === undefined){  
-          _this.hexGrids[reference] = true; 
+          _this.hexGrids[reference] = true; */
   
           var g = new Grid(a,b, visible);
           _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
           updateGrid(_this.grids[_this.grids.length-1]);
-        }
+        //}
       };
     } 
   };

@@ -65,8 +65,7 @@ define([
     }
   };
   Motifeditor.prototype.updateCellDimens = function(arg){
-    if(this.editorState.fixed){ 
-
+    if(this.editorState.fixed){  
       if(!_.isUndefined(arg.x)) {
         if(this.latticeName !== 'hexagonal'){
           this.cellParameters.scaleX = arg.x ; 
@@ -82,8 +81,7 @@ define([
         $('#scaleZ').val(arg.z); 
       } 
       this.configureCellPoints();
-    }
-      
+    } 
   };
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName) {
     
