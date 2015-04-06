@@ -1508,16 +1508,18 @@ define([
     var _this = this, offsets = {x : 0, y : 0, z : 0 } ;   
      
     var now = performance.now();
- 
-    if(_.isUndefined(_this.newSphere.object3d)){
-      if(!_.isUndefined(pos) ){ 
-        var helperObj = {"object3d" : {"position" : { "x": pos.x, "y":pos.y, "z": pos.z}}, getRadius: function() { return radius; } } ; 
-        this.motifsAtoms.push(helperObj); 
+    
+    if(!_.isUndefined(_this.newSphere)){  
+      if(_.isUndefined(_this.newSphere.object3d)){
+        if(!_.isUndefined(pos) ){ 
+          var helperObj = {"object3d" : {"position" : { "x": pos.x, "y":pos.y, "z": pos.z}}, getRadius: function() { return radius; } } ; 
+          this.motifsAtoms.push(helperObj); 
+        }
       }
+      else{  
+        _this.motifsAtoms.push(_this.newSphere);
+      } 
     }
-    else{  
-      _this.motifsAtoms.push(_this.newSphere);
-    } 
 
     // - create an helper motif (copy of the real motif)
     var motifHelper = [], j = 0;
@@ -1742,38 +1744,81 @@ define([
    
     return (sign*offset);
   };
-  function customBox(points) { 
+  Motifeditor.prototype.customBox = function(points) { 
 
     var vertices = [];
     var faces = [];
+    var _this = this ;
 
-    vertices.push(points['_000'].position); // 0
-    vertices.push(points['_010'].position); // 1
-    vertices.push(points['_011'].position); // 2
+    if(this.latticeName !== 'hexagonal'){
+      vertices.push(points['_000'].position); // 0
+      vertices.push(points['_010'].position); // 1
+      vertices.push(points['_011'].position); // 2
 
-    vertices.push(points['_001'].position); // 3
-    vertices.push(points['_101'].position); // 4
-    vertices.push(points['_111'].position); // 5
-    vertices.push(points['_110'].position); // 6
-    vertices.push(points['_100'].position); // 7
+      vertices.push(points['_001'].position); // 3
+      vertices.push(points['_101'].position); // 4
+      vertices.push(points['_111'].position); // 5
+      vertices.push(points['_110'].position); // 6
+      vertices.push(points['_100'].position); // 7
 
-    faces.push(new THREE.Face3(0,1,2));
-    faces.push(new THREE.Face3(0,2,3));
+      faces.push(new THREE.Face3(0,1,2));
+      faces.push(new THREE.Face3(0,2,3));
 
-    faces.push(new THREE.Face3(3,2,5));
-    faces.push(new THREE.Face3(3,5,4));
- 
-    faces.push(new THREE.Face3(4,5,6));
-    faces.push(new THREE.Face3(4,6,7));
+      faces.push(new THREE.Face3(3,2,5));
+      faces.push(new THREE.Face3(3,5,4));
+   
+      faces.push(new THREE.Face3(4,5,6));
+      faces.push(new THREE.Face3(4,6,7));
 
-    faces.push(new THREE.Face3(7,6,1));
-    faces.push(new THREE.Face3(7,1,0));
+      faces.push(new THREE.Face3(7,6,1));
+      faces.push(new THREE.Face3(7,1,0));
 
-    faces.push(new THREE.Face3(7,0,3));
-    faces.push(new THREE.Face3(7,3,4));
+      faces.push(new THREE.Face3(7,0,3));
+      faces.push(new THREE.Face3(7,3,4));
 
-    faces.push(new THREE.Face3(2,1,6));
-    faces.push(new THREE.Face3(2,6,5)); 
+      faces.push(new THREE.Face3(2,1,6));
+      faces.push(new THREE.Face3(2,6,5)); 
+    }
+    else{
+      var bottomFacePoints=[];
+      var upperFacePoints=[]; 
+      _.times(2, function(_y) {  
+        _.times(6 , function(_r) { 
+
+          var v = new THREE.Vector3( _this.cellParameters.scaleZ, 0, 0 ); 
+          var axis = new THREE.Vector3( 0, 1, 0 );
+          var angle = (Math.PI / 3) * _r ; 
+          v.applyAxisAngle( axis, angle );
+
+          var z = v.z ;
+          var y = v.y + _y*_this.cellParameters.scaleY ;
+          var x = v.x ; 
+          var position = new THREE.Vector3( x, y, z);
+          
+          if(_y > 0){
+            upperFacePoints.push(position);
+          }
+          else{
+            bottomFacePoints.push(position);
+          }
+        }); 
+      }); 
+
+      for (var i = 0; i<6; i++) {
+        vertices[i] = bottomFacePoints[i];
+        vertices[i+6] = upperFacePoints[i];
+      };
+      for (var i = 0; i<4; i++) {
+        faces.push(new THREE.Face3(0,i+1,i+2));
+        faces.push(new THREE.Face3(i+8,i+7,6)); 
+      } 
+      for (var i = 0; i<5; i++) { 
+        faces.push(new THREE.Face3(i+7,i+1,i));
+        faces.push(new THREE.Face3(i+6,i+7,i));
+      } 
+      faces.push(new THREE.Face3(6,0,5));
+      faces.push(new THREE.Face3(11,6,5));
+    }
 
     var geom = new THREE.Geometry();
     geom.vertices = vertices;
@@ -1789,7 +1834,7 @@ define([
     var a = performance.now();
     _this.viewState = mode;
 
-    var g = customBox(_this.unitCellPositions);
+    var g = this.customBox(_this.unitCellPositions, _this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
 
@@ -1827,7 +1872,7 @@ define([
       var geom = THREE.CSG.fromCSG(geometryCSG);
       var finalGeom = assignUVs(geom);
  
-      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
+      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
       solidBox.name = 'solidvoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"SolidVoid"); 

@@ -78,7 +78,7 @@ define([
         i++; 
       } 
 
-      var box = new THREE.Mesh(customBox(_this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
+      var box = new THREE.Mesh(_this.customBox(_this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
       
       if(_this.viewMode === 'Subtracted'){
         i = 0 ;
@@ -326,7 +326,6 @@ define([
 
     var lattice = this.lattice; 
     this.destroyPoints();
-    this.destroyGrids();
      
     if (_.isEmpty(lattice)) return; 
 
@@ -506,8 +505,7 @@ define([
           )  
         );
       });
-    }); 
-
+    });  
   };
   Lattice.prototype.getAnglesScales = function(){
 
@@ -804,6 +802,7 @@ define([
   Lattice.prototype.update = function() {  
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations();
+       
       this.updatePoints();
       this.forwardTransformations();
     }
@@ -908,10 +907,13 @@ define([
       var _this = this;
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
+      _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
+      this.actualAtoms.splice(0); 
       this.updatePoints();   
       this.createFaces();
       this.setGradeParameters();
       this.setGradeChoices(this.gradeChoice); 
+      this.recreateMotif();
     }  
   };
   Lattice.prototype.getParameters = function() {
@@ -1663,38 +1665,81 @@ define([
 
     return geometry;
   }
-  function customBox(points) { 
+  Lattice.prototype.customBox = function(points) { 
 
     var vertices = [];
     var faces = [];
+    var _this = this ;
 
-    vertices.push(points['_000'].position); // 0
-    vertices.push(points['_010'].position); // 1
-    vertices.push(points['_011'].position); // 2
+    if(this.latticeName !== 'hexagonal'){
+      vertices.push(points['_000'].position); // 0
+      vertices.push(points['_010'].position); // 1
+      vertices.push(points['_011'].position); // 2
 
-    vertices.push(points['_001'].position); // 3
-    vertices.push(points['_101'].position); // 4
-    vertices.push(points['_111'].position); // 5
-    vertices.push(points['_110'].position); // 6
-    vertices.push(points['_100'].position); // 7
+      vertices.push(points['_001'].position); // 3
+      vertices.push(points['_101'].position); // 4
+      vertices.push(points['_111'].position); // 5
+      vertices.push(points['_110'].position); // 6
+      vertices.push(points['_100'].position); // 7
 
-    faces.push(new THREE.Face3(0,1,2));
-    faces.push(new THREE.Face3(0,2,3));
+      faces.push(new THREE.Face3(0,1,2));
+      faces.push(new THREE.Face3(0,2,3));
 
-    faces.push(new THREE.Face3(3,2,5));
-    faces.push(new THREE.Face3(3,5,4));
- 
-    faces.push(new THREE.Face3(4,5,6));
-    faces.push(new THREE.Face3(4,6,7));
+      faces.push(new THREE.Face3(3,2,5));
+      faces.push(new THREE.Face3(3,5,4));
+   
+      faces.push(new THREE.Face3(4,5,6));
+      faces.push(new THREE.Face3(4,6,7));
 
-    faces.push(new THREE.Face3(7,6,1));
-    faces.push(new THREE.Face3(7,1,0));
+      faces.push(new THREE.Face3(7,6,1));
+      faces.push(new THREE.Face3(7,1,0));
 
-    faces.push(new THREE.Face3(7,0,3));
-    faces.push(new THREE.Face3(7,3,4));
+      faces.push(new THREE.Face3(7,0,3));
+      faces.push(new THREE.Face3(7,3,4));
 
-    faces.push(new THREE.Face3(2,1,6));
-    faces.push(new THREE.Face3(2,6,5)); 
+      faces.push(new THREE.Face3(2,1,6));
+      faces.push(new THREE.Face3(2,6,5)); 
+    }
+    else{
+      var bottomFacePoints=[];
+      var upperFacePoints=[]; 
+      _.times(2, function(_y) {  
+        _.times(6 , function(_r) { 
+
+          var v = new THREE.Vector3( _this.parameters.scaleZ, 0, 0 ); 
+          var axis = new THREE.Vector3( 0, 1, 0 );
+          var angle = (Math.PI / 3) * _r ; 
+          v.applyAxisAngle( axis, angle );
+
+          var z = v.z ;
+          var y = v.y + _y*_this.parameters.scaleY ;
+          var x = v.x ; 
+          var position = new THREE.Vector3( x, y, z);
+          
+          if(_y > 0){
+            upperFacePoints.push(position);
+          }
+          else{
+            bottomFacePoints.push(position);
+          }
+        }); 
+      }); 
+
+      for (var i = 0; i<6; i++) {
+        vertices[i] = bottomFacePoints[i];
+        vertices[i+6] = upperFacePoints[i];
+      };
+      for (var i = 0; i<4; i++) {
+        faces.push(new THREE.Face3(0,i+1,i+2));
+        faces.push(new THREE.Face3(i+8,i+7,6)); 
+      } 
+      for (var i = 0; i<5; i++) { 
+        faces.push(new THREE.Face3(i+7,i+1,i));
+        faces.push(new THREE.Face3(i+6,i+7,i));
+      } 
+      faces.push(new THREE.Face3(6,0,5));
+      faces.push(new THREE.Face3(11,6,5));
+    }
 
     var geom = new THREE.Geometry();
     geom.vertices = vertices;
@@ -1704,6 +1749,7 @@ define([
 
     return geom;
   }
+
   return Lattice;
 
 });

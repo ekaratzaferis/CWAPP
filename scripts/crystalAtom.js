@@ -71,8 +71,8 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
-    sphere.children[0].receiveShadow = true; 
-    sphere.children[0].castShadow = true; 
+    //sphere.children[0].receiveShadow = true; 
+    //sphere.children[0].castShadow = true; 
 
     _this.object3d = sphereCut; 
     Explorer.add(_this); 
