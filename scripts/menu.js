@@ -50,7 +50,14 @@ define([
   var $scaleZ  = jQuery('#scaleZ');
   var $alpha   = jQuery('#alpha');
   var $beta    = jQuery('#beta');
-  var $gamma   = jQuery('#gamma');
+  var $gamma   = jQuery('#gamma'); 
+
+  var $addRepeatX = jQuery('#addRepeatX'); 
+  var $addRepeatY = jQuery('#addRepeatY'); 
+  var $addRepeatZ = jQuery('#addRepeatZ'); 
+  var $subRepeatX = jQuery('#subRepeatX'); 
+  var $subRepeatY = jQuery('#subRepeatY'); 
+  var $subRepeatZ = jQuery('#subRepeatZ'); 
   
   var latticeParameters = {
     'repeatX': $repeatX,
@@ -63,11 +70,20 @@ define([
     'beta': $beta,
     'gamma': $gamma
   };
+  var repeatArrows = {
+    'addRepeatX' : $addRepeatX,
+    'addRepeatY' : $addRepeatY,
+    'addRepeatZ' : $addRepeatZ,
+    'subRepeatX' : $subRepeatX,
+    'subRepeatY' : $subRepeatY,
+    'subRepeatZ' : $subRepeatZ 
+  };
   var angleSliders = ['alpha','beta','gamma'];
 
   // miller parameters
   var $millerH = jQuery('#millerH');
   var $millerK = jQuery('#millerK');
+  var $millerI = jQuery('#millerI');
   var $millerL = jQuery('#millerL');
   var $planeColor = jQuery('#planeColor');
   var $planeOpacity = jQuery('#planeOpacity');
@@ -82,6 +98,7 @@ define([
   var $millerU = jQuery('#millerU');
   var $millerV = jQuery('#millerV');
   var $millerW = jQuery('#millerW');
+  var $millerT = jQuery('#millerT');
   var $directionColor = jQuery('#directionColor');
   var $directionName = jQuery('#directionName');
   var $vectors = jQuery('#vectors');
@@ -95,6 +112,7 @@ define([
     'millerH': $millerH,
     'millerK': $millerK,
     'millerL': $millerL,
+    'millerI': $millerI,
     'planeColor': $planeColor,
     'planeOpacity': $planeOpacity,
     'planeName' : $planeName
@@ -104,6 +122,7 @@ define([
     'millerU': $millerU,
     'millerV': $millerV,
     'millerW': $millerW,
+    'millerT': $millerT,
     'directionColor': $directionColor,
     'directionName' : $directionName
   };
@@ -221,7 +240,53 @@ define([
         PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
       });
     });
-
+    _.each(repeatArrows, function($arrow, k) {
+      $arrow.on('click', function() {
+        if(k === 'addRepeatX'){
+          var val = parseInt( $("#repeatZ").val());
+          val++;
+          $("#repeatZ").val(val);
+          $("#repeatZ").trigger('change');
+          
+        }
+        else if(k === 'addRepeatY'){
+          var val = parseInt( $("#repeatX").val());
+          val++;
+          $("#repeatX").val(val);
+          $("#repeatX").trigger('change');
+        }
+        else if(k === 'addRepeatZ'){
+          var val = parseInt( $("#repeatY").val());
+          val++;
+          $("#repeatY").val(val);
+          $("#repeatY").trigger('change');
+        }
+        else if(k === 'subRepeatX'){
+          var val = parseInt( $("#repeatZ").val());
+          if(val > 1) { 
+            val--;
+            $("#repeatZ").val(val);
+            $("#repeatZ").trigger('change');
+          }
+        }
+        else if(k === 'subRepeatY'){
+          var val = parseInt( $("#repeatX").val());
+          if(val > 1) { 
+            val--;
+            $("#repeatX").val(val);
+            $("#repeatX").trigger('change');
+          }
+        }
+        else if(k === 'subRepeatZ'){
+          var val = parseInt( $("#repeatY").val());
+          if(val > 1) { 
+            val--;
+            $("#repeatY").val(val);
+            $("#repeatY").trigger('change');
+          }
+        } 
+      });
+    });
     _.each(angleSliders, function(name) {
       _this.setSlider(name,90,44,136,2);
     });

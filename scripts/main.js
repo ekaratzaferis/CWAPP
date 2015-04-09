@@ -65,11 +65,8 @@ require([
   motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200, 12,  0,  0);
   motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200,  0, 12,  0);
 
-  crystalRenderer.startAnimation();
-  unitCellRenderer.startAnimation();
-  motifRenderer.startAnimation();
- 
- 
+  crystalRenderer.startAnimation();  
+  
   // Orbit Controls
   //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
@@ -139,6 +136,14 @@ require([
 
   // motif
   $("#list li").click(function() {
+    if($(this).attr('id') === "millerPI" ){ 
+      if(lattice.latticeName === 'hexagonal'){
+        $(".hexagonalMiller").css('display','block');
+      }
+      else{
+        $(".hexagonalMiller").css('display','none'); 
+      } 
+    } 
     if($(this).attr('id') === "motifLI" ){  
 
       $('#crystalRenderer').width(width/2);
@@ -164,8 +169,8 @@ require([
       crystalRenderer.changeContainerDimensions(width/2, height/2);
       unitCellRenderer.changeContainerDimensions(width/2, height/2);
       motifRenderer.changeContainerDimensions(width, height/2);  
-      unitCellRenderer.startAnimation();
-      motifRenderer.startAnimation();  
+      unitCellRenderer.startAnimation();                                                                    
+      motifRenderer.startAnimation(); 
       motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName());
 
     }

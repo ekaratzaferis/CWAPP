@@ -48,7 +48,7 @@
             <section class="menu">      
               <ul class="nav nav-tabs" id="list">
                 <li class="active"><a data-toggle="tab" href="#LatticeParameters">Lattice</a></li> 
-                <li><a data-toggle="tab" href="#MillerIndices">P & D</a></li>
+                <li id="millerPI"><a data-toggle="tab" href="#MillerIndices">P & D</a></li>
                 <li id="motifLI"><a data-toggle="tab" href="#MotifEditor">Motif</a></li>
                 <li><a data-toggle="tab" href="#OtherParameters" >Other</a></li>
               </ul> 
@@ -106,17 +106,49 @@
                                         <input type="text" class="form-control" id="repeatZ" value="1">
                                       </div>
                                     </div>  
+                                    <div class="col-md-8">
+                                      <button type="button" id='addRepeatX' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+                                      </button> 
+                                      <button type="button" id='subRepeatX' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row">  
+                                  <div class="col-md-12">
                                     <div class="col-md-4">
                                       <div class="input-group input-group-sm">
                                         <span class="input-group-addon">y</span>
                                         <input type="text" class="form-control" id="repeatX" value="1">
                                       </div>
                                     </div>
+                                    <div class="col-md-8">
+                                      <button type="button" id='addRepeatY' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+                                      </button> 
+                                      <button type="button" id='subRepeatY' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row">  
+                                  <div class="col-md-12">
                                     <div class="col-md-4">
                                       <div class="input-group input-group-sm">
                                         <span class="input-group-addon">z</span>
                                         <input type="text" class="form-control" id="repeatY" value="1">
                                       </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                      <button type="button" id='addRepeatZ' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+                                      </button> 
+                                      <button type="button" id='subRepeatZ' class="btn btn-default" aria-label="Left Align">
+                                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                                      </button>
                                     </div>
                                   </div>
                                 </div>  
@@ -336,6 +368,12 @@
                                           <input type="text" class="form-control col-md-4 planeInput" id="millerK" value='1' disabled>
                                         </div>
                                       </div>
+                                      <div class="col-md-4 hexagonalMiller" style="display: none;">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon">i</span>
+                                          <input type="text" class="form-control col-md-4 planeInput" id="millerI" value='1' disabled>
+                                        </div>
+                                      </div>
                                       <div class="col-md-4">
                                         <div class="input-group input-group-sm">
                                           <span class="input-group-addon">l</span>
@@ -371,7 +409,7 @@
                                       <div class="col-md-6">
                                         <div class="input-group input-group-sm">
                                           <span class="input-group-addon">Opacity</span>
-                                          <input type="text" class="form-control" id="planeOpacity" >
+                                          <input type="text" class="form-control" id="planeOpacity" value='10'>
                                         </div>
                                       </div>
                                       <div class="col-md-6" style="padding-top:7px;">
@@ -407,20 +445,26 @@
                                 <div class="col-md-12">  
                                   <div class="col-md-4">
                                     <div class="input-group input-group-sm">
-                                      <span class="input-group-addon">h</span>
+                                      <span class="input-group-addon">u</span>
                                       <input type="text" class="form-control col-md-4 dirInput" id="millerU" value='1' disabled>
                                     </div>
                                   </div>  
                                   <div class="col-md-4">
                                     <div class="input-group input-group-sm">
-                                      <span class="input-group-addon">k</span>
+                                      <span class="input-group-addon">v</span>
                                       <input type="text" class="form-control col-md-4 dirInput" id="millerV" value='1' disabled>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-4 hexagonalMiller" style="display: none;">
+                                    <div class="input-group input-group-sm">
+                                      <span class="input-group-addon">t</span>
+                                      <input type="text" class="form-control col-md-4 dirInput" id="millerT" value='-2' disabled>
                                     </div>
                                   </div>
                                   <div class="col-md-4">
                                     <div class="input-group input-group-sm">
-                                      <span class="input-group-addon">l</span>
-                                      <input type="text" class="form-control col-md-4 dirInput" id="millerW" value='1' disabled>
+                                      <span class="input-group-addon">w</span>
+                                      <input type="text" class="form-control col-md-4 dirInput" id="millerW" value='0' disabled>
                                     </div>
                                   </div>
                                 </div>

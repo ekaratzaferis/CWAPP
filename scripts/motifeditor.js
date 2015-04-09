@@ -1088,10 +1088,15 @@ define([
                 var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
                 var y =  v.y + _y*c ;
                 var x = v.x + _x*a*1.5 ;
-                  
+                var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
+                var yC =  _y*c ;
+                var xC =  _x*a*1.5 ;
                 var position = new THREE.Vector3( x, y, z);  
+                var positionC = new THREE.Vector3( xC, yC, zC);  
 
                 var reference = 'h_'+_x+_y+_z+_r ;
+                var referenceC = 'hc_'+_x+_y+_z ;
+
                 if(_this.unitCellAtoms[i].latticeIndex === (reference) ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset();
                   if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
@@ -1102,6 +1107,16 @@ define([
                     );
                   } 
                 } 
+                if(_this.unitCellAtoms[i].latticeIndex === (referenceC) ){  
+                  var offset = _this.unitCellAtoms[i].getUserOffset();
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
+                    _this.unitCellAtoms[i].object3d.position.set( 
+                      positionC.x + offset.x , 
+                      positionC.y + offset.y , 
+                      positionC.z + offset.z 
+                    );
+                  } 
+                }
               }    
             });
           });
@@ -1265,7 +1280,19 @@ define([
 
       _.times(2, function(_y) {
         _.times(1 , function(_x) {
-          _.times(1 , function(_z) { 
+          _.times(1 , function(_z) {  
+            var y =  _y*c ;  
+            _this.unitCellAtoms.push(new UnitCellAtom( 
+              new THREE.Vector3(
+                pos.x , 
+                pos.y + y, 
+                pos.z), 
+                radius, color, tang, name, id, 'hc_'+_x+_y+_z
+              ) 
+            );  
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
+            _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
             _.times(6 , function(_r) {
 
               var v = new THREE.Vector3( a, 0, 0 );
@@ -1450,7 +1477,7 @@ define([
 
       _.times(2, function(_y) {
         _.times(1 , function(_x) {
-          _.times(1 , function(_z) { 
+          _.times(1 , function(_z) {  
             _.times(6 , function(_r) {
               var v = new THREE.Vector3( a, 0, 0 );
 
@@ -1461,19 +1488,32 @@ define([
               var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
               var y =  v.y + _y*c ;
               var x = v.x + _x*a*1.5 ;
-                
+              var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
+              var yC =  _y*c ;
+              var xC =  _x*a*1.5 ;
+
               var position = new THREE.Vector3( x, y, z);  
+              var positionC = new THREE.Vector3( xC, yC, zC);  
 
               var reference = 'h_'+_x+_y+_z+_r ;
+              var referenceC = 'hc_'+_x+_y+_z ;
 
               for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
                
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === reference ){  
+                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && ( _this.unitCellAtoms[i].latticeIndex === reference) ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset(); 
                   _this.unitCellAtoms[i].object3d.position.set( 
                     position.x + offset.x ,  
                     position.y + offset.y , 
                     position.z + offset.z 
+                  ); 
+                }
+                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && (_this.unitCellAtoms[i].latticeIndex === referenceC)){  
+                  var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                  _this.unitCellAtoms[i].object3d.position.set( 
+                    positionC.x + offset.x ,  
+                    positionC.y + offset.y , 
+                    positionC.z + offset.z 
                   ); 
                 }
               }   

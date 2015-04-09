@@ -1,5 +1,4 @@
-/*global define*/
-'use strict';
+ 
 
 define([
   'pubsub', 'three', 'underscore',
@@ -313,10 +312,8 @@ define([
                     usedGridOrigins[originReference] = 1;
                 }
                 break; 
-            }
-
-          });
-
+            } 
+          }); 
         });
       });
     }); 
@@ -390,6 +387,14 @@ define([
         _.times(parseInt(parameters.repeatX)   , function(_x) {
           _.times(parseInt(parameters.repeatZ)  , function(_z) {
             var hexPoints = [];
+            // point in the middle
+            var z = (_x % 2==0) ? (_z*vertDist) : ((_z*vertDist + vertDist/2));
+            var y =  _y*c ;
+            var x = _x*a*1.5 ;
+            var reference = 'h_'+(x).toFixed(2)+(y).toFixed(2)+(z).toFixed(2) ; 
+            _this.points[reference] = new Point(new THREE.Vector3(x,y,z)); 
+            // point in the middle 
+
             _.times(6 , function(_r) {
 
               var v = new THREE.Vector3( a, 0, 0 ); 
@@ -400,7 +405,7 @@ define([
               var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
               var y =  v.y + _y*c ;
               var x = v.x + _x*a*1.5 ;
-                
+              
               var position = new THREE.Vector3( x, y, z);
               z = z.toFixed(2) ;
               if(z==0) z = '0.00'; // check for negative zeros  
@@ -411,7 +416,9 @@ define([
                 _this.points[reference] = new Point(position);   
                 if(_y>0) _this.createHexGrid([position, new THREE.Vector3(position.x, position.y - c, position.z)],true);
               }  
+
             });
+
             _this.createHexGrid(hexPoints,false);
             _this.hexagonalShapes.push(hexPoints); 
           });
@@ -1150,59 +1157,95 @@ define([
 
   Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform) {
     var _this = this ;
+    var hexagonal = (this.latticeName !== 'hexagonal') ? false : true ;
     var parameters = this.parameters ;
-    var u = millerParameters.millerU, v = millerParameters.millerV, w = millerParameters.millerW ; 
-    var id ;
-    var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w));
-    u/=devider;
-    v/=devider;
-    w/=devider;  
+    var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
+    var id, checkVals = parseInt(u + v) * -1 ;
+    
+    if(hexagonal){
+      if(t != checkVals ) {   
+        return null ;
+      }
+      var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
+      var aLength = parseInt(this.parameters.scaleZ) ;
+      var cLength = parseInt(this.parameters.scaleY) ;
 
-    _.times(parameters.repeatX , function(_x) {
-      _.times(parameters.repeatY , function(_y) {
-        _.times(parameters.repeatZ , function(_z) {
-          id = generateKey();
-          var startPoint = new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 )) ; 
-          var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
-          startPoint.x += _x ; 
-          startPoint.y += _y ; 
-          startPoint.z += _z ; 
-          endpointPoint.x += _x ; 
-          endpointPoint.y += _y ; 
-          endpointPoint.z += _z ; 
-          if(!temp){ 
-            _this.millerDirections[id] = {
-              direction : undefined,
-              startPoint : startPoint , 
-              endpointPoint : endpointPoint,
-              id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-              u : millerParameters.millerU,
-              v : millerParameters.millerV,
-              w : millerParameters.millerW,
-              directionColor : millerParameters.directionColor,
-              name : millerParameters.directionName
-            };
-            _this.forwardTransformationsMiller(_this.millerDirections[id]); 
-            _this.millerDirections[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
-          }
-          else{
-            _this.tempDirs[id] = {
-              direction : undefined,
-              startPoint : startPoint , 
-              endpointPoint : endpointPoint,
-              id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-              u : millerParameters.millerU,
-              v : millerParameters.millerV,
-              w : millerParameters.millerW,
-              directionColor : millerParameters.directionColor,
-              name : millerParameters.directionName
-            };
-            _this.forwardTransformationsMiller(_this.tempDirs[id]); 
-            _this.tempDirs[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
-          }
+      var axis = new THREE.Vector3( 0, 1, 0 );
+
+      var a3 = new THREE.Vector3( aLength, 0, 0 ); 
+      var rotA3 = (t>0) ? ((Math.PI*2) / 3) : ((Math.PI*5) / 3) ;
+      a3.applyAxisAngle( axis, rotA3) ;
+
+      var a2 = new THREE.Vector3( aLength, 0, 0 );  
+      var rotA2 = (v>0) ? (0) : ( Math.PI ) ;
+      a2.applyAxisAngle( axis, rotA2) ;
+
+      var a1 = new THREE.Vector3( aLength, 0, 0 ); 
+      var rotA1 = (u>0) ? ((Math.PI*4) / 3) : ( Math.PI/3 ) ;
+      a1.applyAxisAngle( axis, rotA1) ;
+
+      var c = new THREE.Vector3(0,cLength,0);  
+      a1.setLength(Math.abs(u/devider));
+      a2.setLength(Math.abs(v/devider));
+      a3.setLength(Math.abs(t/devider));
+      c.setLength(Math.abs(w/devider)); 
+      
+      a1.add(a2.add(a3.add(c)));
+      new MillerVector(new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor) ;  
+       
+    }
+    else{ 
+      var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w));
+      u/=devider;
+      v/=devider;
+      w/=devider;  
+
+      _.times(parameters.repeatX , function(_x) {
+        _.times(parameters.repeatY , function(_y) {
+          _.times(parameters.repeatZ , function(_z) {
+            id = generateKey();
+            var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
+            var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
+            startPoint.x += _x ; 
+            startPoint.y += _y ; 
+            startPoint.z += _z ; 
+            endpointPoint.x += _x ; 
+            endpointPoint.y += _y ; 
+            endpointPoint.z += _z ; 
+            if(!temp){ 
+              _this.millerDirections[id] = {
+                direction : undefined,
+                startPoint : startPoint , 
+                endpointPoint : endpointPoint,
+                id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                u : millerParameters.millerU,
+                v : millerParameters.millerV,
+                w : millerParameters.millerW,
+                directionColor : millerParameters.directionColor,
+                name : millerParameters.directionName
+              };
+              _this.forwardTransformationsMiller(_this.millerDirections[id]); 
+              _this.millerDirections[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
+            }
+            else{
+              _this.tempDirs[id] = {
+                direction : undefined,
+                startPoint : startPoint , 
+                endpointPoint : endpointPoint,
+                id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                u : millerParameters.millerU,
+                v : millerParameters.millerV,
+                w : millerParameters.millerW,
+                directionColor : millerParameters.directionColor,
+                name : millerParameters.directionName
+              };
+              _this.forwardTransformationsMiller(_this.tempDirs[id]); 
+              _this.tempDirs[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
+            }
+          });
         });
       });
-    });
+    }
   };
 
   Lattice.prototype.selectDirection = function (which){
@@ -1336,7 +1379,7 @@ define([
           break;
       }
   }
-  Lattice.prototype.submitDirectional = function(millerParameters) { 
+  Lattice.prototype.submitDirectional = function(millerParameters) {  
     if(
       (millerParameters.millerU==="" || millerParameters.millerV==="" || millerParameters.millerW==="")
       && (millerParameters.button==="previewDirection" || millerParameters.button==="saveDirection")) { 
@@ -1369,13 +1412,11 @@ define([
           if(_.isUndefined(found)){
             this.createMillerDirection(millerParameters, false, false);
             _this.updateDirectionList(millerParameters); 
-          }
-          
+          } 
           break;
       }
     }
-    else if (_this.directionalState.state === "editing"){
-
+    else if (_this.directionalState.state === "editing"){ 
       switch(buttonClicked) {
         case "previewDirection":
           _.each(_this.tempDirs, function(dir, reference) {
@@ -1415,10 +1456,8 @@ define([
           });
           _this.removeDirectionList();
           break;
-      }
-
-    }
-    
+      } 
+    } 
   };
 
   Lattice.prototype.submitPlane = function(millerParameters) { 
