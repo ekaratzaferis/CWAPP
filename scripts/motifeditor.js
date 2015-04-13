@@ -1858,13 +1858,13 @@ define([
       } 
       faces.push(new THREE.Face3(6,0,5));
       faces.push(new THREE.Face3(11,6,5));
-    }
-
+    } 
+ 
     var geom = new THREE.Geometry();
     geom.vertices = vertices;
     geom.faces = faces;
-
-    geom.mergeVertices();
+    geom.mergeVertices(); 
+    
 
     return geom;
   }
@@ -1912,12 +1912,54 @@ define([
       var geom = THREE.CSG.fromCSG(geometryCSG);
       var finalGeom = assignUVs(geom);
  
-      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
+      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16) })  );
       solidBox.name = 'solidvoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
     }
-    else if(_this.viewState === 'GradeLimited'){   
+    else if(_this.viewState === 'GradeLimited'){ 
+
+      var collidableMeshList = [box] ;
+      var dir = (new THREE.Vector3(1,0,0 )).normalize() ;
+      i=0;
+      while(i < _this.unitCellAtoms.length ) {    
+         
+        var originPoint = _this.unitCellAtoms[i].object3d.position.clone(); 
+        var ray = new THREE.Raycaster( originPoint, dir ); 
+        var collisionResults = ray.intersectObjects( collidableMeshList );
+        var touches = true ;
+        var radius = _this.unitCellAtoms[i].getRadius() ;
+
+        if(collisionResults.length !== 1){ // case it is not fully inside
+          var vertexIndex = 0;
+          while( vertexIndex < _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length )
+          {   
+            var localVertex = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4( _this.unitCellAtoms[i].object3d.children[0].matrix );
+            var directionVector = globalVertex.sub( _this.unitCellAtoms[i].object3d.position );
+            
+            var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+            var collisionResults = ray.intersectObjects( collidableMeshList );
+            if ( collisionResults.length === 1 &&  collisionResults[0].distance <= radius  ){ 
+              touches = true;
+              vertexIndex = 1000000;
+              console.log('fake fully inside');
+            }
+            else if(collisionResults.length === 2 &&  collisionResults[0].distance <= radius ) {  
+               touches = true;
+               vertexIndex = 1000000;
+               console.log('just touching');
+            }
+
+            vertexIndex++;
+            if(vertexIndex === _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length) touches = false;
+          }  
+          if(!touches) _this.unitCellAtoms[i].object3d.visible = false ;
+        }
+        _this.unitCellAtoms[i].GradeLimited();
+        i++;   
+      }
+      console.log(box);
       PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
     }
     else if(_this.viewState === 'Classic'){ 
@@ -1936,6 +1978,7 @@ define([
 
     console.log('It took ' + (b - a) + ' ms.');
   };
+
   function assignUVs( geometry ){ //todo maybe it doesn't work right
      
     geometry.computeBoundingBox();

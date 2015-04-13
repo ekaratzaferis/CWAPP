@@ -26,6 +26,7 @@ define([
     this.tangency = tangency; 
     this.myID = id; 
     this.elementName = elementName; 
+    this.viewMode = 'Classic'; 
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
@@ -117,17 +118,26 @@ define([
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;
- 
+    _this.viewMode = 'SubtractedSolid';
+
   };
   UnitCellAtom.prototype.SolidVoid = function( pos) {
     var _this = this; 
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;
+    _this.viewMode = 'SolidVoid';
  
+  };
+  UnitCellAtom.prototype.GradeLimited = function() {
+    this.viewMode = 'GradeLimited' ; 
   };
   UnitCellAtom.prototype.classicView = function() {
     var _this = this;
+    if(_this.viewMode === 'GradeLimited'){
+      this.viewMode = 'Classic'; 
+      return;
+    }
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
 
