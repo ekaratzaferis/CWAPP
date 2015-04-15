@@ -1863,10 +1863,75 @@ define([
     var geom = new THREE.Geometry();
     geom.vertices = vertices;
     geom.faces = faces;
-    geom.mergeVertices(); 
-    
-
+    geom.mergeVertices();  
+    geom.computeFaceNormals();
     return geom;
+  }
+  function customBox2(points) { 
+    var vertices = [];
+    var faces = []; 
+ 
+    vertices.push(points['_111'].position); // 0
+    vertices.push(points['_110'].position); // 1
+    vertices.push(points['_101'].position); // 2 
+    vertices.push(points['_100'].position); // 3
+    vertices.push(points['_010'].position); // 4
+    vertices.push(points['_011'].position); // 5
+    vertices.push(points['_000'].position); // 6
+    vertices.push(points['_001'].position); // 7
+
+    faces.push(new THREE.Face3(0,2,1));
+    faces.push(new THREE.Face3(2,3,1));
+
+    faces.push(new THREE.Face3(4,6,5));
+    faces.push(new THREE.Face3(6,7,5));
+ 
+    faces.push(new THREE.Face3(4,5,1));
+    faces.push(new THREE.Face3(5,0,1));
+
+    faces.push(new THREE.Face3(7,6,2));
+    faces.push(new THREE.Face3(6,3,2));
+
+    faces.push(new THREE.Face3(5,7,0));
+    faces.push(new THREE.Face3(7,2,0));
+
+    faces.push(new THREE.Face3(1,3,4));
+    faces.push(new THREE.Face3(3,6,4)); 
+      
+    var geometry = new THREE.Geometry();
+    geometry.vertices = vertices;
+    geometry.faces = faces;
+        
+    geometry.computeFaceNormals(); 
+    geometry.computeVertexNormals();
+
+    return geometry;
+ 
+  }
+  function flipNormals(geometry){
+    for ( var i = 0; i < geometry.faces.length; i ++ ) {
+
+      var face = geometry.faces[ i ];
+      var temp = face.a;
+      face.a = face.c;
+      face.c = temp;
+
+    }
+    
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+    
+    var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
+    for ( var i = 0; i < faceVertexUvs.length; i ++ ) {
+    
+      var temp = faceVertexUvs[ i ][ 0 ];
+      faceVertexUvs[ i ][ 0 ] = faceVertexUvs[ i ][ 2 ];
+      faceVertexUvs[ i ][ 2 ] = temp;
+    
+    }
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+    return geometry;
   }
   Motifeditor.prototype.setCSGmode = function(mode){ 
     var _this = this, i = 0;
@@ -1877,14 +1942,14 @@ define([
     var g = this.customBox(_this.unitCellPositions, _this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
-
+    var scene = UnitCellExplorer.getInstance().object3d;
     if(_this.viewState === 'Subtracted'){
       while(i < _this.unitCellAtoms.length ) {
         _this.unitCellAtoms[i].object3d.visible = true; 
         _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
         i++;
       } 
-      var scene = UnitCellExplorer.getInstance().object3d;
+      
       var object = scene.getObjectByName('solidvoid');
       if(!_.isUndefined(object)) scene.remove(object);
       PubSub.publish(events.VIEW_STATE,"Subtracted"); 
@@ -1918,48 +1983,99 @@ define([
       PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
     }
     else if(_this.viewState === 'GradeLimited'){ 
+      var g = customBox2(_this.unitCellPositions) ;
+      var gFliped = g.clone();
 
-      var collidableMeshList = [box] ;
-      var dir = (new THREE.Vector3(1,0,0 )).normalize() ;
+      var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({transparent:true, opacity:0.2, color:0xFF0000}));
+      var flipedBox = new THREE.Mesh( flipNormals(gFliped)  , new THREE.MeshBasicMaterial({  transparent:true, opacity:0.2}));
+      
+      // I make the box with 'inside' normals a little bigger (not enough to cause a problem) so if a sphere is on the edge of the geometry to be included
+      flipedBox.scale.set(1.3,1.3,1.3);
+      flipedBox.position.set(-0.3,-0.3,-0.3); 
+
+      var FNHfliped = new THREE.FaceNormalsHelper( flipedBox ) ;
+      FNHfliped.name = 'FNHfliped';
+      var FNHbox = new THREE.FaceNormalsHelper( box ) ;
+      FNHbox.name = 'FNHbox';
+      UnitCellExplorer.add({'object3d' : ( FNHfliped) });
+      UnitCellExplorer.add({'object3d' : (FNHbox) });
+  
+      box.geometry.computeFaceNormals(); 
+      box.geometry.computeVertexNormals(); 
+      flipedBox.geometry.computeFaceNormals(); 
+      flipedBox.geometry.computeVertexNormals(); 
+      var collidableMeshList = [] ;
+      collidableMeshList.push(box);
+      collidableMeshList.push(flipedBox);
+       
       i=0;
       while(i < _this.unitCellAtoms.length ) {    
-         
-        var originPoint = _this.unitCellAtoms[i].object3d.position.clone(); 
-        var ray = new THREE.Raycaster( originPoint, dir ); 
-        var collisionResults = ray.intersectObjects( collidableMeshList );
+        var originPointF = _this.unitCellAtoms[i].object3d.position.clone();
+        var localVertexF = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices[0].clone();
+        var globalVertexF = localVertexF.applyMatrix4(_this.unitCellAtoms[i].object3d.matrixWorld);
+        var directionVectorF = globalVertexF.sub( originPointF );   
+        var rayF = new THREE.Raycaster( originPointF, directionVectorF.clone().normalize() );
+        var collisionResultsF = rayF.intersectObjects( collidableMeshList );
+
         var touches = true ;
         var radius = _this.unitCellAtoms[i].getRadius() ;
-
-        if(collisionResults.length !== 1){ // case it is not fully inside
-          var vertexIndex = 0;
-          while( vertexIndex < _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length )
-          {   
+ 
+        if(collisionResultsF.length !== 1){ // case it is not fully inside
+           
+          var vertexIndex = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length-1;
+          
+          while( vertexIndex >= 0 )
+          {     
             var localVertex = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
-            var globalVertex = localVertex.applyMatrix4( _this.unitCellAtoms[i].object3d.children[0].matrix );
-            var directionVector = globalVertex.sub( _this.unitCellAtoms[i].object3d.position );
-            
-            var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+            var globalVertex = localVertex.applyMatrix4(_this.unitCellAtoms[i].object3d.matrixWorld);
+            var directionVector = globalVertex ;
+ 
+            var ray = new THREE.Raycaster( originPointF, globalVertex.clone().normalize()  );
+  
             var collisionResults = ray.intersectObjects( collidableMeshList );
-            if ( collisionResults.length === 1 &&  collisionResults[0].distance <= radius  ){ 
-              touches = true;
-              vertexIndex = 1000000;
-              console.log('fake fully inside');
-            }
-            else if(collisionResults.length === 2 &&  collisionResults[0].distance <= radius ) {  
-               touches = true;
-               vertexIndex = 1000000;
-               console.log('just touching');
-            }
 
-            vertexIndex++;
-            if(vertexIndex === _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length) touches = false;
+             var geometry3 = new THREE.Geometry();
+            geometry3.vertices.push(
+              originPointF,
+              globalVertex
+            ); 
+            
+            var mesh1 = new THREE.Line( geometry3, new THREE.LineBasicMaterial({  color: "#"+((1<<24)*(i/20)|0).toString(16)   }) );
+
+            //UnitCellExplorer.add({'object3d' : ( mesh1) });
+
+
+            if ( collisionResults.length === 1 &&  collisionResults[0].distance <= (radius) ){ // center is exactly on the face/grid of cell
+              
+              vertexIndex = -2;
+              console.log('1 coll');
+              _this.unitCellAtoms[i].setMaterial(0xFF0000, 10);
+              
+
+            }
+            else if(collisionResults.length > 1 &&  collisionResults[0].distance <= (radius) ) {  
+               
+               vertexIndex = -2;
+               console.log('2 coll and first <r');
+               _this.unitCellAtoms[i].setMaterial(0xFFFFBE, 10);
+            }
+           
+            vertexIndex--;
+            if(vertexIndex === -1) touches = false;
           }  
           if(!touches) _this.unitCellAtoms[i].object3d.visible = false ;
+        }
+        else if(collisionResultsF.length ===1) {
+          //_this.unitCellAtoms[i].setMaterial(0x484D46, 10);
+          console.log(' fully inside from start');
         }
         _this.unitCellAtoms[i].GradeLimited();
         i++;   
       }
-      console.log(box);
+
+      FNHfliped.visible = false;
+      FNHbox.visible = false;
+      console.log(FNHbox);
       PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
     }
     else if(_this.viewState === 'Classic'){ 
