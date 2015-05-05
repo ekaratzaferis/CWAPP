@@ -9,7 +9,7 @@ define([
 ) {
   var events = {
     LOAD: 'lattice.load',
-    DIRECTION_STATE: 'lattice.direction_state',
+    DIRECTION_STATE: 'lattice.direction_state', 
     PLANE_STATE: 'lattice.plane_state'
   };
 
@@ -145,7 +145,7 @@ define([
       delete _this.grids[reference];
     });
   }; 
-  Lattice.prototype.setMotif = function(motif, dimensions){
+  Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
     _this.currentMotif = motif ;
     _.each(_this.actualAtoms, function(atom,k) {
@@ -154,10 +154,13 @@ define([
     _this.actualAtoms.splice(0); 
 
     _this.backwardTransformations();
-
-    this.parameters.scaleX = dimensions.z ;
-    this.parameters.scaleY = dimensions.y ;
-    this.parameters.scaleZ = dimensions.z ;
+     
+    this.parameters.scaleX = params.x ;
+    this.parameters.scaleY = params.y ;
+    this.parameters.scaleZ = params.z ;
+    this.parameters.alpha = params.alpha ;
+    this.parameters.beta = params.beta ;
+    this.parameters.gamma = params.gamma ;
 
     _this.forwardTransformations();  
  
@@ -184,6 +187,8 @@ define([
         );
       });
     });  
+
+    _this.updateLatticeTypeRL();
   }; 
   Lattice.prototype.createGrid = function() {
     
@@ -516,10 +521,10 @@ define([
   };
   Lattice.prototype.getAnglesScales = function(){
 
-    var anglesScales = { 
-      "alpha" : this.parameters.alpha, 
-      "beta" : this.parameters.beta, 
-      "gamma" : this.parameters.gamma,
+    var anglesScales = {  
+      "alpha" : this.lattice.defaults.alpha, 
+      "beta" : this.lattice.defaults.beta, 
+      "gamma" : this.lattice.defaults.gamma,
       "scaleX" : this.parameters.scaleX,
       "scaleY" : this.parameters.scaleY,
       "scaleZ" : this.parameters.scaleZ  
@@ -584,7 +589,7 @@ define([
     var actualAtoms = this.actualAtoms;
     var parameters = this.parameters;
     var _this = this;
-
+    
     _.each(parameterKeys, function(k) { 
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
@@ -881,7 +886,31 @@ define([
     });
 
   }
+  Lattice.prototype.updateLatticeTypeRL = function(){ return 0;
+    var params = this.parameters ;
+    if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+    
+      $("select option[value='cubic_primitive']").attr("selected","selected");
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
 
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+
+    }
+    else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
+
+    }
+  };
   Lattice.prototype.setParameters = function(latticeParameters) {  
      
     if(this.latticeName !== 'hexagonal'){  
@@ -922,6 +951,7 @@ define([
       this.setGradeChoices(this.gradeChoice); 
       this.recreateMotif();
     }  
+    _this.updateLatticeTypeRL();
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1149,8 +1179,50 @@ define([
         });
       }
     }
-    else{
+    else{/*
+      if( h!=0 && k!=0 && l!=0) { 
+        var a = new THREE.Vector3( (k<0 ? (1+k) : k) + _x,  (l<0 ? 1 : 0 ) + _y , (h<0 ? 1 : 0) + _z); 
+        var b = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x,  (l<0 ? (1+l) : l ) + _y, (h<0 ? 1 : 0) + _z ); 
+        var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
+        
+        var x =  new MillerPlane(a, b, c, undefined, millerParameters.planeOpacity , millerParameters.planeColor );
+        id = generateKey();
+        if(!temp){ 
+          _this.millerPlanes[id] = {
+            plane : x, 
+            a : a, 
+            b : b, 
+            c : c, 
+            id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+            h : millerParameters.millerH,
+            k : millerParameters.millerK,
+            l : millerParameters.millerL,
+            planeOpacity : millerParameters.planeOpacity,
+            planeColor : millerParameters.planeColor,
+            planeName : millerParameters.planeName,
+          }; 
 
+          _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
+        }
+        else{
+           
+          _this.tempPlanes[id] = {
+            plane : x, 
+            a : a, 
+            b : b, 
+            c : c , 
+            id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+            h : millerParameters.millerH,
+            k : millerParameters.millerK,
+            l : millerParameters.millerL,
+            planeOpacity : millerParameters.planeOpacity,
+            planeColor : millerParameters.planeColor,
+            planeName : millerParameters.planeName,
+          }; 
+          _this.forwardTransformationsMiller(_this.tempPlanes[id]); 
+         
+        }
+      }*/
     }
       
   };
@@ -1628,12 +1700,17 @@ define([
   };
   Lattice.prototype.getLatticeType = function(){
     var lattice = this.lattice;
-    var l = lattice.theType;
+    var l = lattice.latticeType; 
     return l;
-  }
+  };
+  Lattice.prototype.getLatticeSystem = function(){
+    var lattice = this.lattice;
+    var l = lattice.latticeSystem; 
+    return l;
+  };
   Lattice.prototype.getLatticeName = function(){ 
     return this.latticeName;
-  }
+  };
   Lattice.prototype.revertScalingMiller = function() {
     this.transformMiller(reverseScaling, function(value) {
       return (value === 0 ? 0 : 1 / value);

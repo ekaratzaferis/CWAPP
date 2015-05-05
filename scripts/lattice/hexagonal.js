@@ -5,7 +5,8 @@ define(function() {
     originArray: [
       { x: 0, y: 0, z: 0 }
     ],
-    theType: "primitive",
+    latticeType: "hexagonal", 
+    latticeSystem: "hexagonal",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
       'scaleX': 1,
@@ -25,7 +26,6 @@ define(function() {
       'gamma': {
         'gamma': '='
       }
-    }
-     
+    } 
   };
 });

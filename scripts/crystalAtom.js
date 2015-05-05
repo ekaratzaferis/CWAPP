@@ -17,7 +17,8 @@ define([
     this.radius = radius;  
     this.material;
     this.materialLetter;
-    this.materials; 
+    this.identity = id ;
+    this.materialls; 
     this.offsetX = offsetX; 
     this.offsetY = offsetY; 
     this.offsetZ = offsetZ; 
@@ -30,11 +31,11 @@ define([
     textureLoader.load(texture,
       function(tex){
         tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, geometry, color, position, opacity, wireframe) ;
+        _this.addMaterial(tex, geometry, color, position, opacity, wireframe,id) ;
       }
     );  
   }
-  CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe) {
+  CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe, identity) {
     var _this = this ;
     _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:opacity    }) ;
     _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:opacity  }) ;
@@ -48,6 +49,8 @@ define([
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
+    sphere.name = 'atom';
+    sphere.identity = identity ;
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     _this.object3d = sphere;
@@ -97,7 +100,8 @@ define([
    
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
-
+    sphere.name = 'atom';
+    sphere.identity = _this.identity ;
     _this.object3d = sphere;
     _this.object3d.position.x = _this.helperPos.x ;
     _this.object3d.position.y = _this.helperPos.y ;

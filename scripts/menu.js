@@ -37,7 +37,9 @@ define([
     SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
     UNIT_CELL_VIEW: 'menu.unit_cell_view',
     CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
-    AXIS_MODE: 'menu.axis_mode'
+    AXIS_MODE: 'menu.axis_mode',
+    AXYZ_CHANGE: 'menu.axyz_change',
+    MANUAL_SET_DIMS: 'menu.manual_set_dims'
   };
 
   // lattice parameters
@@ -179,6 +181,7 @@ define([
   };
 
   var motifSliders = ['atomPosX', 'atomPosY', 'atomPosZ'];
+  var cellManDimensionsSliders = ['Aa', 'Ab', 'Ac'];
   var atomButtons = { 
     'saveChanges': $saveChanges,
     'deleteAtom': $deleteAtom,
@@ -186,6 +189,16 @@ define([
   };
 
   var $savedAtoms = jQuery('#savedAtoms');
+ 
+  var $Aa = jQuery('#Aa');
+  var $Ab = jQuery('#Ab');
+  var $Ac = jQuery('#Ac');
+
+  var cellManDimensions = {  
+    'Aa' : $Aa,
+    'Ab' : $Ab,
+    'Ac' : $Ac
+  };
 
   var $atomPosX = jQuery('#atomPosX');
   var $atomPosY = jQuery('#atomPosY');
@@ -356,7 +369,10 @@ define([
 
     // Motif
     _.each(motifSliders, function(name) {
-      _this.setSliderInp(name,0,-20,20,0.0000000001);
+      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001);
+    }); 
+    _.each(cellManDimensionsSliders, function(name) {
+      _this.setSliderInp(name,0,0.0000000000,20.0000000000,0.0000000001);
     }); 
     $(".periodic").click(function(){
       argument = {};
@@ -391,20 +407,33 @@ define([
         argument[k] = $parameter.val();
         if(k=='wireframe') argument[k]= ($('#wireframe').is(':checked')) ? true : false ;
         PubSub.publish(events.ATOM_PARAMETER_CHANGE, argument);
-      });
+      }); 
     }); 
     _.each(motifInputs, function($parameter, k) {
       $parameter.on('change', function() {
         argument = {}; 
         argument[k] = $parameter.val(); 
-        _this.setSliderValue(k,argument[k]); 
+        //_this.setSliderValue(k,argument[k]); 
         PubSub.publish(events.ATOM_POSITION_CHANGE, argument);
+      });
+    });
+    _.each(cellManDimensions, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {}; 
+        argument[k] = $parameter.val(); 
+        //_this.setSliderValue(k,argument[k]); 
+        PubSub.publish(events.AXYZ_CHANGE, argument);
       });
     });
     $('#tangency').change(function() {  
       var argument = {};
       argument["tangency"]= ($('#tangency').is(':checked')) ? true : false ;
       PubSub.publish(events.ATOM_TANGENCY_CHANGE, argument);           
+    });
+    $('#manualSetCellDims').change(function() {  
+      var argument = {};
+      argument["manualSetCellDims"]= ($('#manualSetCellDims').is(':checked')) ? true : false ;
+      PubSub.publish(events.MANUAL_SET_DIMS, argument);           
     });
     $('#fixedLength').change(function() {  
       var argument = {};
@@ -439,7 +468,8 @@ define([
     _.each(rotatingAngles, function($parameter, k) {
       $parameter.on('change', function() {
         argument = {};
-        argument[k] = $parameter.val();
+        argument['rotAnglePhi'] =  $('#rotAnglePhi').val()
+        argument['rotAngleTheta'] =  $('#rotAngleTheta').val()
         PubSub.publish(events.SET_ROTATING_ANGLE, argument);
       });
     });
@@ -509,24 +539,16 @@ define([
     PubSub.publish(events.LATTICE_PARAMETER_CHANGE, this.getLatticeParameters());
   };
 
-  Menu.prototype.disableSlider = function( ) {
+  Menu.prototype.setOnOffSlider = function(name, action) {
+    var name = '#'+name+'Slider'
     require([ "jquery-ui" ], function( slider ) { 
-      $("#atomPosXSlider").slider( "disable" );
+      $(name).slider(action);
     });
   };
-
-  Menu.prototype.setSliderOnOff = function(which,on){
-    if(on){ 
-      $(which).slider( "enable" );
-    }
-    else{ 
-      $(which).slider( "disable" );
-    }
-  };
+ 
   Menu.prototype.setSliderValue = function(name,value) {
     require([ "jquery-ui" ], function( slider ) {
-      $("#"+name+"Slider").slider('value',value );
-      $("#"+name).val(value);
+      $("#"+name+"Slider").slider('value',value ); 
     });
   };
   Menu.prototype.setSliderInp = function(name,value,min,max,step) { 
@@ -618,9 +640,15 @@ define([
   };
   Menu.prototype.onAtomPositionChange = function(callback) {
     PubSub.subscribe(events.ATOM_POSITION_CHANGE, callback);
+  }; 
+  Menu.prototype.onManuallyCellDimsChange = function(callback) {
+    PubSub.subscribe(events.AXYZ_CHANGE, callback);
   };
   Menu.prototype.onAtomTangencyChange = function(callback) {
     PubSub.subscribe(events.ATOM_TANGENCY_CHANGE, callback);
+  };
+  Menu.prototype.setDimsManually = function(callback) {
+    PubSub.subscribe(events.MANUAL_SET_DIMS, callback);
   };
   Menu.prototype.onFixedLengthChange = function(callback) {
     PubSub.subscribe(events.MOTIF_LENGTH_CHANGE, callback);

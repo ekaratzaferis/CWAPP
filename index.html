@@ -36,17 +36,17 @@
               <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
             </div>              
           </div> 
-
+          <div id="infoBox" > </div>
           <div class="col-md-3 right-panel" id="controls">
             <header>
               <div class="row head">
-                <div class="col-md-12 text-center">
-                  <h2><span class="breaking">Cr</span>ystal<span class="breaking">W</span>alk</h2>
+                <div class="col-md-12 ">
+                  <div id='logo' class=''></div>
                 </div>
               </div>
             </header> 
             <section class="menu">      
-              <ul class="nav nav-tabs" id="list">
+              <ul class="nav nav-tabs " id="list">
                 <li class="active"><a data-toggle="tab" href="#LatticeParameters">Lattice</a></li> 
                 <li id="millerPI"><a data-toggle="tab" href="#MillerIndices">P & D</a></li>
                 <li id="motifLI"><a data-toggle="tab" href="#MotifEditor">Motif</a></li>
@@ -88,6 +88,7 @@
                                       <option value="monoclinic_primitive">Monoclinic Simple</option>
                                       <option value="monoclinic_base_centered">Monoclinic Base-centered</option>
                                       <option value="triclinic_primitive">Triclinic Simple</option>
+                                      <option value="nonexistent">Νonexistent</option>
                                     </select>
                                   </div>
                                 </form>
@@ -573,6 +574,15 @@
                                       <h3 class="panel-title"><strong>Enable Distortion</strong></h3>
                                     </div>
                                   </div> 
+                                  <div class="row col-md-12" style=" margin-bottom: 5px;">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" >  
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Do not Overlap</strong></h3>
+                                    </div>
+                                  </div> 
                                   <div class="row"> 
                                     <div class="row col-md-12" style="margin-top: 5; margin-bottom: 5;">
                                       <div class="col-md-2" style="margin-top:5px;">
@@ -873,7 +883,52 @@
                                         <div id="atomPosYSlider"></div>
                                       </div>
                                     </div>
+                                  </div>  
+                                  <div class="col-md-12">
+                                    <div class="col-md-5 input-group input-group-md atomInput">
+                                      <span class="input-group-addon">Set Manually Cell Dimensions</span> 
+                                      <input id="manualSetCellDims" type="checkbox" name="manualSetCellDims" value="0"  >
+                                    </div> 
                                   </div> 
+                                  <div class="row form-group manualDims">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">Aa</span>
+                                          <input type="text" id="Aa" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="AaSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div> 
+                                  <div class="row form-group manualDims">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">Ab</span>
+                                          <input type="text" id="Ab" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="AbSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row form-group manualDims">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">Ac</span>
+                                          <input type="text" id="Ac" class="form-control atomInput disableME"  value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="AcSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div>  
                                   <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-6">
@@ -915,14 +970,8 @@
                                       </div>   
                                     </div>
                                   </div> 
-                                  <div class="row col-md-12 atomInput">
-                                    <div class="col-md-6">
-                                      <div class="input-group input-group-md atomInput">
-                                        <span class="input-group-addon"> Do not Overlap</span> 
-                                        <input id="tangency"  type="checkbox" name="tangency" value="1" checked="checked" > 
-                                      </div>
-                                    </div> 
-                                    <div class="col-md-6 ">                                  
+                                  <div class="row col-md-12 atomInput"> 
+                                    <div class="col-md-12 ">                                  
                                       <div class="input-group input-group-md ">
                                         <span class="input-group-addon"> Drag Mode</span> 
                                         <input id="dragMode" class="disableME" type="checkbox" name="dragMode" >
@@ -959,9 +1008,9 @@
                                     </div>
                                   </div> 
                                   <div id="helperImage">
-                                    <div id="helperImage"  style="float:left; border: 1px solid red;background-size: 130px 130px;background-image: url(../crystalwalk/Images/sphericalCoords.png); height: 130px; width: 130px;">  
+                                    <div id="helperImage"  style="float:left; border: 1px solid red;background-size: 130px 130px;background-image: url(Images/sphericalCoords.png); height: 130px; width: 130px;">  
                                       </div>
-                                    <div id="helperImage2"  style="float:right; border: 1px solid red;background-size: 130px 130px;background-image: url(../crystalwalk/Images/sphericalCoords2.gif); height: 130px; width: 130px;">  
+                                    <div id="helperImage2"  style="float:right; border: 1px solid red;background-size: 130px 130px;background-image: url(Images/sphericalCoords2.gif); height: 130px; width: 130px;">  
                                     </div>
                                   </div>
                                   <div class=" btn-toolbar col-md-12 " role="toolbar" style=" margin-bottom: 5px;">

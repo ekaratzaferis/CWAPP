@@ -4,8 +4,9 @@ define(function() {
   return {
     originArray: [
       { x: 0, y: 0, z: 0 }
-    ],
-    theType: "primitive",
+    ], 
+    latticeType: "primitive", 
+    latticeSystem: "rhombohedral",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
       'scaleX': 1.0,

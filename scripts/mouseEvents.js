@@ -77,7 +77,7 @@ define([
     raycaster.setFromCamera( mouse, _this.camera );
      
     if ( _this.SELECTED ) {
-        
+      
       var intersects = raycaster.intersectObject( _this.plane.object3d );
       var pos = intersects[ 0 ].point.sub( _this.offset ) ;
       _this.SELECTED.position.copy( pos );
@@ -136,7 +136,8 @@ define([
     var _this =this;
 
     event.preventDefault();
-    if(!(_this.motifEditor.editorState.state === 'initial')) {
+
+    if( !(_this.motifEditor.editorState.state === 'initial') && _this.motifEditor.manualAabc === false ) {
       raycaster.setFromCamera( mouse, _this.camera );
       
       var intersects = raycaster.intersectObjects( _this.getAtoms() );

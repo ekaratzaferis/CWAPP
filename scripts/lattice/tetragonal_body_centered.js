@@ -5,13 +5,14 @@ define(function() {
     originArray: [
       { x: 0,   y: 0,   z: 0   },
       { x: 0.5, y: 0.5, z: 0.5 }
-    ],
-    theType: "body",
+    ], 
+    latticeType: "body", 
+    latticeSystem: "tetragonal",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
       'scaleX': 1.0,
-      'scaleY': 1.0,
-      'scaleZ': 1.5,
+      'scaleY': 1.5,
+      'scaleZ': 1.0,
       'alpha': 90,
       'beta': 90,
       'gamma': 90

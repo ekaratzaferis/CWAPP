@@ -26,11 +26,13 @@ require.config({
 require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
-  'menu', 'lattice', 'snapshot','hudExplorer','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'hud'
+  'menu', 'lattice', 'snapshot','hudExplorer','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'hud',
+  'infobox'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
-  Menu, Lattice, Snapshot, HudExplorer, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, Hud
+  Menu, Lattice, Snapshot, HudExplorer, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, Hud,
+  Infobox
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -88,9 +90,12 @@ require([
   var motifEditor = new Motifeditor(menu);
   motifEditor.loadAtoms();
 
-  var dragNdropX = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
-  var dragNdropY = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
-  var dragNdropZ = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(2), 'motifPosZ');
+  var dragNdropXevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
+  var dragNdropYevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
+  var dragNdropZevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(2), 'motifPosZ');
+
+  // infobox
+  var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -171,8 +176,9 @@ require([
       motifRenderer.changeContainerDimensions(width, height/2);  
       unitCellRenderer.startAnimation();                                                                    
       motifRenderer.startAnimation(); 
-      motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName());
+      motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName(), lattice.getLatticeSystem());
 
+      infoBoxEvents.state = 'motifScreen';
     }
     else{  
       $('#crystalRenderer').width(width);
@@ -202,6 +208,7 @@ require([
 
       motifRenderer.changeContainerDimensions(0, 0);
 
+      infoBoxEvents.state = 'default';
     }
   });
   menu.atomSelection(function(message , arg) {
@@ -228,8 +235,14 @@ require([
   menu.onAtomPositionChange(function(message, param) { 
     motifEditor.setAtomsPosition(param);
   });
+  menu.onManuallyCellDimsChange(function(message, param) { 
+    motifEditor.setManuallyCellDims(param);
+  });
   menu.onAtomTangencyChange(function(message, param) { 
     motifEditor.setAtomsTangency(param);
+  });
+  menu.setDimsManually(function(message, param) { 
+    motifEditor.setDimsManually(param);
   });
   menu.onFixedLengthChange(function(message, param) { 
     motifEditor.fixedLengthMode(param); 

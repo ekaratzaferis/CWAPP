@@ -9,7 +9,8 @@ define([
   MotifExplorer,
   _
 ) {
- 
+  
+  // tangency is not used anymore!
   function AtomSphere(position, radius, color, tangency, elementName, id) {
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  

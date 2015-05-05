@@ -74,6 +74,26 @@
 .atomInput{visibility: hidden;}
 
 #crystalRenderer{
-  
    
 } 
+#logo{
+  background: url('../Images/cwlogo.png')  no-repeat center center;
+  background-size:90% auto; 
+  height:60px;
+}
+#infoBox{ 
+  position: fixed; 
+  bottom: 0px; 
+  right:25%; 
+  z-index: 100;    
+  background-color: #26201A ;
+  border-radius: 5px;
+  color: white; 
+  font-family:Arial, sans-serif;
+  padding: 5px 20px; 
+  margin-bottom: 1px; 
+  display: none;
+}
+.manualDims{
+  display: none;
+}
