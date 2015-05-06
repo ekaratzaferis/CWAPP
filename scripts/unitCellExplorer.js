@@ -40,7 +40,7 @@ define([
     light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
     light.shadowDarkness = 0.3;
 
-    var AmbLight = new THREE.AmbientLight( 0x20211F );
+    var AmbLight = new THREE.AmbientLight( 0x4D4D4C );
 
     //light.shadowCameraVisible = true;
     this.object3d.add(light);

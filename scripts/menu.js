@@ -233,6 +233,8 @@ define([
   var $unitCellView = jQuery('#unitCellView');
   var $showViewInCrystal = jQuery('#showViewInCrystal');
 
+  var $notes = jQuery('#notes');
+
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
   function Menu() {
@@ -507,6 +509,34 @@ define([
       argument["abcAxes"]= ($('#abcAxes').is(':checked')) ? true : false ;
       PubSub.publish(events.AXIS_MODE, argument);
     }); 
+    
+    $('#draggableDiv')
+.width(222)
+                    .height(111)
+                                    .draggable({
+                                        cancel: "text",
+                                        start: function (){
+                                            $('#textarea').focus();
+                                         },
+                                        stop: function (){
+                                            $('#textarea').focus();
+                                         } 
+                                     })
+                                    .resizable()
+                  .css({
+                      'position'          : 'absolute',
+                      'background-color'  : 'yellow',
+                      'border-color'      : 'black',
+                      'border-width'      : '1px',
+                      'border-style'      : 'solid'
+                     })
+                   .offset({top:30, left:40});
+      
+     
+    $notes.on('click', function() {
+      $( "#draggableDiv" ).toggle();
+    });
+
     this.restrictionEvents = []; 
      
   }; 
@@ -549,6 +579,7 @@ define([
   Menu.prototype.setSliderValue = function(name,value) {
     require([ "jquery-ui" ], function( slider ) {
       $("#"+name+"Slider").slider('value',value ); 
+      $("#"+name).val(value);
     });
   };
   Menu.prototype.setSliderInp = function(name,value,min,max,step) { 

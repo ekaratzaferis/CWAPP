@@ -460,7 +460,7 @@ define([
       break;
 
       case "y": 
-          if( val < _this.leastCellLengths.y){
+        if( val < _this.leastCellLengths.y){
           return _this.leastCellLengths.y ;
         }
         else{
@@ -470,7 +470,7 @@ define([
       break;
 
       case "z": 
-            if( val < _this.leastCellLengths.z){
+        if( val < _this.leastCellLengths.z){
           return _this.leastCellLengths.z ;
         }
         else{
@@ -629,14 +629,14 @@ define([
         ||
         ( (_this.latticeType === 'base' ) && ( _this.latticeSystem === 'orthorhombic'))
         ||
-        ( (_this.latticeType === 'primitive' ) && ( _this.latticeSystem === 'rhombohedral'))
+        ( (_this.latticeType === 'primitive' ) && (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic'   )))
       )  
     {
       // this algorithm calculates the least distances of the unit cell in x,y,z directions, putting 4 times the motifhelper in diff position and tries fake collision
        
       var xDistances =[], theXOffset  ; 
       var twoDarr = [] ;
-
+       
       if(axis === 'x'){   
         if (_this.latticeType === 'body' ) { 
           twoDarr = [{a : 1/2, b : 1/2}, {a : -1/2, b : 1/2}, {a : 1/2, b : -1/2}, {a : -1/2, b : -1/2}] 
@@ -653,7 +653,7 @@ define([
         while(j < motifHelper.length ) { 
           motifHelper[j].object3d.position.x = _this.cellParameters.scaleX  ; 
            
-          if (_this.latticeSystem === 'rhombohedral' ) { 
+          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
             var argument, matrix ; 
             _.each(reverseShearing, function(k) {
               if (_.isUndefined(_this.cellParameters[k]) === false) { 
@@ -691,8 +691,8 @@ define([
  
         };
         var maxX = _.max( xDistances );
-        var centeredDist = (_this.cellParameters.scaleX/2 + maxX)* 2 ;
-        var cornerDist = _this.cellParameters.scaleX + sideTosideCol;
+        var centeredDist = (_this.cellParameters.scaleX/2 + maxX)* 2 ; // body centered atom
+        var cornerDist = _this.cellParameters.scaleX + sideTosideCol; // in 4 corners 
         _this.leastCellLengths.x = (centeredDist > cornerDist) ? centeredDist : cornerDist;
 
         if(_this.leastCellLengths.x < 0 ) _this.leastCellLengths.x = val ;
@@ -712,29 +712,30 @@ define([
 
         _this.cellParameters.scaleY =  val ;
         j = 0;
-        console.log(_this.motifsAtoms);
-
+          
         while(j < motifHelper.length ) { 
           motifHelper[j].object3d.position.y = _this.cellParameters.scaleY  ; 
-          if (_this.latticeSystem === 'rhombohedral' ) { 
+          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
             var argument, matrix ;  
             _.each(reverseShearing, function(k) {  
               if (_.isUndefined(_this.cellParameters[k]) === false) { 
                 argument = {};
                 argument[k] = parseFloat(_this.cellParameters[k]); 
                 matrix = transformationMatrix(argument);   
-                motifHelper[j].object3d.position.applyMatrix4(matrix);  
-                 
-                console.log(motifHelper[j].object3d.position); 
-                console.log('--'); 
+                motifHelper[j].object3d.position.applyMatrix4(matrix);   
               }
             });  
           }
           j++;
         }
-
-        var sideTosideCol = _this.fakeCollision("y", motifHelper);
-         console.log(sideTosideCol);
+        console.log(motifHelper);
+        var sideTosideCol ;
+        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+          sideTosideCol = _this.fakeCollision("y", motifHelper, 1); 
+        }
+        else{   
+          sideTosideCol = _this.fakeCollision("y", motifHelper); 
+        }
          
         j = 0;
         while(j < motifHelper.length ) { 
@@ -760,8 +761,9 @@ define([
         var maxX = _.max( xDistances );
         var centeredDist = (_this.cellParameters.scaleY/2 + maxX)* 2 ;
         var cornerDist = _this.cellParameters.scaleY + sideTosideCol;
-        _this.leastCellLengths.y = (centeredDist > cornerDist) ? centeredDist : cornerDist;
          
+        _this.leastCellLengths.y = (centeredDist > cornerDist) ? centeredDist : cornerDist;
+          
         if(_this.leastCellLengths.y < 0 ) _this.leastCellLengths.y = val ;
         
       }
@@ -779,7 +781,7 @@ define([
         j = 0;
         while(j < motifHelper.length ) { 
           motifHelper[j].object3d.position.z = _this.cellParameters.scaleZ  ; 
-          if (_this.latticeSystem === 'rhombohedral' ) { 
+          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
             var argument, matrix ; 
             _.each(reverseShearing, function(k) {
               if (_.isUndefined(_this.cellParameters[k]) === false) { 
@@ -823,7 +825,7 @@ define([
         if(_this.leastCellLengths.z < 0 ) _this.leastCellLengths.z = val ;
         
       }
-      
+        
     }
     else if( (_this.latticeType === 'hexagonal' ) && ( _this.latticeSystem === 'hexagonal') )     
     {
@@ -833,8 +835,7 @@ define([
 
         _this.cellParameters.scaleY =  val ;
         j = 0;
-        console.log(_this.motifsAtoms);
-
+          
         while(j < motifHelper.length ) { 
           motifHelper[j].object3d.position.y = _this.cellParameters.scaleY  ;  
           j++;
@@ -882,12 +883,64 @@ define([
 
     this.motifsAtoms.pop();
   };
+  Motifeditor.prototype.fakeFixAtomPositionWithAngles = function(helperAtom, otherAtom,axis){
+    var _this = this,sign = 1; 
+    
+    var movingSpherePosition = helperAtom.object3d.position.clone();
+
+    var collisionSpherePosition = new THREE.Vector3( otherAtom.object3d.position.x, otherAtom.object3d.position.y, otherAtom.object3d.position.z );
+  
+    var realTimeHypotenuse = new THREE.Vector3( collisionSpherePosition.x - movingSpherePosition.x, collisionSpherePosition.y - movingSpherePosition.y, collisionSpherePosition.z - movingSpherePosition.z );
+    var calculatedHypotenuse = parseFloat( otherAtom.getRadius() + helperAtom.getRadius() ) ;  
+
+    var fixedSide ;
+    var wrongSide, rightSide ;
+     
+    if(axis==="x"){ 
+       
+    }
+    else if(axis==="y"){ 
+      var argument,matrix,line = new THREE.Vector3(0,1,0);
+      line.setLength(100);
+      
+      _.each(reverseShearing, function(k) {
+        if (_.isUndefined(_this.cellParameters[k]) === false) { 
+          argument = {};
+          argument[k] = parseFloat(_this.cellParameters[k]); 
+          matrix = transformationMatrix(argument);  
+          line.applyMatrix4(matrix);  
+        }
+      });  
+       
+      var a = realTimeHypotenuse.clone(); 
+      console.log(line);
+      console.log(a);
+      var projectOnLine = a.projectOnVector(line);
+      console.log(a);
+      wrongSide = projectOnLine.length();
+       
+      fixedSide = Math.sqrt ( Math.abs((( (realTimeHypotenuse.length())*(realTimeHypotenuse.length())) - (wrongSide*wrongSide) ))); 
+       
+      rightSide = Math.sqrt ( (( calculatedHypotenuse*calculatedHypotenuse) - (fixedSide*fixedSide) )); 
+ 
+      console.log('---'); 
+    }
+    else{ 
+         
+    }    
+    var offset = parseFloat( rightSide - wrongSide );
+    console.log(offset); 
+
+    return (offset);
+  }; 
   Motifeditor.prototype.setDimsManually = function(par){
     
     if( par.manualSetCellDims) { 
       $(".manualDims").css("display", "inline"); 
       $('input[name=manualSetCellDims]').attr('checked', true);
-      
+      this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
+      this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
+      this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
       this.findLeastCellLength(); // calculate the least acceptable length for the cell
     }
     else{
@@ -2175,10 +2228,10 @@ define([
        
     return cell; // remember these dimensions are in 2l (e.g for cubic primitive)
   };
-  Motifeditor.prototype.fakeCollision = function(axis, motifHelper){
+  Motifeditor.prototype.fakeCollision = function(axis, motifHelper, withAngles){
 
     var _this = this;
-
+    
     var offsets = [], i = 0, j =0;
      
     while(i<motifHelper.length) {
@@ -2188,8 +2241,15 @@ define([
         var b = new THREE.Vector3(_this.motifsAtoms[j].object3d.position.x, _this.motifsAtoms[j].object3d.position.y, _this.motifsAtoms[j].object3d.position.z) ;
         var realDistance =parseFloat(  (a.distanceTo(b)).toFixed(parseInt(10)) );
         var calculatedDistance = parseFloat( (_this.motifsAtoms[j].getRadius() + motifHelper[i].getRadius()).toFixed(parseInt(10)) ) ;  
-        if (realDistance < calculatedDistance){     
-          offsets.push( Math.abs( parseFloat((_this.fakeFixAtomPosition(motifHelper[i], _this.motifsAtoms[j],axis)).toFixed(parseInt(10)) ) ) ) ;  
+        if (realDistance < calculatedDistance){   
+        var val;
+        if( _.isUndefined(withAngles) ) {
+          val = _this.fakeFixAtomPosition(motifHelper[i], _this.motifsAtoms[j],axis) 
+        }
+        else{ 
+          val = _this.fakeFixAtomPositionWithAngles(motifHelper[i], _this.motifsAtoms[j],axis) ; 
+        } 
+        offsets.push( Math.abs( parseFloat((val).toFixed(parseInt(10)) ) ) ) ;  
         }  
         j++;
       } 
@@ -2502,7 +2562,7 @@ define([
 
     var b = performance.now();
 
-   // console.log('It took ' + (b - a) + ' ms.');
+    
   };
 
   function assignUVs( geometry ){ //todo maybe it doesn't work right
@@ -2928,10 +2988,7 @@ define([
         break;
     
       } 
-      
-      _this.menu.setSliderValue("Aa", dims.zDim);
-      _this.menu.setSliderValue("Ab", dims.xDim);
-      _this.menu.setSliderValue("Ac", dims.yDim);
+       
     }
 
     return dims;
