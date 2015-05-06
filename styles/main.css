@@ -73,8 +73,7 @@
 
 .atomInput{visibility: hidden;}
 
-#crystalRenderer{
-   
+#crystalRenderer{ 
 } 
 #logo{
   background: url('../Images/cwlogo.png')  no-repeat center center;
@@ -97,12 +96,9 @@
 .manualDims{
   display: none;
 }
- 
-textarea {
-    height:100%;
-    background-color:beige;
-    width:100%;
-    resize:none; border:none;
-    padding:0px; margin:0px;
-    color: black;
+#notepad{
+   
+}
+textarea {  
+  resize: none;
 }

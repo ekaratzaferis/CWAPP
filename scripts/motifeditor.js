@@ -666,8 +666,14 @@ define([
           }
           j++;
         }
+        var sideTosideCol ;
+        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+          sideTosideCol = _this.fakeCollision("x", motifHelper, 1); 
+        }
+        else{   
+          sideTosideCol = _this.fakeCollision("x", motifHelper); 
+        }
 
-        var sideTosideCol = _this.fakeCollision("x", motifHelper);
         
         j = 0;
          
@@ -728,7 +734,7 @@ define([
           }
           j++;
         }
-        console.log(motifHelper);
+         
         var sideTosideCol ;
         if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
           sideTosideCol = _this.fakeCollision("y", motifHelper, 1); 
@@ -795,7 +801,13 @@ define([
           j++;
         }
 
-        var sideTosideCol = _this.fakeCollision("z", motifHelper);
+        var sideTosideCol ;
+        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+          sideTosideCol = _this.fakeCollision("z", motifHelper, 1); 
+        }
+        else{   
+          sideTosideCol = _this.fakeCollision("z", motifHelper); 
+        }
         
         j = 0;
         while(j < motifHelper.length ) { 
@@ -851,7 +863,7 @@ define([
       } 
       else if(axis === 'x' || axis === 'z'){ 
 
-        var xDistances =[], theXOffset  ; 
+        /*var xDistances =[], theXOffset  ; 
         var twoDarr =[{a : 0, b : 1/2}, {a : 0, b : -1/2} ] ;
         _.times(6 , function(_r) {
           var v = new THREE.Vector3( a, 0, 0 );
@@ -875,7 +887,7 @@ define([
           theXOffset = _this.fakeCollision("z", motifHelper); 
           xDistances[g] = parseFloat(theXOffset  );
  
-        };
+        };*/
 
 
       }

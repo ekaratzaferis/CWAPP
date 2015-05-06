@@ -6,19 +6,19 @@ define([
   'three',
   'underscore',
   'jquery',
-  'hudExplorer',
+  'navArrowsHud',
   'renderer'
 ], function(
   THREE,
   _,
   jQuery,
-  HudExplorer,
+  NavArrowsHud,
   Renderer
 ) {
    
   var $bravaisLatticeInp = jQuery('#bravaisLattice');
   var logo;
-  var myHud  = HudExplorer.getInstance();
+  var myHud  = NavArrowsHud.getInstance();
   var theRenderer;
 
   function Snapshot(renderer) {

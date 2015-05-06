@@ -27,6 +27,7 @@
           <div class="col-md-9" id="app-container" style="padding:0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
             <div id="crystalRenderer" class="canvasContainer" >
               <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: absolute; z-index:10; bottom:0px; left:0px;"></div> 
+              <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div> 
             </div>
             <div id="unitCellRenderer" class="canvasContainer"></div>
             <div id="motifRenderer" class="canvasContainer" > </div>              
@@ -1071,15 +1072,11 @@
         </div>
       </section>
     </div> 
-    
-    <div id='draggableDiv'>
-      <textarea name="ta" id="ta" cols="30" rows="10"></textarea>
+     
+    <div id="notepad" title="Notes">  
+      <textarea id='mynotes'> </textarea> 
     </div>
-
-    <script type="text/javascript"> 
-      window.onerror = function(error, url, line) {  alert("error : "+error+" line : "+line); }; 
-    </script>
-
+ 
     <script src="vendor/jquery.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.js"></script>
     

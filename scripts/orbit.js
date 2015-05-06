@@ -22,7 +22,7 @@ define([
     if(type == "perspective" ) {
       if( camName=== 'hud') {
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
-      }
+      } 
       else{
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
       }

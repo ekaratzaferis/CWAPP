@@ -26,12 +26,12 @@ require.config({
 require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
-  'menu', 'lattice', 'snapshot','hudExplorer','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'hud',
+  'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
   'infobox'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
-  Menu, Lattice, Snapshot, HudExplorer, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, Hud,
+  Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
   Infobox
 ) {
   // Scenes
@@ -49,15 +49,18 @@ require([
   var lattice = new Lattice();
 
   // HUD  
-  var hudScene = HudExplorer.getInstance();  
-  var hud = new Hud(hudScene.object3d, lattice);
-   
+  var navArrowsScene = NavArrowsHud.getInstance();  
+  var hudArrows = new NavArrows(navArrowsScene.object3d, lattice);
+  
+  var navCubeScene = NavCubeHud.getInstance();  
+  var hudCube = new NavCube(navCubeScene.object3d, lattice);
+
   var canvasSnapshot = new Snapshot(crystalRenderer);
 
   //  WebGL Renderers and cameras
   var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
-  crystalRenderer.initHud(hudScene.object3d);
+  crystalRenderer.initHud(navArrowsScene.object3d, navCubeScene.object3d);
 
   var unitCellRenderer = new Renderer(unitCellScene.object3d, 'unitCellRenderer', 'cell');
   unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
@@ -74,6 +77,8 @@ require([
 
   var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera() );
   var orbitHud        = new Orbit(crystalRenderer.hudCamera,          '#crystalRenderer',   "perspective",  false, 'hud'      );
+  var orbitHudCube    = new Orbit(crystalRenderer.hudCameraCube,      '#crystalRenderer',   "perspective",  false,  'hud'      );
+
   var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
   var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
   var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
@@ -89,10 +94,12 @@ require([
   // Motif editor
   var motifEditor = new Motifeditor(menu);
   motifEditor.loadAtoms();
-
+ 
   var dragNdropXevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
   var dragNdropYevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
   var dragNdropZevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(2), 'motifPosZ');
+
+  var CubeEvent = new MouseEvents(null, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube', [crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),crystalRenderer.hudCameraCube,crystalRenderer.hudCamera]);
 
   // infobox
   var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
@@ -106,7 +113,8 @@ require([
     motifEditor.updateFixedDimensions(latticeParameters);
   });
   menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
-    hud.updateAngles(latticeParameters);
+    hudArrows.updateAngles(latticeParameters);
+    hudCube.updateAngles(latticeParameters);
     crystalScene.updateAbcAxes(latticeParameters);
   });
   // grade

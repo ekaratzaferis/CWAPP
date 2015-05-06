@@ -1,4 +1,4 @@
- 
+//'use strict';
 
 define([
   'pubsub', 'three', 'underscore',

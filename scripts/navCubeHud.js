@@ -11,11 +11,11 @@ define([
   var instance;
 
   var events = {
-    ADD: 'hudExplorer.add',
-    REMOVE: 'hudExplorer.remove'
+    ADD: 'navCubeHud.add',
+    REMOVE: 'navCubeHud.remove'
   };
 
-  function HudExplorer(options) {
+  function NavCubeHud(options) {
     options = options || {};
 
     this.object3d = new THREE.Scene();
@@ -29,22 +29,22 @@ define([
     });
   }
 
-  HudExplorer.prototype.getObjByName = function(name) {
+  NavCubeHud.prototype.getObjByName = function(name) {
     var obj = this.object3d.getObjectByName(name,true);
     return obj;
   };
 
-  HudExplorer.prototype.add = function(object) {
+  NavCubeHud.prototype.add = function(object) {
     this.object3d.add(object);
   };
 
-  HudExplorer.prototype.remove = function(object) {
+  NavCubeHud.prototype.remove = function(object) {
     this.object3d.remove(object.object3d.object3d);
   };
 
   return {
     getInstance: function(options) {
-      return (instance = instance || new HudExplorer(options));
+      return (instance = instance || new NavCubeHud(options));
     },
     add: function(object) {
       PubSub.publish(events.ADD, object);

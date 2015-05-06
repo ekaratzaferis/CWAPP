@@ -128,7 +128,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			angle = getAutoRotationAngle();
 
 		}
-
+		console.log(angle);
 		thetaDelta -= angle;
 
 	};
@@ -364,7 +364,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 			if ( scope.noRotate === true ) return;
 
-			rotateEnd.set( event.clientX, event.clientY );
+			rotateEnd.set( event.clientX, event.clientY ); 
 			rotateDelta.subVectors( rotateEnd, rotateStart );
 
 			// rotating across whole screen goes 360 degrees around

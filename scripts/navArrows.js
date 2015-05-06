@@ -14,7 +14,7 @@ define([
   _
 ) { 
 
-  function NavArrows( scene, latticeParams) {
+  function Hud( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.arrowLength =  (height/100)  ; 
@@ -124,7 +124,7 @@ define([
     scene.add( this.gamma );
 
   };
-  NavArrows.prototype.updateAngles = function(angle) {
+  Hud.prototype.updateAngles = function(angle) {
     var l = this.arrowLength ;
     var _this = this; 
     var matrix;
@@ -338,6 +338,6 @@ var transformationMatrix = function(parameter) {
     ctx.fill();
     ctx.stroke();   
   }
-  return NavArrows;
+  return Hud;
   
 });

@@ -510,32 +510,23 @@ define([
       PubSub.publish(events.AXIS_MODE, argument);
     }); 
     
-    $('#draggableDiv')
-.width(222)
-                    .height(111)
-                                    .draggable({
-                                        cancel: "text",
-                                        start: function (){
-                                            $('#textarea').focus();
-                                         },
-                                        stop: function (){
-                                            $('#textarea').focus();
-                                         } 
-                                     })
-                                    .resizable()
-                  .css({
-                      'position'          : 'absolute',
-                      'background-color'  : 'yellow',
-                      'border-color'      : 'black',
-                      'border-width'      : '1px',
-                      'border-style'      : 'solid'
-                     })
-                   .offset({top:30, left:40});
-      
-     
+    $("#notepad").dialog({
+       
+      draggable: true,
+      resizable: true, 
+      width: 400,
+      height: 400,
+      hide:true  
+    });  
+    $( "#notepad" ).dialog( "close" ); 
+    $( "#notepad" ).on( "dialogresize", function( event, ui ) { 
+      $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
+    } ); 
     $notes.on('click', function() {
-      $( "#draggableDiv" ).toggle();
+      $( "#notepad" ).dialog( "open" );   
     });
+    $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) })
+     
 
     this.restrictionEvents = []; 
      
