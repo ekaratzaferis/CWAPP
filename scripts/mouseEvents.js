@@ -20,11 +20,11 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2();
 
-  function MouseEvents( motifEditor, func,  _camera, domElement, camerasToFix) {
+  function MouseEvents( motifEditor, func,  _camera, domElement,  orbitControls) {
     this.plane = {'object3d' : undefined} ;
     this.func = func ;
-    this.container = domElement; 
-    this.camerasToFix = camerasToFix; 
+    this.container = domElement;   
+    this.orbitControls = orbitControls; 
     this.objects = [] ;
     this.camera = _camera ;
     this.motifEditor = motifEditor ;
@@ -89,8 +89,17 @@ define([
     } 
     else if(this.container === 'hudRendererCube' ) {
 
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      var contWidth = $('#crystalRenderer').width() ;
+       
+      if(contWidth < 800 ){
+        mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+        console.log(mouse);
+      }
+      else{  
+        mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      }
        
       raycaster.setFromCamera( mouse, _this.camera );
        
@@ -211,7 +220,7 @@ define([
         
         var intersects = raycaster.intersectObjects( _this.getAtoms() );
 
-        if ( intersects.length > 0 &&  intersects[0].object.parent.name ==='atom') {
+        if ( intersects.length > 0 &&  intersects[0].object.parent.name === 'atom') {
               
           _this.SELECTED = intersects[0].object.parent; 
           var intersects = raycaster.intersectObject( _this.plane.object3d ); 
@@ -223,8 +232,17 @@ define([
      }
      else if(this.func === 'navCubeDetect'){
 
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      var contWidth = $('#crystalRenderer').width() ;
+       
+      if(contWidth < 800 ){
+        mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+        console.log(mouse);
+      }
+      else{  
+        mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      }
     
       raycaster.setFromCamera( mouse, _this.camera );
        
@@ -236,36 +254,52 @@ define([
         if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==-1){
           index = 5 ;
         }
-        if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==1){
+        else if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==1){
           index = 4 ;
         }
-        if(intersects[0].face.normal.x==1 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==0){
-          index = 0 ;
+        else if(intersects[0].face.normal.x==1 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==0){
+          index = 0 ; 
         }
-        if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==-1 &&intersects[0].face.normal.z==0){
+        else if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==-1 &&intersects[0].face.normal.z==0){
           index = 3 ;
         }
-        if(intersects[0].face.normal.x==-1 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==0){
+        else if(intersects[0].face.normal.x==-1 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==0){
           index = 1 ;
         }
-        if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==1 &&intersects[0].face.normal.z==0){
+        else if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==1 &&intersects[0].face.normal.z==0){
           index = 2 ;
         }
-        for (var i = this.camerasToFix.length - 1; i >= 0; i--) {
-          this.camerasToFix[i].position.set(indexPosition[i].x, indexPosition[i].y, indexPosition[i].z);
-          this.camerasToFix[i].lookAt(0,0,0);
-        }; 
+
+        var params = this.motifEditor.getParameters() ;
+        var x = params.scaleX * params.repeatX/2 ;
+        var y = params.scaleY * params.repeatY /2;
+        var z = params.scaleZ * params.repeatZ/2 ;
+        var center = new THREE.Vector3(x,y,z) ;
+
+        for (var i = this.orbitControls.length - 1; i >= 0; i--) { 
+
+          if( this.orbitControls[i].getCamName() != 'crystal'  ) { 
+            center = new THREE.Vector3(0,0,0); // mperdeuontai auta 
+          }
+          if( (this.orbitControls[i].getCamName() == 'cell') && $('#syncCameras').is(':checked') ){  
+            this.orbitControls[i].setThetaPhi(angles[index].theta, angles[index].phi, center ); 
+          }
+          if(this.orbitControls[i].getCamName() != 'cell'){
+            this.orbitControls[i].setThetaPhi(angles[index].theta, angles[index].phi, center );
+          }
+
+        };  
       } 
     }
   };
-  var indexPosition = {
-    '0' : {'x':73.48469228349535,   'y':0,                  'z':0},
-    '1' : {'x':-73.48469228349535,  'y':0,                  'z':0},
-    '2' : {'x':0,                   'y':73.48469228349535,  'z':0},
-    '3' : {'x':0,                   'y':-73.48469228349535, 'z':0},
-    '4' : {'x':0,                   'y':0,                  'z':73.48469228349535},
-    '5' : {'x':0,                   'y':0,                  'z':-73.48469228349535}
 
+  var angles = {
+    '0' : {'theta' : 90*Math.PI/180, 'phi'  : 90*Math.PI/180},
+    '1' : {'theta' : -90*Math.PI/180, 'phi' : 90*Math.PI/180},
+    '2' : {'theta' : 0*Math.PI/180, 'phi'  : 0*Math.PI/180},
+    '3' : {'theta' : 0*Math.PI/180, 'phi'  : 180*Math.PI/180},
+    '4' : {'theta' : 0*Math.PI/180, 'phi'  : 90*Math.PI/180},
+    '5' : {'theta' : 180*Math.PI/180, 'phi'  : 90*Math.PI/180} 
   };
 
   MouseEvents.prototype.onDocumentMouseUp  = function(event){  

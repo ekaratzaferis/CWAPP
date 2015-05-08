@@ -66,6 +66,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	this.minPolarAngle = 0; // radians
 	this.maxPolarAngle = Math.PI; // radians
 
+	this.myTheta = 0; // radians
+	this.myPhi = 0; // radians
+	this.makeMovement = false ;
+	this.rotationState = 'setPhi' ;
+
 	// Set to true to disable use of the keys
 	this.noKeys = deactivate;
 
@@ -128,7 +133,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			angle = getAutoRotationAngle();
 
 		}
-		console.log(angle);
+		 
 		thetaDelta -= angle;
 
 	};
@@ -251,6 +256,36 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			this.rotateLeft( getAutoRotationAngle() );
 
 		}
+ 
+		if(this.makeMovement){ 
+			switch(this.rotationState) { 
+				case 'setPhi': 
+					if( Math.abs(phi - this.myPhi ) < 0.01 ) { 
+						phi = this.myPhi; 
+						this.rotationState = 'setTheta' ;
+		    			this.rotateUp(0); 
+					}
+					else{   
+						var x = (phi<this.myPhi) ? -1 : 1 ;
+		    			this.rotateUp( x * 0.5 * Math.PI/180);  
+					}
+				break;
+
+				case 'setTheta': 
+					if( Math.abs(theta - this.myTheta ) < 0.01 ) { 
+						theta = this.myTheta; 
+						this.makeMovement = false ;
+
+						this.rotationState = 'setPhi' ;
+		    			this.rotateUp(0); 
+					}
+					else{ 
+						var x = (theta<this.myTheta) ? -1 : 1 ;
+		    			this.rotateLeft( x * 0.5 * Math.PI/180);  
+					}
+				break; 
+			}
+		}
 
 		theta += thetaDelta;
 		phi += phiDelta;
@@ -261,6 +296,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		// restrict phi to be betwee EPS and PI-EPS
 		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
+
 		var radius = offset.length() * scale;
 
 		// restrict radius to be between desired limits
@@ -268,11 +304,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		
 		// move target to panned location
 		this.target.add( pan );
-
+		 
 		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
 		offset.y = radius * Math.cos( phi );
 		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
-
+ 
 		// rotate offset back to "camera-up-vector-is-up" space
 		offset.applyQuaternion( quatInverse );
 
@@ -285,13 +321,14 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		scale = 1;
 		pan.set( 0, 0, 0 );
 
-		if ( lastPosition.distanceToSquared( this.object.position ) > EPS ) {
-
+		if ( lastPosition.distanceToSquared( this.object.position ) > EPS  ) {
+			
 			this.dispatchEvent( changeEvent ); 
-
+			 
 			lastPosition.copy( this.object.position );
-
+			
 		} 
+		 
 	};
 
 

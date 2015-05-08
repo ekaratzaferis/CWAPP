@@ -76,17 +76,21 @@ require([
   //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
   var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera() );
-  var orbitHud        = new Orbit(crystalRenderer.hudCamera,          '#crystalRenderer',   "perspective",  false, 'hud'      );
-  var orbitHudCube    = new Orbit(crystalRenderer.hudCameraCube,      '#crystalRenderer',   "perspective",  false,  'hud'      );
+  var orbitHud        = new Orbit(crystalRenderer.getHudCamera(),     '#crystalRenderer',   "perspective",  false, 'hud' );
+  var orbitHudCube    = new Orbit(crystalRenderer.getHudCameraCube(), '#crystalRenderer',   "perspective",  false, 'hud' );
 
   var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
+
   var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
   var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
   var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ',         "orthographic", false, 'motifZ'   );
 
+   
+  crystalRenderer.onAnimationUpdate2(orbitHudCube.update.bind(orbitHudCube), orbitHud.update.bind(orbitHud));
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
 
   unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
+
   motifRenderer.onAnimationUpdate(cameraControls1.update.bind(cameraControls1));
   motifRenderer.onAnimationUpdate(cameraControls2.update.bind(cameraControls2));
   motifRenderer.onAnimationUpdate(cameraControls3.update.bind(cameraControls3));
@@ -99,7 +103,7 @@ require([
   var dragNdropYevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
   var dragNdropZevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(2), 'motifPosZ');
 
-  var CubeEvent = new MouseEvents(null, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube', [crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),crystalRenderer.hudCameraCube,crystalRenderer.hudCamera]);
+  var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube , 'hudRendererCube',  [orbitHud,orbitHudCube,orbitUnitCell,orbitCrystal] );
 
   // infobox
   var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
@@ -261,8 +265,7 @@ require([
 
     if(param.syncCameras){    
       crystalCamera.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z ); 
-
-     
+ 
       orbitCrystal.currPos.x = cellCamera.position.x ;
       orbitCrystal.currPos.y = cellCamera.position.y ;
       orbitCrystal.currPos.z = cellCamera.position.z ;
@@ -271,7 +274,7 @@ require([
       orbitUnitCell.currPos.y = cellCamera.position.y ;
       orbitUnitCell.currPos.z = cellCamera.position.z ; 
       orbitCrystal.sync = true;
-      orbitUnitCell.sync = true; 
+      orbitUnitCell.sync = true; // navalw na douleuei swsta to syncing twn camerwn
     }
     else{
       orbitCrystal.sync = false;

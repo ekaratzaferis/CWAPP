@@ -17,10 +17,13 @@ define([
     this.sync = false;
     this.camera = camera; 
     this.camName = camName; 
+    this.theta = 0; 
+    this.phi = 0; 
     this.syncedCamera = syncedCamera; 
     this.currPos = new THREE.Vector3(0,0,0); 
+
     if(type == "perspective" ) {
-      if( camName=== 'hud') {
+      if( camName=== 'hud') { 
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
       } 
       else{
@@ -31,10 +34,23 @@ define([
       this.control = new THREE.OrbitAndPanControls(camera, $rendererContainer[0]);
     }
   }
-
+  Orbit.prototype.getCamName = function(){
+    return this.camName ;
+  };
+  Orbit.prototype.setThetaPhi = function(theta,phi, target) {
+  
+    this.theta = theta;
+    this.phi = phi;
+    this.control.myTheta = this.theta ;
+    this.control.myPhi = this.phi ; 
+    this.control.target = target ; 
+    this.control.makeMovement = true ;
+    
+  }
   Orbit.prototype.update = function() {
 
     this.control.update(); 
+     
     var dx = Math.abs(this.camera.position.x - this.currPos.x ) ;
     var dy = Math.abs(this.camera.position.y - this.currPos.y ) ;
     var dz = Math.abs(this.camera.position.z - this.currPos.z ) ;
