@@ -298,7 +298,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 
 		var radius = offset.length() * scale;
-
+		 
 		// restrict radius to be between desired limits
 		radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
 		
@@ -308,10 +308,10 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
 		offset.y = radius * Math.cos( phi );
 		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
- 
+ 		 
 		// rotate offset back to "camera-up-vector-is-up" space
 		offset.applyQuaternion( quatInverse );
-
+		 
 		position.copy( this.target ).add( offset );
 
 		this.object.lookAt( this.target );
@@ -326,12 +326,28 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			this.dispatchEvent( changeEvent ); 
 			 
 			lastPosition.copy( this.object.position );
-			
+
 		} 
 		 
 	};
 
+	this.setRotationManually = function(theta, phi ){
 
+ 		var radius = this.object.position.length() * scale;
+ 		 
+		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
+		offset.y = radius * Math.cos( phi );
+		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
+ 	 
+		// rotate offset back to "camera-up-vector-is-up" space
+		offset.applyQuaternion( quatInverse );
+		 
+		this.object.position.copy( this.target ).add( offset ); 
+
+		this.object.lookAt( this.target );
+
+		this.dispatchEvent( changeEvent );
+	}
 	this.reset = function () {
 
 		state = STATE.NONE;

@@ -12,11 +12,12 @@ define([
 ) {
   var mutualCamPosParam = new THREE.Vector3();
 
-  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera ) {
+  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras ) {
     var $rendererContainer = jQuery(domElement);
     this.sync = false;
     this.camera = camera; 
     this.camName = camName; 
+    this.hudCameras = hudCameras; 
     this.theta = 0; 
     this.phi = 0; 
     this.syncedCamera = syncedCamera; 
@@ -45,8 +46,17 @@ define([
     this.control.myPhi = this.phi ; 
     this.control.target = target ; 
     this.control.makeMovement = true ;
-    
+
   }
+  Orbit.prototype.getCamPosition = function(){
+    return this.control.object.position ;
+  };
+  Orbit.prototype.getTarget = function(){
+    return this.control.target ;
+  };
+  Orbit.prototype.setRotationManually = function(theta,phi){
+    this.control.setRotationManually(theta,phi);
+  };
   Orbit.prototype.update = function() {
 
     this.control.update(); 
@@ -62,6 +72,37 @@ define([
       this.currPos.x = this.camera.position.x ;
       this.currPos.y = this.camera.position.y ;
       this.currPos.z = this.camera.position.z ; 
+    }
+     
+    if( this.camName =='crystal'){
+       
+      for (var i = this.hudCameras.length - 1; i >= 0; i--) { 
+ 
+        var offset = this.getCamPosition().clone();  
+        var targ = this.getTarget() ; 
+        offset.sub( targ );
+
+        var theta = Math.atan2( offset.x, offset.z );  
+        var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+        phi = Math.max( 0.000001, Math.min( Math.PI - 0.000001, phi ) );
+        var r = this.hudCameras[i].position.length() ;
+        var newOffset = new THREE.Vector3();
+
+        newOffset.x = r * Math.sin( phi ) * Math.sin( theta );
+        newOffset.y = r * Math.cos( phi );
+        newOffset.z = r * Math.sin( phi ) * Math.cos( theta );
+
+        var quat = new THREE.Quaternion().setFromUnitVectors( this.hudCameras[i].up, new THREE.Vector3( 0, 1, 0 ) );
+        var quatInverse = quat.clone().inverse();
+
+        newOffset.applyQuaternion( quatInverse );
+     
+        this.hudCameras[i].position.copy( new THREE.Vector3(0,0,0) ).add( newOffset ); 
+
+        this.hudCameras[i].lookAt( new THREE.Vector3(0,0,0) );
+
+      };
+
     }
   }; 
   return Orbit;
