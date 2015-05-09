@@ -39,7 +39,8 @@ define([
     CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
     AXIS_MODE: 'menu.axis_mode',
     AXYZ_CHANGE: 'menu.axyz_change',
-    MANUAL_SET_DIMS: 'menu.manual_set_dims'
+    MANUAL_SET_DIMS: 'menu.manual_set_dims',
+    CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target'
   };
 
   // lattice parameters
@@ -234,6 +235,8 @@ define([
   var $showViewInCrystal = jQuery('#showViewInCrystal');
 
   var $notes = jQuery('#notes');
+
+  var $crystalCamTarget = jQuery('#crystalCamTarget');
 
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
@@ -510,8 +513,7 @@ define([
       PubSub.publish(events.AXIS_MODE, argument);
     }); 
     
-    $("#notepad").dialog({
-       
+    $("#notepad").dialog({ 
       draggable: true,
       resizable: true, 
       width: 400,
@@ -526,8 +528,13 @@ define([
       $( "#notepad" ).dialog( "open" );   
     });
     $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) })
-     
-
+  
+    $("#crystalCamTarget").click(function(){
+      argument = {}; 
+      argument["center"]= ($('#crystalCamTarget').is(':checked')) ? true : false ;
+      PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
+    });
+    
     this.restrictionEvents = []; 
      
   }; 
@@ -701,6 +708,9 @@ define([
   };
   Menu.prototype.onAxisModeChange = function(callback) { 
     PubSub.subscribe(events.AXIS_MODE, callback);
+  };
+  Menu.prototype.targetOfCamChange = function(callback) { 
+    PubSub.subscribe(events.CRYSTAL_CAM_TARGET, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

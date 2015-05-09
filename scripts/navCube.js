@@ -17,7 +17,7 @@ define([
 function NavCube( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.length =  (height/100)  ; 
+    this.length =  (height/90)  ; 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     
@@ -29,15 +29,62 @@ function NavCube( scene, latticeParams) {
     materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/3.jpg' ) }));
     materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/4.jpg' ) }));
     materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/5.jpg' ) }));    
-        var cubeMats = new THREE.MeshFaceMaterial(materialArray);
-    var cubeG = new THREE.CubeGeometry( this.length, this.length, this.length, 3,3,3, materialArray );
+    
+    var cubeMats = new THREE.MeshFaceMaterial(materialArray);
+    var cubeG = new THREE.CubeGeometry( this.length-1, this.length-1, this.length-1, 3,3,3, materialArray );
     this.cube = new THREE.Mesh( cubeG, cubeMats );
     this.cube.name = 'cube' ;
     this.cube.position.set(0,0,0);
     scene.add(this.cube);
-    
+     
+    var geom =  new THREE.Geometry();
+    var v1   =  new THREE.Vector3(2.8, -8.7,   0);
+    var v2   =  new THREE.Vector3(5.2, -6.4,   0);
+    var v3   =  new THREE.Vector3(2,   -6.7,   0);
+ 
+    geom.vertices.push(v1);
+    geom.vertices.push(v2);
+    geom.vertices.push(v3);
+  
+    geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+     
+    geom.computeFaceNormals();
+
+    var arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1  , side : THREE.doubleSide}));
+    arHead.name = 'arrowHead';
+      
+    var CustomSinCurve = THREE.Curve.create(
+      function ( scale ) {  
+        this.scale = (scale === undefined) ? 1 : scale ;
+      },
+      
+      function ( t ) { console.log(t); 
+        var tx = 2*(t-2/3) * 2, ty = -3 + Math.sin( -1*Math.PI/1.3 + Math.PI * t/2 )  ; 
+          
+        return new THREE.Vector3(tx, ty, 0).multiplyScalar(this.scale);
+      }
+    );
+
+    var path = new CustomSinCurve( 2 );
+
+    var geometry = new THREE.TubeGeometry(
+        path,  //path
+        20,    //segments
+        0.4,     //radius
+        8,     //radiusSegments
+        false  //closed
+    );
+    var arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1  , side : THREE.doubleSide}));
+    arLine.name = 'arrowLine' ;
+    scene.add(arHead);
+    scene.add(arLine);
 
 };
+function getTexture() {
+  var texture = new THREE.ImageUtils.loadTexture("Images/rotationArrow.png");
+  return texture;
+}
+
 NavCube.prototype.updateAngles = function(angle) {
     var l = this.arrowLength ;
     var _this = this; 

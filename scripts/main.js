@@ -295,6 +295,19 @@ require([
   }); 
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);
+  }); 
+  menu.targetOfCamChange(function(message, arg) { 
+    if(arg.center){
+      orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
+    }
+    else{
+      var params = lattice.getParameters() ;
+      var x = params.scaleX * params.repeatX/2 ;
+      var y = params.scaleY * params.repeatY /2;
+      var z = params.scaleZ * params.repeatZ/2 ;
+      var target = new THREE.Vector3(x,y,z) ;
+      orbitCrystal.control.target = target ;
+    } 
   });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {

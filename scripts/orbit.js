@@ -38,16 +38,24 @@ define([
   Orbit.prototype.getCamName = function(){
     return this.camName ;
   };
-  Orbit.prototype.setThetaPhi = function(theta,phi, target) {
+  Orbit.prototype.setThetaPhi = function(theta,phi) {
   
     this.theta = theta;
     this.phi = phi;
     this.control.myTheta = this.theta ;
     this.control.myPhi = this.phi ; 
-    this.control.target = target ; 
+    
     this.control.makeMovement = true ;
 
   }
+  Orbit.prototype.getAutoRotate = function(){
+    return this.control.autoRotate ;
+  };
+  Orbit.prototype.autoRotate = function(bool){
+ 
+    this.control.autoRotate = bool;
+      
+  };
   Orbit.prototype.getCamPosition = function(){
     return this.control.object.position ;
   };

@@ -159,7 +159,10 @@ define([
         _this.hudCameraCube.updateProjectionMatrix();
         _this.renderer.render( _this.hudSceneCube, _this.hudCameraCube );
 
-        
+        var arrowL = _this.hudSceneCube.getObjectByName( "arrowLine" );
+        var arrowH = _this.hudSceneCube.getObjectByName( "arrowHead" );
+        arrowL.lookAt(_this.hudCameraCube.position);
+        arrowH.lookAt(_this.hudCameraCube.position);
       }
     }
     else if(_this.cameras.length>1){
