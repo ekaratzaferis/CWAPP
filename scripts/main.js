@@ -27,12 +27,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'infobox'
+  'infobox', 'storeProject'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  Infobox
+  Infobox, StoreProject
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -102,6 +102,9 @@ require([
 
   // infobox
   var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
+
+  // storing mechanism
+  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera() );
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -296,6 +299,9 @@ require([
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);
   }); 
+  menu.storeProject(function(message, arg) { 
+    storingMachine.createJSONfile();
+  });
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
@@ -318,3 +324,55 @@ require([
   
 });
  
+$( document ).ready(function() {
+
+  var hash = window.location.hash;
+  var service = 'https://cwgl.herokuapp.com';
+  var shortener = 'http://cw.gl';
+  var $name = $('#name');
+  var $url = $('#url');
+  var $button = $('#add');
+
+  // load
+
+  if(hash.length > 0) {
+    var slug = hash.replace(/^#/, '');
+    $.ajax(service + '/' + slug + '.json', {
+        method: 'GET',
+        beforeSend: function(xmlHttpRequest) {
+            xmlHttpRequest.withCredentials = true;
+        }
+    })
+    .done(function(res) {
+      var data = res.data;
+      $name.val(data.name);
+    });
+  }
+
+  // save
+
+  $button.on('click', function() {
+    $name.attr('disabled', true);
+    $button.attr('disabled', true);
+    var data = {
+      url: window.location.origin,
+      data: { name: $name.val() }
+    };
+    $.ajax(service + '/add', {
+        method: 'POST',
+        data: data,
+        beforeSend: function(xmlHttpRequest) {
+            xmlHttpRequest.withCredentials = true;
+        }
+    })
+    .done(function(res) {
+      var slug = res.slug;
+      $url.val(shortener + '/' + slug);
+      $url.removeAttr('disabled');
+      $url.focus().select();
+      $name.removeAttr('disabled');
+      $button.removeAttr('disabled');
+    });
+  });
+
+}); 

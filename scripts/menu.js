@@ -40,7 +40,8 @@ define([
     AXIS_MODE: 'menu.axis_mode',
     AXYZ_CHANGE: 'menu.axyz_change',
     MANUAL_SET_DIMS: 'menu.manual_set_dims',
-    CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target'
+    CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
+    STORE_PROJECT: 'menu.store_project'
   };
 
   // lattice parameters
@@ -238,6 +239,8 @@ define([
 
   var $crystalCamTarget = jQuery('#crystalCamTarget');
 
+  var $storeState = jQuery('#storeState');
+
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
   function Menu() {
@@ -325,11 +328,11 @@ define([
       $select.on('click', function(){
         argument ={};
         if($select.val()==="on") {
-          argument[$select.attr('name')] = "off";
+          argument[$select.attr('name')] = false;
           $select.val("off");
         }
         else{
-          argument[$select.attr('name')] = "on";
+          argument[$select.attr('name')] = true;
           $select.val("on");
         }
         PubSub.publish(events.GRADE_CHOICES, argument);  
@@ -535,6 +538,10 @@ define([
       PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
     });
     
+    $storeState.on('click', function() {
+      PubSub.publish(events.STORE_PROJECT, argument);   
+    });
+    
     this.restrictionEvents = []; 
      
   }; 
@@ -711,6 +718,9 @@ define([
   };
   Menu.prototype.targetOfCamChange = function(callback) { 
     PubSub.subscribe(events.CRYSTAL_CAM_TARGET, callback);
+  };
+  Menu.prototype.storeProject = function(callback) { 
+    PubSub.subscribe(events.STORE_PROJECT, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

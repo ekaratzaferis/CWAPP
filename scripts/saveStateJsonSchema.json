@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "stored state",
+  "description": "crystalwalk stored state json schema",
+  "type": "object",
+  "properties": {
+    "projectName": {
+        "description": "the name of the project the user gave",
+        "type": "string"
+    },
+    "latticeParams": { 
+      "type": "object",
+      "properties" : {
+        "scaleX": { "type":"number"},
+        "scaleY": { "type":"number"},
+        "scaleZ": { "type":"number"},
+        "repeateX": { "type":"number"},
+        "repeateY": { "type":"number"},
+        "repeateZ": { "type":"number"},
+        "alpha": { "type":"number"},
+        "beta": { "type":"number"},
+        "gamma": { "type":"number"},
+        "bravaisLattice": { "type":"string"},
+        "viewState": { "type":"string"}
+      },
+      "required": ["scaleX","scaleY","scaleZ", "repeateX", "repeateY", "repeateZ", "alpha", "beta", "gamma", "bravaisLattice"] 
+    },
+    "cellVisualization": {
+      "type": "object", 
+      "properties" : {
+        "edges": { 
+          "type":"object",
+          "properties" :{
+            "visible" : { "type" : "boolean" },
+            "radius" : { "type" : "number" },
+            "color" : { "type" : "string" }
+          },
+          "required": ["visible", "radius", "color"]
+        },
+        "faces": { 
+          "type":"object",
+          "properties" :{
+            "visible" : { "type" : "boolean" },
+            "opacity" : { "type" : "number" },
+            "color" : { "type" : "string" }
+          },
+          "required": ["visible", "radius", "color"]
+        },
+        "required": ["edges", "faces" ]
+      },
+      "required": ["scaleX"]  
+    },
+    "millerObjects": {
+      "type": "object",
+      "properties": {
+        "directions": {
+          "type": "array",
+          "items": 
+          { "anyOf" : 
+            [
+              {
+                "type": "object",
+                "properties": { 
+                  "visible": {"type": "boolean"},
+                  "id": {"type": "string"},
+                  "startPoint": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "endPoint": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "color": {"type": "string"},
+                  "name": {"type": "string"},
+                  "u": {"type": "number"},
+                  "v": {"type": "number"},
+                  "w": {"type": "number"}
+                }
+              }
+            ]
+          }
+        },
+        "planes": {
+          "type": "array",
+          "items": 
+          { "anyOf" : 
+            [
+              {
+                "type": "object",
+                "properties":{ 
+                  "visible": {"type": "boolean"},
+                  "id": {"type": "string"},
+                  "a": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "b": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "c": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "d": {
+                    "type": "object",
+                    "properties":{
+                      "x": {"type": "number"},
+                      "y": {"type": "number"},
+                      "z": {"type": "number"},
+                      "required": ["x","y","z"]
+                    }
+                  },
+                  "color": {"type": "string"},
+                  "opacity": {"type": "number"},
+                  "name": {"type": "string"},
+                  "h": {"type": "number"},
+                  "k": {"type": "number"},
+                  "l": {"type": "number"}
+                }
+              }
+            ]
+          }
+        }
+      } 
+    },
+    "motif": {
+      "type": "array",
+      "items": 
+      { "anyOf" : 
+        [
+          {
+            "type": "object",
+            "properties":{ 
+              "visible": { "type": "boolean"},
+              "id": { "type": "string"},
+              "radius": { "type": "number"},
+              "name": { "type": "string"},
+              "color": { "type": "string"},
+              "blinking": { "type": "boolean"},
+              "position": {
+                "type": "object",
+                "properties":{
+                  "x": {"type": "number"},
+                  "y": {"type": "number"},
+                  "z": {"type": "number"},
+                  "required": ["x","y","z"]
+                }
+              },
+              "opacity": { "type": "number"},
+              "texture": { "type": "string"},
+              "wireframe": { "type": "boolean"}
+            },
+            "required":["opacity","texture","dragMode","wireframe","visible","id","radius","name","color","blinking","position","name"]
+          }
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "unitCell": { 
+      "type": "object",
+      "properties" : {
+        "fixedLength": { "type":"boolean"}, 
+        "viewState": { "type":"string"},
+        "positions": { 
+          "type": "array",
+          "items": 
+          { "anyOf" : 
+            [
+              {
+                "type": "object", 
+                "properties":{
+                  "x": {"type": "number"},
+                  "y": {"type": "number"},
+                  "z": {"type": "number"},
+                  "reference": {"type": "string"},
+                  "required": ["x","y","z"]
+                }
+              }
+            ]
+          }
+        },
+        "dragMode": { "type": "boolean"},
+        "editorState": { "type":"number"},
+        "dimensions": { 
+          "type": "object",
+          "properties":{
+            "x": {"type": "number"},
+            "y": {"type": "number"},
+            "z": {"type": "number"},
+            "required": ["x","y","z"]
+          }
+        },
+        "newSphere": {  
+          "type": "object",
+          "properties":{ 
+            "visible": { "type": "boolean"},
+            "id": { "type": "string"},
+            "radius": { "type": "number"},
+            "name": { "type": "string"},
+            "color": { "type": "string"},
+            "blinking": { "type": "boolean"},
+            "position": {
+              "type": "object",
+              "properties":{
+                "x": {"type": "number"},
+                "y": {"type": "number"},
+                "z": {"type": "number"},
+                "required": ["x","y","z"]
+              }
+            },
+            "opacity": { "type": "number"},
+            "texture": { "type": "string"},
+            "wireframe": { "type": "boolean"}
+          },
+          "required":["opacity","texture","dragMode","wireframe","visible","id","radius","name","color","blinking","position","name"]
+        }, 
+        "lastSphereAdded": { "type":"string"},
+        "tangentToThis": { "type":"string"},
+        "tangency": { "type":"boolean"}, 
+        "manualSetCellDims": { "type":"boolean"}, 
+        "AzAbAc": { 
+          "type": "object",
+          "properties":{
+            "a": {"type": "number"},
+            "b": {"type": "number"},
+            "c": {"type": "number"},
+            "required": ["x","y","z"]
+          }
+        }
+        "leastCellLengths": { 
+          "type": "object",
+          "properties":{
+            "x": {"type": "number"},
+            "y": {"type": "number"},
+            "z": {"type": "number"},
+            "required": ["x","y","z"]
+          }
+        }
+      },
+      "required": ["scaleX","scaleY","scaleZ", "repeateX", "repeateY", "repeateZ", "alpha", "beta", "gamma", "bravaisLattice"] 
+    },
+    "cameraSettings": {
+      "type": "object",
+      "centeredAtAxis": {"type":"boolean"},
+      "synced": {"type":"boolean"},
+      "enableDistortion": {"type":"boolean"},
+      "position": {
+        "type": "object",
+        "properties":{
+          "x": {"type": "number"},
+          "y": {"type": "number"},
+          "z": {"type": "number"},
+          "required": ["x","y","z"]
+        }
+      }
+    },
+    "axisSelection": {
+      "type": "object",
+      "xyzVisible" : {"type": "boolean"},
+      "abcVisible" : {"type": "boolean"}
+    }
+  },
+  "required": [
+    "projectName",
+    "latticeParams",
+    "cellVisualization",
+    "millerObjects", 
+    "motif", 
+    "unitCell", 
+    "cameraSettings", 
+    "axisSelection"
+  ] 
+}

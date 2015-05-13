@@ -961,7 +961,7 @@
                                           <option value="None" id="None">None</option>
                                           <option value="Lines" id="Lines">Lines</option>
                                           <option value="Dots" id="Dots">Dots</option>
-                                          <option value="Stars" id="Stars">Stars</option>
+                                          <option value="randomLines" id="randomLines">Random Lines</option>
                                           <option value="CrystalWalk" id="CrystalWalk">CrystalWalk</option>
                                         </select>
                                       </div>
@@ -1059,8 +1059,7 @@
                                         <span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Snapshot
                                       </a>   
                                     </button>
-                                  </div> 
-                                 
+                                  </div>  
                                   <div  role="group" aria-label="Small button group">
                                     <button class="btn-group btn-group-sm">
                                       <a id="notes" class=" btn btn-center btn btn-default navbar-btn   " href="#">
@@ -1068,6 +1067,14 @@
                                       </a>   
                                     </button>
                                   </div> 
+                                  <div  role="group" aria-label="Small button group">
+                                    <button class="btn-group btn-group-sm">
+                                      <a id="storeState" class=" btn btn-center btn btn-default navbar-btn   " href="#">
+                                        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Store Project
+                                      </a>   
+                                    </button>
+                                  </div>
+                                  <div id='downloadJSON'></div>
                                 </div> 
                               </div> 
                               <div class='row'>
@@ -1080,7 +1087,7 @@
                                     <h3 class="panel-title"><strong>Crystal Camera Center at (0,0,0)</strong></h3>
                                   </div>
                                 </div>
-                              </div>
+                              </div> 
                             </div>
                           </div>
                         </div>

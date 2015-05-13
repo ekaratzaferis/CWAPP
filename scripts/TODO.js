@@ -1,15 +1,7 @@
-1. newSPhere doesnot reposition well when tangetn to rotate
-2. when I add one atom and then i click save and then i move it with mouse newSphere is undefined and causes problems
-3. possible have to change every configureCellPoints call with stalling to enable it get the right values of object3d.position (or I can re do it every little time);
-
-7. sync cams and enable distortion do not work together
-8. * depthWrite: false, depthTest: false, */
-9. motif editor must create an DB for each atom and for the whole motif
-
-
  
 
 TODO list
+
 1.  xyz labels not moving when zoom in/out
 2.  switch for light to improve performance
 3.  parameters for lighting
@@ -30,3 +22,15 @@ TODO list
 18. adjust arrows head width, length acording to the size of the arrow (millers)
 19. between changing view mode it must go to classic first (except for gradeLimited) 
 20. triclinic,monoclinic,rhombohedral and hexagonal needs their Aa Ab Ac leastCellLengths fixed (findLeastCellLength())
+21. sync cams and enable distortion do not work together
+
+
+ 
+-----------------------
+
+List with Ideas
+
+1. Syncing with user dropbox to store a project there and reopen it later
+2. Public library of CW Projects - search by keywords, most popular etc
+
+

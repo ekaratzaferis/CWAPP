@@ -24,10 +24,8 @@ define([
     this.menu = menu ; 
     this.cellParameters = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
     this.initialLatticeParams = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
-
-
-    this.motifParameters ;  
-    this.pointPositions = [];
+ 
+    this.motifParameters ;   
     this.motifsAtoms = [];
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
@@ -42,8 +40,7 @@ define([
     this.manualAabc = false;
     this.leastCellLengths = {'x' : 0, 'y' : 0, 'z' : 0 };
 
-    this.newSphere ;
-    this.newCellSphere ;
+    this.newSphere ; 
     this.lastSphereAdded ; 
     this.dragMode = false;
     this.tangentToThis;
@@ -127,7 +124,7 @@ define([
     if(_this.isEmpty) {  
       var newId = "_"+Math.random() ;
       
-      var a = new AtomSphere( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
+      var a = new AtomSphere( true, (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
       _this.newSphere = a ;
       _this.isEmpty = false;
       $("#atomName").val(params.element+" ");
@@ -151,7 +148,7 @@ define([
       $("#atomPosY").val( p.y);
       $("#atomPosZ").val( p.z);
       var newId = "_"+Math.random();
-      var a = new AtomSphere( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId);
+      var a = new AtomSphere( true,  (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId);
       _this.newSphere = a;
       _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
       PubSub.publish(events.EDITOR_STATE,"creating");

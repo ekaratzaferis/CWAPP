@@ -58,7 +58,7 @@ function NavCube( scene, latticeParams) {
         this.scale = (scale === undefined) ? 1 : scale ;
       },
       
-      function ( t ) { console.log(t); 
+      function ( t ) {  
         var tx = 2*(t-2/3) * 2, ty = -3 + Math.sin( -1*Math.PI/1.3 + Math.PI * t/2 )  ; 
           
         return new THREE.Vector3(tx, ty, 0).multiplyScalar(this.scale);

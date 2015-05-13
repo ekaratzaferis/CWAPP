@@ -11,15 +11,19 @@ define([
 ) {
   
   // tangency is not used anymore!
-  function AtomSphere(position, radius, color, tangency, elementName, id) {
+  function AtomSphere(visible,position, radius, color, tangency, elementName, id) {
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
     this.material;
     this.materialLetter;
     this.materials;
     this.tangency = tangency; 
+    this.color = color; 
     this.myID = id; 
     this.blinking;
+    this.blinkingMode = false;
+    this.visible = visible;
+    this.textureName = 'none';
     this.elementName = elementName;
     
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
@@ -86,6 +90,7 @@ define([
   }; 
   AtomSphere.prototype.setMaterial = function(color, opacity) {
     var _this = this;
+    this.color = color ; 
     _this.colorMaterial = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide  });
     _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity/10  });
     _this.object3d.children[0].material.needsUpdate = true;
@@ -93,6 +98,7 @@ define([
   };
   AtomSphere.prototype.setMaterialTexture = function(texture) {
     var _this = this;
+    this.textureName = texture ;
     var textureLoader = new THREE.TextureLoader();
     textureLoader.load("Images/atoms/"+texture+".png",
       function(tex){ 
@@ -109,6 +115,7 @@ define([
   };
   AtomSphere.prototype.changeColor = function(color) {
     var _this = this;
+    this.color = color ;
     _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
     _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
@@ -130,6 +137,8 @@ define([
   };
   AtomSphere.prototype.blinkMode = function(bool, color) {
     var _this = this; 
+    this.blinkingMode = bool;
+
     if(bool){
       this.blinking = setInterval(function() { 
         _this.changeColor(color);
@@ -140,8 +149,7 @@ define([
       clearInterval(this.blinking);
       _this.object3d.children[0].material = _this.colorMaterial;
       _this.object3d.children[0].material.needsUpdate = true;
-    }
-
+    } 
   };
   return AtomSphere;
 });

@@ -92,7 +92,7 @@ define([
 
         var theta = Math.atan2( offset.x, offset.z );  
         var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
-        phi = Math.max( 0.000001, Math.min( Math.PI - 0.000001, phi ) );
+        phi = Math.max( 0.01, Math.min( Math.PI - 0.01, phi ) );
         var r = this.hudCameras[i].position.length() ;
         var newOffset = new THREE.Vector3();
 

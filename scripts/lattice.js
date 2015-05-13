@@ -38,9 +38,11 @@ define([
     this.mutex = false;
     this.currentMotif = [];
     this.latticeName = 'none';
+    this.latticeType = 'none';
+    this.latticeSystem = 'none';
 
     // grade
-    this.gradeChoice = {"face":"off", "grid":"off"};
+    this.gradeChoice = {"face":false, "grid":false};
     this.gridPointsPos = [];
     this.grids = [];
     this.hexGrids = {};
@@ -203,7 +205,7 @@ define([
     var origin, g,destinationReference;
     var destination;
     var _this = this;
-    var visible = (this.gradeChoice.grid === "on" ) ;
+    var visible = (this.gradeChoice.grid  ) ;
   
     // erase previous grid 
     this.destroyGrids();
@@ -433,7 +435,7 @@ define([
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
-    var visible = (this.gradeChoice.grid === "on" ); //recreate motif inm lattice and add atom in motif
+    var visible = (this.gradeChoice.grid ); //recreate motif inm lattice and add atom in motif
     if(vertical){
       var a = hexPoints[0];
       var b = hexPoints[1];
@@ -544,6 +546,8 @@ define([
     _this.latticeName = latticeName;
     require(['lattice/' + latticeName], function(lattice) {
       _this.lattice = lattice; 
+      _this.latticeSystem = _this.lattice.latticeSystem ;
+      _this.latticeType = _this.lattice.latticeType ;
       _this.update();
       PubSub.publish(events.LOAD, lattice);
     }); 
@@ -651,7 +655,7 @@ define([
     var _this = this;
     var parameters = this.parameters;
     var gradeParameters = this.gradeParameters;
-    var visible = (this.gradeChoice.face === "on" );
+    var visible = (this.gradeChoice.face  );
 
     _.each(this.faces, function(face, reference) {
       face.destroy();
@@ -838,7 +842,7 @@ define([
 
       this.gradeChoice.face = gradeChoices["faceCheckButton"];
 
-      if(this.gradeChoice.face == "off"){
+      if(this.gradeChoice.face == false){
         _.each(this.faces, function(face) {
           face.setVisible(false);
         });
@@ -853,7 +857,7 @@ define([
 
     if(!_.isUndefined(gradeChoices["gridCheckButton"])) { 
       this.gradeChoice.grid = gradeChoices["gridCheckButton"];
-      if(this.gradeChoice.grid == "off"){
+      if(this.gradeChoice.grid == false){
         _.each(this.grids, function(grid) {
           grid.grid.setVisible(false);
         });
@@ -970,8 +974,9 @@ define([
             millerL : plane.l,
             planeColor : plane.planeColor,
             planeOpacity : plane.planeOpacity,
-            planeName : plane.planeName
-            };
+            planeName : plane.planeName 
+
+          };
         plane.plane.destroy();
         delete _this.millerPlanes[reference]; 
         _this.createMillerPlane(params, false, true);  
@@ -1015,9 +1020,10 @@ define([
               var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
               
               var x =  new MillerPlane(a, b, c, undefined, millerParameters.planeOpacity , millerParameters.planeColor );
-              id = generateKey();
+              id = generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
+                  visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
@@ -1036,10 +1042,12 @@ define([
               else{
                  
                 _this.tempPlanes[id] = {
+                  visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
                   c : c , 
+                  d : d , 
                   id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                   h : millerParameters.millerH,
                   k : millerParameters.millerK,
@@ -1141,13 +1149,15 @@ define([
               var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
               var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
               var x = new MillerPlane(_a,_b,_c,_d, millerParameters.planeOpacity , millerParameters.planeColor );
-              id = generateKey();
+              id = generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
+                  visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
                   c : c , 
+                  d : d , 
                   id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                   h : millerParameters.millerH,
                   k : millerParameters.millerK,
@@ -1160,10 +1170,12 @@ define([
               }
               else{
                  _this.tempPlanes[id] = {
+                  visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
                   c : c , 
+                  d : d , 
                   id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                   h : millerParameters.millerH,
                   k : millerParameters.millerK,
@@ -1275,7 +1287,7 @@ define([
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
           _.times(parameters.repeatZ , function(_z) {
-            id = generateKey();
+            id = generateDirectionKey();
             var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
             var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
             startPoint.x += _x ; 
@@ -1286,6 +1298,7 @@ define([
             endpointPoint.z += _z ; 
             if(!temp){ 
               _this.millerDirections[id] = {
+                visible: true,
                 direction : undefined,
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
@@ -1301,6 +1314,7 @@ define([
             }
             else{
               _this.tempDirs[id] = {
+                visible: true,
                 direction : undefined,
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
@@ -1646,8 +1660,7 @@ define([
       $option.remove();
       _.each(_this.directionalList, function(x, reference) {
         if(x.id===oldId) delete _this.directionalList[reference];
-      });
-
+      }); 
     }
 
     var text = "Vector : "+millerParameters.directionName+"  ["+millerParameters.millerU+","+millerParameters.millerV+","+millerParameters.millerW+"] ";
@@ -1746,9 +1759,13 @@ define([
     _grid.position.set(newPoint.x,newPoint.y,newPoint.z);
 
   };
-  var key = 0 ;
-  function generateKey(){
-    return key++; 
+  var keyP = 0 ;
+  function generatePlaneKey(){
+    return keyP++; 
+  }
+  var keyD = 0 ;
+  function generateDirectionKey(){
+    return keyD++; 
   }
   function assignUVs( geometry ){ //todo maybe it doesn't work right
      
