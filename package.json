@@ -1,0 +1,41 @@
+{
+  "name": "crystalwalk",
+  "version": "0.5.13",
+  "description": "A Visualization Tool for Material Science",
+  "main": "index.js",
+  "engines": {
+    "node": "0.12.2"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "~4.9.x"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-bowercopy": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-qunit": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-jsonlint": "*",
+    "grunt-newer": "*",
+    "jshint-stylish": "*",
+    "load-grunt-tasks": "*",
+    "mocha": "^1.20.1",
+    "requirejs": "^2.1.14",
+    "three": "^0.67.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gvcm/crystalwalk"
+  },
+  "keywords": [
+    "crystalwalk",
+    "visualization"
+  ],
+  "license": "MIT"
+}
