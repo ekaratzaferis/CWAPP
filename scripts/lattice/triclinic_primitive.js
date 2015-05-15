@@ -28,8 +28,7 @@ define(function() {
       'scaleZ': {
         'scaleX': '≠',
         'scaleY': '≠'
-      },
-
+      }, 
       'gamma': {
         '90': '≠',
         'beta': '≠',

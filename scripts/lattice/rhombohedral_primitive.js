@@ -22,8 +22,7 @@ define(function() {
       },
       'scaleZ': {
         'scaleY': '='
-      },
-      
+      }, 
       'gamma': {
         '90': '≠',   
       },

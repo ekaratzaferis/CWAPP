@@ -175,6 +175,7 @@ THREE.OrbitAndPanControls = function ( object, domElement ) {
 		if ( event.wheelDelta ) { // WebKit / Opera / Explorer 9
 
 			delta = event.wheelDelta / 40;
+			console.log(delta);
 
 		} else if ( event.detail ) { // Firefox
 
@@ -212,7 +213,7 @@ THREE.OrbitAndPanControls = function ( object, domElement ) {
 			delta = - event.detail / 3;
 
 		}
-			
+			console.log(delta);
 		var width = this.object.right / zoom;
 		var height = this.object.top / zoom;
 		

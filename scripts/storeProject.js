@@ -10,18 +10,24 @@ define([
   jQuery
 ) {
  
-  function StoreProject(lattice, motifeditor, camera) { 
+  function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam) { 
     this.idle = false;
     this.lattice = lattice;
     this.motifeditor = motifeditor;
+    this.cellCamera = cellCamera ;
+    this.motifXcam = motifXcam ;
+    this.motifYcam = motifYcam ;
+    this.motifZcam = motifZcam ;
     this.camera = camera ;
- 
   };
 
   StoreProject.prototype.createJSONfile = function() {
     var _this = this ;
-    if(!this.idle){  
-      
+    if(!this.idle){   
+
+      $("body").css("cursor", "wait");
+      var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay');
+
       var centeredAtAxis = ($('#crystalCamTarget').is(':checked')) ? true : false ;
       var synced = ($('#syncCameras').is(':checked')) ? true : false ;
       var enableDistortion = ($('#distortion').is(':checked')) ? true : false ;
@@ -30,10 +36,21 @@ define([
       var abcAxes = ($('#abcAxes').is(':checked')) ? true : false ;
       var start =  " "  ;
 
-      var latticeParams = 
-      '{"latticeParams": { "type": "object", "properties" : { "scaleX":"'+this.lattice.parameters.scaleX+'",  "scaleY":"'+this.lattice.parameters.scaleY+'", "scaleZ":"'+this.lattice.parameters.scaleZ+'", "repeateX":"'+this.lattice.parameters.repeateX+'", "repeateY":"'+this.lattice.parameters.repeateY+'", "repeateZ":"'+this.lattice.parameters.repeateZ+'","alpha":"'+this.lattice.parameters.alpha+'", "beta":"'+this.lattice.parameters.beta+'", "gamma":"'+this.lattice.parameters.gamma+'", "latticeType":"'+this.lattice.latticeType+'", "latticeSystem":"'+this.lattice.latticeSystem+'", "viewState": "todo" } },  ';
+      var latticeParams;
 
-      var cellVisualization = '"cellVisualization" :{ "edges" : { "visible":'+this.lattice.gradeChoice.grid+', "radius":"'+this.lattice.gradeParameters.radius+'", "color":"'+this.lattice.gradeParameters.cylinderColor+'"}, "faces": { "visible": '+this.lattice.gradeChoice.face +', "opacity": "'+this.lattice.gradeParameters.faceOpacity +'", "color": "'+this.lattice.gradeParameters.faceColor +'"} },';
+      if(this.lattice.lattice){ 
+      var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
+      var gridPoints = JSON.stringify(this.lattice.lattice.gridPoints);
+      var originArray = JSON.stringify(this.lattice.lattice.originArray);
+
+      latticeParams = 
+      '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+      }
+      else{
+        latticeParams = '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+      }
+
+      var cellVisualization = '"cellVisualization" :{ "edges" : { "visible":'+this.lattice.gradeChoice.grid+', "radius":'+this.lattice.gradeParameters.radius+', "color":"'+this.lattice.gradeParameters.cylinderColor+'"}, "faces": { "visible": '+this.lattice.gradeChoice.face +', "opacity": '+this.lattice.gradeParameters.faceOpacity +', "color": "'+this.lattice.gradeParameters.faceColor +'"} },';
 
       var millerObjects = this.createJsonMillerObjects();
 
@@ -41,7 +58,8 @@ define([
       
       var notes = '"notes" : "'+($("#mynotes").val())+'" , ';
 
-      var cameraSettings  = '"cameraSettings" :{ "centeredAtAxis" : '+centeredAtAxis+', "synced":'+synced+', "enableDistortion":'+enableDistortion+', "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'} },';
+      var cameraSettings  = '"cameraSettings" :{ "crystalCamera" :{  "centeredAtAxis" : '+centeredAtAxis+', "synced":'+synced+', "enableDistortion":'+enableDistortion+', "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'}},"cellCamera" :{   "position" : { "x" : '+this.cellCamera.position.x+', "y" :'+this.cellCamera.position.y+', "z" : '+this.cellCamera.position.z+'}},  "motifCameras" :{  "xCam" :{ "left" :'+this.motifXcam.left+', "right" :'+this.motifXcam.right+', "top" :'+this.motifXcam.top+', "bottom" :'+this.motifXcam.bottom+' },"yCam" :{ "left" :'+this.motifYcam.left+', "right" :'+this.motifYcam.right+', "top" :'+this.motifYcam.top+', "bottom" :'+this.motifYcam.bottom+' },"zCam" :{ "left" :'+this.motifZcam.left+', "right" :'+this.motifZcam.right+', "top" :'+this.motifZcam.top+', "bottom" :'+this.motifZcam.bottom+' } } },';
+
 
       var unitCell = this.createJsonUnitCell() ;
 
@@ -58,9 +76,10 @@ define([
                 cameraSettings+
                 axisSelection+
                 end ;
-  
+      
+      //console.log(text);
       var obj = JSON.parse(text);
-  
+
       // send request
 
       var hash = window.location.hash;
@@ -100,6 +119,9 @@ define([
         document.getElementById('downloadJSON').appendChild(a);
         $("#downloadJSON").append('<br> Your url : ');
         document.getElementById('downloadJSON').appendChild(input);
+        overlay.remove();
+        $("body").css("cursor", "default");
+
       });
        
       // get
@@ -122,7 +144,7 @@ define([
   }; 
   StoreProject.prototype.createJsonUnitCell = function(){
     var _this = this ;
-
+ 
     var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? 'undefined' : this.motifeditor.lastSphereAdded.id;
     var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
     var start = '"unitCell" :{ "fixedLength" : '+this.motifeditor.editorState.fixed+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
@@ -287,6 +309,7 @@ define([
       directions.push(',');
 
       directions.push('"id" : "');
+    
       directions.push(directional.id );
 
       directions.push('",');
@@ -330,7 +353,7 @@ define([
 
     var planesIDs = [];
     var planesUnique = _.uniq(_this.lattice.millerPlanes, function(p) { return p.id; });
-
+     
     _.each(planesUnique, function(plane ) {
       if(counter>0) planes.push(', ') ;
       counter++;

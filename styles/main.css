@@ -102,3 +102,11 @@
 textarea {  
   resize: none;
 }
+#overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 1000000;
+  background-color: #26201A;
+  opacity: 0.4;
+}

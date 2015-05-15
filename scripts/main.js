@@ -27,12 +27,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'infobox', 'storeProject'
+  'infobox', 'storeProject', 'restoreCWstate'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  Infobox, StoreProject
+  Infobox, StoreProject, RestoreCWstate
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -78,17 +78,17 @@ require([
   var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
   var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
 
-  var cameraControls1 = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
-  var cameraControls2 = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
-  var cameraControls3 = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ',         "orthographic", false, 'motifZ'   );
+  var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
+  var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
+  var motifCamZ = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ',         "orthographic", false, 'motifZ'   );
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
 
   unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
 
-  motifRenderer.onAnimationUpdate(cameraControls1.update.bind(cameraControls1));
-  motifRenderer.onAnimationUpdate(cameraControls2.update.bind(cameraControls2));
-  motifRenderer.onAnimationUpdate(cameraControls3.update.bind(cameraControls3));
+  motifRenderer.onAnimationUpdate(motifCamX.update.bind(motifCamX));
+  motifRenderer.onAnimationUpdate(motifCamY.update.bind(motifCamY));
+  motifRenderer.onAnimationUpdate(motifCamZ.update.bind(motifCamZ));
 
   // Motif editor
   var motifEditor = new Motifeditor(menu);
@@ -103,8 +103,8 @@ require([
   // infobox
   var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
 
-  // storing mechanism
-  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera() );
+  // storing mechanism  
+  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2) );
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -275,8 +275,24 @@ require([
       orbitUnitCell.sync = false; 
     }
   });  
-  menu.onCameraDistortionChange(function(message, mode){
-    motifEditor.cameraDist(mode, crystalRenderer) ;
+  menu.onCameraDistortionChange(function(message, mode){ 
+    var cPos = crystalRenderer.cameras[0].position ;
+    var currDistance = (crystalRenderer.cameras[0].position).distanceTo(new THREE.Vector3(0,0,0)) ;
+    var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
+    var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
+
+    if(mode.distortion){
+      crystalRenderer.cameras[0].fov = 75;
+      var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
+      var factor = distance/currDistance; 
+      crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
+    }
+    else{ 
+      crystalRenderer.cameras[0].fov = 15;
+      var distance = Visheight/(2 * Math.tan( (15* Math.PI / 180) / 2 ) );
+      var factor = distance/currDistance; 
+      crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
+    } 
   });
   menu.cellDimensionChange(function(message, param){
     motifEditor.updateCellDimens(param) ;
@@ -317,10 +333,32 @@ require([
   });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
-      menu.setLatticeParameters(lattice.defaults);
+      menu.setLatticeParameters(lattice.defaults);  
       menu.setLatticeRestrictions(lattice.restrictions);   
     }
   });
   
+  // to read the json file
+  var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, hudCube, hudArrows );
+  
+  document.getElementById('localJSON').addEventListener('change', parseJSON, false);
+
+  function parseJSON(evt) { 
+     
+    var f = evt.target.files[0];  
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+        var st = JSON.parse(e.target.result); 
+        restore.configureState(st);
+
+      }
+      r.readAsText(f);
+    } 
+    else { 
+      alert("Failed to load file");
+    }
+  } 
+
 });
  

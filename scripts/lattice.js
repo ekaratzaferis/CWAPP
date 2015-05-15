@@ -37,9 +37,9 @@ define([
     this.points = {}; 
     this.mutex = false;
     this.currentMotif = [];
-    this.latticeName = 'none';
-    this.latticeType = 'none';
-    this.latticeSystem = 'none';
+    this.latticeName = 'none';  
+    this.latticeType = 'none'; // may be useless
+    this.latticeSystem = 'none'; // may be useless
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -61,12 +61,14 @@ define([
     this.directionalState = {state:"initial", editing : undefined, dname : undefined};    
     this.directionalList =[];
     this.tempDirs = [] ;
+    this.planesUnique = [];
+    this.directionsUnique = [] ;
 
     //view
     this.actualAtoms = []; 
     this.viewBox = [];
     this.viewMode = 'Classic';
-  };
+  }; 
   Lattice.prototype.changeView = function(arg) {
     var _this = this, i =0;
     _this.viewMode = arg ;
@@ -196,7 +198,7 @@ define([
     
     var gridPoints = this.lattice.gridPoints;
     var usedGridOrigins = [];
- 
+     
     if (_.isUndefined(gridPoints) && (this.latticeName !== 'hexagonal')) { 
       return;
     }
@@ -206,7 +208,7 @@ define([
     var destination;
     var _this = this;
     var visible = (this.gradeChoice.grid  ) ;
-  
+     
     // erase previous grid 
     this.destroyGrids();
      
@@ -533,7 +535,7 @@ define([
     }; 
     return anglesScales ; 
   };
-  Lattice.prototype.load = function(latticeName) {
+  Lattice.prototype.load = function(latticeName) {  
     if (_.isEmpty(latticeName)) {
       this.lattice = null;
       this.destroyPoints();
@@ -549,7 +551,7 @@ define([
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ;
       _this.update();
-      PubSub.publish(events.LOAD, lattice);
+      PubSub.publish(events.LOAD, lattice); 
     }); 
   };
 
@@ -773,10 +775,10 @@ define([
 
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
-
+ 
     arrow.position.set(start.x, start.y, start.z);
     arrow.setDirection(direction.normalize());
-    arrow.setLength(length);
+    arrow.setLength(length,  0.4, 0.15);
 
   };
   Lattice.prototype.revertShearing = function() {
@@ -817,8 +819,7 @@ define([
 
   Lattice.prototype.update = function() {  
     if(this.latticeName !== 'hexagonal'){
-      this.backwardTransformations();
-       
+      this.backwardTransformations(); 
       this.updatePoints();
       this.forwardTransformations();
     }
@@ -837,7 +838,7 @@ define([
   };
   
   Lattice.prototype.setGradeChoices = function(gradeChoices) { 
-    
+     
     if(!_.isUndefined(gradeChoices["faceCheckButton"])) {
 
       this.gradeChoice.face = gradeChoices["faceCheckButton"];
@@ -878,8 +879,8 @@ define([
     var _this = this;
      
     if(_.isUndefined(_this.gradeParameters)) return;
-     
-     _.each(this.grids, function(grid) { 
+      
+    _.each(this.grids, function(grid) { 
       grid.grid.setRadius(_this.gradeParameters.radius);
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
@@ -914,9 +915,9 @@ define([
     else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
 
     }
-  };
-  Lattice.prototype.setParameters = function(latticeParameters) {  
-     
+  }; 
+  Lattice.prototype.setParameters = function(latticeParameters) { 
+
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
@@ -926,7 +927,7 @@ define([
 
       _.extend(this.parameters, delta);  
 
-      if (_.indexOf(deltaKeys, 'repeatX')!=-1 || _.indexOf(deltaKeys, 'repeatY')!=-1 || _.indexOf(deltaKeys, 'repeatZ')!=-1) { 
+      if (_.indexOf(deltaKeys, 'repeatX')!=-1 || _.indexOf(deltaKeys, 'repeatY')!=-1 || _.indexOf(deltaKeys, 'repeatZ')!=-1) {  
         _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
         this.actualAtoms.splice(0);   
         this.updatePoints();  
@@ -965,45 +966,56 @@ define([
   };
   Lattice.prototype.reCreateMillers = function() {
     var _this = this;
+    console.log('reCreateMillers'); 
+
+    this.planesUnique = _.uniq(_this.millerPlanes, function(p) { return p.id; });
+
+    for (var i = 0; i < this.millerPlanes.length; i++) {
+      this.millerPlanes[i].plane.destroy();
+    }  
+    this.millerPlanes.splice(0);
+ 
+    for (var i = 0; i < this.planesUnique.length; i++) { 
+      var plane = this.planesUnique[i];
+      var params = {
+        millerH : plane.h, 
+        millerK :  plane.k, 
+        millerL : plane.l,
+        planeColor : plane.planeColor,
+        planeOpacity : plane.planeOpacity,
+        planeName : plane.planeName  
+      };    
+      this.createMillerPlane(params, false, true);   
+    }
     
-    if(this.millerPlanes.length>0) {
-      _.each(_this.millerPlanes, function(plane, reference) {
-        var params = {
-            millerH : plane.h, 
-            millerK :  plane.k, 
-            millerL : plane.l,
-            planeColor : plane.planeColor,
-            planeOpacity : plane.planeOpacity,
-            planeName : plane.planeName 
+    ///////////////////////////////////////////////
 
-          };
-        plane.plane.destroy();
-        delete _this.millerPlanes[reference]; 
-        _this.createMillerPlane(params, false, true);  
-      });
-    };
+    this.directionsUnique = _.uniq(_this.millerDirections, function(p) { return p.id; });
 
-    if(this.millerDirections.length>0) {
-      _.each(_this.millerDirections, function(directional, reference) {
-        var params = {
-            millerU : directional.u, 
-            millerV :  directional.v, 
-            millerW : directional.w,
-            directionColor : directional.directionColor,
-            directionName : directional.directionName
-            };
-        directional.direction.destroy();
-        delete _this.millerDirections[reference];
-        _this.createMillerDirection(params, false, true);   
-      });
-    };
+    for (var i = 0; i < this.millerDirections.length; i++) {
+      this.millerDirections[i].direction.destroy();
+    }
+
+    this.millerDirections.splice(0);
+
+    for (var i = 0; i < this.directionsUnique.length; i++) { 
+      var directional = this.directionsUnique[i];
+      var params = {
+        millerU : directional.u, 
+        millerV :  directional.v, 
+        millerW : directional.w,
+        directionColor : directional.directionColor,
+        directionName : directional.directionName
+      };   
+      this.createMillerDirection(params, false, true); 
+    }   
   }
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform) {
     var _this = this ;
     var parameters = this.parameters ;
-    var h = millerParameters.millerH ; 
-    var k = millerParameters.millerK ; 
-    var l = millerParameters.millerL ;
+    var h = parseInt(millerParameters.millerH ); 
+    var k = parseInt(millerParameters.millerK ); 
+    var l = parseInt(millerParameters.millerL );
     var id;  
 
     h = (h!=0) ? 1/h : 0 ;
@@ -1019,8 +1031,8 @@ define([
               var b = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x,  (l<0 ? (1+l) : l ) + _y, (h<0 ? 1 : 0) + _z ); 
               var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
               
-              var x =  new MillerPlane(a, b, c, undefined, millerParameters.planeOpacity , millerParameters.planeColor );
-              id = generatePlaneKey();
+              var x =  new MillerPlane(a, b, c, undefined, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor );
+              id = _this.generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
                   visible: true,
@@ -1028,35 +1040,34 @@ define([
                   a : a, 
                   b : b, 
                   c : c, 
-                  id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : millerParameters.millerH,
-                  k : millerParameters.millerK,
-                  l : millerParameters.millerL,
-                  planeOpacity : millerParameters.planeOpacity,
+                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                  h : parseInt(millerParameters.millerH),
+                  k : parseInt(millerParameters.millerK),
+                  l : parseInt(millerParameters.millerL),
+                  planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
                 }; 
 
                 _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
               }
-              else{
-                 
-                _this.tempPlanes[id] = {
+              else{ 
+                _this.tempPlanes.push({
                   visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
                   c : c , 
                   d : d , 
-                  id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : millerParameters.millerH,
-                  k : millerParameters.millerK,
-                  l : millerParameters.millerL,
-                  planeOpacity : millerParameters.planeOpacity,
+                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                  h : parseInt(millerParameters.millerH),
+                  k : parseInt(millerParameters.millerK),
+                  l : parseInt(millerParameters.millerL),
+                  planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
-                }; 
-                _this.forwardTransformationsMiller(_this.tempPlanes[id]); 
+                }); 
+                _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]); 
                
               }
             });
@@ -1149,7 +1160,7 @@ define([
               var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
               var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
               var x = new MillerPlane(_a,_b,_c,_d, millerParameters.planeOpacity , millerParameters.planeColor );
-              id = generatePlaneKey();
+              id = _this.generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
                   visible: true,
@@ -1158,33 +1169,33 @@ define([
                   b : b, 
                   c : c , 
                   d : d , 
-                  id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : millerParameters.millerH,
-                  k : millerParameters.millerK,
-                  l : millerParameters.millerL,
-                  planeOpacity : millerParameters.planeOpacity,
+                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                  h : parseInt(millerParameters.millerH),
+                  k : parseInt(millerParameters.millerK),
+                  l : parseInt(millerParameters.millerL),
+                  planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
                 }; 
                 _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
               }
               else{
-                 _this.tempPlanes[id] = {
+                 _this.tempPlanes.push({
                   visible: true,
                   plane : x, 
                   a : a, 
                   b : b, 
                   c : c , 
                   d : d , 
-                  id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : millerParameters.millerH,
-                  k : millerParameters.millerK,
-                  l : millerParameters.millerL,
-                  planeOpacity : millerParameters.planeOpacity,
+                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                  h : parseInt(millerParameters.millerH),
+                  k : parseInt(millerParameters.millerK),
+                  l : parseInt(millerParameters.millerL),
+                  planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
-                }; 
-                _this.forwardTransformationsMiller(_this.tempPlanes[id]);
+                }); 
+                _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);
               }
             });
           });
@@ -1205,7 +1216,7 @@ define([
             a : a, 
             b : b, 
             c : c, 
-            id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
             h : millerParameters.millerH,
             k : millerParameters.millerK,
             l : millerParameters.millerL,
@@ -1223,7 +1234,7 @@ define([
             a : a, 
             b : b, 
             c : c , 
-            id : (""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
             h : millerParameters.millerH,
             k : millerParameters.millerK,
             l : millerParameters.millerL,
@@ -1244,8 +1255,8 @@ define([
     var hexagonal = (this.latticeName !== 'hexagonal') ? false : true ;
     var parameters = this.parameters ;
     var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
-    var id, checkVals = parseInt(u + v) * -1 ;
-    
+    var id, checkVals = parseInt(u + v) * -1 ; 
+
     if(hexagonal){
       if(t != checkVals ) {   
         return null ;
@@ -1287,7 +1298,7 @@ define([
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
           _.times(parameters.repeatZ , function(_z) {
-            id = generateDirectionKey();
+            id = _this.generateDirectionKey() ;
             var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
             var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
             startPoint.x += _x ; 
@@ -1302,10 +1313,10 @@ define([
                 direction : undefined,
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
-                id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                u : millerParameters.millerU,
-                v : millerParameters.millerV,
-                w : millerParameters.millerW,
+                id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                u : parseInt(millerParameters.millerU),
+                v : parseInt(millerParameters.millerV),
+                w : parseInt(millerParameters.millerW),
                 directionColor : millerParameters.directionColor,
                 name : millerParameters.directionName
               };
@@ -1313,20 +1324,20 @@ define([
               _this.millerDirections[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
             }
             else{
-              _this.tempDirs[id] = {
+              _this.tempDirs.push({
                 visible: true,
                 direction : undefined,
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
-                id : (""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                u : millerParameters.millerU,
-                v : millerParameters.millerV,
-                w : millerParameters.millerW,
+                id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                u : parseInt(millerParameters.millerU),
+                v : parseInt(millerParameters.millerV),
+                w : parseInt(millerParameters.millerW),
                 directionColor : millerParameters.directionColor,
                 name : millerParameters.directionName
-              };
-              _this.forwardTransformationsMiller(_this.tempDirs[id]); 
-              _this.tempDirs[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
+              });
+              _this.forwardTransformationsMiller(_this.tempDirs[_this.tempDirs.length-1]); 
+              _this.tempDirs[_this.tempDirs.length-1].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor) ;
             }
           });
         });
@@ -1338,23 +1349,21 @@ define([
     if(which==="---") return;
     var _this = this;
     var u,v,w,name,color;
-    PubSub.publish(events.DIRECTION_STATE,"editing");
+    PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
-    _.each(_this.tempDirs, function(dir, reference) {
-      dir.direction.destroy();
-      delete _this.tempDirs[reference];
-    });  
-    _.each(_this.millerDirections, function(dir, reference) {
-      if(dir.id === which) {
-        _this.tempDirs.push(dir);
-        u = _this.millerDirections[reference].u;
-        v = _this.millerDirections[reference].v;
-        w = _this.millerDirections[reference].w;
-        name = _this.millerDirections[reference].name;
-        color = _this.millerDirections[reference].directionColor;
-        delete _this.millerDirections[reference];
+    var index ;
+    for (var i = 0; i < this.millerDirections.length; i++) {
+
+      if(this.millerDirections[i].id === which) {
+        this.tempDirs.push(this.millerDirections[i]);
+        u = this.millerDirections[i].u;
+        v = this.millerDirections[i].v;
+        w = this.millerDirections[i].w;
+        name = this.millerDirections[i].name;
+        color = this.millerDirections[i].directionColor; 
       }
-    });  
+    };
+    this.millerDirections.splice(index,1);
     _this.directionalState.editing = which;
     _this.directionalState.dname = name;
     $("#millerU").val(u);
@@ -1369,26 +1378,24 @@ define([
     var _this = this;
     var h,k,l,name,color, opacity;
     PubSub.publish(events.PLANE_STATE,"editing");
-   
-    _.each(_this.tempPlanes, function(plane, reference) {
-      plane.plane.destroy();
-      delete _this.tempPlanes[reference];
-    });  
-    _.each(_this.millerPlanes, function(plane, reference) {
+ 
+    var index ;
+    for (var i = 0; i < this.millerPlanes.length; i++) {
 
-      if(plane.id === which) {
-        _this.tempPlanes.push(plane);
-        h = _this.millerPlanes[reference].h;
-
-        k = _this.millerPlanes[reference].k;
-        l = _this.millerPlanes[reference].l;
-        name = _this.millerPlanes[reference].name;
-        color = _this.millerPlanes[reference].planeColor;
-        opacity = _this.millerPlanes[reference].planeOpacity;
-        delete _this.millerPlanes[reference];
+      if(this.millerPlanes[i].id === which) {
+        this.tempPlanes.push(this.millerPlanes[i]);
+        h = this.millerPlanes[i].h; 
+        k = this.millerPlanes[i].k;
+        l = this.millerPlanes[i].l;
+        name = this.millerPlanes[i].name;
+        color =  this.millerPlanes[i].planeColor;
+        opacity =  this.millerPlanes[i].planeOpacity; 
+        
+        index=i;
       }
-    });  
-    
+    }   
+    this.millerPlanes.splice(index,1);
+
     _this.planeState.editing = which;
     _this.planeState.dname = name;
     $("#millerH").val(h);
@@ -1473,27 +1480,28 @@ define([
     }
     var _this = this ;
     var buttonClicked = millerParameters.button ;
-    var directionID = ""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+    var directionID = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
  
     if (_this.directionalState.state === "initial"){
       PubSub.publish(events.DIRECTION_STATE,"creating");
     }
     else if (_this.directionalState.state === "creating"){
       switch(buttonClicked) {
-        case "previewDirection":
-          _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];
-          });
+        case "previewDirection": 
+          for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
+
           this.createMillerDirection(millerParameters, true, false);
           break;
 
         case "saveDirection":
           PubSub.publish(events.DIRECTION_STATE,"initial");
-          _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];
-          });
+          for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
           var found = _.find(_this.directionalList, function(directional){ return directional.id === directionID; });
           if(_.isUndefined(found)){
             this.createMillerDirection(millerParameters, false, false);
@@ -1505,10 +1513,10 @@ define([
     else if (_this.directionalState.state === "editing"){ 
       switch(buttonClicked) {
         case "previewDirection":
-          _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];
-          });
+          for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
           this.createMillerDirection(millerParameters, true, false);
 
           break;
@@ -1516,10 +1524,10 @@ define([
         case "saveDirection": 
           PubSub.publish(events.DIRECTION_STATE,"initial");
           
-          _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];
-          });
+          for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
           this.createMillerDirection(millerParameters, false, false);
           _this.updateDirectionList(millerParameters, _this.directionalState.editing);
            
@@ -1527,19 +1535,19 @@ define([
 
         case "newDirection": 
           PubSub.publish(events.DIRECTION_STATE,"creating");
-           _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];
-          });
+           for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
           _this.removeDirectionList();
           break;
 
         case "deleteDirection": 
           PubSub.publish(events.DIRECTION_STATE,"initial");
-          _.each(_this.tempDirs, function(dir, reference) {
-            dir.direction.destroy();
-            delete _this.tempDirs[reference];  
-          });
+          for (var i = 0; i < this.tempDirs.length; i++) {
+            this.tempDirs[i].direction.destroy(); 
+          };  
+          this.tempDirs.splice(0);
           _this.removeDirectionList();
           break;
       } 
@@ -1554,7 +1562,7 @@ define([
     }
     var _this = this ;
     var buttonClicked = millerParameters.button ;
-    var planeID = ""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+    var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
  
     if (_this.planeState.state === "initial"){
       PubSub.publish(events.PLANE_STATE,"creating");
@@ -1562,19 +1570,19 @@ define([
     else if (_this.planeState.state === "creating"){
       switch(buttonClicked) {
         case "previewPlane":
-          _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];
-          });
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           this.createMillerPlane(millerParameters, true, false);
           break;
 
         case "savePlane":
           PubSub.publish(events.PLANE_STATE,"initial");
-          _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];
-          });
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
           if(_.isUndefined(found)){
             this.createMillerPlane(millerParameters, false, false);
@@ -1587,20 +1595,20 @@ define([
 
       switch(buttonClicked) {
         case "previewPlane":
-          _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];
-          });
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           this.createMillerPlane(millerParameters, true, false);
 
           break;
 
         case "savePlane": 
           PubSub.publish(events.PLANE_STATE,"initial");
-          _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];
-          });
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           this.createMillerPlane(millerParameters, false, false);
           _this.updatePlaneList(millerParameters, _this.planeState.editing);
            
@@ -1608,19 +1616,19 @@ define([
 
         case "newPlane": 
           PubSub.publish(events.PLANE_STATE,"creating");
-           _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];
-          });
+           for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           _this.removePlaneList();
           break;
 
         case "deletePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial");
-          _.each(_this.tempPlanes, function(plane, reference) {
-            plane.plane.destroy();
-            delete _this.tempPlanes[reference];  
-          });
+          PubSub.publish(events.PLANE_STATE,"initial"); 
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
           _this.removePlaneList();
           break;
       }
@@ -1632,7 +1640,7 @@ define([
   Lattice.prototype.updatePlaneList = function(millerParameters, oldId)  {
     var _this = this ;
     var $planes = jQuery('#planes');
-    
+
     if(!_.isUndefined(oldId)){
       var $option = jQuery("#"+oldId);
       $option.remove();
@@ -1643,7 +1651,7 @@ define([
     }
 
     var text = "Plane : "+millerParameters.planeName+"  ["+millerParameters.millerH+","+millerParameters.millerK+","+millerParameters.millerL+"] ";
-    var id = ""+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
     var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
     $planes.append(option) ;
 
@@ -1664,7 +1672,7 @@ define([
     }
 
     var text = "Vector : "+millerParameters.directionName+"  ["+millerParameters.millerU+","+millerParameters.millerV+","+millerParameters.millerW+"] ";
-    var id = ""+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
     var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
     $vectors.append(option) ;
 
@@ -1736,6 +1744,7 @@ define([
   };
 
   Lattice.prototype.forwardTransformationsMiller = function(shape) { 
+
     this.transformMiller(shape,_.union(scaling, shearing), function(value) {
       return value;
     });
@@ -1751,21 +1760,20 @@ define([
     var newPoint =  pointA.clone().add(dir) ;  
     var direction = new THREE.Vector3().subVectors( pointB, newPoint );
     var direcNorm = direction;
-    direcNorm.normalize();
+    direcNorm.normalize(); 
+
     var arrow = new THREE.ArrowHelper( direcNorm ,newPoint );
 
     _grid.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
     _grid.scale.y = distance/0.001; //distance/grid.geometry.parameters.height;
     _grid.position.set(newPoint.x,newPoint.y,newPoint.z);
 
-  };
-  var keyP = 0 ;
-  function generatePlaneKey(){
-    return keyP++; 
+  }; 
+  Lattice.prototype.generatePlaneKey = function() {
+    return (this.millerPlanes.length); 
   }
-  var keyD = 0 ;
-  function generateDirectionKey(){
-    return keyD++; 
+  Lattice.prototype.generateDirectionKey = function() {
+    return (this.millerDirections.length); 
   }
   function assignUVs( geometry ){ //todo maybe it doesn't work right
      

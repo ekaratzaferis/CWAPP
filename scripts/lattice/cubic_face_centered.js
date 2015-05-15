@@ -26,8 +26,7 @@ define(function() {
       },
       'scaleZ': {
         'scaleY': '='
-      },
-      
+      }, 
       'alpha': {
         'alpha': '='
       },
@@ -37,10 +36,8 @@ define(function() {
       'gamma': {
         'gamma': '='
       }
-    },
-    
-    gridPoints: {
-
+    }, 
+    gridPoints: { 
       'first' : [0,0,0],
       'left'  : [1,1,0],
       'right' : [1,0,1],

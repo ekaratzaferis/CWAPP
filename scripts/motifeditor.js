@@ -922,23 +922,20 @@ define([
       });  
        
       var a = realTimeHypotenuse.clone(); 
-      console.log(line);
-      console.log(a);
+
       var projectOnLine = a.projectOnVector(line);
-      console.log(a);
+       
       wrongSide = projectOnLine.length();
        
       fixedSide = Math.sqrt ( Math.abs((( (realTimeHypotenuse.length())*(realTimeHypotenuse.length())) - (wrongSide*wrongSide) ))); 
        
       rightSide = Math.sqrt ( (( calculatedHypotenuse*calculatedHypotenuse) - (fixedSide*fixedSide) )); 
- 
-      console.log('---'); 
+  
     }
     else{ 
          
     }    
-    var offset = parseFloat( rightSide - wrongSide );
-    console.log(offset); 
+    var offset = parseFloat( rightSide - wrongSide ); 
 
     return (offset);
   }; 
@@ -2762,25 +2759,7 @@ define([
       _this.unitCellAtoms.splice(pos[i],1);;
     }   
   };  
-  Motifeditor.prototype.cameraDist = function(mode, crystalRenderer) {
-    var cPos = crystalRenderer.cameras[0].position ;
-    var currDistance = (crystalRenderer.cameras[0].position).distanceTo(new THREE.Vector3(0,0,0)) ;
-    var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
-    var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
 
-    if(mode.distortion){
-      crystalRenderer.cameras[0].fov = 75;
-      var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
-      var factor = distance/currDistance; 
-      crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
-    }
-    else{ 
-      crystalRenderer.cameras[0].fov = 15;
-      var distance = Visheight/(2 * Math.tan( (15* Math.PI / 180) / 2 ) );
-      var factor = distance/currDistance; 
-      crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
-    }
-  } 
   Motifeditor.prototype.colorUnitCellAtoms = function(id, color){   
     var _this = this; 
     for (var i = 0; i<_this.unitCellAtoms.length; i++) { 

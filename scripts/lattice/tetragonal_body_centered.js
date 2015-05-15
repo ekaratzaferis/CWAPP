@@ -27,9 +27,7 @@ define(function() {
       },
       'scaleY': {
         'scaleX': '='
-      },
-       
-      
+      }, 
       'alpha': {
         'alpha': '='
       },

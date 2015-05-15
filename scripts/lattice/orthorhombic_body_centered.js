@@ -29,8 +29,7 @@ define(function() {
       'scaleZ': {
         'scaleX': '≠',
         'scaleY': '≠'
-      },
-
+      }, 
       'alpha': {
         'alpha': '='
       },

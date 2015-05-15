@@ -29,8 +29,7 @@ define(function() {
       'scaleZ': {
         'scaleX': '≠',
         'scaleY': '≠'
-      },
-
+      }, 
       'beta': {
         '90': '≠'
       },

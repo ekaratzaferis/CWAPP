@@ -23,7 +23,10 @@ TODO list
 19. between changing view mode it must go to classic first (except for gradeLimited) 
 20. triclinic,monoclinic,rhombohedral and hexagonal needs their Aa Ab Ac leastCellLengths fixed (findLeastCellLength())
 21. sync cams and enable distortion do not work together
-
+22. distortion doesnt work perfect
+23. when zoomed in much, the motif cameras are not restored right
+24. adjust arrowhead properties to its length
+24. miller objects recreate function can be optimized
 
  
 -----------------------

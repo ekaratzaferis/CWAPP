@@ -22,8 +22,7 @@ define(function() {
       },
       'scaleZ': {
         'scaleY': '='
-      },
-      
+      }, 
       'alpha': {
         'alpha': '='
       },

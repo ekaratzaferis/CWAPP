@@ -248,7 +248,7 @@ define([
     var _this = this;
 
     // Lattice UI Tab
-    $bravaisLattice.on('change', function() {
+    $bravaisLattice.on('change', function() {  
       return PubSub.publish(events.LATTICE_CHANGE, jQuery(this).val());
     });
 
@@ -559,11 +559,11 @@ define([
       return;
     } 
     var _this = this;
-
+    
     /*jshint unused:false*/
     _.each(latticeParameters, function($latticeParameter, k) {
       if (_.isUndefined(parameters[k]) === false) {
-          $latticeParameter.val(parameters[k]); 
+        $latticeParameter.val(parameters[k]); 
       }
     });
 
@@ -638,7 +638,7 @@ define([
   Menu.prototype.onLatticeChange = function(callback) {
     PubSub.subscribe(events.LATTICE_CHANGE, callback);
   };
-  Menu.prototype.onLatticeParameterChange = function(callback) {
+  Menu.prototype.onLatticeParameterChange = function(callback) { 
     PubSub.subscribe(events.LATTICE_PARAMETER_CHANGE, callback);
   };
   Menu.prototype.onLatticeParameterChangeForHud = function(callback) {
