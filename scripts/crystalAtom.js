@@ -143,7 +143,7 @@ define([
 
     },200);
   }; 
-  CrystalAtom.prototype.destroy = function() {
+  CrystalAtom.prototype.destroy = function() {  
     Explorer.remove(this);  
   };
   function assignUVs( geometry ){ //todo maybe it doesn't work right

@@ -88,9 +88,9 @@ define([
       
   };
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem) {
-    
-    this.latticeType = latticeType; 
-    this.latticeName = latticeName;   
+     
+    this.latticeType   = latticeType; 
+    this.latticeName   = latticeName;   
     this.latticeSystem = latticeSystem;   
       
     this.initialLatticeParams.alpha = anglesScales.alpha ;
@@ -2744,7 +2744,7 @@ define([
     this.cellParameters.scaleZ = parseFloat(arg.z) ;
 
     this.configureCellPoints();
-      // lattice detect mechanism. Ax Ay Az edw
+     
   }; 
 
   Motifeditor.prototype.removeFromUnitCell = function( id ){  //

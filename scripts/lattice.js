@@ -955,8 +955,9 @@ define([
       this.setGradeParameters();
       this.setGradeChoices(this.gradeChoice); 
       this.recreateMotif();
-    }  
+    }   
     _this.updateLatticeTypeRL();
+    console.log(this.actualAtoms)
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -965,8 +966,7 @@ define([
     PubSub.subscribe(events.LOAD, callback);
   };
   Lattice.prototype.reCreateMillers = function() {
-    var _this = this;
-    console.log('reCreateMillers'); 
+    var _this = this; 
 
     this.planesUnique = _.uniq(_this.millerPlanes, function(p) { return p.id; });
 

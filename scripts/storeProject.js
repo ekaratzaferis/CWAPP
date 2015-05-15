@@ -109,7 +109,7 @@ define([
         var a = document.createElement('a');  
         a.download    = "save.json";
         a.href        = url;
-        a.textContent = "Download project.json";
+        a.textContent = "save.json";
           
         var input = document.createElement("input");
         input.type = "text";
@@ -117,7 +117,7 @@ define([
         input.value = window.location + hash;   
 
         document.getElementById('downloadJSON').appendChild(a);
-        $("#downloadJSON").append('<br> Your url : ');
+        $("#downloadJSON").append('  Your url : ');
         document.getElementById('downloadJSON').appendChild(input);
         overlay.remove();
         $("body").css("cursor", "default");
@@ -353,7 +353,7 @@ define([
 
     var planesIDs = [];
     var planesUnique = _.uniq(_this.lattice.millerPlanes, function(p) { return p.id; });
-     
+
     _.each(planesUnique, function(plane ) {
       if(counter>0) planes.push(', ') ;
       counter++;

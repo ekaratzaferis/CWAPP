@@ -49,9 +49,7 @@ define([
  
     // AFTER ADDING EVERYTHING
 
-    if(this.cwObj.latticeParams.lattice){
-      _.each(this.lattice.actualAtoms, function(atom,k) {  atom.destroy(); });
-      this.lattice.actualAtoms.splice(0);   
+    if(this.cwObj.latticeParams.lattice){   
       this.lattice.updatePoints();  
       this.lattice.createGrid();  
       this.lattice.createFaces();
@@ -63,11 +61,63 @@ define([
       this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.cellVisualization.edges.visible} );
       this.lattice.setGradeParameters();
     }
-     
+
+    this.configureMotifEditor();
+
     overlay.remove();
     $("body").css("cursor", "default");
 
   }; 
+  RestoreCWstate.prototype.configureMotifEditor = function() {
+
+    var cell = this.cwObj.unitCell ;
+    var atoms = this.cwObj.motif ;
+    var latticeParams = this.cwObj.latticeParams.lattice.defaults ;
+
+    var anglesScales = {'anglesScales': {'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ}, };
+
+    this.motifEditor.updateLatticeParameters(anglesScales,this.cwObj.latticeParams.lattice.latticeType, this.cwObj.latticeParams.bravaisLattice, this.cwObj.latticeParams.lattice.latticeSystem  );
+
+    // empty array of motif
+    for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
+      this.motifEditor.motifsAtoms[i].destroy(); 
+    };
+    this.motifEditor.motifsAtoms.splice(0);
+
+    // empty array of cell
+    for (var i = this.motifEditor.unitCellAtoms.length - 1; i >= 0; i--) {
+      this.motifEditor.unitCellAtoms[i].destroy(); 
+    };
+    this.motifEditor.unitCellAtoms.splice(0);
+
+    if(this.motifEditor.newSphere){ 
+      this.motifEditor.newSphere.destroy();
+      this.motifEditor.newSphere = undefined ;
+    }
+ 
+
+
+    /*
+    cell.fixedLength
+    cell.viewState
+    cell.dragMode
+    cell.editorState
+    cell.lastSphereAdded
+    cell.tangentToThis
+    cell.tangency
+
+    cell.leastCellLengths
+    cell.positions
+    cell.tangency
+    cell.tangency
+    cell.tangency
+    cell.tangency
+    cell.tangency
+    cell.tangency
+    */
+     
+
+  };
   RestoreCWstate.prototype.configureMillerObjects = function() {
     var dirs = this.cwObj.millerObjects.directions;
     var planes = this.cwObj.millerObjects.planes; 
@@ -170,6 +220,14 @@ define([
     var _this = this ;
     var params = this.cwObj.latticeParams.properties ;
 
+    // empty array of crystal atoms
+    var i = 0; 
+    while(i < this.lattice.actualAtoms.length ) { 
+      this.lattice.actualAtoms[i].destroy();
+      i++; 
+    }
+    this.lattice.actualAtoms.splice(0); 
+    console.log(this.lattice.actualAtoms);
     this.lattice.gradeChoice = {"face":this.cwObj.cellVisualization.faces.visible, "grid":this.cwObj.cellVisualization.edges.visible};
 
     $('#bravaisLattice').val(this.cwObj.latticeParams.bravaisLattice); 
