@@ -88,7 +88,7 @@ define([
       var hash ='' ;
 
       var data = {
-        url: 'http://localhost:8080/crystalwalk/',
+        url: document.location.origin,
         data: { state: obj }
       };
 
@@ -114,7 +114,7 @@ define([
         var input = document.createElement("input");
         input.type = "text";
         input.className = " ";  
-        input.value = window.location + hash;   
+        input.value = shortener + '/' + hash;   
 
         document.getElementById('downloadJSON').appendChild(a);
         $("#downloadJSON").append('  Your url : ');
