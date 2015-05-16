@@ -32,6 +32,8 @@ define([
   var reverseScaling = scaling.slice(0).reverse();
 
   function Lattice() {
+
+    // lattice
     this.lattice = null;
     this.parameters = defaultParameters;
     this.points = {}; 
@@ -39,7 +41,8 @@ define([
     this.currentMotif = [];
     this.latticeName = 'none';  
     this.latticeType = 'none'; // may be useless
-    this.latticeSystem = 'none'; // may be useless
+    this.latticeSystem = 'none'; // may be useless 
+    this.actualAtoms =[]; 
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -65,7 +68,6 @@ define([
     this.directionsUnique = [] ;
 
     //view
-    this.actualAtoms = []; 
     this.viewBox = [];
     this.viewMode = 'Classic';
   }; 
@@ -151,7 +153,9 @@ define([
   }; 
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
+
     _this.currentMotif = motif ;
+
     _.each(_this.actualAtoms, function(atom,k) {
       atom.destroy();   
     }); 
@@ -167,12 +171,12 @@ define([
     this.parameters.gamma = params.gamma ;
 
     _this.forwardTransformations();  
- 
+    
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
       _.each(motif, function(atom) {   
         var a = atom.object3d.position.clone(); 
-        var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
+        // wrong var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
@@ -533,6 +537,7 @@ define([
       "scaleY" : this.parameters.scaleY,
       "scaleZ" : this.parameters.scaleZ  
     }; 
+     
     return anglesScales ; 
   };
   Lattice.prototype.load = function(latticeName) {  
@@ -585,9 +590,9 @@ define([
       xz, bc, sc,  0,
        0,  0,  0,  1
     );
+     
     return m;
-  };
-
+  }; 
   Lattice.prototype.transform = function(caller, parameterKeys, operation) {  
     var matrix; 
     var argument;
@@ -599,9 +604,9 @@ define([
     _.each(parameterKeys, function(k) { 
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
-        argument[k] = operation(parameters[k]);
+        argument[k] = operation(parameters[k]); 
         matrix = transformationMatrix(argument);  
-        _.each(_this.actualAtoms, function(atom) {   
+        _.each(_this.actualAtoms, function(atom) {    
           atom.centerOfMotif.applyMatrix4(matrix);  
           atom.object3d.position.x = atom.centerOfMotif.x + atom.offsetX;  
           atom.object3d.position.y = atom.centerOfMotif.y + atom.offsetY;  
@@ -631,16 +636,16 @@ define([
           } 
         });   
         _.each(_this.faces, function(face, k) {
-          _.each(face.object3d.geometry.vertices, function(vertex , k){
-            face.object3d.geometry.verticesNeedUpdate = true ;
+          _.each(face.object3d.geometry.vertices, function(vertex , k){ 
+            face.object3d.geometry.verticesNeedUpdate = true ; 
             vertex.applyMatrix4(matrix); 
           });   
         });             
       } 
-      _.each(_this.millerPlanes, function(plane, reference) {
+      _.each(_this.millerPlanes, function(plane, reference) { 
         plane.plane.object3d.geometry.verticesNeedUpdate = true ;
         var vertices = plane.plane.object3d.geometry.vertices;
-        _.each(vertices, function(vertex , k){
+        _.each(vertices, function(vertex , k){  
           vertex.applyMatrix4(matrix); 
         });
       });
@@ -957,7 +962,6 @@ define([
       this.recreateMotif();
     }   
     _this.updateLatticeTypeRL();
-    console.log(this.actualAtoms)
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1057,8 +1061,7 @@ define([
                   plane : x, 
                   a : a, 
                   b : b, 
-                  c : c , 
-                  d : d , 
+                  c : c ,  
                   id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                   h : parseInt(millerParameters.millerH),
                   k : parseInt(millerParameters.millerK),
@@ -1691,7 +1694,7 @@ define([
     var argument;
     var parameters = this.parameters;
     var _this = this;
-
+     
     _.each(parameterKeys, function(k) { // TODO performance imporvement - no need to be executed so many times
  
         if (_.isUndefined(parameters[k]) === false) {
@@ -1699,15 +1702,15 @@ define([
           argument[k] = operation(parameters[k]);
           matrix = transformationMatrix(argument);
           if(_.isUndefined ( shape.plane) ){ 
-              shape.startPoint.applyMatrix4(matrix);
-              shape.endpointPoint.applyMatrix4(matrix);                  
+            shape.startPoint.applyMatrix4(matrix);
+            shape.endpointPoint.applyMatrix4(matrix);                  
           }  
           else{ 
-              shape.plane.object3d.geometry.verticesNeedUpdate = true ;
-              var vertices = shape.plane.object3d.geometry.vertices;
-              _.each(vertices, function(vertex , k){
-                vertex.applyMatrix4(matrix); 
-              }); 
+            shape.plane.object3d.geometry.verticesNeedUpdate = true ;
+            var vertices = shape.plane.object3d.geometry.vertices;
+            _.each(vertices, function(vertex , k){
+              vertex.applyMatrix4(matrix); 
+            }); 
           } 
         } 
     });

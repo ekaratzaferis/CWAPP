@@ -31,7 +31,7 @@ function NavCube( scene, latticeParams) {
     materialArray.push(new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/5.jpg' ) }));    
     
     var cubeMats = new THREE.MeshFaceMaterial(materialArray);
-    var cubeG = new THREE.CubeGeometry( this.length-1, this.length-1, this.length-1, 3,3,3, materialArray );
+    var cubeG = new THREE.BoxGeometry( this.length-1, this.length-1, this.length-1, 3,3,3, materialArray );
     this.cube = new THREE.Mesh( cubeG, cubeMats );
     this.cube.name = 'cube' ;
     this.cube.position.set(0,0,0);

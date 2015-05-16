@@ -149,8 +149,10 @@ require([
     lattice.directionState(state);
   });  
 
+  $('#MotifEditor').prop('disabled', true);
+
   // motif
-  $("#list li").click(function() {
+  $("#list li").click(function(e) { 
     if($(this).attr('id') === "millerPI" ){ 
       if(lattice.latticeName === 'hexagonal'){
         $(".hexagonalMiller").css('display','block');
@@ -159,8 +161,8 @@ require([
         $(".hexagonalMiller").css('display','none'); 
       } 
     } 
-    if($(this).attr('id') === "motifLI" ){  
-
+    if($(this).attr('id') === "motifLI" ){     
+      
       $('#crystalRenderer').width(width/2);
       $('#crystalRenderer').height(height/2);
       $('#crystalRenderer').css( "left", width/2 );

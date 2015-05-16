@@ -27,7 +27,8 @@ TODO list
 23. when zoomed in much, the motif cameras are not restored right
 24. adjust arrowhead properties to its length
 24. miller objects recreate function can be optimized
-
+25. delete the restore function object after scene has restored to prevent memory usage 
+26. sync cameras when autoratating do not work great 
  
 -----------------------
 

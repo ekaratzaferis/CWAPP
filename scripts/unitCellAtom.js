@@ -15,7 +15,7 @@ define([
 ) {
  
  
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex) {
+  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex) { 
 
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  

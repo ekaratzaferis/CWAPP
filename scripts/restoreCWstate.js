@@ -7,14 +7,16 @@ define([
   'pubsub',
   'underscore',  
   'millervector',
-  'millerplane' 
+  'millerplane',
+  'atomSphere' 
 ], function(
   jQuery,
   jQuery_ui,
   PubSub,
   _,
   MillerVector,
-  MillerPlane 
+  MillerPlane ,
+  AtomSphere
 ) {
  
   function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene,hudCube, hudArrows )  {  
@@ -34,10 +36,11 @@ define([
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
- 
+    
+    var _this = this;
     $("body").css("cursor", "wait");
-    var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay');
-
+    var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay'); 
+ 
     this.cwObj = cwObj ;  
     this.configureCameras();
     this.configureAxisSelection();
@@ -65,18 +68,15 @@ define([
     this.configureMotifEditor();
 
     overlay.remove();
-    $("body").css("cursor", "default");
-
+    $("body").css("cursor", "default"); 
   }; 
   RestoreCWstate.prototype.configureMotifEditor = function() {
 
     var cell = this.cwObj.unitCell ;
     var atoms = this.cwObj.motif ;
     var latticeParams = this.cwObj.latticeParams.lattice.defaults ;
-
-    var anglesScales = {'anglesScales': {'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ}, };
-
-    this.motifEditor.updateLatticeParameters(anglesScales,this.cwObj.latticeParams.lattice.latticeType, this.cwObj.latticeParams.bravaisLattice, this.cwObj.latticeParams.lattice.latticeSystem  );
+    
+    var anglesScales = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
     // empty array of motif
     for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
@@ -94,29 +94,52 @@ define([
       this.motifEditor.newSphere.destroy();
       this.motifEditor.newSphere = undefined ;
     }
- 
+    this.motifEditor.editorState_("initial");
+    this.motifEditor.viewState_("Classic");
 
 
-    /*
-    cell.fixedLength
-    cell.viewState
-    cell.dragMode
-    cell.editorState
-    cell.lastSphereAdded
-    cell.tangentToThis
-    cell.tangency
+    this.motifEditor.globalTangency = cell.tangency ;
+    this.motifEditor.fixedLengthMode({ 'fixedLength': cell.fixedLength,  'x': cell.dimensions.x , 'y' : cell.dimensions.y   ,'z': cell.dimensions.z},  true );
 
-    cell.leastCellLengths
-    cell.positions
-    cell.tangency
-    cell.tangency
-    cell.tangency
-    cell.tangency
-    cell.tangency
-    cell.tangency
-    */
+    $("input[name='fixedLength']").prop('checked', cell.fixedLength);
+
+    // lista me atoma update
+    // view mode efarmogi
+
+    this.motifEditor.leastCellLengths = cell.tangency ;
      
+    this.motifEditor.unitCellPositions ={};
 
+    for (var i = cell.positions.length - 1; i >= 0; i--) {
+      this.motifEditor.unitCellPositions[cell.positions[i].reference] = { 'position':{'x':  cell.positions[i].x, 'y': cell.positions[i].y , 'z':  cell.positions[i].z}}  ;
+    };
+
+    this.motifEditor.updateLatticeParameters(anglesScales,this.cwObj.latticeParams.lattice.latticeType, this.cwObj.latticeParams.bravaisLattice, this.cwObj.latticeParams.lattice.latticeSystem,1  );
+
+    if (  atoms.length>0) this.motifEditor.isEmpty = false;
+
+    for (var i = 0; i < atoms.length; i++) { 
+ 
+      var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id);
+
+      this.motifEditor.motifsAtoms.push(atom); 
+
+      this.motifEditor.addAtomInCell(  
+        (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , 
+        atoms[i].radius , 
+        atoms[i].color, 
+        undefined, 
+        atoms[i].elementName, 
+        atoms[i].id, 
+        1); 
+       
+      this.motifEditor.updateAtomList(atoms[i].id, atoms[i].id.radius, atoms[i].elementName,true);
+       
+      if(atoms[i].id == cell.lastSphereAdded) this.motifEditor.lastSphereAdded = atom ;
+    } 
+     
+    this.lattice.setMotif(this.motifEditor.getMotif(1), this.motifEditor.getDimensions())  ;
+    
   };
   RestoreCWstate.prototype.configureMillerObjects = function() {
     var dirs = this.cwObj.millerObjects.directions;
@@ -169,23 +192,42 @@ define([
 
     for (var i = planes.length - 1; i >= 0; i--) {
       
-      var x =  new MillerPlane(planes[i].a, planes[i].b, planes[i].c, undefined, planes[i].opacity , planes[i].color ); 
-      this.lattice.millerPlanes[i] = {
-        visible: planes[i].visible,
-        plane : x, 
-        a : planes[i].a, 
-        b : planes[i].b, 
-        c : planes[i].c, 
-        id : planes[i].id,
-        h : planes[i].h,
-        k : planes[i].k,
-        l : planes[i].l,
-        planeOpacity : planes[i].opacity,
-        planeColor : planes[i].color,
-        planeName : planes[i].name
-      }; 
-
-      this.lattice.forwardTransformationsMiller(this.lattice.millerPlanes[i]); 
+      var x =  new MillerPlane(planes[i].a, planes[i].b, planes[i].c, planes[i].d, planes[i].opacity , planes[i].color ); 
+      if(planes[i].d){  
+        this.lattice.millerPlanes[i] = {
+          visible: planes[i].visible,
+          plane : x, 
+          a : planes[i].a, 
+          b : planes[i].b, 
+          c : planes[i].c, 
+          d : planes[i].d, 
+          id : planes[i].id,
+          h : planes[i].h,
+          k : planes[i].k,
+          l : planes[i].l,
+          planeOpacity : planes[i].opacity,
+          planeColor : planes[i].color,
+          planeName : planes[i].name
+        }; 
+      }
+      else{ 
+        this.lattice.millerPlanes[i] = {
+          visible: planes[i].visible,
+          plane : x, 
+          a : planes[i].a, 
+          b : planes[i].b, 
+          c : planes[i].c,   
+          id : planes[i].id,
+          h : planes[i].h,
+          k : planes[i].k,
+          l : planes[i].l,
+          planeOpacity : planes[i].opacity,
+          planeColor : planes[i].color,
+          planeName : planes[i].name
+        }; 
+      }
+       
+      //this.lattice.forwardTransformationsMiller(this.lattice.millerPlanes[i]); 
     
       var text = "Plane : "+planes[i].name+"  ["+planes[i].h+","+planes[i].k+","+planes[i].l+"] ";
       var id = "_"+planes[i].h+""+planes[i].k+""+planes[i].l+"";
@@ -216,18 +258,18 @@ define([
     $("input[name='gridCheckButton']").prop('checked', this.cwObj.cellVisualization.edges.visible);
   
   }; 
+    
   RestoreCWstate.prototype.configureLatticeParams = function() { 
     var _this = this ;
     var params = this.cwObj.latticeParams.properties ;
 
     // empty array of crystal atoms
-    var i = 0; 
-    while(i < this.lattice.actualAtoms.length ) { 
-      this.lattice.actualAtoms[i].destroy();
-      i++; 
-    }
+    this.lattice.currentMotif.splice(0);
+    _.each(_this.lattice.actualAtoms, function(atom,k) {
+      atom.destroy();   
+    }); 
     this.lattice.actualAtoms.splice(0); 
-    console.log(this.lattice.actualAtoms);
+      
     this.lattice.gradeChoice = {"face":this.cwObj.cellVisualization.faces.visible, "grid":this.cwObj.cellVisualization.edges.visible};
 
     $('#bravaisLattice').val(this.cwObj.latticeParams.bravaisLattice); 
@@ -240,10 +282,10 @@ define([
 
     this.lattice.lattice = this.cwObj.latticeParams.lattice ; 
     if(this.cwObj.latticeParams.lattice){  
+
       this.lattice.parameters =  {
         'repeatX': this.cwObj.latticeParams.repeatX, 'repeatY': this.cwObj.latticeParams.repeatY, 'repeatZ':this.cwObj.latticeParams.repeatZ,
-        'scaleX': this.cwObj.latticeParams.lattice.defaults.scaleX, 'scaleY': this.cwObj.latticeParams.lattice.defaults.scaleY, 'scaleZ': this.cwObj.latticeParams.lattice.defaults.scaleZ,
-        'alpha': this.cwObj.latticeParams.lattice.defaults.alpha, 'beta': this.cwObj.latticeParams.lattice.defaults.beta, 'gamma': this.cwObj.latticeParams.lattice.defaults.gamma
+        'scaleX': this.cwObj.latticeParams.lattice.defaults.scaleX, 'scaleY': this.cwObj.latticeParams.lattice.defaults.scaleY, 'scaleZ': this.cwObj.latticeParams.lattice.defaults.scaleZ, 'alpha': this.cwObj.latticeParams.lattice.defaults.alpha, 'beta': this.cwObj.latticeParams.lattice.defaults.beta, 'gamma': this.cwObj.latticeParams.lattice.defaults.gamma
       }; 
     }
 

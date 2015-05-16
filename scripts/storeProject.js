@@ -145,7 +145,7 @@ define([
   StoreProject.prototype.createJsonUnitCell = function(){
     var _this = this ;
  
-    var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? 'undefined' : this.motifeditor.lastSphereAdded.id;
+    var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
     var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
     var start = '"unitCell" :{ "fixedLength" : '+this.motifeditor.editorState.fixed+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
@@ -174,7 +174,7 @@ define([
       newSphere.push(',');
 
       newSphere.push('"elementName" : "');
-      newSphere.push(this.motifeditor.newSphere.name );
+      newSphere.push(this.motifeditor.newSphere.elementName );
 
       newSphere.push('",');
 
@@ -251,7 +251,7 @@ define([
       motif.push(',');
 
       motif.push('"elementName" : "');
-      motif.push(atom.name );
+      motif.push(atom.elementName );
 
       motif.push('",');
 
@@ -373,9 +373,8 @@ define([
 
       planes.push('"c" : { "x" : '+plane.c.x+', "y" :'+plane.c.y+', "z" : '+plane.c.z+'},'  );
 
-      if(plane.d !== undefined) {
-        planes.push('"d" : { "x" : '+plane.d.x+', "y" :'+plane.d.y+', "z" : '+plane.d.z+'},'  );
-        planes.push(',');
+      if(plane.d !== undefined) {  
+        planes.push('"d" : { "x" : '+plane.d.x+', "y" :'+plane.d.y+', "z" : '+plane.d.z+'},'  ); 
       } 
 
       planes.push('"name" : "');

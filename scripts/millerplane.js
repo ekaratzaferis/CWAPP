@@ -12,7 +12,7 @@ define([
 ) {
 
   function MillerPlane( b , a, c, d, opacity, color) {
-
+      
     var vertices = [];
     var faces = [];
 

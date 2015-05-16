@@ -1884,9 +1884,9 @@ THREE.Vector3.prototype = {
 		// input: THREE.Matrix4 affine matrix
 
 		var x = this.x, y = this.y, z = this.z;
-
+		 
 		var e = m.elements;
-
+		  
 		this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z + e[ 12 ];
 		this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z + e[ 13 ];
 		this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ];
@@ -7928,7 +7928,7 @@ THREE.Object3D.prototype = {
 		callback( this );
 
 		for ( var i = 0, l = this.children.length; i < l; i ++ ) {
-
+			 
 			this.children[ i ].traverse( callback );
 
 		}
