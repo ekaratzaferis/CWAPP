@@ -39,12 +39,12 @@ define([
       var latticeParams;
 
       if(this.lattice.lattice){ 
-      var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
-      var gridPoints = JSON.stringify(this.lattice.lattice.gridPoints);
-      var originArray = JSON.stringify(this.lattice.lattice.originArray);
+        var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
+        var gridPoints = JSON.stringify(this.lattice.lattice.gridPoints);
+        var originArray = JSON.stringify(this.lattice.lattice.originArray);
 
-      latticeParams = 
-      '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+        latticeParams = 
+        '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
       }
       else{
         latticeParams = '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
@@ -76,27 +76,26 @@ define([
                 cameraSettings+
                 axisSelection+
                 end ;
-      
-      //console.log(text);
-      var obj = JSON.parse(text);
+     
+      var obj =  JSON.stringify(JSON.parse(text));
 
       // send request
 
       var hash = window.location.hash;
       var service = 'https://cwgl.herokuapp.com';
-      var shortener = 'http://cw.gl';
+      var shortener = window.location.href;
       var hash ='' ;
 
       var data = {
-        url: 'http://localhost:8080/crystalwalk/',
-        data: { state: obj }
+        url: document.location.origin,
+        data: obj
       };
 
       $.ajax(service + '/add', {
         method: 'POST',
         data: data,
         beforeSend: function(xmlHttpRequest) {
-            xmlHttpRequest.withCredentials = true;
+          xmlHttpRequest.withCredentials = true;
         }
       })
       .done(function(res) {  
@@ -114,7 +113,7 @@ define([
         var input = document.createElement("input");
         input.type = "text";
         input.className = " ";  
-        input.value = window.location + hash;   
+        input.value = shortener + hash;   
 
         document.getElementById('downloadJSON').appendChild(a);
         $("#downloadJSON").append('  Your url : ');
@@ -124,21 +123,6 @@ define([
 
       });
        
-      // get
-      /*
-      if(hash.length > 0) {
-        var slug = hash.replace(/^#/, '');
-        $.ajax(service + '/' + slug + '.json', {
-          method: 'GET',
-          beforeSend: function(xmlHttpRequest) {
-              xmlHttpRequest.withCredentials = true;
-          }
-        })
-        .done(function(res) {
-          var data = res.data;
-          console.log(res);
-        });
-      }*/ 
     }
 
   }; 
@@ -202,9 +186,8 @@ define([
 
       newSphere.push('",');
 
-      newSphere.push('"wireframe" : "' );
+      newSphere.push('"wireframe" : ' );
       newSphere.push(this.motifeditor.newSphere.wireframe );
-      newSphere.push(' "' );
     }
 
     newSphere.push(' }, "positions" : [  ');
@@ -232,7 +215,7 @@ define([
 
    for (var i = 0 ; i < _this.motifeditor.motifsAtoms.length ; i++) {
       var atom = this.motifeditor.motifsAtoms[i] ;
-     
+       
       if(i>0)  motif.push(', ') ; 
 
       motif.push('{"visible" : ');
@@ -270,7 +253,7 @@ define([
       motif.push(',');
 
       motif.push('"opacity" : ');
-      motif.push(atom.radius );
+      motif.push(atom.opacity );
 
       motif.push(','); 
 
@@ -279,10 +262,10 @@ define([
 
       motif.push('",');
 
-      motif.push('"wireframe" : "' );
+      motif.push('"wireframe" : ' );
       motif.push(atom.wireframe );
   
-      motif.push('" } ');
+      motif.push('} ');
         
     };
        

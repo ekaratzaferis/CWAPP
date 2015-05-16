@@ -36,37 +36,45 @@ define([
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
-    
+     console.log(cwObj)
     var _this = this;
     $("body").css("cursor", "wait");
     var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay'); 
- 
-    this.cwObj = cwObj ;  
+    
+    this.cwObj = cwObj.data ;  
     this.configureCameras();
     this.configureAxisSelection();
     this.configureTextArea();
     this.configureGradeParams();
-    this.configureLatticeParams();
-    this.configureCellVisualization();
-    this.configureMillerObjects();
+    
+    // important to destroy now the crystal atoms
+    _.each(_this.lattice.actualAtoms, function(atom,k) {
+      atom.destroy();   
+    }); 
+    this.lattice.actualAtoms.splice(0); 
  
     // AFTER ADDING EVERYTHING
 
-    if(this.cwObj.latticeParams.lattice){   
+    if(this.cwObj.latticeParams.lattice){  
+
+      this.configureLatticeParams();
+      this.configureCellVisualization();
+      this.configureMillerObjects();
+
       this.lattice.updatePoints();  
       this.lattice.createGrid();  
       this.lattice.createFaces();
       this.lattice.setGradeParameters();
       this.lattice.forwardTransformations();  // todo may be useless
       this.lattice.reCreateMillers();
-      this.lattice.recreateMotif();
+ 
       this.lattice.setGradeChoices( {'faceCheckButton': this.cwObj.cellVisualization.faces.visible} );
       this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.cellVisualization.edges.visible} );
       this.lattice.setGradeParameters();
+
+      this.configureMotifEditor();
     }
-
-    this.configureMotifEditor();
-
+ 
     overlay.remove();
     $("body").css("cursor", "default"); 
   }; 
@@ -96,14 +104,12 @@ define([
     }
     this.motifEditor.editorState_("initial");
     this.motifEditor.viewState_("Classic");
-
-
+ 
     this.motifEditor.globalTangency = cell.tangency ;
     this.motifEditor.fixedLengthMode({ 'fixedLength': cell.fixedLength,  'x': cell.dimensions.x , 'y' : cell.dimensions.y   ,'z': cell.dimensions.z},  true );
 
     $("input[name='fixedLength']").prop('checked', cell.fixedLength);
-
-    // lista me atoma update
+ 
     // view mode efarmogi
 
     this.motifEditor.leastCellLengths = cell.tangency ;
@@ -118,11 +124,37 @@ define([
 
     if (  atoms.length>0) this.motifEditor.isEmpty = false;
 
+    var helperMotif = [];
+
     for (var i = 0; i < atoms.length; i++) { 
  
-      var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id);
+      var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id, atoms[i].opacity,atoms[i].wireframe);
 
       this.motifEditor.motifsAtoms.push(atom); 
+       
+      var radius = atoms[i].radius ;
+      
+      helperMotif.push(
+
+        {
+          "object3d" : {
+            "position" : { 
+              "x": atoms[i].position.x, 
+              "y":atoms[i].position.y, 
+              "z": atoms[i].position.z
+            }
+          }, 
+          getRadius: function() { return this.radius; },
+          getID: function() { return this.id; }, 
+          'color' : atoms[i].color,
+          'radius' : atoms[i].radius,
+          'id' : atoms[i].id,
+          'texture' : 'Images/atoms/'+atoms[i].texture+'.png',
+          'opacity' : atoms[i].opacity,
+          'wireframe' : atoms[i].wireframe  
+        }
+
+      );
 
       this.motifEditor.addAtomInCell(  
         (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , 
@@ -130,15 +162,20 @@ define([
         atoms[i].color, 
         undefined, 
         atoms[i].elementName, 
-        atoms[i].id, 
+        atoms[i].id,  
+        atoms[i].opacity,
+        atoms[i].wireframe,
         1); 
        
-      this.motifEditor.updateAtomList(atoms[i].id, atoms[i].id.radius, atoms[i].elementName,true);
+      this.motifEditor.updateAtomList(atoms[i].id, atoms[i].radius, atoms[i].elementName,true);
        
       if(atoms[i].id == cell.lastSphereAdded) this.motifEditor.lastSphereAdded = atom ;
     } 
-     
-    this.lattice.setMotif(this.motifEditor.getMotif(1), this.motifEditor.getDimensions())  ;
+    
+    var _this = this ;
+
+    this.lattice.currentMotif = helperMotif ;
+    this.lattice.recreateMotif();
     
   };
   RestoreCWstate.prototype.configureMillerObjects = function() {

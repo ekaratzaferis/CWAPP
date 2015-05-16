@@ -15,8 +15,8 @@ define([
 ) {
  
  
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex) { 
-
+  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex,opacity,wireframe) { 
+     
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
     this.material;
@@ -24,6 +24,8 @@ define([
     this.materialLetter;
     this.materials;
     this.tangency = tangency; 
+    this.wireframe = wireframe; 
+    this.opacity = opacity ; 
     this.myID = id; 
     this.elementName = elementName; 
     this.viewMode = 'Classic'; 
@@ -52,7 +54,7 @@ define([
   };
   UnitCellAtom.prototype.updateText = function(texture){
     var _this = this; 
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, side: THREE.FrontSide, transparent:true,opacity:1  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
@@ -66,13 +68,13 @@ define([
   };
   UnitCellAtom.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:1   }) ;
-    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:1  }) ;
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10   }) ;
+    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10 }) ;
 
     _this.materials =  [  
       _this.colorMaterial,
       _this.materialLetter,
-      new THREE.MeshBasicMaterial({color : "#000000", wireframe: true})
+      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe})
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
@@ -86,6 +88,7 @@ define([
 
   };
   UnitCellAtom.prototype.wireframeMat = function(bool){
+    this.wireframe = bool ;
     if(bool){ 
       this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true}) ;
     }

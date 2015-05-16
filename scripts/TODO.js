@@ -29,6 +29,9 @@ TODO list
 24. miller objects recreate function can be optimized
 25. delete the restore function object after scene has restored to prevent memory usage 
 26. sync cameras when autoratating do not work great 
+27. check every global array for memory leaks
+28. available atoms list for rotating in drag mode shouldnt have the NewSphere atom in.
+29. view mode is not supported in restore mechanism
  
 -----------------------
 

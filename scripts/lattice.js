@@ -175,8 +175,7 @@ define([
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
       _.each(motif, function(atom) {   
-        var a = atom.object3d.position.clone(); 
-        // wrong var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
+        var a = atom.object3d.position.clone();  
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
@@ -505,27 +504,39 @@ define([
     if(_this.currentMotif.length === 0 ) return ;
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position; 
-      _.each(_this.currentMotif, function(atom) {   
+      _.each(_this.currentMotif, function(atom) {  
         var a = atom.object3d.position; 
-        var wireframe = ($('#wireframe').is(':checked')) ? true : false ;
+        var color, texture, opacity, wireframe;
+        if(!_.isUndefined(atom.object3d) && !atom.object3d.children) { 
+          color = atom.color; 
+          texture = atom.texture;
+          opacity = atom.opacity;
+          wireframe = atom.wireframe;
+        }
+        else{ 
+          atom.object3d.children[0].material.color ; 
+          texture = atom.object3d.children[1].material.map.image.currentSrc ;
+          opacity = atom.object3d.children[1].material.opacity ;
+          wireframe = atom.object3d.children[2].material.wireframe ;
+        }
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
             atom.getRadius(), 
-            atom.object3d.children[0].material.color,
+            color,
             atom.elementName, 
             atom.getID(),
             a.x,
             a.y,
             a.z,
             p,
-            atom.object3d.children[1].material.map.image.currentSrc,
-            atom.object3d.children[0].material.opacity,
-            atom.object3d.children[2].material.wireframe
+            texture,
+            opacity,
+            wireframe
           )  
         );
       });
-    });  
+    });   
   };
   Lattice.prototype.getAnglesScales = function(){
 
@@ -600,17 +611,19 @@ define([
     var actualAtoms = this.actualAtoms;
     var parameters = this.parameters;
     var _this = this;
-    
+      
     _.each(parameterKeys, function(k) { 
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
         argument[k] = operation(parameters[k]); 
         matrix = transformationMatrix(argument);  
-        _.each(_this.actualAtoms, function(atom) {    
-          atom.centerOfMotif.applyMatrix4(matrix);  
-          atom.object3d.position.x = atom.centerOfMotif.x + atom.offsetX;  
-          atom.object3d.position.y = atom.centerOfMotif.y + atom.offsetY;  
-          atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ;  
+        _.each(_this.actualAtoms, function(atom) {
+          if(!_.isUndefined(atom.object3d)){     
+            atom.centerOfMotif.applyMatrix4(matrix);  
+            atom.object3d.position.x = atom.centerOfMotif.x + atom.offsetX;  
+            atom.object3d.position.y = atom.centerOfMotif.y + atom.offsetY;  
+            atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ; 
+          } 
         }); 
         _.each(points, function(point, reference) { 
           var pos = point.object3d.position.applyMatrix4(matrix);   
@@ -810,7 +823,7 @@ define([
     return delta;
   };
 
-  Lattice.prototype.backwardTransformations = function() {  
+  Lattice.prototype.backwardTransformations = function() {   
     this.revertShearing();
     this.revertScaling();
   };
@@ -941,7 +954,7 @@ define([
         this.setGradeParameters();
         this.forwardTransformations();  // todo may be useless
         this.reCreateMillers();
-        this.recreateMotif();
+        this.recreateMotif(); 
       }
       else{
         this.forwardTransformations();  
@@ -960,6 +973,7 @@ define([
       this.setGradeParameters();
       this.setGradeChoices(this.gradeChoice); 
       this.recreateMotif();
+
     }   
     _this.updateLatticeTypeRL();
   };

@@ -268,8 +268,7 @@ require([
       orbitCrystal.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ); 
       orbitUnitCell.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ) ; 
       orbitCrystal.sync = true;
-      orbitUnitCell.sync = true; 
- 
+      orbitUnitCell.sync = true;  
     }
     else
     {
@@ -360,6 +359,26 @@ require([
     else { 
       alert("Failed to load file");
     }
+  } 
+
+
+  var hash = window.location.hash.substr(1);
+  var service = 'https://cwgl.herokuapp.com' ;
+
+  if(hash.length>0){
+     console.log(service + '/' + hash + '.json') 
+
+    var slug = hash.replace(/^#/, '');
+    $.ajax(service + '/' + slug + '.json', {
+      method: 'GET',
+      beforeSend: function(xmlHttpRequest) {
+          xmlHttpRequest.withCredentials = true;
+      }
+    })
+    .done(function(res) { 
+       
+      restore.configureState(res);
+    }); 
   } 
 
 });

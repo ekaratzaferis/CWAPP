@@ -122,13 +122,14 @@ define([
 
     // first time
     if(_this.isEmpty) {  
-      var newId = "_"+Math.random() ; 
-      var a = new AtomSphere( true, (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
+      var newId = "_"+Math.random() ;
+      var wireframe = ($('#wireframe').is(':checked')) ? true : false ; 
+      var a = new AtomSphere( true, (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId,10, wireframe);
       _this.newSphere = a ;
       _this.isEmpty = false;
       $("#atomName").val(params.element+" ");
-      PubSub.publish(events.EDITOR_STATE,"creating");
-      _this.addAtomInCell( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 ,  _this.atomsData[params.element].color, params.tangency, params.element, newId); 
+      PubSub.publish(events.EDITOR_STATE,"creating"); 
+      _this.addAtomInCell( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 ,  _this.atomsData[params.element].color, params.tangency, params.element, newId,10,wireframe); 
        
       return;
     }
@@ -147,9 +148,10 @@ define([
       $("#atomPosY").val( p.y);
       $("#atomPosZ").val( p.z);
       var newId = "_"+Math.random();
-      var a = new AtomSphere( true,  (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId);
+      var wireframe = ($('#wireframe').is(':checked')) ? true : false ; 
+      var a = new AtomSphere( true,  (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId, 10, wireframe);
       _this.newSphere = a;
-      _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId);
+      _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId,10,wireframe);
       PubSub.publish(events.EDITOR_STATE,"creating");
       $("#atomName").val(params.element+" ");  
     }
@@ -1047,7 +1049,7 @@ define([
       copiedAr.push(_this.newSphere); 
     }
     return copiedAr; 
-    
+
   };
    
   Motifeditor.prototype.getAllAtoms = function (){
@@ -1242,6 +1244,7 @@ define([
   };
   Motifeditor.prototype.updateAtomList = function(id, radius, name, create)  {
     var _this = this ;
+    console.log(id,radius,name,create);
     var text =  name+" - radius : "+radius ; 
     if(create){
       var $savedAtoms = jQuery('#savedAtoms'); 
@@ -1762,7 +1765,7 @@ define([
       });
     } 
   };
-  Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id, restore){  
+  Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id, opacity,wireframe,restore){  
     var _this = this;  
     var dimensions;
      
@@ -1787,7 +1790,7 @@ define([
                   pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
                   pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
                   pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z),opacity, wireframe) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1805,7 +1808,7 @@ define([
                   pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
                   pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
                   pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z), opacity, wireframe) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1819,7 +1822,7 @@ define([
                 pos.x + _this.unitCellPositions["_"+i].position.x, 
                 pos.y + _this.unitCellPositions["_"+i].position.y, 
                 pos.z + _this.unitCellPositions["_"+i].position.z), 
-                radius, color, tang, name, id,  ("_"+i)) 
+                radius, color, tang, name, id,  ("_"+i), opacity, wireframe) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1828,7 +1831,7 @@ define([
               pos.x + _this.unitCellPositions["__"+i].position.x, 
               pos.y + _this.unitCellPositions["__"+i].position.y, 
               pos.z + _this.unitCellPositions["__"+i].position.z), 
-              radius, color, tang, name, id,  ("__"+i)) 
+              radius, color, tang, name, id,  ("__"+i), opacity, wireframe) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1837,7 +1840,7 @@ define([
               pos.x + _this.unitCellPositions["___"+i].position.x, 
               pos.y + _this.unitCellPositions["___"+i].position.y, 
               pos.z + _this.unitCellPositions["___"+i].position.z), 
-              radius, color, tang, name, id,  ("___"+i)) 
+              radius, color, tang, name, id,  ("___"+i), opacity, wireframe) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1852,7 +1855,7 @@ define([
                   pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
                   pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
                   pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z), opacity, wireframe) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1864,7 +1867,7 @@ define([
             pos.x + _this.unitCellPositions["_c"].position.x, 
             pos.y + _this.unitCellPositions["_c"].position.y, 
             pos.z + _this.unitCellPositions["_c"].position.z), 
-            radius, color, tang, name, id,  ("_c")) 
+            radius, color, tang, name, id,  ("_c"), opacity, wireframe) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1878,7 +1881,7 @@ define([
                   pos.x + _this.unitCellPositions["_"+_x+_y+_z].position.x, 
                   pos.y + _this.unitCellPositions["_"+_x+_y+_z].position.y, 
                   pos.z + _this.unitCellPositions["_"+_x+_y+_z].position.z), 
-                  radius, color, tang, name, id,  ("_"+_x+_y+_z)) 
+                  radius, color, tang, name, id,  ("_"+_x+_y+_z), opacity, wireframe) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1891,7 +1894,7 @@ define([
               pos.x + _this.unitCellPositions["_up"].position.x, 
               pos.y + _this.unitCellPositions["_up"].position.y, 
               pos.z + _this.unitCellPositions["_up"].position.z), 
-              radius, color, tang, name, id,  ("_up")) 
+              radius, color, tang, name, id,  ("_up"), opacity, wireframe) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1901,7 +1904,7 @@ define([
             pos.x + _this.unitCellPositions["_down"].position.x, 
             pos.y + _this.unitCellPositions["_down"].position.y, 
             pos.z + _this.unitCellPositions["_down"].position.z), 
-            radius, color, tang, name, id,  ("_down")) 
+            radius, color, tang, name, id,  ("_down"), opacity, wireframe) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -1925,7 +1928,7 @@ define([
                 pos.x , 
                 pos.y + y, 
                 pos.z), 
-                radius, color, tang, name, id, 'hc_'+_x+_y+_z
+                radius, color, tang, name, id, 'hc_'+_x+_y+_z, opacity, wireframe
               ) 
             );  
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -1952,7 +1955,7 @@ define([
                   pos.x + position.x, 
                   pos.y + position.y, 
                   pos.z + position.z), 
-                  radius, color, tang, name, id, reference
+                  radius, color, tang, name, id, reference, opacity, wireframe
                 ) 
               );  
 
