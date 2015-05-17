@@ -18,7 +18,7 @@ define([
   MillerPlane ,
   AtomSphere
 ) {
- 
+  
   function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene,hudCube, hudArrows )  {  
     this.menu = menu ;
     this.lattice = lattice ;
