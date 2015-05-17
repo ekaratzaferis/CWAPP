@@ -1244,7 +1244,7 @@ define([
   };
   Motifeditor.prototype.updateAtomList = function(id, radius, name, create)  {
     var _this = this ;
-    console.log(id,radius,name,create);
+    
     var text =  name+" - radius : "+radius ; 
     if(create){
       var $savedAtoms = jQuery('#savedAtoms'); 

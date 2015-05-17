@@ -349,8 +349,8 @@ require([
     var f = evt.target.files[0];  
     if (f) {
       var r = new FileReader();
-      r.onload = function(e) { 
-        var st = JSON.parse(e.target.result); 
+      r.onload = function(e) {  
+        var st = JSON.parse(e.target.result);  
         restore.configureState(st);
 
       }
@@ -375,9 +375,8 @@ require([
           xmlHttpRequest.withCredentials = true;
       }
     })
-    .done(function(res) { 
-       
-      restore.configureState(res);
+    .done(function(res) {  
+      restore.configureState(res.data);
     }); 
   } 
 

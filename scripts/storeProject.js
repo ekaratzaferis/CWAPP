@@ -40,7 +40,7 @@ define([
 
       if(this.lattice.lattice){ 
         var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
-        var gridPoints = JSON.stringify(this.lattice.lattice.gridPoints);
+        var gridPoints =  JSON.stringify(this.lattice.lattice.gridPoints);
         var originArray = JSON.stringify(this.lattice.lattice.originArray);
 
         latticeParams = 
@@ -76,8 +76,9 @@ define([
                 cameraSettings+
                 axisSelection+
                 end ;
-     
-      var obj =  JSON.stringify(JSON.parse(text));
+ 
+      var obj =  JSON.parse(text) ;  
+      var str =  JSON.stringify(obj)
 
       // send request
 
@@ -88,7 +89,7 @@ define([
 
       var data = {
         url: document.location.origin,
-        data: obj
+        data: str
       };
 
       $.ajax(service + '/add', {
@@ -100,9 +101,8 @@ define([
       })
       .done(function(res) {  
         hash = res.slug;  
-        
-        var json = JSON.stringify(obj);
-        var blob = new Blob([json], {type: "application/json"});
+         
+        var blob = new Blob([str], {type: "application/json"});
         var url  = URL.createObjectURL(blob);
    
         var a = document.createElement('a');  
@@ -134,7 +134,7 @@ define([
     var start = '"unitCell" :{ "fixedLength" : '+this.motifeditor.editorState.fixed+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
     var newSphere = [];
-
+    /*
     if(this.motifeditor.newSphere !== undefined){  
       newSphere.push('"visible" : ');
       newSphere.push(this.motifeditor.newSphere.visible );
@@ -182,13 +182,13 @@ define([
       newSphere.push(','); 
 
       newSphere.push('"texture" : "');
-      newSphere.push(this.motifeditor.newSphere.textureName );
+      newSphere.push(this.motifeditor.newSphere.texture );
 
       newSphere.push('",');
 
       newSphere.push('"wireframe" : ' );
       newSphere.push(this.motifeditor.newSphere.wireframe );
-    }
+    }*/
 
     newSphere.push(' }, "positions" : [  ');
 
@@ -251,14 +251,14 @@ define([
       motif.push('"position" : { "x" : '+atom.object3d.position.x+', "y" :'+atom.object3d.position.y+', "z" : '+atom.object3d.position.z+'}'  );
          
       motif.push(',');
-
+      console.log(atom.opacity); 
       motif.push('"opacity" : ');
       motif.push(atom.opacity );
 
       motif.push(','); 
 
       motif.push('"texture" : "');
-      motif.push(atom.textureName );
+      motif.push(atom.texture );
 
       motif.push('",');
 

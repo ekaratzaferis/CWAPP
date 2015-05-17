@@ -16,6 +16,8 @@ define(function() {
       'beta': 90,
       'alpha': 90
     },
+    gridPoints: {  
+    },
     restrictions: {
       'alpha': {
         'alpha': '='

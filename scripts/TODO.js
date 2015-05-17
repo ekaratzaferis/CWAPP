@@ -32,7 +32,8 @@ TODO list
 27. check every global array for memory leaks
 28. available atoms list for rotating in drag mode shouldnt have the NewSphere atom in.
 29. view mode is not supported in restore mechanism
- 
+30. hexagonal is not restored well
+31. opacity is not restored well
 -----------------------
 
 List with Ideas

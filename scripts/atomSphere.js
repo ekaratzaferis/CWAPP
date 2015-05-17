@@ -12,7 +12,7 @@ define([
   
   // tangency is not used anymore!
   function AtomSphere(visible,position, radius, color, tangency, elementName, id, opacity, wireframe ) {
-    console.log(opacity,wireframe);
+     
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
     this.material;
@@ -24,7 +24,7 @@ define([
     this.blinking;
     this.blinkingMode = false;
     this.visible = visible;
-    this.textureName = 'None';
+    this.texture = 'None';
     this.elementName = elementName;
     this.wireframe = wireframe ;
     this.opacity = opacity ;
@@ -51,9 +51,13 @@ define([
   };
   AtomSphere.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true,opacity:this.opacity/10    }) ;
-    _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true,opacity:this.opacity/10  }) ;
+     this.color = color ;
 
+    console.log(this.opacity);
+
+    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true, opacity : this.opacity/10    }) ;
+    _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true, opacity: this.opacity/10  }) ;
+   
     _this.materials =  [  
       _this.colorMaterial,
       _this.materialLetter,
@@ -97,13 +101,13 @@ define([
     var _this = this;
     this.color = color ; 
     _this.colorMaterial = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide  });
-    _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity/10  });
+    _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity });
     _this.object3d.children[0].material.needsUpdate = true;
 
   };
   AtomSphere.prototype.setMaterialTexture = function(texture) {
     var _this = this;
-    this.textureName = texture ;
+    this.texture = texture ;
     var textureLoader = new THREE.TextureLoader();
     textureLoader.load("Images/atoms/"+texture+".png",
       function(tex){ 
@@ -114,6 +118,7 @@ define([
   };
   AtomSphere.prototype.updateText = function(texture){
     var _this = this;
+    this.texture = texture;
     _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide, transparent:true,opacity:this.opacity/10  });
     _this.object3d.children[1].material.needsUpdate = true;
 

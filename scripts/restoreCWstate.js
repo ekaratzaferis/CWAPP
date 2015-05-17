@@ -36,12 +36,12 @@ define([
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
-     console.log(cwObj)
+      
     var _this = this;
     $("body").css("cursor", "wait");
     var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay'); 
-    
-    this.cwObj = cwObj.data ;  
+      
+    this.cwObj = cwObj ;  
     this.configureCameras();
     this.configureAxisSelection();
     this.configureTextArea();
@@ -127,7 +127,7 @@ define([
     var helperMotif = [];
 
     for (var i = 0; i < atoms.length; i++) { 
- 
+       
       var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id, atoms[i].opacity,atoms[i].wireframe);
 
       this.motifEditor.motifsAtoms.push(atom); 
