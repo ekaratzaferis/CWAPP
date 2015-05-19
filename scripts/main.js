@@ -366,7 +366,7 @@ require([
   var service = 'https://cwgl.herokuapp.com' ;
 
   if(hash.length>0){
-     console.log(service + '/' + hash + '.json') 
+     //console.log(service + '/' + hash + '.json') 
 
     var slug = hash.replace(/^#/, '');
     $.ajax(service + '/' + slug + '.json', {

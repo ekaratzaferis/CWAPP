@@ -34,11 +34,18 @@ TODO list
 29. view mode is not supported in restore mechanism
 30. hexagonal is not restored well
 31. opacity is not restored well
+32. when dragging atoms update sliders 
+33. maybe big mistake with lengths, in lattices with angles  
+
+Changes by Andre
+
+1. Miller objects dont need preview
+2. Miller object have visible/invisible checkbutton
 -----------------------
 
 List with Ideas
 
 1. Syncing with user dropbox to store a project there and reopen it later
 2. Public library of CW Projects - search by keywords, most popular etc
-
+3. Miller object use sliders for indexes
 

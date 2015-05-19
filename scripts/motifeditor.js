@@ -258,10 +258,19 @@ define([
     var oldX,oldY,oldZ;
     var stillColliding = true, doNotOverlap = _this.globalTangency ;
     
-    var sliderXVal = parseFloat($('#atomPosXSlider').slider( "value" ) ); 
-    var sliderYVal = parseFloat($('#atomPosYSlider').slider( "value" )); 
-    var sliderZVal = parseFloat($('#atomPosZSlider').slider( "value")); 
-     
+    var sliderXVal, sliderYVal, sliderZVal ;
+
+    if(param.trigger === 'slider'){
+      sliderXVal = parseFloat($('#atomPosXSlider').slider( "value" ) ); 
+      sliderYVal = parseFloat($('#atomPosYSlider').slider( "value" ) ); 
+      sliderZVal = parseFloat($('#atomPosZSlider').slider( "value" ) ); 
+    }
+    else{
+      sliderXVal = parseFloat($('#atomPosX').val() ); 
+      sliderYVal = parseFloat($('#atomPosY').val() );
+      sliderZVal = parseFloat($('#atomPosZ').val() );
+    } 
+
     if(!_.isUndefined(param.atomPosX)){ 
       if(_this.mutex){ 
 
@@ -373,6 +382,7 @@ define([
     }   
 
     _this.configureCellPoints();
+
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -392,7 +402,7 @@ define([
         var calculatedDistance = parseFloat( (_this.motifsAtoms[i].getRadius() + _this.newSphere.getRadius()).toFixed(parseInt(10)) ) ; 
 
         if (realDistance < calculatedDistance){   
-          _this.motifsAtoms[i].changeColor('#FF0000');  
+          _this.motifsAtoms[i].changeColor('#FF0000', 250);  
           c.offset = parseFloat((_this.fixAtomPosition(_this.motifsAtoms[i],axis)).toFixed(parseInt(10)) );
           c.collisionsFound++;  
         } 
@@ -481,364 +491,220 @@ define([
 
   };
 
+  var motifVirtPositions = [] ;
+
+  motifVirtPositions['cubicprimitive'] = [];
+  motifVirtPositions['tetragonalprimitive'] = [];
+  motifVirtPositions['orthorhombicprimitive'] = [];
+
+  motifVirtPositions['cubicbody'] = [{a : 1/2, b : 1/2, c: 1/2}, {a : -1/2, b : 1/2,  c: 1/2}, {a : 1/2, b : -1/2,  c: 1/2}, {a : -1/2, b : -1/2,  c: 1/2}];
+  motifVirtPositions['tetragonalbody'] = [{a : 1/2, b : 1/2, c: 1/2}, {a : -1/2, b : 1/2,  c: 1/2}, {a : 1/2, b : -1/2,  c: 1/2}, {a : -1/2, b : -1/2,  c: 1/2}];
+  motifVirtPositions['orthorhombicbody'] = [{a : 1/2, b : 1/2, c: 1/2}, {a : -1/2, b : 1/2,  c: 1/2}, {a : 1/2, b : -1/2,  c: 1/2}, {a : -1/2, b : -1/2,  c: 1/2}];
+
+  motifVirtPositions['cubicface'] = [{a : 0, b : 1/2, c: 1/2}, {a : 0, b : -1/2, c: 1/2}, {a : 1/2, b : 0, c: 1/2}, {a : -1/2, b : 0, c: 1/2}];
+  motifVirtPositions['orthorhombicface'] = [{a : 0, b : 1/2, c: 1/2}, {a : 0, b : -1/2, c: 1/2}, {a : 1/2, b : 0, c: 1/2}, {a : -1/2, b : 0, c: 1/2}];
+
+  motifVirtPositions['orthorhombicbase'] = [{a : 0, b : 1/2, c: 1/2}, {a : 0, b : -1/2, c: 1/2} ];
+  motifVirtPositions['monoclinicbase'] = [{a : 0, b : 1/2, c: 1/2}, {a : 0, b : -1/2, c: 1/2} ];
+  
+  motifVirtPositions['rhombohedralprimitive'] = [];
+  motifVirtPositions['triclinicprimitive'] = [];
+  motifVirtPositions['monoclinicprimitive'] = [];
+
   Motifeditor.prototype.findLeastCellLength = function(axis, val){
      
     var _this = this ;
     var offsets = {x : 0, y : 0, z : 0 } ; 
-
-    var helperObj = {"object3d" : {"position" : { "x": _this.newSphere.object3d.position.x, "y":_this.newSphere.object3d.position.y, "z": _this.newSphere.object3d.position.z, }}, getRadius: function() { return _this.newSphere.getRadius(); } ,
-      
-    } ; 
+    
+    // add temporary atom (newSphere) in motif - it will be poped out in the end
+    var helperObj = {"object3d" : {"position" : { "x": _this.newSphere.object3d.position.x, "y":_this.newSphere.object3d.position.y, "z": _this.newSphere.object3d.position.z, }}, getRadius: function() { return _this.newSphere.getRadius(); }  } ; 
     this.motifsAtoms.push(helperObj);
- 
-    var motifHelper = [], j = 0;
+    
+    // create an identical motif to use in calculations
+    var motifHelper = [], j = 0, initialX, initialY, initialZ;
     while(j < _this.motifsAtoms.length ) {  
-      var x = _this.motifsAtoms[j].object3d.position.x ;
-      var y = _this.motifsAtoms[j].object3d.position.y ;
-      var z = _this.motifsAtoms[j].object3d.position.z ;
+      var x = _this.motifsAtoms[j].object3d.position.x, y = _this.motifsAtoms[j].object3d.position.y, z = _this.motifsAtoms[j].object3d.position.z ;
       var r = _this.motifsAtoms[j].getRadius();
 
       motifHelper.push( 
         {
-          "object3d" : {"position" : { "x": x, "y": y, "z": z, clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); },
-            applyMatrix4 : function ( m ) {
- 
-            var x = this.x, y = this.y, z = this.z;
-
-            var e = m.elements;
-
-            this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z + e[ 12 ];
-            this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z + e[ 13 ];
-            this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ];
-            } } },
+          "object3d" : {
+            "position" : { 
+              "x": x, 
+              "y": y, 
+              "z": z, 
+              clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); },
+              applyMatrix4 : function ( m ) { 
+                var x = this.x, y = this.y, z = this.z; 
+                var e = m.elements; 
+                this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ]  * z + e[ 12 ];
+                this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ]  * z + e[ 13 ];
+                this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ];
+              } 
+            } 
+          },
           "r" : r , 
           getRadius: function() { return (this.r); } 
         } 
       ); 
       j++;
-    } 
-     // - find minimum radius of spheres r
-    var minRadius = _this.findShortestRadius(); 
-    // - set r-0.1 as a step for moving downwards the whole motif
-    var movingOffset = parseFloat( minRadius);
-
-    if( (axis === undefined) && (_this.latticeType === 'primitive') && (_this.latticeSystem === 'cubic' || _this.latticeSystem === 'tetragonal' || _this.latticeSystem === 'orthorhombic') )  
-    {  
- 
-      // - find classic unit cell dimensions
-      var distantLeftX  = _.min(_this.motifsAtoms, function(atom){ return (atom.object3d.position.x - atom.getRadius()); });
-      var distantDownY  = _.min(_this.motifsAtoms, function(atom){ return (atom.object3d.position.y - atom.getRadius()); });
-      var distantBackZ  = _.min(_this.motifsAtoms, function(atom){ return (atom.object3d.position.z - atom.getRadius()); });
-      var distantRightX = _.max(_this.motifsAtoms, function(atom){ return (atom.object3d.position.x + atom.getRadius()); });
-      var distantUpY    = _.max(_this.motifsAtoms, function(atom){ return (atom.object3d.position.y + atom.getRadius()); });
-      var distantForthZ = _.max(_this.motifsAtoms, function(atom){ return (atom.object3d.position.z + atom.getRadius()); });
-
-      var cell = { 
-        xDim: Math.abs(distantLeftX.object3d.position.x - distantLeftX.getRadius() - (distantRightX.object3d.position.x + distantRightX.getRadius()) ),
-        yDim: Math.abs(distantDownY.object3d.position.y - distantUpY.getRadius()   - (distantUpY.object3d.position.y    + distantDownY.getRadius())  ),
-        zDim: Math.abs(distantBackZ.object3d.position.z - distantBackZ.getRadius() - (distantForthZ.object3d.position.z + distantForthZ.getRadius()) )
-      } 
-      
-      if(cell.xDim===0) cell.xDim = distantRightX.getRadius()*2  ;
-      if(cell.yDim===0) cell.yDim = distantUpY.getRadius()*2  ;
-      if(cell.zDim===0) cell.zDim = distantForthZ.getRadius()*2  ; 
-
+    }  
+    
+    // this algorithm calculates the offset if there is a collision by creating "virtual" motifs "around" the motif in 0,0,0 
+    // then sets the new values in "leasts lengths" if they have to be updated (collision)
+     
+    var _distances =[], theOffset  ; 
+    var twoDarr = motifVirtPositions[this.latticeSystem+this.latticeType] ;
+     
+    if(axis === 'x'){   
+        
+      _this.cellParameters.scaleX =  val ;
        
-      // - move helper motif by 1 step each time and detect collision 
-      var finished = false, theXOffset, theYOffset, theZOffset;
-
-      // for X
+      // move virtual motif in x direction 
       j = 0;
       while(j < motifHelper.length ) { 
-        motifHelper[j].object3d.position.x += cell.xDim ; 
-        j++;
-      }
-      while(!finished){
+        motifHelper[j].object3d.position.x += _this.cellParameters.scaleX  ; 
          
-        offsets.x -= movingOffset; 
-        var j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.x -= movingOffset ;  // todo maybe move it by a full 2r-0.001
-          j++;
-        }
-        theXOffset = _this.fakeCollision("x", motifHelper);
-        if (theXOffset != -1) finished = true ; 
-      }   
-
-      // for Y
-      finished = false;
-      j = 0;
-      while(j < _this.motifsAtoms.length ) { 
-        var x = _this.motifsAtoms[j].object3d.position.x ; 
-        motifHelper[j].object3d.position.x = x ;
-        motifHelper[j].object3d.position.y += cell.yDim ; 
-        j++;
-      } 
-
-      while(!finished){ 
-        offsets.y -= movingOffset; 
-        var j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.y -= movingOffset ;  // todo maybe move it by a full 2r-0.001
-          j++;
-        }
-        theYOffset = _this.fakeCollision("y", motifHelper);
-        if (theYOffset != -1) finished = true ; 
-      } 
-       
-      // for Z
-      finished = false;
-      j = 0 ;
-      while(j < _this.motifsAtoms.length ) { 
-        var y = _this.motifsAtoms[j].object3d.position.y ; 
-        motifHelper[j].object3d.position.y = y ;
-        motifHelper[j].object3d.position.z += cell.zDim ; 
-        j++;
-      } 
-
-      while(!finished){ 
-        offsets.z -= movingOffset; 
-        var j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.z -= movingOffset ;  // todo maybe move it by a full 2r-0.001
-          j++;
-        }
-        theZOffset = _this.fakeCollision("z", motifHelper);
-        if (theZOffset != -1) finished = true ; 
-      } 
-      j = 0;
-      while(j < _this.motifsAtoms.length ) { 
-        var z = _this.motifsAtoms[j].object3d.position.z ; 
-        motifHelper[j].object3d.position.z = z ; 
         j++;
       }
-      //
-   
-      var tempDim = {x: (cell.xDim + theXOffset + offsets.x), y: (cell.yDim + theYOffset + offsets.y), z: (cell.zDim + theZOffset + offsets.z)};
-        
-      this.leastCellLengths = tempDim;
+
+      // find collisions with neighbour in x direction
+      var sideTosideCol ; 
+      if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+        sideTosideCol = _this.fakeCollision("x", motifHelper, 1); 
+      }
+      else{   
+        sideTosideCol = _this.fakeCollision("x", motifHelper); 
+      }
+
+      
+      for (var g = 0; g < twoDarr.length; g++) {
+
+        j = 0;
+        while(j < motifHelper.length ) {  
+          motifHelper[j].object3d.position.y = _this.motifsAtoms[j].object3d.position.y + ( _this.cellParameters.scaleY * twoDarr[g].a ) ; 
+          motifHelper[j].object3d.position.z = _this.motifsAtoms[j].object3d.position.z + ( _this.cellParameters.scaleZ * twoDarr[g].b ) ;   
+          motifHelper[j].object3d.position.x = _this.motifsAtoms[j].object3d.position.x + ( _this.cellParameters.scaleX * twoDarr[g].c ) ;   
+          j++;
+        }
+         
+        theOffset = _this.fakeCollision("x", motifHelper); 
+        _distances[g] = parseFloat( theOffset  );
+
+      }; 
+
+      var maxDistance = _.max( _distances );
+      if(maxDistance === -1) maxDistance = -10000000 ; 
+      if(sideTosideCol === -1) sideTosideCol = -10000000 ; 
+
+      var centeredDist = (_this.cellParameters.scaleX/2 + maxDistance) *2 ; // body centered atom
+      var cornerDist = _this.cellParameters.scaleX + sideTosideCol; // in 4 corners 
+
+      _this.leastCellLengths.x = (centeredDist > cornerDist) ? centeredDist : cornerDist;
+ 
+      if(_this.leastCellLengths.x < 0 ) _this.leastCellLengths.x = val ;
+      
     }
- 
-    ///
-    else if( 
-        ( (_this.latticeType === 'body' ) && (_this.latticeSystem === 'cubic' || _this.latticeSystem === 'tetragonal' || _this.latticeSystem === 'orthorhombic') )  
-        ||  
-        ( (_this.latticeType === 'face' ) && (_this.latticeSystem === 'cubic' || _this.latticeSystem === 'orthorhombic'))
-        ||
-        ( (_this.latticeType === 'base' ) && ( _this.latticeSystem === 'orthorhombic'))
-        ||
-        ( (_this.latticeType === 'primitive' ) && (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic'   )))
-      )  
-    {
-      // this algorithm calculates the least distances of the unit cell in x,y,z directions, putting 4 times the motifhelper in diff position and tries fake collision
-       
-      var xDistances =[], theXOffset  ; 
-      var twoDarr = [] ;
-       
-      if(axis === 'x'){   
-        if (_this.latticeType === 'body' ) { 
-          twoDarr = [{a : 1/2, b : 1/2}, {a : -1/2, b : 1/2}, {a : 1/2, b : -1/2}, {a : -1/2, b : -1/2}] 
-        } 
-        else if (_this.latticeType === 'face' ) {  
-          twoDarr = [{a : 0, b : 1/2}, {a : 0, b : -1/2}, {a : 1/2, b : 0}, {a : -1/2, b : 0}] ;
-        }
-        else if (_this.latticeType === 'base' ) {  
-          twoDarr = [{a : 0, b : 1/2}, {a : 0, b : -1/2} ] ;
-        }
-         
-        _this.cellParameters.scaleX =  val ;
-        j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.x = _this.cellParameters.scaleX  ; 
-           
-          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
-            var argument, matrix ; 
-            _.each(reverseShearing, function(k) {
-              if (_.isUndefined(_this.cellParameters[k]) === false) { 
-                argument = {};
-                argument[k] = parseFloat(_this.cellParameters[k]); 
-                matrix = transformationMatrix(argument);  
-                motifHelper[j].object3d.position.applyMatrix4(matrix);  
-              }
-            });  
-          }
-          j++;
-        }
-        var sideTosideCol ;
-        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
-          sideTosideCol = _this.fakeCollision("x", motifHelper, 1); 
-        }
-        else{   
-          sideTosideCol = _this.fakeCollision("x", motifHelper); 
-        }
+    
+    else if(axis === 'y'){  
+      
 
+      _this.cellParameters.scaleY =  val ;
+
+      // move virtual motif in y direction 
+      j = 0; 
+      while(j < motifHelper.length ) { 
+        motifHelper[j].object3d.position.y += _this.cellParameters.scaleY  ; 
         
-        j = 0;
-         
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.x = _this.cellParameters.scaleX / 2 ; 
-          j++;
-        }
- 
-        for (var g = 0; g < twoDarr.length; g++) {
-
-          j = 0;
-          while(j < motifHelper.length ) {
-            
-            motifHelper[j].object3d.position.y = ( _this.cellParameters.scaleY * twoDarr[g].a ) ; 
-            motifHelper[j].object3d.position.z = ( _this.cellParameters.scaleZ * twoDarr[g].b ) ;   
-            j++;
-          }
-           
-          theXOffset = _this.fakeCollision("x", motifHelper); 
-          xDistances[g] = parseFloat(theXOffset  );
- 
-        };
-        var maxX = _.max( xDistances );
-        var centeredDist = (_this.cellParameters.scaleX/2 + maxX)* 2 ; // body centered atom
-        var cornerDist = _this.cellParameters.scaleX + sideTosideCol; // in 4 corners 
-        _this.leastCellLengths.x = (centeredDist > cornerDist) ? centeredDist : cornerDist;
-
-        if(_this.leastCellLengths.x < 0 ) _this.leastCellLengths.x = val ;
-        
+        j++;
+      }
+       
+      // find collisions with neighbour in y direction
+      var sideTosideCol ;
+      if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+        sideTosideCol = _this.fakeCollision("y", motifHelper, 1); 
+      }
+      else{   
+        sideTosideCol = _this.fakeCollision("y", motifHelper); 
       }
       
-      else if(axis === 'y'){  
-        if (_this.latticeType === 'body' ) { 
-          twoDarr = [{a : 1/2, b : 1/2}, {a : -1/2, b : 1/2}, {a : 1/2, b : -1/2}, {a : -1/2, b : -1/2}] 
-        } 
-        else if (_this.latticeType === 'face' ) {  
-          twoDarr = [{a : 0, b : 1/2}, {a : 0, b : -1/2}, {a : 1/2, b : 0}, {a : -1/2, b : 0}] ;
-        }
-        else if (_this.latticeType === 'base' ) {  
-          twoDarr = [] ;
-        }
 
-        _this.cellParameters.scaleY =  val ;
+      for (var g = 0; g < twoDarr.length; g++) {
+
         j = 0;
-          
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.y = _this.cellParameters.scaleY  ; 
-          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
-            var argument, matrix ;  
-            _.each(reverseShearing, function(k) {  
-              if (_.isUndefined(_this.cellParameters[k]) === false) { 
-                argument = {};
-                argument[k] = parseFloat(_this.cellParameters[k]); 
-                matrix = transformationMatrix(argument);   
-                motifHelper[j].object3d.position.applyMatrix4(matrix);   
-              }
-            });  
-          }
+        while(j < motifHelper.length ) {  
+          motifHelper[j].object3d.position.x = _this.motifsAtoms[j].object3d.position.x + ( _this.cellParameters.scaleX * twoDarr[g].a ) ; 
+          motifHelper[j].object3d.position.z = _this.motifsAtoms[j].object3d.position.z + ( _this.cellParameters.scaleZ * twoDarr[g].b ) ;   
+          motifHelper[j].object3d.position.y = _this.motifsAtoms[j].object3d.position.y + ( _this.cellParameters.scaleY * twoDarr[g].c ) ;   
           j++;
         }
          
-        var sideTosideCol ;
-        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
-          sideTosideCol = _this.fakeCollision("y", motifHelper, 1); 
-        }
-        else{   
-          sideTosideCol = _this.fakeCollision("y", motifHelper); 
-        }
-         
-        j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.y = _this.cellParameters.scaleY / 2 ; 
-          j++;
-        }
- 
-        for (var g = 0; g < twoDarr.length; g++) {
+        theOffset = _this.fakeCollision("y", motifHelper); 
+        _distances[g] = parseFloat( theOffset  );
 
-          j = 0;
-          while(j < motifHelper.length ) {
-            
-            motifHelper[j].object3d.position.x = ( _this.cellParameters.scaleX * twoDarr[g].a ) ; 
-            motifHelper[j].object3d.position.z = ( _this.cellParameters.scaleZ * twoDarr[g].b ) ;   
-            j++;
-          }
-           
-          theXOffset = _this.fakeCollision("y", motifHelper); 
-          xDistances[g] = parseFloat(theXOffset  );
- 
-        };
+      };  
+      
+      var maxDistance = _.max( _distances );
+      if(maxDistance === -1) maxDistance = -10000000 ; 
+      if(sideTosideCol === -1) sideTosideCol = -10000000 ; 
 
-        var maxX = _.max( xDistances );
-        var centeredDist = (_this.cellParameters.scaleY/2 + maxX)* 2 ;
-        var cornerDist = _this.cellParameters.scaleY + sideTosideCol;
-         
-        _this.leastCellLengths.y = (centeredDist > cornerDist) ? centeredDist : cornerDist;
-          
-        if(_this.leastCellLengths.y < 0 ) _this.leastCellLengths.y = val ;
-        
-      }
-      else if(axis === 'z'){  
-        if (_this.latticeType === 'body' ) { 
-          twoDarr = [{a : 1/2, b : 1/2}, {a : -1/2, b : 1/2}, {a : 1/2, b : -1/2}, {a : -1/2, b : -1/2}] 
-        } 
-        else if (_this.latticeType === 'face' ) {  
-          twoDarr = [{a : 0, b : 1/2}, {a : 0, b : -1/2}, {a : 1/2, b : 0}, {a : -1/2, b : 0}] ;
-        }
-        else if (_this.latticeType === 'base' ) {  
-          twoDarr = [{a : 0, b : 1/2}, {a : 0, b : -1/2} ] ;
-        }
-        _this.cellParameters.scaleZ =  val ;
-        j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.z = _this.cellParameters.scaleZ  ; 
-          if (_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive' )) { 
-            var argument, matrix ; 
-            _.each(reverseShearing, function(k) {
-              if (_.isUndefined(_this.cellParameters[k]) === false) { 
-                argument = {};
-                argument[k] = parseFloat(_this.cellParameters[k]); 
-                matrix = transformationMatrix(argument);  
-                motifHelper[j].object3d.position.applyMatrix4(matrix);  
-              }
-            });  
-          }
-          j++;
-        }
+      var centeredDist = (_this.cellParameters.scaleY/2 + maxDistance) *2 ; // body centered atom
+      var cornerDist = _this.cellParameters.scaleY + sideTosideCol; // in 4 corners 
 
-        var sideTosideCol ;
-        if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
-          sideTosideCol = _this.fakeCollision("z", motifHelper, 1); 
-        }
-        else{   
-          sideTosideCol = _this.fakeCollision("z", motifHelper); 
-        }
-        
-        j = 0;
-        while(j < motifHelper.length ) { 
-          motifHelper[j].object3d.position.z = _this.cellParameters.scaleZ / 2 ; 
-          j++;
-        }
+      _this.leastCellLengths.y = (centeredDist > cornerDist) ? centeredDist : cornerDist;
  
-        for (var g = 0; g < twoDarr.length; g++) {
-
-          j = 0;
-          while(j < motifHelper.length ) {
-            
-            motifHelper[j].object3d.position.y = ( _this.cellParameters.scaleY * twoDarr[g].a ) ; 
-            motifHelper[j].object3d.position.x = ( _this.cellParameters.scaleX * twoDarr[g].b ) ;   
-            j++;
-          }
-           
-          theXOffset = _this.fakeCollision("z", motifHelper); 
-          xDistances[g] = parseFloat(theXOffset  );
+      if(_this.leastCellLengths.y < 0 ) _this.leastCellLengths.y = val ;
  
-        };
-        var maxX = _.max( xDistances );
-        var centeredDist = (_this.cellParameters.scaleZ/2 + maxX)* 2 ;
-        var cornerDist = _this.cellParameters.scaleZ + sideTosideCol;
-        _this.leastCellLengths.z = (centeredDist > cornerDist) ? centeredDist : cornerDist;
-         
-        if(_this.leastCellLengths.z < 0 ) _this.leastCellLengths.z = val ;
-        
-      }
-        
+      
     }
-    else if( (_this.latticeType === 'hexagonal' ) && ( _this.latticeSystem === 'hexagonal') )     
-    {
+    else if(axis === 'z'){  
+     
+      _this.cellParameters.scaleZ =  val ;
+      j = 0;
+      while(j < motifHelper.length ) { 
+        motifHelper[j].object3d.position.z += _this.cellParameters.scaleZ  ;  
+        j++;
+      }
+
+      var sideTosideCol ;
+      if(_this.latticeSystem === 'rhombohedral' || _this.latticeSystem === 'triclinic' || (_this.latticeSystem === 'monoclinic' && _this.latticeType === 'primitive')){ 
+        sideTosideCol = _this.fakeCollision("z", motifHelper, 1); 
+      }
+      else{   
+        sideTosideCol = _this.fakeCollision("z", motifHelper); 
+      } 
+
+      for (var g = 0; g < twoDarr.length; g++) {
+
+        j = 0;
+
+        while(j < motifHelper.length ) {  
+          motifHelper[j].object3d.position.y = _this.motifsAtoms[j].object3d.position.y + ( _this.cellParameters.scaleY * twoDarr[g].a ) ; 
+          motifHelper[j].object3d.position.x = _this.motifsAtoms[j].object3d.position.x + ( _this.cellParameters.scaleX * twoDarr[g].b ) ;   
+          motifHelper[j].object3d.position.z = _this.motifsAtoms[j].object3d.position.z + ( _this.cellParameters.scaleZ * twoDarr[g].c ) ;   
+          j++;
+        } 
+         
+        theOffset = _this.fakeCollision("z", motifHelper); 
+        _distances[g] = parseFloat( theOffset );
+
+      };
+      
+      var maxDistance = _.max( _distances );
+      if(maxDistance === -1) maxDistance = -10000000 ; 
+      if(sideTosideCol === -1) sideTosideCol = -10000000 ; 
+
+      var centeredDist = (_this.cellParameters.scaleZ/2 + maxDistance) *2 ; // body centered atom
+      var cornerDist = _this.cellParameters.scaleZ + sideTosideCol; // in 4 corners 
+
+      _this.leastCellLengths.z = (centeredDist > cornerDist) ? centeredDist : cornerDist;
+ 
+      if(_this.leastCellLengths.z < 0 ) _this.leastCellLengths.z = val ;
+      
+    }
+    
+    if( (_this.latticeType === 'hexagonal' ) && ( _this.latticeSystem === 'hexagonal') )     
+    {  
       // this algorithm calculates the least distances of the unit cell in x,y,z directions, putting 4 times the motifhelper in diff position and tries fake collision
         
       if(axis === 'y'){   
@@ -861,7 +727,7 @@ define([
       } 
       else if(axis === 'x' || axis === 'z'){ 
 
-        /*var xDistances =[], theXOffset  ; 
+        /*var _distances =[], theOffset  ; 
         var twoDarr =[{a : 0, b : 1/2}, {a : 0, b : -1/2} ] ;
         _.times(6 , function(_r) {
           var v = new THREE.Vector3( a, 0, 0 );
@@ -882,8 +748,8 @@ define([
             j++;
           }
            
-          theXOffset = _this.fakeCollision("z", motifHelper); 
-          xDistances[g] = parseFloat(theXOffset  );
+          theOffset = _this.fakeCollision("z", motifHelper); 
+          _distances[g] = parseFloat(theOffset  );
  
         };*/
 
@@ -893,52 +759,95 @@ define([
 
     this.motifsAtoms.pop();
   };
-  Motifeditor.prototype.fakeFixAtomPositionWithAngles = function(helperAtom, otherAtom,axis){
+  Motifeditor.prototype.fakeFixAtomPositionWithAngles = function(helperAtom, otherAtom,eqAtom,axis){
     var _this = this,sign = 1; 
-    
-    var movingSpherePosition = helperAtom.object3d.position.clone();
 
-    var collisionSpherePosition = new THREE.Vector3( otherAtom.object3d.position.x, otherAtom.object3d.position.y, otherAtom.object3d.position.z );
+    var atomOverlapping = helperAtom.object3d.position.clone();
+
+    var atomOverlapped = new THREE.Vector3(otherAtom.object3d.position.x,otherAtom.object3d.position.y,otherAtom.object3d.position.z) ;
+    var equilOverlInMotif = new THREE.Vector3(eqAtom.object3d.position.x,eqAtom.object3d.position.y,eqAtom.object3d.position.z) ; 
   
-    var realTimeHypotenuse = new THREE.Vector3( collisionSpherePosition.x - movingSpherePosition.x, collisionSpherePosition.y - movingSpherePosition.y, collisionSpherePosition.z - movingSpherePosition.z );
+    var realTimeHypotenuse = new THREE.Vector3( atomOverlapped.x - atomOverlapping.x, atomOverlapped.y - atomOverlapping.y, atomOverlapped.z - atomOverlapping.z );
     var calculatedHypotenuse = parseFloat( otherAtom.getRadius() + helperAtom.getRadius() ) ;  
 
     var fixedSide ;
     var wrongSide, rightSide ;
      
-    if(axis==="x"){ 
-       
-    }
-    else if(axis==="y"){ 
-      var argument,matrix,line = new THREE.Vector3(0,1,0);
-      line.setLength(100);
+    if(axis === 'y'){ 
+        
+
+      var bVector = new THREE.Vector3( atomOverlapping.x - equilOverlInMotif.x, atomOverlapping.y - equilOverlInMotif.y, atomOverlapping.z - equilOverlInMotif.z);
+
+      var aVector = new THREE.Vector3( atomOverlapped.x - equilOverlInMotif.x, atomOverlapped.y - equilOverlInMotif.y, atomOverlapped.z - equilOverlInMotif.z);
       
+      var rr = bVector.clone();
+
+      var knownAngleCrads = bVector.angleTo(aVector)  ;
+      var knownAngleCdegrs = bVector.angleTo(aVector)* 180 / Math.PI ;
+      var C = Math.cos(knownAngleCrads);
+
+      var c = 1;
+      var a =  atomOverlapped.distanceTo(equilOverlInMotif) ;
+      var b =  2*a*C;
+      var offset = b - bVector.length()  ;
+      bVector.setLength(bVector.length() + offset);
+
       _.each(reverseShearing, function(k) {
         if (_.isUndefined(_this.cellParameters[k]) === false) { 
-          argument = {};
-          argument[k] = parseFloat(_this.cellParameters[k]); 
-          matrix = transformationMatrix(argument);  
-          line.applyMatrix4(matrix);  
+          var argument = {};
+          argument[k] = -1 * parseFloat(_this.cellParameters[k]); 
+          var matrix = transformationMatrix(argument);  
+          bVector.applyMatrix4(matrix);  
         }
-      });  
-       
-      var a = realTimeHypotenuse.clone(); 
+      }); 
 
-      var projectOnLine = a.projectOnVector(line);
-       
-      wrongSide = projectOnLine.length();
-       
-      fixedSide = Math.sqrt ( Math.abs((( (realTimeHypotenuse.length())*(realTimeHypotenuse.length())) - (wrongSide*wrongSide) ))); 
-       
-      rightSide = Math.sqrt ( (( calculatedHypotenuse*calculatedHypotenuse) - (fixedSide*fixedSide) )); 
-  
+      var material = [ new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) ];
+      var geometry = new THREE.Geometry();
+
+      geometry.vertices.push(
+        rr,
+        atomOverlapped 
+      );
+
+      var scene = UnitCellExplorer.getInstance().object3d;
+      var mesh = new THREE.Line(geometry, material[0]);
+      scene.add(mesh);
+
+      return (bVector.length() - this.cellParameters.scaleY);
+        
+
     }
-    else{ 
-         
-    }    
-    var offset = parseFloat( rightSide - wrongSide ); 
+    else if(axis === 'z'){ 
 
-    return (offset);
+      var bVector = new THREE.Vector3( atomOverlapping.x - equilOverlInMotif.x, atomOverlapping.y - equilOverlInMotif.y, atomOverlapping.z - equilOverlInMotif.z);
+
+      var aVector = new THREE.Vector3( atomOverlapped.x - equilOverlInMotif.x, atomOverlapped.y - equilOverlInMotif.y, atomOverlapped.z - equilOverlInMotif.z);
+      
+      var rr = bVector.clone();
+
+      var knownAngleCrads = bVector.angleTo(aVector)  ;
+      var knownAngleCdegrs = bVector.angleTo(aVector)* 180 / Math.PI ;
+      var C = Math.cos(knownAngleCrads);
+
+      var c = 1;
+      var a =  atomOverlapped.distanceTo(equilOverlInMotif) ;
+      var b =  2 * a * C ;
+      var offset = b - bVector.length()  ;
+      bVector.setLength(bVector.length() + offset);
+
+      _.each(reverseShearing, function(k) {
+        if (_.isUndefined(_this.cellParameters[k]) === false) {
+          var argument = {};
+          argument[k] = -1 * parseFloat(_this.cellParameters[k]);
+          var matrix = transformationMatrix(argument);
+          bVector.applyMatrix4(matrix);
+        }
+      });
+  
+      return (bVector.length() - this.cellParameters.scaleZ);
+         
+    } 
+ 
   }; 
   Motifeditor.prototype.setDimsManually = function(par){
     
@@ -1219,6 +1128,7 @@ define([
         $('select[id="savedAtoms"]').find('option[id="---"]').attr("selected",true);
         $("#savedAtomsCont").css("visibility", "visible");
         $('input[name=dragMode]').attr('checked', false);
+        $('input[name=wireframe]').attr('checked', true);
         break;
       case "creating":
         $("#atomPalette").prop("disabled",true);
@@ -2240,24 +2150,48 @@ define([
 
     var _this = this;
     
-    var offsets = [], i = 0, j =0;
-     
+    var offsets = [], i = 0, j =0, helperVec   ;
+    if(axis === 'y') helperVec = new THREE.Vector3(0,this.cellParameters.scaleY,0);
+    if(axis === 'z') helperVec = new THREE.Vector3(0,0,this.cellParameters.scaleZ);
+    if(axis === 'x') helperVec = new THREE.Vector3( this.cellParameters.scaleX,0,0);
+
+    if (withAngles) { 
+      var argument, matrix, helperVec2 = helperVec.clone() ;  
+      _.each(shearing, function(k) {  
+        if (_.isUndefined(_this.cellParameters[k]) === false) { 
+          argument = {};
+          argument[k] = parseFloat(_this.cellParameters[k]); 
+          matrix = transformationMatrix(argument);   
+          helperVec.applyMatrix4(matrix);   
+        }
+      }); 
+      while(i<motifHelper.length) {
+        motifHelper[i].object3d.position.x += (helperVec.x - helperVec2.x); 
+        motifHelper[i].object3d.position.y += (helperVec.y - helperVec2.y) ; 
+        motifHelper[i].object3d.position.z += (helperVec.z - helperVec2.z); 
+        i++;
+      }
+    }
+
+    i=0;
     while(i<motifHelper.length) {
       j = 0;  
+       
       while(j<_this.motifsAtoms.length) {  
         var a = motifHelper[i].object3d.position.clone();
         var b = new THREE.Vector3(_this.motifsAtoms[j].object3d.position.x, _this.motifsAtoms[j].object3d.position.y, _this.motifsAtoms[j].object3d.position.z) ;
         var realDistance =parseFloat(  (a.distanceTo(b)).toFixed(parseInt(10)) );
         var calculatedDistance = parseFloat( (_this.motifsAtoms[j].getRadius() + motifHelper[i].getRadius()).toFixed(parseInt(10)) ) ;  
         if (realDistance < calculatedDistance){   
-        var val;
-        if( _.isUndefined(withAngles) ) {
-          val = _this.fakeFixAtomPosition(motifHelper[i], _this.motifsAtoms[j],axis) 
-        }
-        else{ 
-          val = _this.fakeFixAtomPositionWithAngles(motifHelper[i], _this.motifsAtoms[j],axis) ; 
-        } 
-        offsets.push( Math.abs( parseFloat((val).toFixed(parseInt(10)) ) ) ) ;  
+          var val;
+
+          if(_.isUndefined(withAngles) || axis==='x') {
+            val = _this.fakeFixAtomPosition(motifHelper[i], _this.motifsAtoms[j],axis) 
+          }
+          else{ 
+            val = _this.fakeFixAtomPositionWithAngles(motifHelper[i], _this.motifsAtoms[j],_this.motifsAtoms[i],axis) ; 
+          } 
+          offsets.push( Math.abs( parseFloat((val).toFixed(parseInt(10)) ) ) ) ;  
         }  
         j++;
       } 
@@ -3089,7 +3023,7 @@ define([
     } 
   };
   Motifeditor.prototype.cellPointsWithAngles = function() {    
-    this.transform( reverseShearing,            function(value) {  return value; }                       );
+    this.transform( shearing, function(value) {  return value; }  );
     //this.transform( reverseScaling,             function(value) { return (value === 0 ? 0 : 1 / value); } );       
     //this.transform( _.union(scaling, shearing), function(value) { return value; }                         );  
   };   
@@ -3098,12 +3032,11 @@ define([
   var scaling = [ 'scaleX', 'scaleY', 'scaleZ' ];
   var reverseScaling = scaling.slice(0).reverse();
 
-  Motifeditor.prototype.transform = function(parameterKeys, operation) {
+  Motifeditor.prototype.transform = function( parameterKeys, operation ) {
     var matrix, _this = this;
     var argument; 
-    var parameters = this.cellParameters;
-
-    _.each(parameterKeys, function(k) {
+    var parameters = this.cellParameters;  
+    _.each(parameterKeys, function(k) {  
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
         argument[k] = operation(parseFloat(parameters[k]));

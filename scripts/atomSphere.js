@@ -51,9 +51,7 @@ define([
   };
   AtomSphere.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-     this.color = color ;
-
-    console.log(this.opacity);
+     this.color = color ; 
 
     _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true, opacity : this.opacity/10    }) ;
     _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true, opacity: this.opacity/10  }) ;
@@ -123,16 +121,15 @@ define([
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
-  AtomSphere.prototype.changeColor = function(color) {
+  AtomSphere.prototype.changeColor = function(color, forTime) { 
     var _this = this;
     this.color = color ;
     _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
     _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[0].material = _this.colorMaterial;
-      _this.object3d.children[0].material.needsUpdate = true;
-
-    },250);
+      _this.object3d.children[0].material.needsUpdate = true; 
+    }, 250);
   };
   AtomSphere.prototype.getTangency = function() {
     var _this = this; 

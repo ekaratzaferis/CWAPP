@@ -377,10 +377,10 @@ define([
 
     // Motif
     _.each(motifSliders, function(name) {
-      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001);
+      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE);
     }); 
     _.each(cellManDimensionsSliders, function(name) {
-      _this.setSliderInp(name,0,0.0000000000,20.0000000000,0.0000000001);
+      _this.setSliderInp(name,0,0.0000000000,20.0000000000,0.0000000001, events.AXYZ_CHANGE);
     }); 
     $(".periodic").click(function(){
       argument = {};
@@ -421,7 +421,8 @@ define([
       $parameter.on('change', function() {
         argument = {}; 
         argument[k] = $parameter.val(); 
-        //_this.setSliderValue(k,argument[k]); 
+        _this.setSliderValue(k,parseFloat(argument[k])); 
+        argument['trigger'] = 'textbox';
         PubSub.publish(events.ATOM_POSITION_CHANGE, argument);
       });
     });
@@ -429,7 +430,7 @@ define([
       $parameter.on('change', function() {
         argument = {}; 
         argument[k] = $parameter.val(); 
-        //_this.setSliderValue(k,argument[k]); 
+        _this.setSliderValue(k,argument[k]); 
         PubSub.publish(events.AXYZ_CHANGE, argument);
       });
     });
@@ -587,7 +588,10 @@ define([
       $("#"+name).val(value);
     });
   };
-  Menu.prototype.setSliderInp = function(name,value,min,max,step) { 
+  Menu.prototype.setSliderInp = function(name,value,min,max,step, eventName) { 
+    
+    var _this = this ;
+
     require([ "jquery-ui" ], function( slider ) {
        
       $("#"+name+"Slider").slider({ 
@@ -600,11 +604,13 @@ define([
         animate: true,
 
         slide: function (event, ui) {              
-          $("#"+name).val(ui.value);
-          $("#"+name).trigger('change');
+          $("#"+name).val(ui.value); 
+          var argument = {}; 
+          argument[name] = ui.value;
+          argument['trigger'] = 'slider'; 
+          PubSub.publish(eventName, argument);
         }
-      });
-        
+      }); 
     });
   };
   Menu.prototype.setSlider = function(name,value,min,max,step) {
