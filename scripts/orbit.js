@@ -27,6 +27,9 @@ define([
       if( camName=== 'hud') { 
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
       } 
+      else if( camName === 'motif'){
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
+      }
       else{
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
       }

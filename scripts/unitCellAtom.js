@@ -129,8 +129,7 @@ define([
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;
-    _this.viewMode = 'SolidVoid';
- 
+    _this.viewMode = 'SolidVoid'; 
   };
   UnitCellAtom.prototype.GradeLimited = function() {
     this.viewMode = 'GradeLimited' ; 
@@ -186,15 +185,15 @@ define([
     _this.object3d.children[0].material  = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide, transparent: true, opacity : opacity/10  });
     _this.object3d.children[0].material.needsUpdate = true; 
   }; 
-  UnitCellAtom.prototype.collided = function() {
+  UnitCellAtom.prototype.changeColor = function(color, forTime) { 
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000",side: THREE.FrontSide  });
-    _this.object3d.children[1].material.needsUpdate = true;
+    this.color = color ;
+    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
+    _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
-      _this.object3d.children[1].material = _this.colorMaterial;
-      _this.object3d.children[1].material.needsUpdate = true;
-
-    },200);
+      _this.object3d.children[0].material = _this.colorMaterial;
+      _this.object3d.children[0].material.needsUpdate = true; 
+    }, 250);
   };
   UnitCellAtom.prototype.getTangency = function() {
     var _this = this; 

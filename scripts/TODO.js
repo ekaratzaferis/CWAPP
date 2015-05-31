@@ -34,8 +34,11 @@ TODO list
 29. view mode is not supported in restore mechanism
 30. hexagonal is not restored well
 31. opacity is not restored well
-32. when dragging atoms update sliders 
 33. maybe big mistake with lengths, in lattices with angles  
+33. collision with more than 2 atoms (to handle dragging atom inside atom by the user)  
+34. stereoscopic function doesnt work when I first go to motif editor and then enable it  
+35. when change view, if you change tab and return in MT bug   
+36. blocking system for sliders  
 
 Changes by Andre
 
@@ -49,3 +52,7 @@ List with Ideas
 2. Public library of CW Projects - search by keywords, most popular etc
 3. Miller object use sliders for indexes
 
+
+
+steps:
+ 

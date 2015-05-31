@@ -27,7 +27,7 @@
           <div class="col-md-9" id="app-container" style="padding:0px 0px 0px 0px; margin: 0px 0px 0px 0px;">
             <div id="crystalRenderer" class="canvasContainer" >
               <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: absolute; z-index:10; bottom:0px; left:0px;"></div> 
-              <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div> 
+              <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div>
             </div>
             <div id="unitCellRenderer" class="canvasContainer"></div>
             <div id="motifRenderer" class="canvasContainer" > </div>              
@@ -602,6 +602,15 @@
                                       </div>
                                     </div> 
                                   </div> 
+                                  <div class="row col-md-12" style=" margin-bottom: 5px;">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input id="padlock"  type="checkbox" name="padlock" >  
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Padlock</strong></h3>
+                                    </div>
+                                  </div> 
                                 </div> 
                               </div>
                             </div>  
@@ -887,7 +896,7 @@
                                   </div>  
                                   <div class="col-md-12">
                                     <div class="col-md-5 input-group input-group-md atomInput">
-                                      <span class="input-group-addon">Set Manually Cell Dimensions</span> 
+                                      <span class="input-group-addon">Set Manually Cell Lengths</span> 
                                       <input id="manualSetCellDims" type="checkbox" name="manualSetCellDims" value="0"  >
                                     </div> 
                                   </div> 
@@ -929,7 +938,54 @@
                                         <div id="AcSlider"></div>
                                       </div>
                                     </div>
-                                  </div>  
+                                  </div> 
+
+                                  <div class="col-md-12">
+                                    <div class="col-md-5 input-group input-group-md atomInput">
+                                      <span class="input-group-addon">Set Manually Cell Angles</span> 
+                                      <input id="manualSetCellAngles" type="checkbox" name="manualSetCellAngles" value="0"  >
+                                    </div> 
+                                  </div> 
+                                  <div class="row form-group manualAngles">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">&alpha;</span>
+                                          <input type="text" id="cellBeta" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="cellBetaSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div> 
+                                  <div class="row form-group manualAngles">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">&beta;</span>
+                                          <input type="text" id="cellAlpha" class="form-control atomInput disableME" value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="cellAlphaSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row form-group manualAngles">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">&gamma;</span>
+                                          <input type="text" id="cellGamma" class="form-control atomInput disableME"  value="0">
+                                        </div>
+                                      </div>
+                                      <div class="col-md-7 atomInput" style="padding-top:7px;">
+                                        <div id="cellGammaSlider"></div>
+                                      </div>
+                                    </div>
+                                  </div> 
+
                                   <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-6">
@@ -1072,7 +1128,7 @@
                                 </div> 
                               </div> 
                               <div class="row"> 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                   <div  role="group" aria-label="Small button group">
                                     <button class="btn-group btn-group-sm">
                                       <a id="storeState" class=" btn btn-center btn btn-default navbar-btn   " href="#">
@@ -1080,6 +1136,18 @@
                                       </a>   
                                     </button>
                                   </div>
+                                </div>
+                                <div class="col-md-5">
+                                  <input id='projectName' type="text" class="form-control" placeholder="Project name">
+                                </div>
+                              </div>
+                              <div class="row">  
+                                <div class="col-md-12">
+                                  <input id='tags' type="text" class="form-control" placeholder="enter tags seperated with comma">
+                                </div> 
+                              </div>
+                              <div class="row"> 
+                                <div class="col-md-12">
                                   <div id='downloadJSON'></div>
                                   <form id="fileform">
                                     <span class="btn btn-default  ">
@@ -1097,6 +1165,19 @@
                                     </div>
                                     <div class="col-md-9" >
                                       <h3 class="panel-title"><strong>Crystal Camera Center at (0,0,0)</strong></h3>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div> 
+                              <div class='row'>
+                                <div class="col-md-12">
+                                  <div class=" col-md-12" style=" margin-bottom: 5px;">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-1">
+                                      <input type="checkbox" name="anaglyph" id="anaglyph"  > 
+                                    </div>
+                                    <div class="col-md-9" >
+                                      <h3 class="panel-title"><strong>Stereoscopic Effect</strong></h3>
                                     </div>
                                   </div>
                                 </div>

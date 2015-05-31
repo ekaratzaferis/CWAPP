@@ -807,9 +807,9 @@ define([
   };
 
   Lattice.prototype.revertScaling = function() {
-    this.transform(1, reverseScaling, function(value) {
+    this.transform(1, reverseScaling, function(value) { 
       return (value === 0 ? 0 : 1 / value);
-    });
+    }); 
   };
 
   var calculateDelta = function(original, update) {
@@ -830,7 +830,6 @@ define([
   };
 
   Lattice.prototype.forwardTransformations = function() {  
-     
     this.transform(0,_.union(scaling, shearing), function(value) {
       return value;
     });
@@ -912,8 +911,7 @@ define([
   }
   Lattice.prototype.updateLatticeTypeRL = function(){ return 0;
     var params = this.parameters ;
-    if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){
-    
+    if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){ 
       $("select option[value='cubic_primitive']").attr("selected","selected");
     }
     else if( params.scaleX === params.scaleY && params.scaleX === params.scaleZ && params.alpha === params.beta && params.beta === params.gamma){

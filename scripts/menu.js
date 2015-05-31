@@ -39,9 +39,13 @@ define([
     CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
     AXIS_MODE: 'menu.axis_mode',
     AXYZ_CHANGE: 'menu.axyz_change',
+    MAN_ANGLE_CHANGE: 'menu.man_angle_change',
     MANUAL_SET_DIMS: 'menu.manual_set_dims',
+    MANUAL_SET_ANGLES: 'menu.manual_set_angles',
     CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
-    STORE_PROJECT: 'menu.store_project'
+    STORE_PROJECT: 'menu.store_project',
+    ANAGLYPH_EFFECT: 'menu.anaglyph_effect',
+    SET_PADLOCK: 'menu.set_padlock'
   };
 
   // lattice parameters
@@ -150,7 +154,7 @@ define([
   var $faceOpacity = jQuery('#faceOpacity');
   var $gridCheckButton = jQuery("input[name='gridCheckButton']");
   var $faceCheckButton = jQuery("input[name='faceCheckButton']");
-
+ 
   var gradeSelections = {
     'gridCheckButton' : $gridCheckButton,
     'faceCheckButton': $faceCheckButton
@@ -184,6 +188,8 @@ define([
 
   var motifSliders = ['atomPosX', 'atomPosY', 'atomPosZ'];
   var cellManDimensionsSliders = ['Aa', 'Ab', 'Ac'];
+  var cellManAnglesSliders = ['cellAlpha', 'cellBeta', 'cellGamma'];
+
   var atomButtons = { 
     'saveChanges': $saveChanges,
     'deleteAtom': $deleteAtom,
@@ -196,10 +202,19 @@ define([
   var $Ab = jQuery('#Ab');
   var $Ac = jQuery('#Ac');
 
+  var $cellAlpha = jQuery('#cellAlpha');
+  var $cellBeta = jQuery('#cellBeta');
+  var $cellGamma = jQuery('#cellGamma');
+
   var cellManDimensions = {  
     'Aa' : $Aa,
     'Ab' : $Ab,
     'Ac' : $Ac
+  };
+  var cellManAngles = {  
+    'cellAlpha' : $cellAlpha,
+    'cellBeta' : $cellBeta,
+    'cellGamma' : $cellGamma
   };
 
   var $atomPosX = jQuery('#atomPosX');
@@ -379,8 +394,11 @@ define([
     _.each(motifSliders, function(name) {
       _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE);
     }); 
-    _.each(cellManDimensionsSliders, function(name) {
-      _this.setSliderInp(name,0,0.0000000000,20.0000000000,0.0000000001, events.AXYZ_CHANGE);
+    _.each(cellManDimensionsSliders, function(name) {  
+      _this.setSliderInp(name,0,0.000,30.000,0.001, events.AXYZ_CHANGE);
+    }); 
+    _.each(cellManAnglesSliders, function(name) {  
+      _this.setSliderInp(name,90,30,160,2, events.MAN_ANGLE_CHANGE); 
     }); 
     $(".periodic").click(function(){
       argument = {};
@@ -434,6 +452,14 @@ define([
         PubSub.publish(events.AXYZ_CHANGE, argument);
       });
     });
+    _.each(cellManAngles, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {}; 
+        argument[k] = $parameter.val(); 
+        _this.setSliderValue(k,argument[k]); 
+        PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
+      });
+    });
     $('#tangency').change(function() {  
       var argument = {};
       argument["tangency"]= ($('#tangency').is(':checked')) ? true : false ;
@@ -443,6 +469,11 @@ define([
       var argument = {};
       argument["manualSetCellDims"]= ($('#manualSetCellDims').is(':checked')) ? true : false ;
       PubSub.publish(events.MANUAL_SET_DIMS, argument);           
+    });
+    $('#manualSetCellAngles').change(function() {  
+      var argument = {};
+      argument["manualSetCellAngles"]= ($('#manualSetCellAngles').is(':checked')) ? true : false ;
+      PubSub.publish(events.MANUAL_SET_ANGLES, argument);           
     });
     $('#fixedLength').change(function() {  
       var argument = {};
@@ -543,6 +574,17 @@ define([
       PubSub.publish(events.STORE_PROJECT, argument);   
     });
     
+    $('#anaglyph').change(function() {  
+      var argument = {};
+      argument["anaglyph"]= ($('#anaglyph').is(':checked')) ? true : false ; 
+      PubSub.publish(events.ANAGLYPH_EFFECT, argument);           
+    });  
+    $('#padlock').change(function() {  
+      var argument = {};
+      argument["padlock"]= ($('#padlock').is(':checked')) ? true : false ; 
+      PubSub.publish(events.SET_PADLOCK, argument);           
+    });  
+      
     this.restrictionEvents = []; 
      
   }; 
@@ -580,14 +622,20 @@ define([
     require([ "jquery-ui" ], function( slider ) { 
       $(name).slider(action);
     });
+  }; 
+  Menu.prototype.setSliderMin = function(name, val) {
+    var name = '#'+name+'Slider'
+    require([ "jquery-ui" ], function( slider ) {  
+      $(name).slider( "option", "min", val );
+    });
   };
- 
   Menu.prototype.setSliderValue = function(name,value) {
     require([ "jquery-ui" ], function( slider ) {
       $("#"+name+"Slider").slider('value',value ); 
       $("#"+name).val(value);
     });
-  };
+  }; 
+ 
   Menu.prototype.setSliderInp = function(name,value,min,max,step, eventName) { 
     
     var _this = this ;
@@ -603,7 +651,7 @@ define([
         step: step,
         animate: true,
 
-        slide: function (event, ui) {              
+        slide: function (event, ui) {               
           $("#"+name).val(ui.value); 
           var argument = {}; 
           argument[name] = ui.value;
@@ -686,11 +734,17 @@ define([
   Menu.prototype.onManuallyCellDimsChange = function(callback) {
     PubSub.subscribe(events.AXYZ_CHANGE, callback);
   };
+  Menu.prototype.onManuallyCellAnglesChange = function(callback) {
+    PubSub.subscribe(events.MAN_ANGLE_CHANGE, callback);
+  };
   Menu.prototype.onAtomTangencyChange = function(callback) {
     PubSub.subscribe(events.ATOM_TANGENCY_CHANGE, callback);
   };
   Menu.prototype.setDimsManually = function(callback) {
     PubSub.subscribe(events.MANUAL_SET_DIMS, callback);
+  };
+  Menu.prototype.setAnglesManually = function(callback) {
+    PubSub.subscribe(events.MANUAL_SET_ANGLES, callback);
   };
   Menu.prototype.onFixedLengthChange = function(callback) {
     PubSub.subscribe(events.MOTIF_LENGTH_CHANGE, callback);
@@ -727,6 +781,12 @@ define([
   };
   Menu.prototype.storeProject = function(callback) { 
     PubSub.subscribe(events.STORE_PROJECT, callback);
+  };
+  Menu.prototype.setAnaglyph = function(callback) { 
+    PubSub.subscribe(events.ANAGLYPH_EFFECT, callback);
+  };
+  Menu.prototype.setPadlock = function(callback) { 
+    PubSub.subscribe(events.SET_PADLOCK, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

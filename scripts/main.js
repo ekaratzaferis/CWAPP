@@ -54,9 +54,7 @@ require([
   
   var navCubeScene = NavCubeHud.getInstance();  
   var hudCube = new NavCube(navCubeScene.object3d, lattice);
-
-  var canvasSnapshot = new Snapshot(crystalRenderer);
-
+ 
   //  WebGL Renderers and cameras
   var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
@@ -66,21 +64,22 @@ require([
   unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
 
   var motifRenderer = new Renderer(motifScene.object3d, 'motifRenderer','motif'); 
-  motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200,  0,  0, 12);
-  motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200, 12,  0,  0);
-  motifRenderer.createOrthographicCamera(width/3,height/2,  0, 200,  0, 12,  0);
+  motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 0,0,50, 15);
+  motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 50,0,0, 15);
+  motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 0,50,0, 15);
 
   crystalRenderer.startAnimation();  
   
+  var canvasSnapshot = new Snapshot(crystalRenderer);
   // Orbit Controls
   //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
   var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
   var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
 
-  var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX',         "orthographic", false, 'motifX'   );
-  var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY',         "orthographic", false, 'motifY'   );
-  var motifCamZ = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ',         "orthographic", false, 'motifZ'   );
+  var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
+  var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "perspective", true, 'motif'   );
+  var motifCamZ = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "perspective", true, 'motif'   );
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
 
@@ -104,7 +103,7 @@ require([
   var infoBoxEvents = new Infobox(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default');
 
   // storing mechanism  
-  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2) );
+  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -148,6 +147,14 @@ require([
   lattice.onDirectionStateChange(function(message, state) {
     lattice.directionState(state);
   });  
+  menu.setAnaglyph(function(message, arg) {
+    crystalRenderer.setAnaglyph(arg);
+    motifRenderer.setAnaglyph(arg);
+    unitCellRenderer.setAnaglyph(arg);
+  });
+  menu.setPadlock(function(message, arg) { 
+    motifEditor.setPadlock(arg); 
+  });
 
   $('#MotifEditor').prop('disabled', true);
 
@@ -214,12 +221,10 @@ require([
 
       crystalRenderer.changeContainerDimensions(width,height);
       unitCellRenderer.changeContainerDimensions(0,0);
-
-      unitCellRenderer.stopAtomAnimation();
-      motifRenderer.stopAtomAnimation();
-
       motifRenderer.changeContainerDimensions(0, 0);
 
+      unitCellRenderer.stopAtomAnimation();
+      motifRenderer.stopAtomAnimation(); 
       infoBoxEvents.state = 'default';
     }
   });
@@ -250,11 +255,17 @@ require([
   menu.onManuallyCellDimsChange(function(message, param) { 
     motifEditor.setManuallyCellDims(param);
   });
+  menu.onManuallyCellAnglesChange(function(message, param) { 
+    motifEditor.setManuallyCellAngles(param);
+  });
   menu.onAtomTangencyChange(function(message, param) { 
     motifEditor.setAtomsTangency(param);
   });
   menu.setDimsManually(function(message, param) { 
     motifEditor.setDimsManually(param);
+  });
+  menu.setAnglesManually(function(message, param) { 
+    motifEditor.setAnglesManually(param);
   });
   menu.onFixedLengthChange(function(message, param) { 
     motifEditor.fixedLengthMode(param); 

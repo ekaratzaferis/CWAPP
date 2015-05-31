@@ -374,21 +374,10 @@ define([
     crystalCam.position.set(settings.crystalCamera.position.x, settings.crystalCamera.position.y, settings.crystalCamera.position.z);
     cellCamera.position.set(settings.cellCamera.position.x, settings.crystalCamera.position.y, settings.crystalCamera.position.z);
  
-    this.motifXcam.left =  settings.motifCameras.xCam.left ;  
-    this.motifXcam.top =  settings.motifCameras.xCam.top ;  
-    this.motifXcam.right =  settings.motifCameras.xCam.right ;  
-    this.motifXcam.bottom =  settings.motifCameras.xCam.bottom ; 
-
-    this.motifYcam.left =  settings.motifCameras.yCam.left ;  
-    this.motifYcam.top =  settings.motifCameras.yCam.top ;  
-    this.motifYcam.right =  settings.motifCameras.yCam.right ;  
-    this.motifYcam.bottom =  settings.motifCameras.yCam.bottom ; 
-
-    this.motifZcam.left =  settings.motifCameras.zCam.left ;  
-    this.motifZcam.top =  settings.motifCameras.zCam.top ;  
-    this.motifZcam.right =  settings.motifCameras.zCam.right ;  
-    this.motifZcam.bottom =  settings.motifCameras.zCam.bottom ;  
-    
+    this.motifXcam.position.set(settings.motifCameras.xCam.position.x, settings.motifCameras.xCam.position.y, settings.motifCameras.xCam.position.z);  
+    this.motifYcam.position.set(settings.motifCameras.yCam.position.x, settings.motifCameras.yCam.position.y, settings.motifCameras.yCam.position.z);  
+    this.motifZcam.position.set(settings.motifCameras.zCam.position.x, settings.motifCameras.zCam.position.y, settings.motifCameras.zCam.position.z);  
+  
     this.motifXcam.updateProjectionMatrix();
     this.motifYcam.updateProjectionMatrix();
     this.motifZcam.updateProjectionMatrix();

@@ -10,7 +10,7 @@ define([
   jQuery
 ) {
  
-  function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam) { 
+  function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer) { 
     this.idle = false;
     this.lattice = lattice;
     this.motifeditor = motifeditor;
@@ -19,6 +19,7 @@ define([
     this.motifYcam = motifYcam ;
     this.motifZcam = motifZcam ;
     this.camera = camera ;
+    this.crystalRenderer = crystalRenderer ;
   };
 
   StoreProject.prototype.createJSONfile = function() {
@@ -58,12 +59,24 @@ define([
       
       var notes = '"notes" : "'+($("#mynotes").val())+'" , ';
 
-      var cameraSettings  = '"cameraSettings" :{ "crystalCamera" :{  "centeredAtAxis" : '+centeredAtAxis+', "synced":'+synced+', "enableDistortion":'+enableDistortion+', "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'}},"cellCamera" :{   "position" : { "x" : '+this.cellCamera.position.x+', "y" :'+this.cellCamera.position.y+', "z" : '+this.cellCamera.position.z+'}},  "motifCameras" :{  "xCam" :{ "left" :'+this.motifXcam.left+', "right" :'+this.motifXcam.right+', "top" :'+this.motifXcam.top+', "bottom" :'+this.motifXcam.bottom+' },"yCam" :{ "left" :'+this.motifYcam.left+', "right" :'+this.motifYcam.right+', "top" :'+this.motifYcam.top+', "bottom" :'+this.motifYcam.bottom+' },"zCam" :{ "left" :'+this.motifZcam.left+', "right" :'+this.motifZcam.right+', "top" :'+this.motifZcam.top+', "bottom" :'+this.motifZcam.bottom+' } } },';
+      var cameraSettings  = '"cameraSettings" :{ "crystalCamera" :{  "centeredAtAxis" : '+centeredAtAxis+', "synced":'+synced+', "enableDistortion":'+enableDistortion+', "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'}},"cellCamera" :{   "position" : { "x" : '+this.cellCamera.position.x+', "y" :'+this.cellCamera.position.y+', "z" : '+this.cellCamera.position.z+'}},  "motifCameras" :{  "xCam" :{"position" : { "x" : '+this.motifXcam.position.x+', "y" :'+this.motifXcam.position.y+', "z" : '+this.motifXcam.position.z+'}},"yCam" :{"position" : { "x" : '+this.motifYcam.position.x+', "y" :'+this.motifYcam.position.y+', "z" : '+this.motifYcam.position.z+'}},"zCam" :{"position" : { "x" : '+this.motifZcam.position.x+', "y" :'+this.motifZcam.position.y+', "z" : '+this.motifZcam.position.z+'} } } },';
 
 
       var unitCell = this.createJsonUnitCell() ;
 
       var axisSelection = '"axisSelection" :{ "xyzVisible" : '+xyzAxes+', "abcVisible":'+abcAxes+' }';
+      var prName = ( ($('#projectName').val()).length === 0) ? (createRandomName()) : ($('#projectName').val()) ; 
+      var projectName = ', "projectName" : "'+prName+'"';
+      var tags = this.createJsonTags();  
+
+      // thumbnail
+      this.crystalRenderer.renderer.clear();
+      this.crystalRenderer.renderer.render( this.crystalRenderer.scene, this.crystalRenderer.cameras[0] );
+      
+      var base64thumbnail = document.getElementsByTagName("canvas")[0].toDataURL("image/png", 1.0);
+       
+      var thumbnail = ', "thumbnailBase64" : "'+base64thumbnail+'" ';
+       
       var end = "}" ;
 
       var text =start+
@@ -75,8 +88,13 @@ define([
                 unitCell+
                 cameraSettings+
                 axisSelection+
+                projectName+
+                tags+
+                thumbnail+
                 end ;
- 
+
+       console.log(text);
+
       var obj =  JSON.parse(text) ;  
       var str =  JSON.stringify(obj)
 
@@ -126,6 +144,32 @@ define([
     }
 
   }; 
+  function createRandomName()
+  {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+  StoreProject.prototype.createJsonTags = function(){
+     var tags = $('#tags').val(), text =[];
+     var tagsSplit =  tags.split(',');
+ 
+     text.push(',"tags": [');
+      
+     for (var i = 0; i < tagsSplit.length ; i++) { 
+      console.log(tagsSplit[i],i);
+        if(tagsSplit[i].length>0){  
+          if(i>0) text.push(',');
+          text.push( '"'+tagsSplit[i]+'"' );
+        }
+     }; 
+     text.push(']');
+     return (text.join('')); 
+  };
   StoreProject.prototype.createJsonUnitCell = function(){
     var _this = this ;
  

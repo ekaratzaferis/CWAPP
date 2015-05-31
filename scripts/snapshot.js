@@ -41,7 +41,9 @@ define([
   };
   
   function downloadCanvas(link,  filename) {
-    link.href = document.getElementsByTagName("canvas")[0].toDataURL();
+    theRenderer.renderer.clear();
+    theRenderer.renderer.render( theRenderer.scene, theRenderer.cameras[0] );
+    link.href = document.getElementsByTagName("canvas")[0].toDataURL( ); 
     link.download = filename; 
   };
 
@@ -51,14 +53,14 @@ define([
       var logo = myHud.getObjByName( "logo" );
       logo.visible = true;
       logo.position.set(width/2.5,height/2.3, 0);
-      theRenderer.renderHud();
+      //theRenderer.renderHud();
   };
   function removeLogo(){
       var width = jQuery('#app-container').width();
       var height = jQuery(window).height();
       var logo = myHud.getObjByName( "logo" );
       logo.visible = false;
-      theRenderer.renderHud();
+      //theRenderer.renderHud();
   };
   return Snapshot;
 });

@@ -93,8 +93,7 @@ define([
        
       if(contWidth < 800 ){
         mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
-        console.log(mouse);
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) );  
       }
       else{  
         mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
@@ -216,21 +215,21 @@ define([
     var _this =this;
 
     event.preventDefault();
-
+    _this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
-      if( !(_this.motifEditor.editorState.state === 'initial') && _this.motifEditor.manualAabc === false ) {
+      if( !(_this.motifEditor.editorState.state === 'initial') && (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)) {
         raycaster.setFromCamera( mouse, _this.camera );
         
         var intersects = raycaster.intersectObjects( _this.getAtoms() );
 
-        if ( intersects.length > 0 &&  intersects[0].object.parent.name === 'atom') {
-              
+        if ( intersects.length > 0 &&  intersects[0].object.parent.name === 'atom' && (intersects[0].object.parent.id === _this.motifEditor.newSphere.object3d.id) ) {
+           
           _this.SELECTED = intersects[0].object.parent; 
           var intersects = raycaster.intersectObject( _this.plane.object3d ); 
           _this.offset.copy( intersects[ 0 ].point ).sub( _this.plane.object3d.position ); 
           document.getElementById(_this.container).style.cursor = 'none';
 
-        }
+        } 
       }
      }
      else if(this.func === 'navCubeDetect'){
@@ -239,8 +238,7 @@ define([
        
       if(contWidth < 800 ){
         mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
-        console.log(mouse);
+        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) );  
       }
       else{  
         mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
@@ -326,9 +324,9 @@ define([
       if ( _this.INTERSECTED ) {
 
         _this.plane.object3d.position.copy( _this.INTERSECTED.position );
+        _this.motifEditor.rotateAroundAtom(undefined, _this.INTERSECTED.id);
         _this.SELECTED = null;
-        _this.motifEditor.rotateAroundAtom();
-
+         
       }
 
       document.getElementById(_this.container).style.cursor = 'auto';

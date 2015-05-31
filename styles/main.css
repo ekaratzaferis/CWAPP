@@ -96,6 +96,9 @@
 .manualDims{
   display: none;
 }
+.manualAngles{
+  display: none;
+}
 #notepad{
    
 }
