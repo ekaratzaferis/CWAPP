@@ -19,6 +19,8 @@ define([
     GRADE_CHOICES: 'menu.grade_choices',
     MILLER_PLANE_SUBMIT : 'menu.miller_plane_submit',
     MILLER_DIRECTIONAL_SUBMIT : 'menu.miller_directional_submit',
+    DIRECTION_PARAMETER_CHANGE : 'menu.direction_parameter_change',
+    PLANE_PARAMETER_CHANGE : 'menu.plane_parameter_change',
     PLANE_SELECTION : 'menu.plane_selection',
     DIRECTION_SELECTION : 'menu.direction_selection',
     MOTIF_POSITION_CHANGE : 'menu.motif_position_change',
@@ -45,7 +47,10 @@ define([
     CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
     STORE_PROJECT: 'menu.store_project',
     ANAGLYPH_EFFECT: 'menu.anaglyph_effect',
-    SET_PADLOCK: 'menu.set_padlock'
+    SET_PADLOCK: 'menu.set_padlock',
+    FOG_CHANGE: 'menu.fog_change',
+    FOG_PARAMETER_CHANGE: 'menu.fog_parameter_change',
+    RENDERER_COLOR_CHANGE: 'menu.renderer_color_change'
   };
 
   // lattice parameters
@@ -97,8 +102,7 @@ define([
   var $planeOpacity = jQuery('#planeOpacity');
   var $planeName = jQuery('#planeName');
   var $planes = jQuery('#planes');
-
-  var $previewPlane = jQuery('#previewPlane');
+ 
   var $savePlane = jQuery('#savePlane');
   var $deletePlane = jQuery('#deletePlane');
   var $newPlane = jQuery('#newPlane');
@@ -109,9 +113,9 @@ define([
   var $millerT = jQuery('#millerT');
   var $directionColor = jQuery('#directionColor');
   var $directionName = jQuery('#directionName');
+  var $dirRadius = jQuery('#dirRadius');
   var $vectors = jQuery('#vectors');
- 
-  var $previewDirection = jQuery('#previewDirection');
+  
   var $saveDirection = jQuery('#saveDirection');
   var $deleteDirection = jQuery('#deleteDirection');
   var $newDirection = jQuery('#newDirection');
@@ -132,17 +136,16 @@ define([
     'millerW': $millerW,
     'millerT': $millerT,
     'directionColor': $directionColor,
-    'directionName' : $directionName
+    'directionName' : $directionName,
+    'dirRadius' : $dirRadius
   };
 
-  var planeButtons = {
-    'previewPlane': $previewPlane,
+  var planeButtons = { 
     'savePlane': $savePlane,
     'deletePlane': $deletePlane,
     'newPlane': $newPlane
   };
-  var directionalButtons = {
-    'previewDirection': $previewDirection,
+  var directionalButtons = { 
     'saveDirection': $saveDirection,
     'deleteDirection': $deleteDirection,
     'newDirection': $newDirection
@@ -246,7 +249,7 @@ define([
     'rotAngleTheta' : $rotAngleTheta,
     'rotAnglePhi' : $rotAnglePhi 
   };
-  
+    
   var $unitCellView = jQuery('#unitCellView');
   var $showViewInCrystal = jQuery('#showViewInCrystal');
 
@@ -255,6 +258,28 @@ define([
   var $crystalCamTarget = jQuery('#crystalCamTarget');
 
   var $storeState = jQuery('#storeState');
+
+  var $fogColor = jQuery('#fogColor');
+  var $fogDensity = jQuery('#fogDensity');
+
+  var $crystalScreenColor = jQuery('#crystalScreenColor');
+  var $cellScreenColor = jQuery('#cellScreenColor');
+  var $motifXScreenColor = jQuery('#motifXScreenColor');
+  var $motifYScreenColor = jQuery('#motifYScreenColor');
+  var $motifZScreenColor = jQuery('#motifZScreenColor');
+
+  var rendererColors = {
+    'crystalScreenColor' : $crystalScreenColor,
+    'cellScreenColor' : $cellScreenColor,
+    'motifXScreenColor' : $motifXScreenColor ,
+    'motifYScreenColor' : $motifYScreenColor ,
+    'motifZScreenColor' : $motifZScreenColor  
+  };
+
+  var fogParameters = {
+    'fogDensity' : $fogDensity,
+    'fogColor' : $fogColor 
+  };
 
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
@@ -379,6 +404,24 @@ define([
       });
     });
 
+    _.each(directionParameters, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {};
+        argument[k] = $parameter.val();
+        PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+      });
+    });
+
+    this.setSlider("dirRadius",1,1,10,1); 
+
+    _.each(planeParameters, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {};
+        argument[k] = $parameter.val();
+        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+      });
+    });
+
     $vectors.on('change', function() {
       var id = jQuery(this).val()  ;
       return PubSub.publish(events.DIRECTION_SELECTION, id);
@@ -398,7 +441,7 @@ define([
       _this.setSliderInp(name,0,0.000,30.000,0.001, events.AXYZ_CHANGE);
     }); 
     _.each(cellManAnglesSliders, function(name) {  
-      _this.setSliderInp(name,90,30,160,2, events.MAN_ANGLE_CHANGE); 
+      _this.setSliderInp(name,90,30,160,0.001, events.MAN_ANGLE_CHANGE); 
     }); 
     $(".periodic").click(function(){
       argument = {};
@@ -460,6 +503,21 @@ define([
         PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
       });
     });
+    _.each(fogParameters, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {};
+        argument[k] = $parameter.val();
+        PubSub.publish(events.FOG_PARAMETER_CHANGE, argument);
+      });
+    });
+    _.each(rendererColors, function($parameter, k) {
+      $parameter.on('change', function() {
+        argument = {};
+        argument[k] = $parameter.val();
+        PubSub.publish(events.RENDERER_COLOR_CHANGE, argument);
+      });
+    });
+    this.setSlider("fogDensity",1,0,50,1);
     $('#tangency').change(function() {  
       var argument = {};
       argument["tangency"]= ($('#tangency').is(':checked')) ? true : false ;
@@ -492,6 +550,11 @@ define([
       var argument = {};
       argument["syncCameras"]= ($('#syncCameras').is(':checked')) ? true : false ;
       PubSub.publish(events.MOTIF_CAMERASYNC_CHANGE, argument);           
+    });
+    $('#fog').change(function() {  
+      var argument = {};
+      argument["fog"]= ($('#fog').is(':checked')) ? true : false ;
+      PubSub.publish(events.FOG_CHANGE, argument);           
     });
     _.each(fixedDimensions, function($parameter, k) {
       $parameter.on('change', function() {
@@ -713,6 +776,12 @@ define([
   Menu.prototype.directionSelection = function(callback) {
     PubSub.subscribe(events.DIRECTION_SELECTION, callback);
   };
+  Menu.prototype.directionParameterChange = function(callback) {
+    PubSub.subscribe(events.DIRECTION_PARAMETER_CHANGE, callback);
+  };
+  Menu.prototype.planeParameterChange = function(callback) {
+    PubSub.subscribe(events.PLANE_PARAMETER_CHANGE, callback);
+  };
   Menu.prototype.planeSelection = function(callback) {
     PubSub.subscribe(events.PLANE_SELECTION, callback);
   };
@@ -787,6 +856,15 @@ define([
   };
   Menu.prototype.setPadlock = function(callback) { 
     PubSub.subscribe(events.SET_PADLOCK, callback);
+  };
+  Menu.prototype.onFogParameterChange = function(callback) { 
+    PubSub.subscribe(events.FOG_PARAMETER_CHANGE, callback);
+  };
+  Menu.prototype.onFogChange = function(callback) { 
+    PubSub.subscribe(events.FOG_CHANGE, callback);
+  };
+  Menu.prototype.onRendererColorChange = function(callback) { 
+    PubSub.subscribe(events.RENDERER_COLOR_CHANGE, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

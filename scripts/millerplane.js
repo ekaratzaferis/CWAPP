@@ -44,7 +44,18 @@ define([
     Explorer.add(this);
 
   };
+  MillerPlane.prototype.updatePlanePos = function(h,k,l,i) {   
+     
+    var length =  start.distanceTo(end) ; 
+    var direction = new THREE.Vector3().subVectors( end, start).normalize();
+ 
+    // this.object3d.position.set(start); 
+    this.object3d.setLength(length , length/8, length/20);
+    this.object3d.setDirection(direction.normalize());
+     
+    this.updateTube(start, end);
 
+  };
   MillerPlane.prototype.setVisible = function( x) {
       
     this.object3d.visible = x ;

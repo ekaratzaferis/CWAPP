@@ -138,6 +138,12 @@ require([
   menu.directionSelection(function(message, which) {
     lattice.selectDirection(which);
   });
+  menu.directionParameterChange(function(message, arg) {  
+    lattice.directionParameterChange(arg);
+  });
+  menu.planeParameterChange(function(message, arg) { 
+    lattice.planeParameterChange(arg);
+  });
   menu.planeSelection(function(message, which) {
     lattice.selectPlane(which);
   });
@@ -154,6 +160,44 @@ require([
   });
   menu.setPadlock(function(message, arg) { 
     motifEditor.setPadlock(arg); 
+  });
+  menu.onFogParameterChange(function(message, arg) { 
+    if(crystalScene.fogActive === true){ 
+      if(!_.isUndefined(arg.fogColor)){
+        crystalScene.object3d.fog.color.setHex( "0x"+arg.fogColor );  
+      }
+      else if(!_.isUndefined(arg.fogDensity)){
+        crystalScene.object3d.fog.density = parseInt(arg.fogDensity)/2000 ;
+      }
+    }
+  });
+  menu.onFogChange(function(message, arg) { 
+    crystalScene.fogActive = arg.fog ;
+    if(arg.fog === true){  
+      crystalScene.object3d.fog.density = parseInt($('#fogDensity').val())/2000;
+      crystalScene.object3d.fog.color.setHex( "0x"+($('#fogColor').val()) );  
+    }
+    else{ 
+      crystalScene.object3d.fog.density = 0 ;
+    } 
+  });
+  menu.onRendererColorChange(function(message, arg) { 
+
+    if(!_.isUndefined(arg.crystalScreenColor)){ 
+      crystalRenderer.backgroundColor = ('#'+arg.crystalScreenColor);
+    }
+    else if(!_.isUndefined(arg.cellScreenColor)){
+      unitCellRenderer.backgroundColor = ('#'+arg.cellScreenColor);
+    } 
+    else if(!_.isUndefined(arg.motifXScreenColor)){ 
+      motifRenderer.viewportColors[0] = ('#'+arg.motifXScreenColor);
+    } 
+    else if(!_.isUndefined(arg.motifYScreenColor)){  
+      motifRenderer.viewportColors[1] = ('#'+arg.motifYScreenColor);
+    } 
+    else if(!_.isUndefined(arg.motifZScreenColor)){  
+      motifRenderer.viewportColors[2] = ('#'+arg.motifZScreenColor);
+    } 
   });
 
   $('#MotifEditor').prop('disabled', true);

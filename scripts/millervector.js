@@ -11,32 +11,127 @@ define([
   _
 ) {
 
-  function MillerVector(start , end, color) {
+  function MillerVector(start , end, color, radius) {
+     
+    this.radius = radius ;
+    this.color = color ;
+    this.tubeMesh = { 'object3d' : undefined } ; 
 
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
-    var arrow = new THREE.ArrowHelper( direction , start, length , "#"+color, 0.4, 0.15);
-
+    var arrow = new THREE.ArrowHelper( direction , start, length , "#"+color, length/8, length/20);
+ 
     this.object3d = arrow;
     Explorer.add(this);
 
-  };
+    this.addTube(start , end);
 
+  }; 
+  MillerVector.prototype.updateTubeRadius = function(radius ) { 
+
+    this.radius = parseInt(radius)  ; 
+    this.tubeMesh.object3d.scale.x = this.radius*2.5;
+    this.tubeMesh.object3d.scale.z = this.radius*2.5;
+
+  };
+  MillerVector.prototype.updateDirectionPos = function(start, end) {   
+     
+    var length =  start.distanceTo(end) ; 
+    var direction = new THREE.Vector3().subVectors( end, start).normalize();
+ 
+    // this.object3d.position.set(start); 
+    this.object3d.setLength(length , length/8, length/20);
+    this.object3d.setDirection(direction.normalize());
+     
+    this.updateTube(start, end);
+
+  };
+  MillerVector.prototype.updateTube = function(start , end ) {      
+
+    var pointA = start.clone(); 
+    var pointB = getPointInBetweenByLen(end, start, start.distanceTo(end)/8);  
+    var distance = pointA.distanceTo(pointB) ;
+      
+    var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
+
+    var newPoint =  pointA.clone().add(dir) ;  
+    var direction = new THREE.Vector3().subVectors( pointB, newPoint );
+    var direcNorm = direction;
+    direcNorm.normalize(); 
+
+    var arrow = new THREE.ArrowHelper( direcNorm ,newPoint );
+ 
+    this.tubeMesh.object3d.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
+    this.tubeMesh.object3d.scale.y = distance/0.001;  
+    this.tubeMesh.object3d.position.set(newPoint.x,newPoint.y,newPoint.z);
+    
+  }; 
+  function getPointInBetweenByLen(pointA, pointB, length) {
+      
+    var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(length);
+    return pointA.clone().add(dir);
+         
+  };
+  MillerVector.prototype.addTube = function(start , end) {     
+ 
+    var color =  this.color ;
+     
+    var meshGeometry = new THREE.CylinderGeometry( 0.001, 0.001, 0.001, 8, 8 ); 
+    var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial({color : "#"+color })  );  
+
+    var pointA = start.clone();  
+    var pointB = getPointInBetweenByLen(end, start, start.distanceTo(end)/8); 
+    var distance = pointA.distanceTo(pointB) ;
+      
+    var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
+
+    var newPoint =  pointA.clone().add(dir) ;  
+    var direction = new THREE.Vector3().subVectors( pointB, newPoint );
+    var direcNorm = direction;
+    direcNorm.normalize(); 
+
+    var arrow = new THREE.ArrowHelper( direcNorm ,newPoint );
+
+    mesh.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
+    mesh.scale.y = distance /0.001;   
+    mesh.position.set(newPoint.x,newPoint.y,newPoint.z);
+    mesh.scale.x = this.radius*2.5;
+    mesh.scale.z = this.radius*2.5;
+     
+    this.tubeMesh.object3d = mesh ;
+    
+    Explorer.add(this.tubeMesh);
+
+  };
   MillerVector.prototype.setVisible = function( x) {     
     this.object3d.visible = x ;
+    this.tubeMesh.object3d.visible =x ;
   };
  
-  MillerVector.prototype.setColor = function(color) {
-    if(_.isUndefined(color)) return;
-    this.color = color;
-    this.object3d.material.needsUpdate = true;
-    this.object3d.material.color.setHex( "0x"+color );
+  MillerVector.prototype.setColor = function(color) { 
+    this.color = color;    
+    this.object3d.setColor("#"+color);
+    this.tubeMesh.object3d.material.color.setHex( "0x"+color );
   };
-
-  MillerVector.prototype.destroy = function() {
+ 
+  MillerVector.prototype.destroy = function() { 
     Explorer.remove(this);
+    Explorer.remove(this.tubeMesh);
   }; 
+  function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
 
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+  }
   return MillerVector;
 
-});
+}); 

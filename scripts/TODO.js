@@ -38,7 +38,7 @@ TODO list
 33. collision with more than 2 atoms (to handle dragging atom inside atom by the user)  
 34. stereoscopic function doesnt work when I first go to motif editor and then enable it  
 35. when change view, if you change tab and return in MT bug   
-36. blocking system for sliders  
+36. when direction radius is updated also direction head should be updated
 
 Changes by Andre
 

@@ -26,7 +26,7 @@ define([
   Grid.prototype.setRadius = function( scale) {
 
     if(_.isUndefined(scale)) return;
-    this.scale = scale;
+    this.scale = scale; 
     this.object3d.scale.x = scale;
     this.object3d.scale.z = scale;
 

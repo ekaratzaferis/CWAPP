@@ -20,8 +20,10 @@ define([
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.object3d = new THREE.Scene();
+    this.fogActive = false ;
+    this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
- 
+    console.log(this.object3d.fog);
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
@@ -285,7 +287,7 @@ define([
     this.object3d.add(object.object3d);
   };
 
-  Explorer.prototype.remove = function(object) {
+  Explorer.prototype.remove = function(object) {  
     this.object3d.remove(object.object3d);
   };
   function makeTextSprite( message, parameters )

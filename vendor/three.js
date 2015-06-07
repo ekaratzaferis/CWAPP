@@ -33436,8 +33436,7 @@ THREE.ArrowHelper.prototype.setDirection = ( function () {
 	var axis = new THREE.Vector3();
 	var radians;
 
-	return function ( dir ) {
-
+	return function ( dir ) { 
 		// dir is assumed to be normalized
 
 		if ( dir.y > 0.99999 ) {
@@ -33476,11 +33475,9 @@ THREE.ArrowHelper.prototype.setLength = function ( length, headLength, headWidth
 
 };
 
-THREE.ArrowHelper.prototype.setColor = function ( color ) {
-
+THREE.ArrowHelper.prototype.setColor = function ( color ) { 
 	this.line.material.color.set( color );
-	this.cone.material.color.set( color );
-
+	this.cone.material.color.set( color ); 
 };
 
 // File:src/extras/helpers/BoxHelper.js

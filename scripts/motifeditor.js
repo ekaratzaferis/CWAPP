@@ -277,7 +277,20 @@ define([
 
     var action = (arg.padlock) ? 'disable' : 'enable' ;
     if(arg.padlock){ 
+
+      this.cellParameters.alpha = this.initialLatticeParams.alpha ;
+      this.cellParameters.beta = this.initialLatticeParams.beta ;
+      this.cellParameters.gamma = this.initialLatticeParams.gamma ;
+
+      this.menu.setSliderValue("cellAlpha", this.cellParameters.alpha);
+      this.menu.setSliderValue("cellBeta", this.cellParameters.beta);
+      this.menu.setSliderValue("cellGamma", this.cellParameters.gamma);
+
       this.configureCellPoints();
+
+      this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
+      this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
+      this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
     }
     else{
       this.menu.setSliderMin('Aa', 0);
@@ -595,13 +608,12 @@ define([
       }
     }
     else{
-      // angles fix
-      console.log(this.unitCellPositions);
+      // angles fix 
       _this.checkForAngleFix( angleORaxis, val ) ;
 
       switch(angleORaxis) { 
         case "alpha": 
-          if( val < _this.leastCellAngles.alpha){
+          if( val != _this.leastCellAngles.alpha){
             return _this.leastCellAngles.alpha ;
           }
           else{
@@ -610,7 +622,7 @@ define([
         break;
 
         case "beta": 
-          if( val < _this.leastCellAngles.beta){
+          if( val != _this.leastCellAngles.beta){
             return _this.leastCellAngles.beta ;
           }
           else{
@@ -620,7 +632,7 @@ define([
         break;
 
         case "gamma": 
-          if( val < _this.leastCellAngles.gamma){
+          if( val != _this.leastCellAngles.gamma){
             return _this.leastCellAngles.gamma ;
           }
           else{
@@ -711,7 +723,7 @@ define([
        
       this.leastCellAngles.alpha = this.cellParameters.alpha + result.offset ; 
        
-      if(this.leastCellAngles.alpha < 0 ) this.leastCellAngles.alpha = val ;
+      if(this.leastCellAngles.alpha < -1000 ) this.leastCellAngles.alpha = val ;
     }
     else if(angleName === 'beta'){  
       this.cellParameters.beta =  val ;
@@ -719,7 +731,7 @@ define([
        
       this.leastCellAngles.beta = this.cellParameters.beta + result.offset ; 
        
-      if(this.leastCellAngles.beta < 0 ) this.leastCellAngles.beta = val ;
+      if(this.leastCellAngles.beta < -1000 ) this.leastCellAngles.beta = val ;
     }
     else if(angleName === 'gamma'){  
       this.cellParameters.gamma =  val ;
@@ -727,7 +739,7 @@ define([
        
       this.leastCellAngles.gamma = this.cellParameters.gamma + result.offset ; 
        
-      if(this.leastCellAngles.gamma < 0 ) this.leastCellAngles.gamma = val ;
+      if(this.leastCellAngles.gamma < -1000 ) this.leastCellAngles.gamma = val ;
     }
                
   };
@@ -742,7 +754,7 @@ define([
     
      
     var g=0;
-    if(bbHelper.length > 2) {  
+    if(bbHelper.length > 10) {  
       while(g<bbHelper.length) {   
         scene.remove(bbHelper[g] );
         g++;
@@ -914,7 +926,7 @@ define([
           this.cellParameters.alpha = offset ;
 
           if(par.cellAlpha != offset ) {
-            this.menu.setSliderMin('cellAlpha', offset - 2);
+            //this.menu.setSliderMin('cellAlpha', offset - 2);
             this.menu.setSliderValue("cellAlpha", offset);
           }
 
@@ -936,7 +948,7 @@ define([
           this.cellParameters.beta = offset ;
 
           if(par.cellBeta != offset ) {
-            this.menu.setSliderMin('cellBeta', offset - 2);
+            this.menu.setSliderMin('cellBeta', offset - 0.1);
             this.menu.setSliderValue("cellBeta", offset);
           } 
         } 
@@ -950,7 +962,7 @@ define([
           this.cellParameters.gamma = offset ;
 
           if(par.cellGamma != offset ) {
-            this.menu.setSliderMin('cellGamma', offset - 2);
+            //this.menu.setSliderMin('cellGamma', offset - 2);
             this.menu.setSliderValue("cellGamma", offset);
           } 
         } 
@@ -984,9 +996,9 @@ define([
       this.menu.setSliderMin('Ab', 0);
       this.menu.setSliderMin('Ac', 0);
 
-      this.menu.setSliderMin('cellAlpha', 2);
-      this.menu.setSliderMin('cellBeta', 2);
-      this.menu.setSliderMin('cellGamma', 2);
+      this.menu.setSliderMin('cellAlpha', 30);
+      this.menu.setSliderMin('cellBeta', 30);
+      this.menu.setSliderMin('cellGamma', 30);
 
       this.menu.setSliderValue("cellAlpha", this.cellParameters.alpha);
       this.menu.setSliderValue("cellBeta", this.cellParameters.beta);
@@ -1010,9 +1022,9 @@ define([
       this.menu.setSliderMin('Ab', 0);
       this.menu.setSliderMin('Ac', 0);
 
-      this.menu.setSliderMin('cellAlpha', 2);
-      this.menu.setSliderMin('cellBeta', 2);
-      this.menu.setSliderMin('cellGamma', 2);
+      this.menu.setSliderMin('cellAlpha', 30);
+      this.menu.setSliderMin('cellBeta', 30);
+      this.menu.setSliderMin('cellGamma', 30);
 
       this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
       this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
@@ -2517,6 +2529,7 @@ define([
   };
   Motifeditor.prototype.detectCollisionForAngles = function(angleName){
 
+    var newAngle = -1000000 ;
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) {
       var a = this.unitCellAtoms[i];
     
@@ -2536,117 +2549,96 @@ define([
           ), sign; 
           atomm = j ;
           batomm = i ;
-
-           
-          if(a.latticeIndex === '_c' && a.elementName==='H' && b.latticeIndex === "_111" && b.elementName === 'Be'){  
-            var vecHelper;
-                 
-            if(angleName == 'alpha') {
+ 
+          if(a.latticeIndex === '_c' && a.elementName==='H' && b.latticeIndex === "_011" && b.elementName === 'Be'){  
+            var vecHelper,vecHelper2;
+            /*  
+            if(angleName == 'beta') { 
               sign = (bPos.y>aPos.y) ? -1 : 1 ;
-              vecHelper = this.transformHelper(new THREE.Vector3(0,Math.abs(bPos.y-aPos.y),0));
-            }
-            else if(angleName == 'beta') { 
-              sign = (bPos.y>aPos.y) ? -1 : 1 ;
-              vecHelper = this.transformHelper(new THREE.Vector3(0, this.cellParameters.scaleY,0));
-            }
-            else { 
-            }
+              vecHelper = this.transformHelper(new THREE.Vector3(0, aPos.y ,0));
+              vecHelper2 = this.transformHelper(new THREE.Vector3(0, -bPos.y ,0));
+            } 
             vecHelper.set(vecHelper.x*-1,vecHelper.y*-1,vecHelper.z*-1); 
              
             var thirdPoint,fourthPoint ;
             
             thirdPoint =  new THREE.Vector3(vecHelper.x + aPos.x, vecHelper.y + aPos.y, vecHelper.z + aPos.z ); 
-            fourthPoint =  new THREE.Vector3(vecHelper.x + aPos.x, vecHelper.y + aPos.y, vecHelper.z + aPos.z ); 
+            fourthPoint =  new THREE.Vector3(vecHelper2.x + bPos.x, vecHelper2.y + bPos.y, vecHelper2.z + bPos.z ); 
   
             this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
             this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,aPos.y,aPos.z) , 0xFF0000 );  // brotherOfB to b  : red
-            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
-            //this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
+            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
+            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
 
-            var vecAdown = new THREE.Vector3(aPos.x - thirdPoint.x, aPos.y - thirdPoint.y, aPos.z - thirdPoint.z);
-            var vecAdownR = new THREE.Vector3( thirdPoint.x - aPos.x, thirdPoint.y - aPos.y, thirdPoint.z - aPos.z);
-            var vecAB = new THREE.Vector3(bPos.x - aPos.x, bPos.y - aPos.y, bPos.z - aPos.z);
-            var vecC = new THREE.Vector3(bPos.x - thirdPoint.x, bPos.y - thirdPoint.y, bPos.z - thirdPoint.z);
-            var vecCR = new THREE.Vector3( thirdPoint.x - bPos.x , thirdPoint.y - bPos.y ,thirdPoint.z - bPos.z );
+            this.lineHelper( new THREE.Vector3(-100,aPos.y,aPos.z), new THREE.Vector3(100,aPos.y,aPos.z) , 0xffffbe );   
+            this.lineHelper( new THREE.Vector3(-100,bPos.y,bPos.z), new THREE.Vector3(100,bPos.y,bPos.z) , 0xffffbc ); 
 
-            /*console.log( '--- : '+(vecAdown.angleTo(vecC)));
-            console.log( '*** : '+(vecAdownR.angleTo(vecAB)));
-            console.log( '+++ : '+(vecAB.angleTo(vecCR))); */
-            console.log( '111 : '+(vecAB.length()));
-            console.log( '222 : '+(vecC.length()));
-            console.log( '333 : '+(vecAdown.length()));
+            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xffffbc ); 
+            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xffbfbc );  
+
+            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xfeefbc ); 
+            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xefffbc );  
+            this.lineHelper( new THREE.Vector3(bPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffefbc );  
+            */
           }
 
-          if( ((aPos.distanceTo(bPos) + 0.0000001) < (a.getRadius() + b.getRadius())) && (aPos.distanceTo(bPos) != 0 )){ // 0.00000000001 is for precision issues 
-            var vecHelper;
-                 
-            if(angleName == 'alpha') {
-              sign = (bPos.y>aPos.y) ? -1 : 1 ;
-              vecHelper = this.transformHelper(new THREE.Vector3(0,Math.abs(bPos.y-aPos.y),0));
-            }
-            else if(angleName == 'beta') { 
-              sign = (bPos.y>aPos.y) ? -1 : 1 ;
-              vecHelper = this.transformHelper(new THREE.Vector3(0,Math.abs(bPos.y-aPos.y),0));
-            }
-            else { 
-            }
-            vecHelper.set(vecHelper.x*-1,vecHelper.y*-1,vecHelper.z*-1); 
-             
-            var thirdPoint ;
-            if(sign > 0) thirdPoint =  new THREE.Vector3(vecHelper.x + aPos.x, vecHelper.y + aPos.y, vecHelper.z + aPos.z ); 
-            else  thirdPoint =  new THREE.Vector3(vecHelper.x + bPos.x, vecHelper.y + bPos.y, vecHelper.z + bPos.z ); 
-
+          if( ((aPos.distanceTo(bPos) + 0.0000001) < (a.getRadius() + b.getRadius())) && (aPos.distanceTo(bPos) != 0 )){
             a.changeColor((0xFF0000, 250));
-            b.changeColor((0xFF0000, 250));   
-
-            var rA = a.getRadius();
-            var rB = b.getRadius(); 
-
-            var offset = this.fixAngles(
-              'x', 
-              {
-                "object3d" : {
-                  "position" : {
-                    "x": aPos.x, 
-                    "y": aPos.y, 
-                    "z": aPos.z, 
-                  }
-                }, 
-                getRadius: function() { return rA; }
-              },  
-              {
-                "object3d" : {
-                  "position" : {
-                    "x": bPos.x, 
-                    "y": bPos.y, 
-                    "z": bPos.z, 
-                  }
-                }, 
-                getRadius: function() { return rB; }
-              }, 
-              {
-                "object3d" : {
-                  "position" : {
-                    "x": thirdPoint.x, 
-                    "y": thirdPoint.y, 
-                    "z": thirdPoint.z 
-                  }
-                }, 
-                getRadius: function() { return rB; }
-              } 
-            );  
+            b.changeColor((0xFF0000, 250)); 
+            var vecHelperA, vecHelperB, temp = aPos;
              
+            if(angleName == 'beta') { 
+              vecHelperA = this.transformHelper(new THREE.Vector3(0, -aPos.y ,0)) ;
+              vecHelperB = this.transformHelper(new THREE.Vector3(0, -bPos.y ,0)) ;
+            } 
+             
+            var thirdPoint,fourthPoint ;
+            
+            thirdPoint =  new THREE.Vector3(vecHelperA.x + aPos.x, vecHelperA.y + aPos.y, vecHelperA.z + aPos.z ); 
+            fourthPoint =  new THREE.Vector3(vecHelperB.x + bPos.x, vecHelperB.y + bPos.y, vecHelperB.z + bPos.z );  
+            var a_ = new THREE.Vector3(aPos.x, aPos.y, aPos.z);
+            var b_ = new THREE.Vector3(bPos.x, bPos.y, bPos.z);
+            var c_ = new THREE.Vector3(bPos.x, aPos.y, aPos.z);
+            var d_ = new THREE.Vector3(bPos.x, 0, bPos.z);
+            var e_ = new THREE.Vector3(0, 0, aPos.z);
+            var f_ = new THREE.Vector3(thirdPoint.x, thirdPoint.y, thirdPoint.z);
+
+            var baL = a.getRadius() + b.getRadius();
+            var ca = a_.sub(c_);
+            var bc = c_.sub(b_);
+
+            var before = aPos.x ;
+
+            var caAfter = Math.sqrt( baL * baL - bc.length() * bc.length() );
+
+            var edAfter = before - caAfter ; 
+            
+            //newAngle = Math.atan(b_.y/edAfter); //Math.sqrt( baL * baL - bc.length() * bc.length() );
+            
+           
             j = -1;
             i = -1;
-          }
+            /*
+            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
+            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,aPos.y,aPos.z) , 0xFF0000 );  // brotherOfB to b  : red
+            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
+            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
 
-        }
+            this.lineHelper( new THREE.Vector3(-100,aPos.y,aPos.z), new THREE.Vector3(100,aPos.y,aPos.z) , 0xffffbe );   
+            this.lineHelper( new THREE.Vector3(-100,bPos.y,bPos.z), new THREE.Vector3(100,bPos.y,bPos.z) , 0xffffbc ); 
 
-      }
+            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xffffbc ); 
+            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xffbfbc );  
 
-    }
-
-    return {'offset': -1, 'normalize': false} ; 
+            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xfeefbc ); 
+            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xefffbc );  
+            this.lineHelper( new THREE.Vector3(bPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffefbc );  
+            */
+          } 
+        } 
+      } 
+    } 
+    return {'offset': ((newAngle*180/Math.PI)-this.cellParameters.beta), 'normalize': false} ; 
   };
   Motifeditor.prototype.fixAngles = function(angleName, a, b, thirdPoint){ 
     var _this = this, offset = 0 ;  
@@ -2660,9 +2652,7 @@ define([
     //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
     //this.lineHelper( new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xFF0000 );  // brotherOfB to b  : red
     //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z) , 0x00FF00 );  // a to brotherOfB  :  green 
-
-    console.log('aktina : '+(rA + rB));
-    console.log(bBrPos.distanceTo(aPos));
+ 
 
   };
   function compareWithHighPrecision(a,b){ // compare with high precision but not with absolute equality
@@ -3546,8 +3536,8 @@ define([
                   _this.unitCellPositions[referenceC] = {"position" : new THREE.Vector3( positionC.x, positionC.y, positionC.z), "latticeIndex" : referenceC} ;  
                 }
                 else{
-                  _this.unitCellPositions[reference].position = new THREE.Vector3( position.x, position.y, position.z) ;
-                  _this.unitCellPositions[referenceC].position = new THREE.Vector3( positionC.x, positionC.y, positionC.z) ;
+                 // _this.unitCellPositions[reference].position = new THREE.Vector3( position.x, position.y, position.z) ;
+                  //_this.unitCellPositions[referenceC].position = new THREE.Vector3( positionC.x, positionC.y, positionC.z) ;
                 } 
               }    
             });

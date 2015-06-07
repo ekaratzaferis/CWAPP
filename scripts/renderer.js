@@ -35,7 +35,8 @@ define([
     this.animateAtom = false;
     this.atom;
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: false }); // preserveDrawingBuffer: true
-    this.renderer.setClearColor( 0x000000);
+    this.backgroundColor =  '#000000' ;
+    this.renderer.setClearColor( '#000000', 0 );
     this.renderer.setSize( width, height);
     this.renderer.shadowMapEnabled = true;
     this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
@@ -115,13 +116,14 @@ define([
 
     if(_this.cameras.length === 1){ 
       _this.renderer.clear();
+
       _this.cameras[0].aspect =_this.containerWidth/_this.containerHeight;
       _this.renderer.setViewport(0, 0, _this.containerWidth, _this.containerHeight); 
       _this.renderer.setScissor(0, 0, _this.containerWidth, _this.containerHeight); 
       _this.renderer.enableScissorTest ( true );  
-      _this.renderer.setClearColor( 0x000000  ); 
+      
       _this.cameras[0].updateProjectionMatrix(); 
- 
+      _this.renderer.setClearColor( _this.backgroundColor, 1  );
       if(this.anaglyph){  
         this.effect.render( _this.scene, _this.cameras[0] );
       }
@@ -129,7 +131,7 @@ define([
         this.renderer.render( _this.scene, _this.cameras[0]);
       } 
       // hud arrows
-      if(_this.hudCamera !== undefined){  
+      if(_this.hudCamera !== undefined ){  
         _this.renderer.clearDepth(); 
         if(_this.containerWidth < 800 ){ 
           _this.hudCamera.aspect = (_this.containerWidth)/(_this.containerHeight);
@@ -143,14 +145,15 @@ define([
         }
         
         _this.renderer.enableScissorTest ( true );  
-        _this.renderer.setClearColor( 0x000000, 1 ); 
+         
         _this.hudCamera.updateProjectionMatrix();
-          
+
+        _this.renderer.setClearColor( 0x000000, 1 );
         this.renderer.render( _this.hudScene, _this.hudCamera);
          
       }
       // hud cube
-      if(_this.hudCameraCube !== undefined){  
+      if(_this.hudCameraCube !== undefined  ){  
           
         if(_this.containerWidth < 800 ){ 
           _this.hudCameraCube.aspect = (_this.containerWidth) / (_this.containerHeight );
@@ -167,7 +170,8 @@ define([
           $('#hudRendererCube').height(_this.containerHeight/5);
         }
         
-        _this.renderer.enableScissorTest ( true );  
+        _this.renderer.enableScissorTest ( true ); 
+
         _this.renderer.setClearColor( 0x000000, 1 ); 
         _this.hudCameraCube.updateProjectionMatrix();
           
