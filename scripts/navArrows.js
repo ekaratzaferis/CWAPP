@@ -20,25 +20,26 @@ define([
     this.arrowLength =  (height/100)  ; 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
+    this.scales = {'aScale':1, 'bScale':1, 'cScale':1 }; 
      
     // arrows
     var startA = new THREE.Vector3(0,0,0);
     var endA = new THREE.Vector3(0,0,this.arrowLength);
     var length =  startA.distanceTo(endA) ; 
     var directionA = new THREE.Vector3().subVectors( endA,  startA).normalize();
-    this.arrowA = new THREE.ArrowHelper( directionA , startA, length , "#045FB4", 1, 0.3);
+    this.arrowA = new THREE.ArrowHelper( directionA , startA, length , "#045FB4" , undefined, this.arrowLength/10);
 
     var startB = new THREE.Vector3(0,0,0);
     var endB = new THREE.Vector3(this.arrowLength,0,0);
     var length =  startB.distanceTo(endB) ; 
     var directionB = new THREE.Vector3().subVectors( endB,  startB).normalize();
-    this.arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000", 1, 0.3);
+    this.arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000" , undefined, this.arrowLength/10);
 
     var startC = new THREE.Vector3(0,0,0);
     var endC = new THREE.Vector3(0,this.arrowLength,0);
     var length =  startC.distanceTo(endC) ; 
     var directionC = new THREE.Vector3().subVectors( endC,  startC).normalize();
-    this.arrowC = new THREE.ArrowHelper( directionC, startC, length , "#04B404", 1, 0.3);
+    this.arrowC = new THREE.ArrowHelper( directionC, startC, length , "#04B404", undefined, this.arrowLength/10);
   
     scene.add( this.arrowC ); 
     scene.add( this.arrowB ); 
@@ -48,30 +49,19 @@ define([
     scene.add(startOfAxis);
 
     // a,b,c lengths
-    var aLabel = THREE.ImageUtils.loadTexture( "Images/a.png" );  
-    var aMaterial = new THREE.SpriteMaterial( { map: aLabel, color: 0xffffff, fog: true } );
-    this.spriteA = new THREE.Sprite( aMaterial );
      
-    this.spriteA.position.set(0,-1,this.arrowLength+0.5);
-    this.spriteA.scale.set(1.8,1.8,1.8);
-    scene.add( this.spriteA );
+    this.aScale = makeTextSprite( "  a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
+    this.aScale.position.set(0,-1.5,this.arrowLength+0.5);
+    scene.add( this.aScale  );
+    
+    this.bScale = makeTextSprite( "            b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+    this.bScale.position.set(this.arrowLength+0.5,-1,0);
+    scene.add( this.bScale  );
 
-    var bLabel = THREE.ImageUtils.loadTexture( "Images/b.png" );
-    var bMaterial = new THREE.SpriteMaterial( { map: bLabel, color: 0xffffff, fog: true } );
-    this.spriteB = new THREE.Sprite( bMaterial );
-     
-    this.spriteB.position.set(this.arrowLength+0.5,0,0);
-    this.spriteB.scale.set(1.8,1.8,1.8);
-    scene.add( this.spriteB );
-
-    var cLabel = THREE.ImageUtils.loadTexture( "Images/c.png" );  
-    var cMaterial = new THREE.SpriteMaterial( { map: cLabel, color: 0xffffff, fog: true } );
-    this.spriteC = new THREE.Sprite( cMaterial );
-     
-    this.spriteC.position.set(0,this.arrowLength+0.5,0);
-    this.spriteC.scale.set(1.8,1.8,1.8);
-    scene.add( this.spriteC );
-
+    this.cScale = makeTextSprite( "       c : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:0, g:128, b:5, a:1.0} } );
+    this.cScale.position.set(0,this.arrowLength,0);
+    scene.add( this.cScale  );
+  
     // angles and their curves
      
     var medianAlpha = median( new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5), new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5) );
@@ -108,30 +98,58 @@ define([
     scene.add(this.betaCurve);
     scene.add(this.gammaCurve);
 
-    this.beta = makeTextSprite( "              α : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
-    this.beta.position.set(medianAlpha.x, medianAlpha.y, medianAlpha.z);
+    this.beta = makeTextSprite( "    α : 90° ",  { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+    this.beta.position.set(medianAlpha.x + 5, medianAlpha.y, medianAlpha.z);
     scene.add( this.beta );
     
-    this.alpha = makeTextSprite( "  β : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
-    this.alpha.position.set(medianBeta.x, medianBeta.y - 0.5, medianBeta.z);
+    this.alpha = makeTextSprite( "β : 90° ", 
+      { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+    this.alpha.position.set(medianBeta.x - 1.5, medianBeta.y - 0.5, medianBeta.z);
    scene.add( this.alpha );
     
-    this.gamma = makeTextSprite( "         γ : 90° ", 
-      { fontsize: 40, fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+    this.gamma = makeTextSprite( "       γ : 90° ", 
+      { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
     this.gamma.position.set(medianGamma.x + 2, medianGamma.y - 3, medianGamma.z + 2);
     scene.add( this.gamma );
 
-  };
-  Hud.prototype.updateAngles = function(angle) {
+};
+Hud.prototype.updateLengths = function(params) {
+    var l = this.arrowLength ;
+    var _this = this;  
+
+    if(params.scaleZ !== undefined) this.scales.aScale = (parseFloat(params.scaleZ)).toFixed(1);  
+    if(params.scaleX !== undefined) this.scales.bScale  = (parseFloat(params.scaleX)).toFixed(1);   
+    if(params.scaleY !== undefined) this.scales.cScale = (parseFloat(params.scaleY)).toFixed(1);   
+
+    var scene = this.scene ;
+   
+    // sprites
+    if(params.scaleZ !== undefined)  { 
+        this.scene.remove(this.aScale);
+        this.aScale = makeTextSprite( "  a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
+        scene.add( this.aScale  );
+    }
+    if(params.scaleX !== undefined)  { 
+        this.scene.remove(this.bScale);
+        this.bScale = makeTextSprite( "   b : "+this.scales.bScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+        this.bScale.position.set(this.arrowLength+0.5,-1,0);
+        scene.add( this.bScale  );
+    }
+    if(params.scaleY !== undefined)  { 
+        this.scene.remove(this.cScale);
+        this.cScale = makeTextSprite( "   c : "+this.scales.cScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:5, a:1.0},     fontColor: {r:0, g:128, b:5, a:1.0} } ); 
+        scene.add( this.cScale  );
+    }
+
+};
+Hud.prototype.updateAngles = function(angle) {
     var l = this.arrowLength ;
     var _this = this; 
     var matrix;
  
-    if(angle.alpha !== undefined) _this.angles.alpha = parseInt(angle.alpha);  
-    if(angle.beta  !== undefined) _this.angles.beta  = parseInt(angle.beta);  
-    if(angle.gamma !== undefined) _this.angles.gamma = parseInt(angle.gamma);  
+    if(angle.alpha !== undefined) _this.angles.alpha = (parseInt(angle.alpha)).toFixed(1);   
+    if(angle.beta  !== undefined) _this.angles.beta  = (parseInt(angle.beta)).toFixed(1);   
+    if(angle.gamma !== undefined) _this.angles.gamma = (parseInt(angle.gamma)).toFixed(1);   
   
     var endA = new THREE.Vector3(0,0,l);  
     var endC = new THREE.Vector3(0,l,0); 
@@ -148,21 +166,22 @@ define([
     var directionA = new THREE.Vector3().subVectors(endA,  startA).normalize(); 
     this.arrowA.position.set(startA.x, startA.y, startA.z);
     this.arrowA.setDirection(directionA.normalize()); 
-    this.arrowA.setLength(l);
+    this.arrowA.setLength(l, undefined, this.arrowLength/10);
 
     var startC = new THREE.Vector3(0,0,0); 
     var directionC = new THREE.Vector3().subVectors(endC,  startC).normalize(); 
     this.arrowC.position.set(startC.x, startC.y, startC.z);
     this.arrowC.setDirection(directionC.normalize()); 
-    this.arrowC.setLength(l);
+    this.arrowC.setLength(l, undefined, this.arrowLength/10);
     
     var cPos = directionC.setLength(l);
     var aPos = directionA.setLength(l);
 
     // sprites
-    this.spriteA.position.set(aPos.x, aPos.y, aPos.z + 1);
-    this.spriteC.position.set(cPos.x, cPos.y + 1, cPos.z );
-
+    this.aScale.position.set(aPos.x -2, aPos.y - 1.5, aPos.z + 0.5); // (0,-1.5,this.arrowLength+0.5);
+    this.cScale.position.set(cPos.x + 2, cPos.y , cPos.z );  
+    this.bScale.position.set(this.arrowLength+4.5,-1,0);
+ 
     // curves 
  
     this.scene.remove(this.alphaCurve);
@@ -207,22 +226,22 @@ define([
     // sprites
     if(angle.beta !== undefined)  { 
         this.scene.remove(this.beta);
-        this.beta = makeTextSprite( "              α : "+angle.beta+"° ", 
-          { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
-        this.beta.position.set(medianAlpha.x, medianAlpha.y  , medianAlpha.z);
+        this.beta = makeTextSprite( "    α : "+_this.angles.beta+"° ", 
+          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+        this.beta.position.set(medianAlpha.x + 5, medianAlpha.y  , medianAlpha.z);
         this.scene.add( this.beta );
     }
     if(angle.alpha  !== undefined)  {  
         this.scene.remove(this.alpha);
-        this.alpha = makeTextSprite( "β : "+angle.alpha+"° ", 
-          { fontsize: 40, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
-        this.alpha.position.set(medianBeta.x, medianBeta.y - 0.5 , medianBeta.z);
+        this.alpha = makeTextSprite( "β : "+_this.angles.alpha+"° ", 
+          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+        this.alpha.position.set(medianBeta.x -1.5, medianBeta.y - 0.5 , medianBeta.z);
         this.scene.add( this.alpha );
     }
     if(angle.gamma !== undefined)  {  
         this.scene.remove(this.gamma);
-        this.gamma = makeTextSprite( "         γ : "+angle.gamma+"° ", 
-          { fontsize: 40, fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+        this.gamma = makeTextSprite( "       γ : "+_this.angles.gamma+"° ", 
+          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
         this.gamma.position.set(medianGamma.x + 2, medianGamma.y - 3, medianGamma.z + 2);
         this.scene.add( this.gamma ); 
     }
@@ -278,8 +297,7 @@ var transformationMatrix = function(parameter) {
     var line = new THREE.Line(geometry, material);
     return line;
   }
-  function makeTextSprite( message, parameters )
-  {
+  function makeTextSprite( message, parameters ) { 
     if ( parameters === undefined ) parameters = {};
     
     var fontface = parameters.hasOwnProperty("fontface") ?  parameters["fontface"] : "Arial"; 

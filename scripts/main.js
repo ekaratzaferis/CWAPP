@@ -27,12 +27,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'infobox', 'storeProject', 'restoreCWstate'
+  'infobox', 'storeProject', 'restoreCWstate', 'sound'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  Infobox, StoreProject, RestoreCWstate
+  Infobox, StoreProject, RestoreCWstate, Sound
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -46,7 +46,7 @@ require([
   $('#crystalRenderer').height(height);
 
   var menu = new Menu();
-  var lattice = new Lattice();
+  var lattice = new Lattice(menu);
 
   // HUD  
   var navArrowsScene = NavArrowsHud.getInstance();  
@@ -105,6 +105,13 @@ require([
   // storing mechanism  
   var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
+  // sound
+  var soundMachine = new Sound();
+
+  if(soundMachine.procced){
+    soundMachine.crystalCenterPlay();
+  }
+
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -114,7 +121,8 @@ require([
     motifEditor.updateFixedDimensions(latticeParameters);
   });
   menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
-    hudArrows.updateAngles(latticeParameters);
+    hudArrows.updateLengths(latticeParameters);
+    hudArrows.updateAngles(latticeParameters);  
     hudCube.updateAngles(latticeParameters);
     crystalScene.updateAbcAxes(latticeParameters);
   });
@@ -283,7 +291,22 @@ require([
   });
   menu.onAtomSubmit(function(message, atomParam) {
     if(atomParam.button === 'saveChanges'){
-      lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions())  ;
+      var parameters = motifEditor.getDimensions() ;
+      lattice.setMotif(motifEditor.getMotif(), parameters)  ;
+      
+      var params = {
+        alpha : parameters.alpha,
+        beta : parameters.beta,
+        gamma : parameters.gamma, 
+        scaleX : parameters.x,
+        scaleY : parameters.y,
+        scaleZ : parameters.z,
+      }
+      hudArrows.updateLengths(params);
+      hudArrows.updateAngles(params); 
+      hudCube.updateAngles(params);
+      crystalScene.updateAbcAxes(params);
+
     }
     motifEditor.submitAtom(atomParam);
   });
@@ -354,7 +377,21 @@ require([
     motifEditor.updateCellDimens(param) ;
   });
   menu.motifToLattice(function(message, param){
-    lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions())  ;
+    lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions()) ; 
+    var parameters = motifEditor.getDimensions() ;
+    var params = {
+      alpha : parameters.alpha,
+      beta : parameters.beta,
+      gamma : parameters.gamma, 
+      scaleX : parameters.x,
+      scaleY : parameters.y,
+      scaleZ : parameters.z,
+    }
+    hudArrows.updateLengths(params);
+    hudArrows.updateAngles(params); 
+    hudCube.updateAngles(params);
+    crystalScene.updateAbcAxes(params);
+
   });
   menu.setDragMode(function(message, param){
     motifEditor.setDraggableAtom(param)  ;

@@ -1153,9 +1153,9 @@ define([
         'x' : this.cellParameters.scaleX, 
         'y' : this.cellParameters.scaleY, 
         'z' : this.cellParameters.scaleZ,
-        'alpha' : this.initialLatticeParams.alpha,
-        'beta' : this.initialLatticeParams.beta,
-        'gamma' : this.initialLatticeParams.gamma 
+        'alpha' : this.cellParameters.alpha,
+        'beta' : this.cellParameters.beta,
+        'gamma' : this.cellParameters.gamma 
       } ;
     } 
 

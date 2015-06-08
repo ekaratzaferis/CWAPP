@@ -23,7 +23,7 @@ define([
     this.fogActive = false ;
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
-    console.log(this.object3d.fog);
+     
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);

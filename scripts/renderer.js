@@ -54,6 +54,7 @@ define([
     
     this.effect = new THREE.AnaglyphEffect( this.renderer  ); 
     this.anaglyph = false;
+    this.container = container;
 
     jQuery('#'+container).append(this.renderer.domElement);
  
@@ -61,24 +62,21 @@ define([
   Renderer.prototype.setAnaglyph = function(arg){  
     this.anaglyph = arg.anaglyph ;
   };
-  Renderer.prototype.createPerspectiveCamera = function(lookat,xPos, yPos, zPos, fov){ 
-    var _this = this ; 
+  Renderer.prototype.createPerspectiveCamera = function(lookat,xPos, yPos, zPos, fov){  
     var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 1000);
     camera.lookAt(lookat);
     camera.position.set(xPos, yPos, zPos); 
-    _this.cameras.push(camera);
+    this.cameras.push(camera);
   };
-  Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){ 
-    var _this = this ;
+  Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){  
     var viewSize = 50 ;
     var aspectRatio = width/height;
     var camera = new THREE.OrthographicCamera( viewSize*aspectRatio / - 2, viewSize*aspectRatio / 2, viewSize / 2, viewSize / - 2, near, far );
     camera.position.set(x,y,z);
     camera.lookAt(new THREE.Vector3(0,0,0) );
-    _this.cameras.push(camera); 
+    this.cameras.push(camera); 
   };
-  Renderer.prototype.changeContainerDimensions = function(width, height) {
-    var _this = this ;
+  Renderer.prototype.changeContainerDimensions = function(width, height) { 
     this.containerWidth = width ;
     this.containerHeight = height ; 
     this.renderer.setSize(width,height); 
@@ -107,101 +105,108 @@ define([
     this.animationIsActive = false;
   }; 
   Renderer.prototype.animate = function() {
-    var _this = this;
+ 
     if (this.animationIsActive === false) {
       return;
     }
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + 'explorer', true);
 
-    if(_this.cameras.length === 1){ 
-      _this.renderer.clear();
+    if(this.cameras.length === 1){ 
+      if(this.container === 'unitCellRenderer') this.renderer.clear();
 
-      _this.cameras[0].aspect =_this.containerWidth/_this.containerHeight;
-      _this.renderer.setViewport(0, 0, _this.containerWidth, _this.containerHeight); 
-      _this.renderer.setScissor(0, 0, _this.containerWidth, _this.containerHeight); 
-      _this.renderer.enableScissorTest ( true );  
+      this.cameras[0].aspect =this.containerWidth/this.containerHeight;
+      this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
+      this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
+      this.renderer.enableScissorTest ( true );  
       
-      _this.cameras[0].updateProjectionMatrix(); 
-      _this.renderer.setClearColor( _this.backgroundColor, 1  );
+      this.cameras[0].updateProjectionMatrix();  
+
       if(this.anaglyph){  
-        this.effect.render( _this.scene, _this.cameras[0] );
+        this.effect.render( this.scene, this.cameras[0] );
       }
-      else{
-        this.renderer.render( _this.scene, _this.cameras[0]);
+      else{  
+        if(this.container === 'crystalRenderer') {
+          this.renderer.render( this.scene, this.cameras[0], undefined, true);
+        }
+        else if(this.container === 'unitCellRenderer') {
+          this.renderer.setClearColor( this.backgroundColor  );
+          this.renderer.render( this.scene, this.cameras[0] );
+        }
       } 
+
       // hud arrows
-      if(_this.hudCamera !== undefined ){  
-        _this.renderer.clearDepth(); 
-        if(_this.containerWidth < 800 ){ 
-          _this.hudCamera.aspect = (_this.containerWidth)/(_this.containerHeight);
-          _this.renderer.setViewport(0, 0,  _this.containerWidth/3, _this.containerHeight/3 );
-          _this.renderer.setScissor( 0, 0,  _this.containerWidth/3, _this.containerHeight/3 );
+      if(this.hudCamera !== undefined ){  
+        this.renderer.clearDepth(); 
+        if(this.containerWidth < 800 ){ 
+          this.hudCamera.aspect = (this.containerWidth)/(this.containerHeight);
+          this.renderer.setViewport(0, 0,  this.containerWidth/3, this.containerHeight/3 );
+          this.renderer.setScissor( 0, 0,  this.containerWidth/3, this.containerHeight/3 );
         }
         else{ 
-          _this.hudCamera.aspect = (_this.containerWidth)/(_this.containerHeight); 
-          _this.renderer.setViewport(0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
-          _this.renderer.setScissor( 0, 0,  _this.containerWidth/5, _this.containerHeight/5 );
+          this.hudCamera.aspect = (this.containerWidth)/(this.containerHeight); 
+          this.renderer.setViewport(0, 0,  this.containerWidth/4, this.containerHeight/4 );
+          this.renderer.setScissor( 0, 0,  this.containerWidth/4, this.containerHeight/4 );
         }
         
-        _this.renderer.enableScissorTest ( true );  
+        this.renderer.enableScissorTest ( true );  
          
-        _this.hudCamera.updateProjectionMatrix();
+        this.hudCamera.updateProjectionMatrix();
 
-        _this.renderer.setClearColor( 0x000000, 1 );
-        this.renderer.render( _this.hudScene, _this.hudCamera);
+        this.renderer.setClearColor( this.backgroundColor  );
+        this.renderer.render( this.hudScene, this.hudCamera);
          
       }
       // hud cube
-      if(_this.hudCameraCube !== undefined  ){  
+      if(this.hudCameraCube !== undefined ){  
           
-        if(_this.containerWidth < 800 ){ 
-          _this.hudCameraCube.aspect = (_this.containerWidth) / (_this.containerHeight );
-          _this.renderer.setViewport(0, _this.containerHeight*2/3,  _this.containerWidth/3, _this.containerHeight/3  );
-          _this.renderer.setScissor( 0, _this.containerHeight*2/3,  _this.containerWidth/3, _this.containerHeight/3  );
-          $('#hudRendererCube').width(_this.containerWidth/3);
-          $('#hudRendererCube').height(_this.containerHeight/3);
+        if(this.containerWidth < 800 ){ 
+          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
+          this.renderer.setViewport(0, this.containerHeight*2/3,  this.containerWidth/3, this.containerHeight/3  );
+          this.renderer.setScissor( 0, this.containerHeight*2/3,  this.containerWidth/3, this.containerHeight/3  );
+          $('#hudRendererCube').width(this.containerWidth/3);
+          $('#hudRendererCube').height(this.containerHeight/3);
         }
         else{ 
-          _this.hudCameraCube.aspect = (_this.containerWidth) / (_this.containerHeight  ); 
-          _this.renderer.setViewport(0, _this.containerHeight*4/5,  _this.containerWidth/5, _this.containerHeight/5  );
-          _this.renderer.setScissor( 0, _this.containerHeight*4/5,  _this.containerWidth/5, _this.containerHeight/5  );
-          $('#hudRendererCube').width(_this.containerWidth/5);
-          $('#hudRendererCube').height(_this.containerHeight/5);
+          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
+          this.renderer.setViewport(0, this.containerHeight*4/5,  this.containerWidth/5, this.containerHeight/5  );
+          this.renderer.setScissor( 0, this.containerHeight*4/5,  this.containerWidth/5, this.containerHeight/5  );
+          $('#hudRendererCube').width(this.containerWidth/5);
+          $('#hudRendererCube').height(this.containerHeight/5);
         }
         
-        _this.renderer.enableScissorTest ( true ); 
+        this.renderer.enableScissorTest ( true ); 
 
-        _this.renderer.setClearColor( 0x000000, 1 ); 
-        _this.hudCameraCube.updateProjectionMatrix();
+        this.renderer.setClearColor( this.backgroundColor ); 
+        this.hudCameraCube.updateProjectionMatrix();
           
-        this.renderer.render( _this.hudSceneCube, _this.hudCameraCube);
+        this.renderer.render( this.hudSceneCube, this.hudCameraCube);
         
-        var arrowL = _this.hudSceneCube.getObjectByName( "arrowLine" );
-        var arrowH = _this.hudSceneCube.getObjectByName( "arrowHead" );
-        arrowL.lookAt(_this.hudCameraCube.position);
-        arrowH.lookAt(_this.hudCameraCube.position);
+        var arrowL = this.hudSceneCube.getObjectByName( "arrowLine" );
+        var arrowH = this.hudSceneCube.getObjectByName( "arrowHead" );
+        arrowL.lookAt(this.hudCameraCube.position);
+        arrowH.lookAt(this.hudCameraCube.position);
       }
     }
-    else if( _this.cameras.length>1 ){
-      for ( var i = 0; i < _this.cameras.length; ++i ) {
-        var camera = _this.cameras[i]; 
-        camera.aspect =_this.containerWidth/(3*_this.containerHeight); 
+    else if( this.cameras.length>1 ){
+      for ( var i = 0; i < this.cameras.length; ++i ) {
+        var camera = this.cameras[i]; 
+        camera.aspect =this.containerWidth/(3*this.containerHeight); 
 
         if(this.anaglyph){     
-          this.effect.render( _this.scene, camera, i , _this.containerWidth , _this.containerHeight, _this.viewportColors[i]);
+          this.effect.render( this.scene, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
         }
         else{ 
-          _this.renderer.setViewport( 1/3 *i * _this.containerWidth, 0,  _this.containerWidth/3, _this.containerHeight );
-          _this.renderer.setScissor(  1/3 *i * _this.containerWidth, 0,  _this.containerWidth/3, _this.containerHeight );
-          _this.renderer.enableScissorTest ( true );
+          this.renderer.setViewport( 1/3 *i * this.containerWidth, 0,  this.containerWidth/3, this.containerHeight );
+          this.renderer.setScissor(  1/3 *i * this.containerWidth, 0,  this.containerWidth/3, this.containerHeight );
+          this.renderer.enableScissorTest ( true );
 
-          _this.renderer.setClearColor( _this.viewportColors[i] );
+          this.renderer.setClearColor( this.viewportColors[i] );
  
           camera.updateProjectionMatrix();
           camera.updateMatrixWorld();
-          _this.renderer.clear(); 
-          this.renderer.render( _this.scene, camera);
+          this.renderer.clear(); 
+          this.renderer.render( this.scene, camera);
         }
       }
     }  
@@ -223,28 +228,22 @@ define([
 
   }; 
   Renderer.prototype.getHudCameraCube = function() {
-    var _this = this;
-    return _this.hudCameraCube;
+     
+    return this.hudCameraCube;
   };
   Renderer.prototype.getHudCamera = function() {
-    var _this = this;
-    return _this.hudCamera;
+     
+    return this.hudCamera;
   };
   Renderer.prototype.getMainCamera = function() {
-    var _this = this;
-    return _this.cameras[0];
+     return this.cameras[0];
   };
   Renderer.prototype.getSpecificCamera = function(x) {
-    var _this = this;
-    return _this.cameras[x];
+     return this.cameras[x];
   };
   Renderer.prototype.onAnimationUpdate = function(callback) { 
     PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback);
-  };
-  /*Renderer.prototype.onAnimationUpdate2 = function(callback1,callback2) { 
-    PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback1);
-    PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback2);
-  };*/
+  }; 
   Renderer.prototype.renderHud = function(mode) {   // preserveDrawingBuffer: true
     //this.renderer.render( this.hudScene, this.hudCamera);
   };

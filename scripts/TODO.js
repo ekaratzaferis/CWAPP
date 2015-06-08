@@ -39,6 +39,7 @@ TODO list
 34. stereoscopic function doesnt work when I first go to motif editor and then enable it  
 35. when change view, if you change tab and return in MT bug   
 36. when direction radius is updated also direction head should be updated
+37. Update lattice UI when getting motif from ME ?
 
 Changes by Andre
 
@@ -51,8 +52,13 @@ List with Ideas
 1. Syncing with user dropbox to store a project there and reopen it later
 2. Public library of CW Projects - search by keywords, most popular etc
 3. Miller object use sliders for indexes
+4. all screens resizable
+5. light switches
 
-
-
-steps:
+  
+6- Gearbox (tour)
+7- 3D sound (sonar) on the crystal centar
+8- Crystal doll  
+11- make a change on the unit cell visualization (to consider the neighbourhood atoms) - I'll explain when you choose to do this 
+13- leap motion and rift oculus
  

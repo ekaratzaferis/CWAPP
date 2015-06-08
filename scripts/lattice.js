@@ -31,9 +31,11 @@ define([
 
   var reverseScaling = scaling.slice(0).reverse();
 
-  function Lattice() {
+  function Lattice(menu) {
 
     // lattice
+    this.menu = menu ; 
+
     this.lattice = null;
     this.parameters = defaultParameters;
     this.points = {}; 
@@ -151,9 +153,25 @@ define([
       delete _this.grids[reference];
     });
   }; 
+  Lattice.prototype.updateLatticeUI = function( params){
+
+
+    this.menu.setSliderValue("beta", params.beta );
+    this.menu.setSliderValue("gamma", params.gamma );
+    this.menu.setSliderValue("alpha", params.alpha );
+
+    $('#beta').val(params.scaleZ);
+    $('#alpha').val(params.scaleZ);
+    $('#gamma').val(params.scaleZ);
+
+    $('#scaleX').val(params.x);
+    $('#scaleY').val(params.y);
+    $('#scaleZ').val(params.z);
+
+  }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
-
+    this.updateLatticeUI(params);
     _this.currentMotif = motif ;
 
     _.each(_this.actualAtoms, function(atom,k) {
