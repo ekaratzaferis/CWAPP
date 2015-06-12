@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 
 define([
   'pubsub', 'three', 'underscore',
@@ -31,11 +31,10 @@ define([
 
   var reverseScaling = scaling.slice(0).reverse();
 
-  function Lattice(menu) {
+  function Lattice(menu, soundMachine) {
 
     // lattice
-    this.menu = menu ; 
-
+    this.menu = menu ;  
     this.lattice = null;
     this.parameters = defaultParameters;
     this.points = {}; 
@@ -77,8 +76,10 @@ define([
     var _this = this, i =0;
     _this.viewMode = arg ;
     if(this.actualAtoms.length!==0){
+      
       var geometry = new THREE.Geometry();  
       var scene = Explorer.getInstance().object3d;
+
       while(i < _this.viewBox.length ) {  
         _this.viewBox[i].object3d.updateMatrix();  
         geometry.merge( _this.viewBox[i].object3d.geometry, _this.viewBox[i].object3d.matrix ); 
@@ -207,13 +208,16 @@ define([
             p,
             atom.object3d.children[1].material.map.image.currentSrc,
             atom.object3d.children[0].material.opacity,
-            atom.object3d.children[2].material.wireframe 
+            atom.object3d.children[2].material.wireframe,
+            kk
           )  
         );
       });
     });  
 
     _this.updateLatticeTypeRL();
+
+    console.log(this.actualAtoms.length);
   }; 
   Lattice.prototype.createGrid = function() {
     
@@ -376,7 +380,7 @@ define([
       _.times(parameters.repeatX + 1, function(_x) {
         _.times(parameters.repeatY + 1, function(_y) {
           _.times(parameters.repeatZ + 1, function(_z) {  
-            for (index = 0; index < originLength; index++) {
+            for (var index = 0; index < originLength; index++) {
               origin = lattice.originArray[index];
               position = new THREE.Vector3(
                 _x * vector.x + origin.x,
@@ -551,7 +555,8 @@ define([
             p,
             texture,
             opacity,
-            wireframe
+            wireframe,
+            kk
           )  
         );
       });

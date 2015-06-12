@@ -27,12 +27,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'infobox', 'storeProject', 'restoreCWstate', 'sound'
+  'infobox', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  Infobox, StoreProject, RestoreCWstate, Sound
+  Infobox, StoreProject, RestoreCWstate, Sound, Animate, GearTour
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -44,10 +44,18 @@ require([
   var height = $(window).height(); 
   $('#crystalRenderer').width(width);
   $('#crystalRenderer').height(height);
+   
+  var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
+  crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
+
+  // sound & animations
+  var animationMachine = new Animate(crystalScene);
+  var soundMachine = new Sound(animationMachine); 
+  crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
 
   var menu = new Menu();
-  var lattice = new Lattice(menu);
-
+  var lattice = new Lattice(menu, soundMachine);
+  
   // HUD  
   var navArrowsScene = NavArrowsHud.getInstance();  
   var hudArrows = new NavArrows(navArrowsScene.object3d, lattice);
@@ -56,8 +64,7 @@ require([
   var hudCube = new NavCube(navCubeScene.object3d, lattice);
  
   //  WebGL Renderers and cameras
-  var crystalRenderer = new Renderer(crystalScene.object3d, 'crystalRenderer', 'crystal' ); 
-  crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
+   
   crystalRenderer.initHud(navArrowsScene.object3d, navCubeScene.object3d);
 
   var unitCellRenderer = new Renderer(unitCellScene.object3d, 'unitCellRenderer', 'cell');
@@ -75,6 +82,9 @@ require([
   //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
   var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
+    
+  soundMachine.crystalCameraOrbit = orbitCrystal ;
+   
   var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
@@ -90,7 +100,7 @@ require([
   motifRenderer.onAnimationUpdate(motifCamZ.update.bind(motifCamZ));
 
   // Motif editor
-  var motifEditor = new Motifeditor(menu);
+  var motifEditor = new Motifeditor(menu, soundMachine);
   motifEditor.loadAtoms();
  
   var dragNdropXevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
@@ -105,12 +115,8 @@ require([
   // storing mechanism  
   var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
-  // sound
-  var soundMachine = new Sound();
-
-  if(soundMachine.procced){
-    soundMachine.crystalCenterPlay();
-  }
+  // Gear Bar Tour
+  var gearTour = new GearTour(crystalScene, motifEditor, lattice);
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -168,6 +174,34 @@ require([
   });
   menu.setPadlock(function(message, arg) { 
     motifEditor.setPadlock(arg); 
+  });
+  menu.onSoundsSet(function(message, arg) { 
+    soundMachine.switcher(arg.sounds); 
+  });
+  menu.onLightsSet(function(message, arg) { 
+     
+    if(arg.lights){
+      crystalScene.AmbLight.color.setHex( 0x4D4D4C ); 
+      crystalScene.light.intensity = 1 ;
+      crystalScene.light.castShadow = true;  
+
+      unitCellScene.AmbLight.color.setHex( 0x4D4D4C ); 
+      unitCellScene.light.intensity = 1 ;
+      unitCellScene.light.castShadow = true;  
+    }
+    else{
+      crystalScene.AmbLight.color.setHex( 0xffffff ); 
+      crystalScene.light.intensity = 0 ;
+      crystalScene.light.castShadow = false;  
+
+      unitCellScene.AmbLight.color.setHex( 0xffffff ); 
+      unitCellScene.light.intensity = 0.0;
+      unitCellScene.light.castShadow = false;  
+
+    }
+    //motifEditor
+    //lattice
+
   });
   menu.onFogParameterChange(function(message, arg) { 
     if(crystalScene.fogActive === true){ 
@@ -410,6 +444,9 @@ require([
   }); 
   menu.storeProject(function(message, arg) { 
     storingMachine.createJSONfile();
+  });
+  menu.onGearBarSelection(function(message, arg) { 
+    gearTour.setState( arg.state );
   });
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){

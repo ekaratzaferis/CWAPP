@@ -11,7 +11,7 @@ define([
   _
 ) {
  
-  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, wireframe) { 
+  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, wireframe, latticeIndex) { 
      
     var _this = this; 
     this.radius = radius;  
@@ -25,6 +25,8 @@ define([
     this.centerOfMotif = new THREE.Vector3(centerOfMotif.x, centerOfMotif.y, centerOfMotif.z); ; 
     this.helperPos = {"x":0, "y":0, "z":0};
     this.elementName = elementName; 
+    this.latticeIndex = latticeIndex; 
+    this.subtractedForGear = { 'object3d': undefined} ; 
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
 
     var textureLoader = new THREE.TextureLoader();
@@ -58,11 +60,13 @@ define([
     Explorer.add(_this); 
 
   };  
-  CrystalAtom.prototype.subtractedSolidView = function(box, pos) {
+  CrystalAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this; 
-
-    Explorer.remove({'object3d':_this.object3d}); 
-     
+ 
+    if(gear === undefined){
+      Explorer.remove({'object3d':_this.object3d});
+    }
+      
     var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
@@ -76,9 +80,16 @@ define([
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
     //sphere.children[0].receiveShadow = true; 
     //sphere.children[0].castShadow = true; 
-
-    _this.object3d = sphereCut; 
-    Explorer.add(_this); 
+    
+    if(gear !== undefined){
+      this.subtractedForGear = { 'object3d' : sphereCut };
+      Explorer.add(this.subtractedForGear);
+    }
+    else{
+      _this.object3d = sphereCut; 
+      Explorer.add(_this); 
+    }
+     
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;

@@ -55,6 +55,7 @@ define([
     this.effect = new THREE.AnaglyphEffect( this.renderer  ); 
     this.anaglyph = false;
     this.container = container;
+    this.externalFunctions = [];
 
     jQuery('#'+container).append(this.renderer.domElement);
  
@@ -204,12 +205,15 @@ define([
           this.renderer.setClearColor( this.viewportColors[i] );
  
           camera.updateProjectionMatrix();
-          camera.updateMatrixWorld();
+          //camera.updateMatrixWorld();
           this.renderer.clear(); 
           this.renderer.render( this.scene, camera);
         }
       }
     }  
+    for (var i = 0; i < this.externalFunctions.length ; i++) {
+      this.externalFunctions[i]();
+    };
   };
   Renderer.prototype.initHud = function(scene1, scene2) {  
     this.hudScene = scene1; 

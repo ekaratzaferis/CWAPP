@@ -217,7 +217,7 @@ define([
     event.preventDefault();
     _this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
-      if( !(_this.motifEditor.editorState.state === 'initial') && (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false) && (_this.motifEditor.padlock === false)) {
+      if( !(_this.motifEditor.editorState.state === 'initial') && (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)) {
         raycaster.setFromCamera( mouse, _this.camera );
         
         var intersects = raycaster.intersectObjects( _this.getAtoms() );

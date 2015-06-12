@@ -28,23 +28,23 @@ define([
     PubSub.subscribe(events.REMOVE, function(message, object) {
       _this.remove(object);
     });
-    var light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    light.position.set( 300, 300, 60 );
-    light.castShadow = true;
-    light.shadowMapWidth = 1024;    // power of 2
-    light.shadowMapHeight = 1024;
+    this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
+    this.light.position.set( 300, 300, 60 );
+    this.light.castShadow = true;
+    this.light.shadowMapWidth = 1024;    // power of 2
+    this.light.shadowMapHeight = 1024;
 
-    light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
-    light.shadowCameraFar = 450;    // shadows not cast past the far plane
-    light.shadowCameraFov = 20;
-    light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
-    light.shadowDarkness = 0.3;
+    this.light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
+    this.light.shadowCameraFar = 450;    // shadows not cast past the far plane
+    this.light.shadowCameraFov = 20;
+    this.light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
+    this.light.shadowDarkness = 0.3;
 
-    var AmbLight = new THREE.AmbientLight( 0x4D4D4C );
+    this.AmbLight = new THREE.AmbientLight( 0x4D4D4C );
 
     //light.shadowCameraVisible = true;
-    this.object3d.add(light);
-    this.object3d.add(AmbLight);
+    this.object3d.add(this.light);
+    this.object3d.add(this.AmbLight);
 
     var geometry1 = new THREE.Geometry();
     geometry1.vertices.push(

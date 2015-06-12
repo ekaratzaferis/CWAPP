@@ -51,7 +51,8 @@
                 <li class="active"><a data-toggle="tab" href="#LatticeParameters">Lattice</a></li> 
                 <li id="millerPI"><a data-toggle="tab" href="#MillerIndices">P & D</a></li>
                 <li id="motifLI"><a data-toggle="tab" href="#MotifEditor">Motif</a></li>
-                <li><a data-toggle="tab" href="#OtherParameters" >Other</a></li>
+                <li id="otherParams"><a data-toggle="tab" href="#OtherParameters" >Other</a></li>
+                <li id="moreParams"><a data-toggle="tab" href="#moreParameters" >More</a></li>
               </ul> 
               <div class="tab-content">
                 <div id="LatticeParameters" class="tab-pane fade in active">
@@ -1281,6 +1282,64 @@
                     </div>
                   </div>
                 </div>
+                <div id="moreParameters" class="tab-pane  ">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="panel-group" id="accordion5">
+                        <div class="panel panel-default">
+                          <div class="panel-heading col-md-12 ">
+                            <h3 class="panel-title col-md-12 ">
+                              <a data-toggle="collapse" data-parent="#accordion5" href="#moreParams">More Features</a>
+                            </h3>
+                          </div> 
+                          <div class="panel-body" style="padding:5px 5px 5px 5px;">
+                            <div class="panel panel-info"> 
+                              <div class="panel panel-info"  style=" margin-bottom: 5px;"> 
+                                
+                                <div class='row'  style=" margin-bottom: 5px;">
+                                  <div class="col-md-12">
+                                    <div class=" col-md-12" style=" margin-bottom: 5px;">
+                                      <div class="col-md-1"></div>
+                                      <div class="col-md-1">
+                                        <input type="checkbox" name="sounds" id="sounds"  > 
+                                      </div>
+                                      <div class="col-md-9" >
+                                        <h3 class="panel-title"><strong>Sounds</strong></h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class='row'  style=" margin-bottom: 5px;">
+                                  <div class="col-md-12">
+                                    <div class=" col-md-12"  >
+                                      <div class="col-md-1"></div>
+                                      <div class="col-md-1">
+                                        <input type="checkbox" name="lights" id="lights"  checked="checked"> 
+                                      </div>
+                                      <div class="col-md-9" >
+                                        <h3 class="panel-title"><strong>Lights</strong></h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div> 
+                                <div class='row'  style=" margin-bottom: 5px;">
+                                  <div class="col-md-1">
+                                    <div id='gearBarSlider'>
+                                    </div>
+                                  </div>
+                                  <div class="col-md-11">
+                                    <label id='gearBarLabel' for="gearBarSlider">Lattice Points</label>
+                                  </div>
+                                </div> 
+                              </div>  
+                            </div>
+                          </div>
+                        </div>
+                      </div>  
+                    </div>
+                  </div>
+                </div> 
               </div> 
             </section>
           </div>

@@ -103,9 +103,9 @@ define([
     Explorer.add(this.tubeMesh);
 
   };
-  MillerVector.prototype.setVisible = function( x) {     
-    this.object3d.visible = x ;
-    this.tubeMesh.object3d.visible =x ;
+  MillerVector.prototype.setVisible = function(bool) {     
+    this.object3d.visible = bool ;
+    this.tubeMesh.object3d.visible = bool ;
   };
  
   MillerVector.prototype.setColor = function(color) { 

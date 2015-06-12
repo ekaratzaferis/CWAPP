@@ -50,11 +50,11 @@ define([
 
     // a,b,c lengths
      
-    this.aScale = makeTextSprite( "  a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
+    this.aScale = makeTextSprite( "a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
     this.aScale.position.set(0,-1.5,this.arrowLength+0.5);
     scene.add( this.aScale  );
     
-    this.bScale = makeTextSprite( "            b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+    this.bScale = makeTextSprite( "         b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
     this.bScale.position.set(this.arrowLength+0.5,-1,0);
     scene.add( this.bScale  );
 
@@ -104,12 +104,12 @@ define([
     
     this.alpha = makeTextSprite( "β : 90° ", 
       { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
-    this.alpha.position.set(medianBeta.x - 1.5, medianBeta.y - 0.5, medianBeta.z);
+    this.alpha.position.set(medianBeta.x - 2, medianBeta.y - 0.5, medianBeta.z);
    scene.add( this.alpha );
     
-    this.gamma = makeTextSprite( "       γ : 90° ", 
+    this.gamma = makeTextSprite( "    γ : 90° ", 
       { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
-    this.gamma.position.set(medianGamma.x + 2, medianGamma.y - 3, medianGamma.z + 2);
+    this.gamma.position.set(medianGamma.x + 2.5, medianGamma.y - 3, medianGamma.z + 2);
     scene.add( this.gamma );
 
 };
@@ -126,12 +126,12 @@ Hud.prototype.updateLengths = function(params) {
     // sprites
     if(params.scaleZ !== undefined)  { 
         this.scene.remove(this.aScale);
-        this.aScale = makeTextSprite( "  a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
+        this.aScale = makeTextSprite( "a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
         scene.add( this.aScale  );
     }
     if(params.scaleX !== undefined)  { 
         this.scene.remove(this.bScale);
-        this.bScale = makeTextSprite( "   b : "+this.scales.bScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+        this.bScale = makeTextSprite( "  b : "+this.scales.bScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
         this.bScale.position.set(this.arrowLength+0.5,-1,0);
         scene.add( this.bScale  );
     }
@@ -235,12 +235,12 @@ Hud.prototype.updateAngles = function(angle) {
         this.scene.remove(this.alpha);
         this.alpha = makeTextSprite( "β : "+_this.angles.alpha+"° ", 
           { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
-        this.alpha.position.set(medianBeta.x -1.5, medianBeta.y - 0.5 , medianBeta.z);
+        this.alpha.position.set(medianBeta.x -2, medianBeta.y - 0.5 , medianBeta.z);
         this.scene.add( this.alpha );
     }
     if(angle.gamma !== undefined)  {  
         this.scene.remove(this.gamma);
-        this.gamma = makeTextSprite( "       γ : "+_this.angles.gamma+"° ", 
+        this.gamma = makeTextSprite( "      γ : "+_this.angles.gamma+"° ", 
           { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
         this.gamma.position.set(medianGamma.x + 2, medianGamma.y - 3, medianGamma.z + 2);
         this.scene.add( this.gamma ); 

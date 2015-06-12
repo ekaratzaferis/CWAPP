@@ -37,9 +37,10 @@ TODO list
 33. maybe big mistake with lengths, in lattices with angles  
 33. collision with more than 2 atoms (to handle dragging atom inside atom by the user)  
 34. stereoscopic function doesnt work when I first go to motif editor and then enable it  
-35. when change view, if you change tab and return in MT bug   
-36. when direction radius is updated also direction head should be updated
-37. Update lattice UI when getting motif from ME ?
+35. when change view, if you change tab and return in MT bug    
+37. Ligths full deactivation fro performance
+37. Calculate better the center of crystal
+38. Grade Limited View for hexagonal Strange
 
 Changes by Andre
 
@@ -55,10 +56,10 @@ List with Ideas
 4. all screens resizable
 5. light switches
 
-  
-6- Gearbox (tour)
-7- 3D sound (sonar) on the crystal centar
+   
 8- Crystal doll  
-11- make a change on the unit cell visualization (to consider the neighbourhood atoms) - I'll explain when you choose to do this 
+11- make a change on the unit cell visualization (to consider the neighbourhood atoms) 
 13- leap motion and rift oculus
  
+
+ // 1.initial conditions for hex 2.gear tour for hex 3. view mode for hex

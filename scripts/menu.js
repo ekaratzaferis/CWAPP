@@ -50,7 +50,10 @@ define([
     SET_PADLOCK: 'menu.set_padlock',
     FOG_CHANGE: 'menu.fog_change',
     FOG_PARAMETER_CHANGE: 'menu.fog_parameter_change',
-    RENDERER_COLOR_CHANGE: 'menu.renderer_color_change'
+    RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
+    SET_SOUNDS: 'menu.set_sounds',
+    SET_LIGHTS: 'menu.set_lights',
+    SET_GEAR_BAR: 'menu.set_gear_bar'
   };
 
   // lattice parameters
@@ -647,7 +650,19 @@ define([
       argument["padlock"]= ($('#padlock').is(':checked')) ? true : false ; 
       PubSub.publish(events.SET_PADLOCK, argument);           
     });  
-      
+    $('#sounds').change(function() {  
+      var argument = {};
+      argument["sounds"]= ($('#sounds').is(':checked')) ? true : false ;
+      PubSub.publish(events.SET_SOUNDS, argument);           
+    });
+    $('#lights').change(function() {  
+      var argument = {};
+      argument["lights"]= ($('#lights').is(':checked')) ? true : false ;
+      PubSub.publish(events.SET_LIGHTS, argument);           
+    });
+
+    this.setVerticalSlider('#gearBarSlider', 1, 1, 5, 1);
+
     this.restrictionEvents = []; 
      
   }; 
@@ -724,6 +739,25 @@ define([
       }); 
     });
   };
+  Menu.prototype.setVerticalSlider = function( name, value, min, max, step ){
+
+    require([ "jquery-ui" ], function( slider ) {
+      $(name).slider({
+        orientation: "vertical",
+        range: "min",
+        min: 1,
+        max: 5,
+        value: 1,
+        slide: function( event, ui ) {
+          $( "#amount" ).val( ui.value );
+          var argument = {'state' : ui.value } ;
+          PubSub.publish(events.SET_GEAR_BAR, argument);
+        }
+      });
+      $( "#amount" ).val( $( name ).slider( "value" ) );
+    });
+
+  }
   Menu.prototype.setSlider = function(name,value,min,max,step) {
     require([ "jquery-ui" ], function( slider ) {
        
@@ -865,6 +899,15 @@ define([
   };
   Menu.prototype.onRendererColorChange = function(callback) { 
     PubSub.subscribe(events.RENDERER_COLOR_CHANGE, callback);
+  };
+  Menu.prototype.onSoundsSet = function(callback) { 
+    PubSub.subscribe(events.SET_SOUNDS, callback);
+  };
+  Menu.prototype.onLightsSet = function(callback) { 
+    PubSub.subscribe(events.SET_LIGHTS, callback);
+  };
+  Menu.prototype.onGearBarSelection = function(callback) { 
+    PubSub.subscribe(events.SET_GEAR_BAR, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

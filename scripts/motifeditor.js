@@ -18,8 +18,10 @@ define([
     VIEW_STATE: 'motifeditor.view_state'
   }; 
 
-  function Motifeditor(menu) {
+  function Motifeditor(menu, soundMachine) {
     this.motifeditor = null;
+
+    this.soundMachine = soundMachine;
 
     this.menu = menu ; 
     this.cellParameters = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
@@ -302,10 +304,6 @@ define([
       this.menu.setSliderMin('cellGamma', 2);
     }
 
-    this.menu.setOnOffSlider('atomPosX', action);  
-    this.menu.setOnOffSlider('atomPosY', action);  
-    this.menu.setOnOffSlider('atomPosZ', action);
-
     this.menu.setOnOffSlider('Aa', action);  
     this.menu.setOnOffSlider('Ab', action);  
     this.menu.setOnOffSlider('Ac', action);
@@ -313,10 +311,6 @@ define([
     this.menu.setOnOffSlider('cellAlpha', action);
     this.menu.setOnOffSlider('cellBeta', action);
     this.menu.setOnOffSlider('cellGamma', action);
-
-    $("#atomPosX").prop("disabled",arg.padlock);
-    $("#atomPosY").prop("disabled",arg.padlock);
-    $("#atomPosZ").prop("disabled",arg.padlock);
   
     $("#Aa").prop("disabled",arg.padlock);
     $("#Ab").prop("disabled",arg.padlock);
@@ -476,6 +470,7 @@ define([
 
         if (realDistance < calculatedDistance){   
           _this.motifsAtoms[i].changeColor('#FF0000', 250);  
+          if(this.soundMachine.procced) this.soundMachine.play('atomCollision');
           c.offset = parseFloat((_this.fixAtomPosition(_this.motifsAtoms[i],axis)).toFixed(parseInt(10)) );
           c.collisionsFound++;  
         } 
@@ -1420,7 +1415,11 @@ define([
         }
       };
     }
+
     if(_this.dragMode || colAtom){ 
+
+      if(this.soundMachine.procced) this.soundMachine.play('popOutOfAtom');
+
       var axis = this.rotAxis;
       var movingAtom = this.newSphere;
       var stillAtom = (colAtom) ? colAtom : this.tangentToThis;
@@ -2478,7 +2477,10 @@ define([
             var bortherPos = new THREE.Vector3(vecHelper.x + bPos.x, vecHelper.y + bPos.y, vecHelper.z + bPos.z ); 
 
             a.changeColor((0xFF0000, 250));
-            b.changeColor((0xFF0000, 250));   
+            b.changeColor((0xFF0000, 250)); 
+
+            if(this.soundMachine.procced) this.soundMachine.play('cellCollision');
+
             var rA = a.getRadius();
             var rB = b.getRadius(); 
 
@@ -2552,7 +2554,7 @@ define([
  
           if(a.latticeIndex === '_c' && a.elementName==='H' && b.latticeIndex === "_011" && b.elementName === 'Be'){  
             var vecHelper,vecHelper2;
-            /*  
+             
             if(angleName == 'beta') { 
               sign = (bPos.y>aPos.y) ? -1 : 1 ;
               vecHelper = this.transformHelper(new THREE.Vector3(0, aPos.y ,0));
@@ -2564,7 +2566,8 @@ define([
             
             thirdPoint =  new THREE.Vector3(vecHelper.x + aPos.x, vecHelper.y + aPos.y, vecHelper.z + aPos.z ); 
             fourthPoint =  new THREE.Vector3(vecHelper2.x + bPos.x, vecHelper2.y + bPos.y, vecHelper2.z + bPos.z ); 
-  
+            
+            /*
             this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
             this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,aPos.y,aPos.z) , 0xFF0000 );  // brotherOfB to b  : red
             this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
@@ -2979,6 +2982,7 @@ define([
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
     var scene = UnitCellExplorer.getInstance().object3d;
+    
     if(_this.viewState === 'Subtracted'){
       while(i < _this.unitCellAtoms.length ) {
         _this.unitCellAtoms[i].object3d.visible = true; 
@@ -3428,8 +3432,7 @@ define([
         else if( this.latticeType === 'hexagonal'){  
           if(_this.motifsAtoms.length >= 1){ 
            
-            dims.zDim = LL * 2; 
-            dims.yDim = LL * 2; 
+            // todo run algorithm to find cell dimensions
           }
         }
       break;
