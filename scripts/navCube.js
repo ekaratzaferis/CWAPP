@@ -50,7 +50,7 @@ function NavCube( scene, latticeParams) {
      
     geom.computeFaceNormals();
 
-    var arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1  , side : THREE.doubleSide}));
+    var arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
     arHead.name = 'arrowHead';
       
     var CustomSinCurve = THREE.Curve.create(
@@ -74,7 +74,7 @@ function NavCube( scene, latticeParams) {
         8,     //radiusSegments
         false  //closed
     );
-    var arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1  , side : THREE.doubleSide}));
+    var arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
     arLine.name = 'arrowLine' ;
     scene.add(arHead);
     scene.add(arLine);
@@ -82,6 +82,7 @@ function NavCube( scene, latticeParams) {
 };
 function getTexture() {
   var texture = new THREE.ImageUtils.loadTexture("Images/rotationArrow.png");
+  
   return texture;
 }
 

@@ -19,6 +19,7 @@ define([
     this.materialLetter;
     this.identity = id ;
     this.materialls; 
+    this.color = color; 
     this.offsetX = offsetX; 
     this.offsetY = offsetY; 
     this.offsetZ = offsetZ; 
@@ -82,7 +83,7 @@ define([
     //sphere.children[0].castShadow = true; 
     
     if(gear !== undefined){
-      this.subtractedForGear = { 'object3d' : sphereCut };
+      this.subtractedForGear.object3d  = sphereCut ;
       Explorer.add(this.subtractedForGear);
     }
     else{
@@ -93,6 +94,9 @@ define([
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;
+  };
+  CrystalAtom.prototype.removeSubtractedForGear = function() {
+    Explorer.remove(this.subtractedForGear);  
   };
   CrystalAtom.prototype.SolidVoid = function( pos) {
     var _this = this;   

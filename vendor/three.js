@@ -13521,8 +13521,7 @@ THREE.Material.prototype = {
 
 			var newValue = values[ key ];
 
-			if ( newValue === undefined ) {
-
+			if ( newValue === undefined ) { 
 				THREE.warn( "THREE.Material: '" + key + "' parameter is undefined." );
 				continue;
 

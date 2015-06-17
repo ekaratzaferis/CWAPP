@@ -65,7 +65,7 @@ define([
   };
 
   return {
-    getInstance: function(options) {
+    getInstance: function(options) { 
       return (instance = instance || new MotifExplorer(options));
     },
     add: function(object) {

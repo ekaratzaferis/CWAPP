@@ -23,7 +23,11 @@ define([
     this.fogActive = false ;
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
-     
+ 
+    this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(2, 2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
+    this.doll.name = 'doll';
+    this.doll.position.set(5,5,5);  
+
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
@@ -116,7 +120,7 @@ define([
         fontColor: {r:255, g:255, b:255, a:1.0} } 
         );
     this.zSprite.position.set(0,7,0);
-    this.object3d.add( this.zSprite );
+    //this.object3d.add( this.zSprite );
     
     this.xSprite = makeTextSprite( "                        x", 
       { fontsize: 25, 
@@ -125,7 +129,7 @@ define([
         fontColor: {r:255, g:255, b:255, a:1.0} } 
         );
     this.xSprite.position.set(0,-2,12);
-    this.object3d.add( this.xSprite );
+    //this.object3d.add( this.xSprite );
 
     this.ySprite = makeTextSprite( "                      y", 
       { fontsize: 25, 
@@ -134,7 +138,7 @@ define([
         fontColor: {r:255, g:255, b:255, a:1.0} } 
         );
     this.ySprite.position.set(12,-2,0);
-    this.object3d.add( this.ySprite );
+    //this.object3d.add( this.ySprite );
 
     // abc labels
     this.cSprite = makeTextSprite( "                      c", 
@@ -167,8 +171,9 @@ define([
     this.bSprite.visible = false;
     this.cSprite.visible = false;
     this.object3d.add( this.bSprite );
+    //this.object3d.add( this.doll );
 
-  }
+  } 
   Explorer.prototype.updateAbcAxes = function(angle){
     var _this = this; 
 
@@ -323,7 +328,8 @@ define([
     context.fillText( message, borderThickness, fontsize + borderThickness);
     
     // canvas contents will be used for a texture
-    var texture = new THREE.Texture(canvas) 
+    var texture = new THREE.Texture(canvas);
+    texture.minFilter = THREE.NearestFilter;
     texture.needsUpdate = true;
 
     var spriteMaterial = new THREE.SpriteMaterial( 

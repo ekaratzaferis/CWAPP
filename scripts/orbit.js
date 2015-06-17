@@ -37,7 +37,7 @@ define([
     else if (type == "orthographic"){
       this.control = new THREE.OrbitAndPanControls(camera, $rendererContainer[0]);
     }
-  }
+  } 
   Orbit.prototype.getCamName = function(){
     return this.camName ;
   };

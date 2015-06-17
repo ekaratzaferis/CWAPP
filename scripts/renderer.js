@@ -24,7 +24,8 @@ define([
 
     this.containerWidth = width ;
     this.containerHeight = height ;
-    this.scene = scene;
+    this.scene = scene.object3d;
+    this.doll;
     this.viewportColors = ['#0B0800', '#000600', '#08000A'];
     this.cameras = [];
     this.motifView = false;
@@ -56,6 +57,9 @@ define([
     this.anaglyph = false;
     this.container = container;
     this.externalFunctions = [];
+
+    this.dollScene;
+    this.dollCamera;
 
     jQuery('#'+container).append(this.renderer.domElement);
  
@@ -128,10 +132,18 @@ define([
       }
       else{  
         if(this.container === 'crystalRenderer') {
+         
           this.renderer.render( this.scene, this.cameras[0], undefined, true);
+
+          if(this.doll !== undefined){  
+            this.dollCamera.updateProjectionMatrix();
+            this.renderer.setClearColor( 0x000000 );  
+            this.renderer.render( this.dollScene, this.dollCamera);        
+          }
+
         }
         else if(this.container === 'unitCellRenderer') {
-          this.renderer.setClearColor( this.backgroundColor  );
+          this.renderer.setClearColor( this.backgroundColor );
           this.renderer.render( this.scene, this.cameras[0] );
         }
       } 
@@ -187,7 +199,9 @@ define([
         var arrowH = this.hudSceneCube.getObjectByName( "arrowHead" );
         arrowL.lookAt(this.hudCameraCube.position);
         arrowH.lookAt(this.hudCameraCube.position);
+
       }
+
     }
     else if( this.cameras.length>1 ){
       for ( var i = 0; i < this.cameras.length; ++i ) {
@@ -214,6 +228,17 @@ define([
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
     };
+  };
+  Renderer.prototype.setDoll = function(scene, doll) { 
+    this.doll = doll;
+    this.dollScene = scene;
+    this.dollCamera = new THREE.PerspectiveCamera(75, 1, 0.1 , 100); 
+    this.dollCamera.lookAt(new THREE.Vector3(0,0,0));
+    this.dollCamera.position.set(0, 0, 1); 
+    this.dollCamera.aspect = this.containerWidth/this.containerHeight;  
+
+    this.dollScene.add(this.dollCamera);
+
   };
   Renderer.prototype.initHud = function(scene1, scene2) {  
     this.hudScene = scene1; 

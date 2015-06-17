@@ -21,10 +21,9 @@ define([
 
     for (var i = wavesNames.length - 1; i >= 0; i--) {
       this.wavesTrigger[wavesNames[i]] = false;
-      this.waves[wavesNames[i]] = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 32, 32 ) , new THREE.MeshBasicMaterial( { blending: THREE.AdditiveAlphaBlending,color: '#0066CC', side: THREE.DoubleSide, transparent:true, opacity:0.1 ,depthWrite:false} ) );
+      this.waves[wavesNames[i]] = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 32, 32 ) , new THREE.MeshBasicMaterial( { blending: THREE.AdditiveBlending, color: '#0066CC', side: THREE.DoubleSide, transparent:true, opacity:0.1 ,depthWrite:false} ) );
       this.waves[wavesNames[i]].visible = false ;
-      scene.add({'object3d' : this.waves[wavesNames[i]]});
-
+      scene.add({'object3d' : this.waves[wavesNames[i]]}); 
     }; 
   };
 

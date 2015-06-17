@@ -76,7 +76,7 @@ define([
     var _this = this, i =0;
     _this.viewMode = arg ;
     if(this.actualAtoms.length!==0){
-      
+
       var geometry = new THREE.Geometry();  
       var scene = Explorer.getInstance().object3d;
 
@@ -84,8 +84,7 @@ define([
         _this.viewBox[i].object3d.updateMatrix();  
         geometry.merge( _this.viewBox[i].object3d.geometry, _this.viewBox[i].object3d.matrix ); 
         i++; 
-      } 
-
+      }  
       var box = new THREE.Mesh(_this.customBox(_this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
       
       if(_this.viewMode === 'Subtracted'){
@@ -139,6 +138,15 @@ define([
       }
 
     }
+  };
+  Lattice.prototype.toggleRadius = function(arg) {
+    if(arg > 10) return ;
+    var radius = arg/10;
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+      this.actualAtoms[i].object3d.scale.x = radius ;
+      this.actualAtoms[i].object3d.scale.y = radius ;
+      this.actualAtoms[i].object3d.scale.z = radius ;
+    };  
   };
   Lattice.prototype.destroyPoints = function() {
     var _this = this; 
@@ -216,8 +224,7 @@ define([
     });  
 
     _this.updateLatticeTypeRL();
-
-    console.log(this.actualAtoms.length);
+ 
   }; 
   Lattice.prototype.createGrid = function() {
     
@@ -694,8 +701,7 @@ define([
       }); 
     }); 
   };
-
-
+ 
   Lattice.prototype.createFaces = function(){ 
     var _this = this;
     var parameters = this.parameters;
@@ -2072,6 +2078,59 @@ define([
 
     return geometry;
   }
+  Lattice.prototype.customBoxForHexCell = function() { 
+    var vertices = [];
+    var faces = [];
+    var _this = this ;
+
+    var bottomFacePoints=[];
+    var upperFacePoints=[]; 
+
+    _.times(2, function(_y) {  
+      _.times(6 , function(_r) { 
+
+        var v = new THREE.Vector3( _this.parameters.scaleZ, 0, 0 ); 
+        var axis = new THREE.Vector3( 0, 1, 0 );
+        var angle = (Math.PI / 3) * _r ; 
+        v.applyAxisAngle( axis, angle );
+
+        var z = v.z ;
+        var y = v.y + _y*_this.parameters.scaleY ;
+        var x = v.x ; 
+        var position = new THREE.Vector3( x, y, z);
+        
+        if(_y > 0){
+          upperFacePoints.push(position);
+        }
+        else{
+          bottomFacePoints.push(position);
+        }
+      }); 
+    }); 
+
+    for (var i = 0; i<6; i++) {
+      vertices[i] = bottomFacePoints[i];
+      vertices[i+6] = upperFacePoints[i];
+    };
+    for (var i = 0; i<4; i++) {
+      faces.push(new THREE.Face3(0,i+1,i+2));
+      faces.push(new THREE.Face3(i+8,i+7,6)); 
+    } 
+    for (var i = 0; i<5; i++) { 
+      faces.push(new THREE.Face3(i+7,i+1,i));
+      faces.push(new THREE.Face3(i+6,i+7,i));
+    } 
+    faces.push(new THREE.Face3(6,0,5));
+    faces.push(new THREE.Face3(11,6,5));
+     
+    var geom = new THREE.Geometry();
+    geom.vertices = vertices;
+    geom.faces = faces;
+
+    geom.mergeVertices();
+
+    return geom;
+  };
   Lattice.prototype.customBox = function(points) { 
 
     var vertices = [];

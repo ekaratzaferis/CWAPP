@@ -53,7 +53,8 @@ define([
     RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
     SET_SOUNDS: 'menu.set_sounds',
     SET_LIGHTS: 'menu.set_lights',
-    SET_GEAR_BAR: 'menu.set_gear_bar'
+    SET_GEAR_BAR: 'menu.set_gear_bar',
+    CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius'
   };
 
   // lattice parameters
@@ -270,7 +271,7 @@ define([
   var $motifXScreenColor = jQuery('#motifXScreenColor');
   var $motifYScreenColor = jQuery('#motifYScreenColor');
   var $motifZScreenColor = jQuery('#motifZScreenColor');
-
+   
   var rendererColors = {
     'crystalScreenColor' : $crystalScreenColor,
     'cellScreenColor' : $cellScreenColor,
@@ -283,6 +284,8 @@ define([
     'fogDensity' : $fogDensity,
     'fogColor' : $fogColor 
   };
+
+  var $reduceRadius = jQuery('#reduceRadius');
 
   var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
 
@@ -365,6 +368,7 @@ define([
     });
     
     this.setSlider("radius",1,1,10,1);
+    
     this.setSlider("faceOpacity",1,1,10,1);
 
     _.each(gradeSelections, function($select, k ) {
@@ -520,6 +524,7 @@ define([
         PubSub.publish(events.RENDERER_COLOR_CHANGE, argument);
       });
     });
+
     this.setSlider("fogDensity",1,0,50,1);
     $('#tangency').change(function() {  
       var argument = {};
@@ -659,6 +664,12 @@ define([
       var argument = {};
       argument["lights"]= ($('#lights').is(':checked')) ? true : false ;
       PubSub.publish(events.SET_LIGHTS, argument);           
+    }); 
+
+    this.setSlider("reduceRadius",10,1,10.2,0.2);
+    $reduceRadius.on('change', function() {
+      var arg = jQuery(this).val()  ; 
+      return PubSub.publish(events.CHANGE_CRYSTAL_ATOM_RADIUS, arg);
     });
 
     this.setVerticalSlider('#gearBarSlider', 1, 1, 5, 1);
@@ -742,19 +753,19 @@ define([
   Menu.prototype.setVerticalSlider = function( name, value, min, max, step ){
 
     require([ "jquery-ui" ], function( slider ) {
+
       $(name).slider({
         orientation: "vertical",
         range: "min",
         min: 1,
         max: 5,
         value: 1,
-        slide: function( event, ui ) {
-          $( "#amount" ).val( ui.value );
+        slide: function( event, ui ) { 
           var argument = {'state' : ui.value } ;
           PubSub.publish(events.SET_GEAR_BAR, argument);
         }
       });
-      $( "#amount" ).val( $( name ).slider( "value" ) );
+      
     });
 
   }
@@ -773,8 +784,7 @@ define([
         change: function (event, ui) {
           $("#"+name).val(ui.value);
           $("#"+name).trigger('change');
-          $("#"+name+"Label").text(ui.value);
-                 
+          $("#"+name+"Label").text(ui.value); 
         },
 
         slide: function (event, ui) {              
@@ -905,6 +915,9 @@ define([
   };
   Menu.prototype.onLightsSet = function(callback) { 
     PubSub.subscribe(events.SET_LIGHTS, callback);
+  };
+  Menu.prototype.onRadiusToggle = function(callback) { 
+    PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);
   };
   Menu.prototype.onGearBarSelection = function(callback) { 
     PubSub.subscribe(events.SET_GEAR_BAR, callback);

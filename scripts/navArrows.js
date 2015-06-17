@@ -50,12 +50,12 @@ define([
 
     // a,b,c lengths
      
-    this.aScale = makeTextSprite( "a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
-    this.aScale.position.set(0,-1.5,this.arrowLength+0.5);
+    this.aScale = makeTextSprite( "  a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
+    this.aScale.position.set(0.5,-1.5,this.arrowLength+0.5);
     scene.add( this.aScale  );
     
-    this.bScale = makeTextSprite( "         b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
-    this.bScale.position.set(this.arrowLength+0.5,-1,0);
+    this.bScale = makeTextSprite( "       b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+    this.bScale.position.set(this.arrowLength+2,-1,0);
     scene.add( this.bScale  );
 
     this.cScale = makeTextSprite( "       c : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:0, g:128, b:5, a:1.0} } );
@@ -178,9 +178,9 @@ Hud.prototype.updateAngles = function(angle) {
     var aPos = directionA.setLength(l);
 
     // sprites
-    this.aScale.position.set(aPos.x -2, aPos.y - 1.5, aPos.z + 0.5); // (0,-1.5,this.arrowLength+0.5);
+    this.aScale.position.set(aPos.x -0.5, aPos.y - 1.5, aPos.z + 1.5); // (0,-1.5,this.arrowLength+0.5);
     this.cScale.position.set(cPos.x + 2, cPos.y , cPos.z );  
-    this.bScale.position.set(this.arrowLength+4.5,-1,0);
+    this.bScale.position.set(this.arrowLength+4.5,-1,0); 
  
     // curves 
  
@@ -330,6 +330,7 @@ var transformationMatrix = function(parameter) {
     
     // canvas contents will be used for a texture
     var texture = new THREE.Texture(canvas) 
+    texture.minFilter = THREE.NearestFilter;
     texture.needsUpdate = true;
 
     var spriteMaterial = new THREE.SpriteMaterial( 

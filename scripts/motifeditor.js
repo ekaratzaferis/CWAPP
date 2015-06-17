@@ -1663,7 +1663,7 @@ define([
     }  
     this.revertShearing();
      
-    this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false); // revert scaling
+    if(_this.latticeName !== 'hexagonal') this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false); // revert scaling
 
     this.cellPointsWithScaling(dimensions, true); // todo fix that true  
      
@@ -2374,6 +2374,78 @@ define([
      
     return cell; // remember these dimensions are in 2l (e.g for cubic primitive)
   };
+  Motifeditor.prototype.findHexTangentLengths = function(dimensions){
+    var offsets = {x : 0, y : 0, z : 0 } ; 
+    return dimensions.zDim;
+    var finished = false, theXOffset=0, theYOffset=0, theZOffset=0;
+
+    var motifHelper = [], j = 0;
+    if(this.newSphere.object3d !== undefined){
+      var rad = this.newSphere.getRadius();
+      var helperObj = {"object3d" : {"position" : { "x": this.newSphere.object3d.position.x, "y":this.newSphere.object3d.position.y, "z": this.newSphere.object3d.position.z}}, getRadius: function() { return rad; } } ; 
+      this.motifsAtoms.push(helperObj);
+    }
+
+    var minRadius = this.findShortestRadius(); 
+
+    var movingOffset = 0.1; 
+
+    while(j < this.motifsAtoms.length ) { 
+       
+      var r = this.motifsAtoms[j].getRadius();
+
+      motifHelper.push( 
+        {
+          "object3d" : {"position" : { "x": this.motifsAtoms[j].object3d.position.x, "y": this.motifsAtoms[j].object3d.position.y, "z": this.motifsAtoms[j].object3d.position.z, clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); } } },
+          "r" : r , 
+          getRadius: function() { return (this.r); } 
+        } 
+      ); 
+      j++;
+    } 
+     
+    var a = dimensions.zDim ;
+    var c = dimensions.yDim ; 
+   
+    var vertDist = a*Math.sqrt(3), _this = this;
+     
+    while(false){
+      offsets.z -= movingOffset;
+      //console.log('step to reduce '+offsets.z);
+      _.times(6 , function(_r) {
+          
+        var v = new THREE.Vector3( a + offsets.z, 0, 0 );
+        console.log(v);
+        var axis = new THREE.Vector3( 0, 1, 0 );
+        var angle = (Math.PI / 3) * _r ; 
+        v.applyAxisAngle( axis, angle );
+
+        for (var i = motifHelper.length - 1; i >= 0; i--) {
+          motifHelper[i].object3d.position.x += v.x ;
+          motifHelper[i].object3d.position.z += v.z ;
+          if( _r === 1 ) {
+            console.log('=========');
+            console.log(motifHelper[i].object3d.position);
+            console.log('=========');
+          }
+        } 
+
+        var ofst = _this.fakeCollision("x", motifHelper, new THREE.Vector3(v.x, 0 , v.z));   
+        if( ofst > theZOffset) theZOffset = ofst ;
+        //console.log('theZOffset '+theZOffset);
+      });
+          
+      if (offsets.z < -5) finished = true ; 
+    };
+  
+    if(this.newSphere.object3d !== undefined){
+      this.motifsAtoms.pop();
+    }; 
+    return a ;
+    dimensions.xDim += theZOffset;
+    dimensions.zDim += theZOffset;
+    return dimensions.xDim;
+  };
   Motifeditor.prototype.changeCellAtomColor = function(id){
     
     for (var i = 0; i<this.unitCellAtoms.length; i++) { 
@@ -2729,65 +2801,76 @@ define([
     if(axis === 'z') return (aVector.length() - this.cellParameters.scaleZ);
        
   }; 
-  /*Motifeditor.prototype.fakeCollision = function(axis, motifHelper, withAngles){
-
-    if(withAngles) return this.detectCollisionForLengths(axis, motifHelper, withAngles);
-      
+  Motifeditor.prototype.fakeCollision = function(axis, motifHelper, motifCenter){
+    
     var _this = this;
     
-    var offsets = [], i = 0, j =0, helperVec   ;
-    if(axis === 'y') helperVec = new THREE.Vector3(0,this.cellParameters.scaleY,0);
-    if(axis === 'z') helperVec = new THREE.Vector3(0,0,this.cellParameters.scaleZ);
-    if(axis === 'x') helperVec = new THREE.Vector3( this.cellParameters.scaleX,0,0);
-
-    if (!_.isUndefined(withAngles)  &&  withAngles === 1) {  
-      var argument, matrix, helperVec2 = helperVec.clone();  
-      _.each(shearing, function(k) {  
-        if (_.isUndefined(_this.cellParameters[k]) === false) { 
-          argument = {};
-          argument[k] = parseFloat(_this.cellParameters[k]); 
-          matrix = transformationMatrix(argument);   
-          helperVec.applyMatrix4(matrix);   
-        }
-      }); 
-      while(i<motifHelper.length) {
-        motifHelper[i].object3d.position.x += (helperVec.x - helperVec2.x); 
-        motifHelper[i].object3d.position.y += (helperVec.y - helperVec2.y); 
-        motifHelper[i].object3d.position.z += (helperVec.z - helperVec2.z); 
-        i++;
-      }
-    }
-
-    i=0;
+    var offset = -1, i = 0, j =0;
+  
     while(i<motifHelper.length) {
-      j = 0;  
-       
+      j = 0;   
       while(j<_this.motifsAtoms.length) {  
         var a = motifHelper[i].object3d.position.clone();
+         
         var b = new THREE.Vector3(_this.motifsAtoms[j].object3d.position.x, _this.motifsAtoms[j].object3d.position.y, _this.motifsAtoms[j].object3d.position.z) ;
-        var realDistance =parseFloat(  (a.distanceTo(b)).toFixed(parseInt(10)) );
+        var realDistance = parseFloat( (a.distanceTo(b)).toFixed(parseInt(10)) );
         var calculatedDistance = parseFloat( (_this.motifsAtoms[j].getRadius() + motifHelper[i].getRadius()).toFixed(parseInt(10)) ) ;  
- 
+        
         if (realDistance < calculatedDistance){   
-          var val;
-           
-          if(this.motifsAtoms[j].myID) this.changeCellAtomColor(this.motifsAtoms[j].myID);
-          if(_.isUndefined(withAngles) || axis==='x' ) { // in x axis problems seem to not occur with angles
-            val = _this.fakeFixAtomPosition(motifHelper[i], _this.motifsAtoms[j],axis) 
-          }
-          else{ 
-            val = _this.fakeFixAtomPositionWithAngles(motifHelper[i], _this.motifsAtoms[j],_this.motifsAtoms[i],axis) ;  
+          if(realDistance ==0){
+            console.log( a);
+            console.log( b);
           } 
-          offsets.push( Math.abs( parseFloat((val).toFixed(parseInt(10)) ) ) ) ;  
+          var val; 
+          var bortherPos = new THREE.Vector3(motifCenter.x + b.x, motifCenter.y + b.y, motifCenter.z + b.z ); 
+   
+          var rA = motifHelper[i].getRadius();
+          var rB = this.motifsAtoms[j].getRadius(); 
+
+          var offset = this.fixLengths(
+            axis, 
+            {
+              "object3d" : {
+                "position" : {
+                  "x": a.x, 
+                  "y": a.y, 
+                  "z": a.z, 
+                }
+              }, 
+              getRadius: function() { return rA; }
+            },  
+            {
+              "object3d" : {
+                "position" : {
+                  "x": b.x, 
+                  "y": b.y, 
+                  "z": b.z, 
+                }
+              }, 
+              getRadius: function() { return rB; }
+            }, 
+            {
+              "object3d" : {
+                "position" : {
+                  "x": bortherPos.x, 
+                  "y": bortherPos.y, 
+                  "z": bortherPos.z 
+                }
+              }, 
+              getRadius: function() { return rB; }
+            },
+            true 
+          ); 
+          j = 100000;
+          i = 100000;  
         }  
         j++;
       } 
       i++;
     };  
-    var o = (offsets.length === 0) ? -1 : _.max(offsets) ;
-      
-    return o;
-  };*/
+    return {'offset': offset } ; 
+
+  }; 
   Motifeditor.prototype.fakeFixAtomPosition = function(helperAtom, otherAtom,axis){
     var _this = this, sign = 1; 
 
@@ -2968,25 +3051,33 @@ define([
     
     } 
     return geometry;
-  }
+  };
+  function loadingData(callback){ 
+    $("body").css("cursor", "wait");
+    $('#UIBlocker').css( "display", 'inline' ); 
+    callback();
+  }; 
+  function endLoadingData() {
+    //$("body").css("cursor", "default");
+    //$('#UIBlocker').css( "display", 'none' );
+  }; 
   Motifeditor.prototype.setCSGmode = function(mode){ 
     var _this = this, i = 0;
 
-    $("body").css("cursor", "wait");
-    var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay'); 
+    var ret = loadingData();
 
-    var a = performance.now();
     _this.viewState = mode;
 
     var g = this.customBox(_this.unitCellPositions, _this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
     var scene = UnitCellExplorer.getInstance().object3d;
-    
+  
     if(_this.viewState === 'Subtracted'){
       while(i < _this.unitCellAtoms.length ) {
         _this.unitCellAtoms[i].object3d.visible = true; 
         _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
+        i += ret;
         i++;
       } 
       
@@ -3092,11 +3183,8 @@ define([
       if(!_.isUndefined(object)) scene.remove(object);
       PubSub.publish(events.VIEW_STATE,"Classic");
     }
-
-    var b = performance.now();
-
-    overlay.remove();
-    $("body").css("cursor", "default");
+ 
+    endLoadingData();
   };
 
   function assignUVs( geometry ){ //todo maybe it doesn't work right
@@ -3432,7 +3520,8 @@ define([
         else if( this.latticeType === 'hexagonal'){  
           if(_this.motifsAtoms.length >= 1){ 
            
-            // todo run algorithm to find cell dimensions
+            dims.xDim = dims.zDim = this.findHexTangentLengths(dims); 
+            console.log(dims.zDim);
           }
         }
       break;
@@ -3497,7 +3586,7 @@ define([
   // Angle Handling - lattice.js code
   Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate){ 
     var _this = this; 
-    
+
     var dimensions = ((this.editorState.fixed || this.manualAabc || this.manualAlphBtGmm) && (!this.padlock)) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
 
     _this.cellParameters.scaleX = dimensions.xDim;
