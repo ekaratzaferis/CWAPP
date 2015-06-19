@@ -22,7 +22,7 @@ define([
       
     this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(0.2,0.2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
     this.doll.name = 'doll';
-    this.doll.position.set(0,0,0);  
+    this.doll.position.set(width/-1150,0,0);  
 
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {

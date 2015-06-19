@@ -119,7 +119,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance(); 
   crystalRenderer.setDoll(dollScene.object3d, dollScene.doll);
-  var dollMachine = new Doll(dollScene.doll, crystalRenderer.dollCamera, orbitCrystal, lattice);
+  var dollMachine = new Doll(dollScene.doll, crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine);
   
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollMachine);

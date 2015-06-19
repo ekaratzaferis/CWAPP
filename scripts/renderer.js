@@ -68,7 +68,7 @@ define([
     this.anaglyph = arg.anaglyph ;
   };
   Renderer.prototype.createPerspectiveCamera = function(lookat,xPos, yPos, zPos, fov){  
-    var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 1000);
+    var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 5000);
     camera.lookAt(lookat);
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);

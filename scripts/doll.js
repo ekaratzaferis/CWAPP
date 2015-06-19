@@ -19,7 +19,7 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2(); 
 
-  function Doll( doll, camera, crystalOrbit, lattice ) {
+  function Doll( doll, camera, crystalOrbit, lattice, animationMachine ) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
@@ -27,6 +27,7 @@ define([
     this.doll = doll;
     this.camera = camera;
     this.lattice = lattice;
+    this.animationMachine = animationMachine;
     this.container = 'crystalRenderer';
     this.INTERSECTED;
     this.SELECTED;
@@ -166,7 +167,16 @@ define([
       this.plane.object3d.position.copy( this.INTERSECTED.position ); 
       this.SELECTED = null;
       if(this.atomUnderDoll){ 
-        this.dollMode();
+        var xPos = $('#app-container').width() / -1150;
+        console.log(xPos);
+        this.INTERSECTED.position.set( xPos, 0,0);
+        
+        this.dollMode(this.atomUnderDoll);
+        for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
+          this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
+          this.lattice.actualAtoms[j].object3d.visible = true ;
+        };
+         
       }
        
     }
@@ -174,16 +184,42 @@ define([
     document.getElementById(this.container).style.cursor = 'auto';
      
   };
-  Doll.prototype.dollMode  = function(){ 
-    console.log(this.crystalOrbit.control);
-    var vec = new THREE.Vector3(
-      this.crystalOrbit.camera.position.x - this.atomUnderDoll.position.x, 
-      this.crystalOrbit.camera.position.y - this.atomUnderDoll.position.y, 
-      this.crystalOrbit.camera.position.z - this.atomUnderDoll.position.z
-      );
-    vec.setLength(0.00001);
-    this.crystalOrbit.camera.position.set(vec.x + this.atomUnderDoll.position.x, vec.y + this.atomUnderDoll.position.y, vec.z + this.atomUnderDoll.position.z);
-    this.crystalOrbit.control.target = new THREE.Vector3(this.atomUnderDoll.position.x, this.atomUnderDoll.position.y, this.atomUnderDoll.position.z);
+  Doll.prototype.dollMode  = function(atom){ 
+     
+    var params = this.lattice.getParameters() ;
+    var x = params.scaleX * params.repeatX/2 ;
+    var y = params.scaleY * params.repeatY /2;
+    var z = params.scaleZ * params.repeatZ/2 ;
+    var target = new THREE.Vector3(x,y,z) ; 
+    var t = target.clone();
+    var newCamPos = new THREE.Vector3(atom.position.x - target.x, atom.position.y - target.y, atom.position.z - target.z);
+    newCamPos.setLength(newCamPos.length()+0.001);
+    newCamPos.x += target.x ;
+    newCamPos.y += target.y ;
+    newCamPos.z += target.z ;
+
+    this.animationMachine.doll_toAtomMovement = { 
+      positionTrigger : true, 
+      targetTrigger : true, 
+      orbitControl : this.crystalOrbit, 
+      oldTarget : this.crystalOrbit.control.target.clone(), 
+      oldPos : this.crystalOrbit.camera.position.clone(), 
+      newTarget : new THREE.Vector3(atom.position.x, atom.position.y, atom.position.z), 
+      targetFactor : 0,
+      posFactor : 0,
+      posFactor : 0,
+      atom: atom,
+      targConnectVector : new THREE.Vector3(
+        target.x - this.crystalOrbit.control.target.x, 
+        target.y - this.crystalOrbit.control.target.y, 
+        target.z - this.crystalOrbit.control.target.z 
+      ),
+      posConnectVector : new THREE.Vector3(
+        newCamPos.x - this.crystalOrbit.camera.position.x, 
+        newCamPos.y - this.crystalOrbit.camera.position.y, 
+        newCamPos.z - this.crystalOrbit.camera.position.z 
+      )
+    }; 
   };
 
   return Doll;

@@ -14,10 +14,10 @@ define([
   function Animate(scene, soundMachine) { 
     
     this.scene = scene ;
-    this.soundMachine = soundMachine ;
-
+    this.soundMachine = soundMachine ; 
     this.waves = [] ;
     this.wavesTrigger = [] ;
+    this.doll_toAtomMovement = undefined;
 
     for (var i = wavesNames.length - 1; i >= 0; i--) {
       this.wavesTrigger[wavesNames[i]] = false;
@@ -26,7 +26,6 @@ define([
       scene.add({'object3d' : this.waves[wavesNames[i]]}); 
     }; 
   };
-
 
   Animate.prototype.produceWave = function(sourcePos, which){
 
@@ -47,7 +46,8 @@ define([
       var elapsed = timeNow - lastTime ;
        
       var offset = elapsed/20 ;
-      
+        
+      //soundwaves
       for (var i = wavesNames.length - 1; i >= 0; i--) {
         if(this.wavesTrigger[wavesNames[i]]){
           var a = this.waves[wavesNames[i]].scale.x ; 
@@ -61,6 +61,88 @@ define([
           }  
         } 
       } 
+
+      // camera doll movement
+      if( this.doll_toAtomMovement!== undefined && (this.doll_toAtomMovement.targetTrigger === true || this.doll_toAtomMovement.positionTrigger === true)){
+           
+        var offset2, 
+            newTarget,
+            ltarg,
+            distanceVec,
+            lpos,
+            targConnectVector = this.doll_toAtomMovement.targConnectVector.clone(),
+            posConnectVector = this.doll_toAtomMovement.posConnectVector.clone(),
+            simultanousFactor = targConnectVector.length()/posConnectVector.length(); 
+
+        // calcs for target
+        if(this.doll_toAtomMovement.targetTrigger){ 
+            
+          this.doll_toAtomMovement.targetFactor += offset/3 ;
+
+          ltarg = targConnectVector.length() ;
+
+          if(this.doll_toAtomMovement.targetFactor > ltarg){  
+            this.doll_toAtomMovement.targetFactor = ltarg ;
+            this.doll_toAtomMovement.targetTrigger = false; 
+
+            if(this.doll_toAtomMovement.positionTrigger === false){
+              this.doll_toAtomMovement.orbitControl.control.target = new THREE.Vector3(
+                this.doll_toAtomMovement.newTarget.x,
+                this.doll_toAtomMovement.newTarget.y,
+                this.doll_toAtomMovement.newTarget.z
+
+                );
+            }
+          }
+          targConnectVector.setLength(this.doll_toAtomMovement.targetFactor);
+
+          this.doll_toAtomMovement.orbitControl.control.target.set(
+            this.doll_toAtomMovement.oldTarget.x + targConnectVector.x, 
+            this.doll_toAtomMovement.oldTarget.y + targConnectVector.y, 
+            this.doll_toAtomMovement.oldTarget.z + targConnectVector.z
+          );
+          
+        }
+
+        // calcs for position
+        if(this.doll_toAtomMovement.positionTrigger){
+          
+          lpos = posConnectVector.length() ;
+
+          this.doll_toAtomMovement.posFactor += ((lpos * offset) / (100) ); 
+ 
+          if(this.doll_toAtomMovement.posFactor > lpos){  
+            this.doll_toAtomMovement.posFactor = lpos ;
+            this.doll_toAtomMovement.positionTrigger = false; 
+
+            this.doll_toAtomMovement.orbitControl.camera.position.set(
+              this.doll_toAtomMovement.oldPos.x + posConnectVector.x, 
+              this.doll_toAtomMovement.oldPos.y + posConnectVector.y, 
+              this.doll_toAtomMovement.oldPos.z + posConnectVector.z
+            );
+
+            if(this.doll_toAtomMovement.targetTrigger === false){
+              this.doll_toAtomMovement.orbitControl.control.target = new THREE.Vector3(
+                this.doll_toAtomMovement.newTarget.x,
+                this.doll_toAtomMovement.newTarget.y,
+                this.doll_toAtomMovement.newTarget.z
+
+              );
+            }
+            this.doll_toAtomMovement.atom.visible = false;
+          }
+          else{  
+            posConnectVector.setLength(this.doll_toAtomMovement.posFactor);
+             
+            this.doll_toAtomMovement.orbitControl.camera.position.set(
+              this.doll_toAtomMovement.oldPos.x + posConnectVector.x, 
+              this.doll_toAtomMovement.oldPos.y + posConnectVector.y, 
+              this.doll_toAtomMovement.oldPos.z + posConnectVector.z
+            );
+          }
+
+        }
+      }
     }
     lastTime = timeNow;
   };
