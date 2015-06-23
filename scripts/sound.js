@@ -10,17 +10,18 @@ define([
   _
 ) {
   
-  var mp3names = ['crystalCenter', 'cellCollision', 'atomCollision', 'popOutOfAtom'];
+  var mp3names = ['crystalCenter', 'cellCollision', 'atomCollision', 'popOutOfAtom', 'dollHolder', 'atomUnderDoll', 'navCube', 'dollArrived'];
 
   function Sound(animationMachine) {
 
     this.procced = true, this.context ;
     this.animationMachine = animationMachine ;
-    this.mute = false ;
+    this.mute = true ;
     this.buffers = [] ; 
     this.crystalHold ; 
     this.crystalCameraOrbit  ;
     this.crysCentrSource = {panner: undefined , dryGain: undefined , panX : 0, panZ : 0, gain : 0 };
+    this.steredLoops = {};
 
     var _this = this ;
 
@@ -63,7 +64,7 @@ define([
   Sound.prototype.crystalCenterStop = function() {
     if(this.crystalHold) clearInterval(this.crystalHold);
   }; 
- Sound.prototype.calculateAngle = function(x,z){
+  Sound.prototype.calculateAngle = function(x,z){
      
     var vec1 = new THREE.Vector2(this.crystalCameraOrbit.control.target.x-this.crystalCameraOrbit.camera.position.x,this.crystalCameraOrbit.control.target.z-this.crystalCameraOrbit.camera.position.z);
     var vec2 = new THREE.Vector2(x-this.crystalCameraOrbit.camera.position.x,z-this.crystalCameraOrbit.camera.position.z);
@@ -105,8 +106,25 @@ define([
     }
 
   };
+  Sound.prototype.stopStoredPlay = function(sampleName) {
+    if(this.steredLoops[sampleName] !== undefined){
+      this.steredLoops[sampleName].stop();
+    }
+  };
+  Sound.prototype.storePlay = function(sampleName) {
+    var _this = this, voice;
+
+    if(!this.mute){  
+      voice = this.context.createBufferSource();
+      voice.buffer = this.buffers[sampleName] ; 
+      voice.connect(this.context.destination);
+      this.steredLoops[sampleName] = voice ;
+      voice.start(0); 
+    }
+  };
   Sound.prototype.play = function(sampleName, sourcePos, calcPanning) {
     if(!this.mute){ 
+
       var data;
       var voice = this.context.createBufferSource();
       voice.buffer = this.buffers[sampleName] ;

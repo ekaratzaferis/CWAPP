@@ -43,7 +43,7 @@ define([
     _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:opacity    }) ;
     _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:opacity  }) ;
     var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
-    if(wireframe) wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, transparent:false}) ;
+    if(wireframe) wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
   
     _this.materials =  [  
       _this.colorMaterial,

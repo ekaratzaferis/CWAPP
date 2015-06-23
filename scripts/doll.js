@@ -18,13 +18,19 @@ define([
 ) { 
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2(); 
+  var dollHolderOffMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }); 
+  var dollHolderOnMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolder.png' )) }); 
 
-  function Doll( doll, camera, crystalOrbit, lattice, animationMachine ) {
+  function Doll( doll, camera, crystalOrbit, lattice, animationMachine , dollHolder, keyboard, soundMachine) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
     
     this.doll = doll;
+    this.soundMachine = soundMachine;
+    this.dollHolder = dollHolder;
+    this.keyboard = keyboard;
+    this.dollOn = false;
     this.camera = camera;
     this.lattice = lattice;
     this.animationMachine = animationMachine;
@@ -100,11 +106,11 @@ define([
 
     }
 
-    var dollIntersect = raycaster.intersectObjects( [this.doll] );
+    var dollIntersect = raycaster.intersectObjects( [this.doll, this.dollHolder] );
         
     if ( dollIntersect.length > 0 ) {
         
-      if ( this.INTERSECTED != dollIntersect[0].object ) {
+      if ( this.INTERSECTED !== dollIntersect[0].object && dollIntersect[0].object.name === 'doll') {
          
         this.INTERSECTED = dollIntersect[0].object;
 
@@ -143,16 +149,42 @@ define([
 
     raycaster.setFromCamera( mouse, this.camera );
         
-    var intersects = raycaster.intersectObjects( [this.doll] );
+    var intersects = raycaster.intersectObjects( [this.doll, this.dollHolder] );
 
     if ( intersects.length > 0 )  {
       
-      this.crystalOrbit.control.enabled = false;
-      this.SELECTED = intersects[0].object; 
-      var intersects = raycaster.intersectObject( this.plane.object3d ); 
-      this.offset.copy( intersects[ 0 ].point ).sub( this.plane.object3d.position ); 
-      document.getElementById(this.container).style.cursor = 'none';
+      if(intersects[0].object.name === 'dollHolder'){ 
+        if(this.soundMachine.procced) this.soundMachine.play('dollHolder');
+        if(this.dollOn){
+          intersects[0].object.material = dollHolderOffMat ;
+          this.dollOn = false;
+          this.doll.visible = false;
+          this.doll.position.z = -100000000;  
 
+          this.animationMachine.doll_toAtomMovement = undefined ;
+          this.keyboard.dollmode = false;
+          this.crystalOrbit.camera.position.set(30,30,60);
+          this.crystalOrbit.control.target = new THREE.Vector3(0,0,0);
+          this.crystalOrbit.control.rotateSpeed = 1.0;
+          this.crystalOrbit.disableUpdate = false;
+          this.crystalOrbit.control.enabled = true;
+        } 
+        else{
+          intersects[0].object.material = dollHolderOnMat ;
+          this.dollOn = true;
+          this.doll.position.set(($('#app-container').width())/-1150 + 0.1,0,0);  
+          this.doll.visible = true;
+      
+        }
+      }
+      else{   
+        this.crystalOrbit.control.enabled = false;
+        this.SELECTED = intersects[0].object; 
+        var intersects = raycaster.intersectObject( this.plane.object3d ); 
+        this.offset.copy( intersects[ 0 ].point ).sub( this.plane.object3d.position ); 
+        document.getElementById(this.container).style.cursor = 'none';
+
+      }
     } 
        
   }; 
@@ -166,19 +198,17 @@ define([
 
       this.plane.object3d.position.copy( this.INTERSECTED.position ); 
       this.SELECTED = null;
+
       if(this.atomUnderDoll){ 
-        var xPos = $('#app-container').width() / -1150;
-        console.log(xPos);
-        this.INTERSECTED.position.set( xPos, 0,0);
-        
+        if(this.soundMachine.procced) this.soundMachine.storePlay('atomUnderDoll'); 
+        this.INTERSECTED.position.set( $('#app-container').width() / -1150 + 0.1, 0,0);  
+
         this.dollMode(this.atomUnderDoll);
         for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
           this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
           this.lattice.actualAtoms[j].object3d.visible = true ;
-        };
-         
-      }
-       
+        }; 
+      }  
     }
 
     document.getElementById(this.container).style.cursor = 'auto';
@@ -197,7 +227,7 @@ define([
     newCamPos.x += target.x ;
     newCamPos.y += target.y ;
     newCamPos.z += target.z ;
-
+ 
     this.animationMachine.doll_toAtomMovement = { 
       positionTrigger : true, 
       targetTrigger : true, 

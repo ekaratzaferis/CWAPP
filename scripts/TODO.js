@@ -33,6 +33,8 @@ TODO list
     29. Disable everything when we are viewing the cell or crystal in subtracted and solid void.
     30. When go bak to classic view from subtracted in cell, distances appear.
     31. Add loader which freezes mouse events 
+    32. When applying new motif to crystal auto position camera far from crystal.
+ 
  
 
 List with Ideas

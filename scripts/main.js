@@ -12,11 +12,13 @@ require.config({
     'jquery': '../vendor/jquery',
     'jquery-ui': '../vendor/jquery-ui/jquery-ui',
     'csg': '../vendor/csg',
-    'threeCSG': '../vendor/ThreeCSG' 
+    'threeCSG': '../vendor/ThreeCSG',
+    'keyboardState': '../vendor/keyboardState'
   },
   shim: {
     'three': { exports: 'THREE' },
     'threejs-controls/OrbitControls': { deps: [ 'three' ] },
+    'keyboardState': { deps: [ 'three' ] },
     'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] },
     'scg': { deps: [ 'three' ] },
     'threeCSG': { deps: [ 'three' ] }
@@ -27,12 +29,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer'
+  'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer
+  CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -51,8 +53,9 @@ require([
   // sound & animations
   var animationMachine = new Animate(crystalScene);
   var soundMachine = new Sound(animationMachine); 
+  animationMachine.soundMachine = soundMachine;
   crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
-
+ 
   var menu = new Menu();
   var lattice = new Lattice(menu, soundMachine);
   
@@ -108,21 +111,27 @@ require([
   var dragNdropZevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(2), 'motifPosZ');
 
   // navigation cube
-  var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube , 'hudRendererCube',  [orbitUnitCell,orbitCrystal] );
+  var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube , 'hudRendererCube',  [orbitUnitCell,orbitCrystal], soundMachine );
  
   // storing mechanism  
   var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
   // Gear Bar Tour
   var gearTour = new GearTour(crystalScene, motifEditor, lattice);
+ 
+  // handel keyboard keys
+  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal);
+  animationMachine.keyboard = keyboard;
+  crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
 
   // CW Doll
   var dollScene = DollExplorer.getInstance(); 
   crystalRenderer.setDoll(dollScene.object3d, dollScene.doll);
-  var dollMachine = new Doll(dollScene.doll, crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine);
+  var dollMachine = new Doll(dollScene.doll, crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, dollScene.dollHolder, keyboard, soundMachine);
   
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollMachine);
+
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {

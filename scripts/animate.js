@@ -17,6 +17,7 @@ define([
     this.soundMachine = soundMachine ; 
     this.waves = [] ;
     this.wavesTrigger = [] ;
+    this.keyboard ;
     this.doll_toAtomMovement = undefined;
 
     for (var i = wavesNames.length - 1; i >= 0; i--) {
@@ -63,7 +64,7 @@ define([
       } 
 
       // camera doll movement
-      if( this.doll_toAtomMovement!== undefined && (this.doll_toAtomMovement.targetTrigger === true || this.doll_toAtomMovement.positionTrigger === true)){
+      if( this.doll_toAtomMovement !== undefined && (this.doll_toAtomMovement.targetTrigger === true || this.doll_toAtomMovement.positionTrigger === true)){
            
         var offset2, 
             newTarget,
@@ -92,6 +93,10 @@ define([
                 this.doll_toAtomMovement.newTarget.z
 
                 );
+              this.scene.movingCube.position.set(this.doll_toAtomMovement.newTarget.x, this.doll_toAtomMovement.newTarget.y, this.doll_toAtomMovement.newTarget.z);
+               
+              this.soundMachine.stopStoredPlay('atomUnderDoll');
+              this.keyboard.dollmode = true;
             }
           }
           targConnectVector.setLength(this.doll_toAtomMovement.targetFactor);
@@ -125,11 +130,13 @@ define([
               this.doll_toAtomMovement.orbitControl.control.target = new THREE.Vector3(
                 this.doll_toAtomMovement.newTarget.x,
                 this.doll_toAtomMovement.newTarget.y,
-                this.doll_toAtomMovement.newTarget.z
-
+                this.doll_toAtomMovement.newTarget.z 
               );
-            }
-            this.doll_toAtomMovement.atom.visible = false;
+              this.scene.movingCube.position.set(this.doll_toAtomMovement.newTarget.x, this.doll_toAtomMovement.newTarget.y, this.doll_toAtomMovement.newTarget.z);
+               
+              this.soundMachine.stopStoredPlay('atomUnderDoll');
+              this.keyboard.dollmode = true;
+            } 
           }
           else{  
             posConnectVector.setLength(this.doll_toAtomMovement.posFactor);

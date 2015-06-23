@@ -59,7 +59,7 @@ define([
     _this.materials =  [  
       _this.colorMaterial,
       _this.materialLetter,
-      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe})
+      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe, opacity:0})
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
@@ -72,7 +72,7 @@ define([
   AtomSphere.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;
     if(bool){ 
-      this.object3d.children[2].material  = new THREE.MeshBasicMaterial({color : "#000000", wireframe: bool}) ;
+      this.object3d.children[2].material  = new THREE.MeshBasicMaterial({color : "#000000", wireframe: bool, opacity:0}) ;
     }
     else{
       this.object3d.children[2].material  = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;

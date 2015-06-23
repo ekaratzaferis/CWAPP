@@ -22,6 +22,7 @@ define([
     this.phi = 0; 
     this.syncedCamera = syncedCamera; 
     this.currPos = new THREE.Vector3(0,0,0); 
+    this.disableUpdate = false;
 
     if(type == "perspective" ) {
       if( camName=== 'hud') { 
@@ -70,6 +71,10 @@ define([
   };
   Orbit.prototype.update = function() {
 
+    if(this.disableUpdate === true){
+      return;
+    }
+    
     this.control.update(); 
      
     var dx = Math.abs(this.camera.position.x - this.currPos.x ) ;

@@ -20,9 +20,10 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2(); 
 
-  function MouseEvents( motifEditor, func,  _camera, domElement,  orbitControls) {
+  function MouseEvents( motifEditor, func,  _camera, domElement,  orbitControls, soundMachine) {
     this.plane = {'object3d' : undefined} ;
     this.func = func ;
+    this.soundMachine = soundMachine;
     this.container = domElement;   
     this.orbitControls = orbitControls; 
     this.objects = [] ;
@@ -250,6 +251,7 @@ define([
       var intersects = raycaster.intersectObjects( _this.getAtoms() );
        
       if ( intersects.length > 0  ) {
+        if(this.soundMachine.procced) this.soundMachine.play('navCube');
         if(intersects[0].object.name === 'cube' ){       
           var index;
           if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==0 &&intersects[0].face.normal.z==-1){

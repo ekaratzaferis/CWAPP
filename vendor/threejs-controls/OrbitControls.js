@@ -235,7 +235,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 	}; 
 	this.update = function () {
-
+		 
 		var position = this.object.position;
 
 		offset.copy( position ).sub( this.target );

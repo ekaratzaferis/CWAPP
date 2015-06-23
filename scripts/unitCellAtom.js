@@ -74,7 +74,7 @@ define([
     _this.materials =  [  
       _this.colorMaterial,
       _this.materialLetter,
-      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe})
+      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe, opacity:0})
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
@@ -87,10 +87,11 @@ define([
     UnitCellExplorer.add(_this); 
 
   };
+
   UnitCellAtom.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;
     if(bool){ 
-      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true}) ;
+      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
     }
     else{
       this.object3d.children[2].material  = new THREE.MeshPhongMaterial({transparent:true, opacity:0}) ;
