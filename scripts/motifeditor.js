@@ -53,7 +53,7 @@ define([
     this.mutex = true ;
     this.cellMutex = true ;
     this.globalTangency = true;
-    this.padlock = false;
+    this.padlock = true;
   };
   Motifeditor.prototype.loadAtoms = function(){
     var _this = this;
@@ -104,7 +104,7 @@ define([
     this.initialLatticeParams.beta  = anglesScales.beta ;
     this.initialLatticeParams.gamma = anglesScales.gamma ; 
     
-    if(this.editorState.fixed){   
+    if(this.padlock === false){   
       this.cellParameters.alpha = parseInt($("#alpha").val());
       this.cellParameters.beta = parseInt($("#beta").val());
       this.cellParameters.gamma = parseInt($("#gamma").val());
@@ -274,12 +274,12 @@ define([
     _this.rotAxis = axis;
      
   };
-  Motifeditor.prototype.setPadlock = function(arg){ 
-    this.padlock = arg.padlock ;
+  Motifeditor.prototype.setUIPadlock = function(arg){  
 
-    var action = (arg.padlock) ? 'disable' : 'enable' ;
-    if(arg.padlock){ 
-
+    var action = (arg) ? 'disable' : 'enable' ;
+     
+    if(arg){ 
+       
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -294,7 +294,7 @@ define([
       this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
       this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
     }
-    else{
+    else{ 
       this.menu.setSliderMin('Aa', 0);
       this.menu.setSliderMin('Ab', 0);
       this.menu.setSliderMin('Ac', 0);
@@ -312,13 +312,13 @@ define([
     this.menu.setOnOffSlider('cellBeta', action);
     this.menu.setOnOffSlider('cellGamma', action);
   
-    $("#Aa").prop("disabled",arg.padlock);
-    $("#Ab").prop("disabled",arg.padlock);
-    $("#Ac").prop("disabled",arg.padlock);
+    $("#Aa").prop("disabled",arg);
+    $("#Ab").prop("disabled",arg);
+    $("#Ac").prop("disabled",arg);
 
-    $("#cellAlpha").prop("disabled",arg.padlock);
-    $("#cellBeta").prop("disabled",arg.padlock);
-    $("#cellGamma").prop("disabled",arg.padlock);
+    $("#cellAlpha").prop("disabled",arg);
+    $("#cellBeta").prop("disabled",arg);
+    $("#cellGamma").prop("disabled",arg);
   };
   Motifeditor.prototype.setAtomsPosition = function(param){ 
     var _this = this;  
@@ -1132,7 +1132,7 @@ define([
   };
   Motifeditor.prototype.getDimensions = function (){ 
     var r = {}; 
-    if(!this.editorState.fixed){  
+    if(this.padlock){  
        
       r = {
         'x' : this.cellParameters.scaleX, 
@@ -1650,7 +1650,7 @@ define([
     if(_this.isEmpty) return; 
     var dimensions;
 
-    if( _this.editorState.fixed || manual!=undefined){  
+    if( (!this.padlock) || manual!=undefined){  
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else{ 
@@ -1895,7 +1895,7 @@ define([
 
     //$("select option[value='"+this.+"']").attr("selected","selected"); // reset the lattice type
 
-    if( _this.editorState.fixed && _.isUndefined(restore)){
+    if( (!this.padlock) && _.isUndefined(restore)){
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else if(_.isUndefined(restore)){ 
@@ -3324,9 +3324,12 @@ define([
 
     return r.getRadius() ;
   };
-  Motifeditor.prototype.fixedLengthMode = function(arg, restore){
-    var _this = this, i=0;   
-    if(arg.fixedLength === true) {
+  Motifeditor.prototype.padlockMode = function(arg, restore){
+    var _this = this, i=0;  
+    this.padlock = arg.padlock;
+    this.setUIPadlock(arg.padlock);
+
+    if(arg.padlock === false) {
       _this.globalTangency = false ;  
       $('#tangency').prop('checked', false);
       $('#tangency').prop('disabled', true);
@@ -3343,7 +3346,7 @@ define([
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
     }
 
-    this.editorState.fixed = arg.fixedLength;
+    this.editorState.fixed = arg.padlock; // keep .fixed var for future uses
 
     if(_this.latticeName === 'hexagonal'){
       $('#scaleX').val(arg.x);
@@ -3587,7 +3590,7 @@ define([
   Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate){ 
     var _this = this; 
 
-    var dimensions = ((this.editorState.fixed || this.manualAabc || this.manualAlphBtGmm) && (!this.padlock)) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
+    var dimensions = (((!this.padlock) || this.manualAabc || this.manualAlphBtGmm) ) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
 
     _this.cellParameters.scaleX = dimensions.xDim;
     _this.cellParameters.scaleY = dimensions.yDim;

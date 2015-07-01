@@ -24,34 +24,49 @@ define([
   KeyboardKeys.prototype.handleKeys = function(){
 
     if(this.dollmode){ 
-      var delta = clock.getDelta();  
-
+      var delta = clock.getDelta(), helperVec;  
+      var camPos = this.orbitCrystal.camera.position ;
+      var cubePos = this.crystalScene.movingCube.position;
       var rotationDistance = 0.5 * delta;
-      var moveDistance = 7 * delta ;
+      var moveDistance = 10 * delta ;
+
+      var camToCubeVec = (cubePos.clone()).sub(camPos) ;
+
+      camToCubeVec.setLength(camToCubeVec.length() + moveDistance);
+     
 
       if ( this.keyboard.pressed("W") ){ 
-        this.orbitCrystal.camera.position.z -= moveDistance ;
-        this.crystalScene.movingCube.position.z -= moveDistance ; 
+        camPos.add(camToCubeVec);
+        cubePos.add(camToCubeVec);    
       } 
       if ( this.keyboard.pressed("A") ){
-        this.orbitCrystal.camera.position.x -= moveDistance ;
-        this.crystalScene.movingCube.position.x -= moveDistance ; 
+        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
+        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 2 ); 
+        helperVec.setLength(camToCubeVec.length());
+         
+        camPos.add(helperVec);
+        cubePos.add(helperVec);
       }
       if ( this.keyboard.pressed("S") ){
-        this.orbitCrystal.camera.position.z += moveDistance ;
-        this.crystalScene.movingCube.position.z += moveDistance ; 
+        camToCubeVec.negate();
+        camPos.add(camToCubeVec);
+        cubePos.add(camToCubeVec); 
       }
       if ( this.keyboard.pressed("D") ){
-        this.orbitCrystal.camera.position.x += moveDistance ;
-        this.crystalScene.movingCube.position.x += moveDistance ; 
+        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
+        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / -2 ); 
+        helperVec.setLength(camToCubeVec.length());
+         
+        camPos.add(helperVec);
+        cubePos.add(helperVec); 
       }
       if ( this.keyboard.pressed("shift") ){
-        this.orbitCrystal.camera.position.y -= moveDistance ;
-        this.crystalScene.movingCube.position.y -= moveDistance ; 
+        camPos.y -= moveDistance ;
+        cubePos.y -= moveDistance ; 
       }
       if ( this.keyboard.pressed("space") ){
-        this.orbitCrystal.camera.position.y += moveDistance ;
-        this.crystalScene.movingCube.position.y += moveDistance ; 
+        camPos.y += moveDistance ;
+        cubePos.y += moveDistance ; 
       }
 
       if ( this.keyboard.pressed("up") ){
@@ -67,7 +82,7 @@ define([
         this.orbitCrystal.control.rotateLeft(  rotationDistance);  
       }
   
-      this.orbitCrystal.control.target =  this.crystalScene.movingCube.position.clone();  
+      this.orbitCrystal.control.target =  cubePos;  
       this.orbitCrystal.control.rotateSpeed =  0.2;  
     } 
  

@@ -180,7 +180,7 @@ define([
   var $deleteAtom = jQuery('#deleteAtom');
   var $cancel = jQuery('#cancel');
 
-  var $fixedLength = jQuery('#fixedLength');
+  var $padlock = jQuery('#padlock');
   var $distortion = jQuery('#distortion');
   var $syncCameras = jQuery('#syncCameras');
 
@@ -541,9 +541,9 @@ define([
       argument["manualSetCellAngles"]= ($('#manualSetCellAngles').is(':checked')) ? true : false ;
       PubSub.publish(events.MANUAL_SET_ANGLES, argument);           
     });
-    $('#fixedLength').change(function() {  
+    $('#padlock').change(function() {  
       var argument = {};
-      argument["fixedLength"]= ($('#fixedLength').is(':checked')) ? true : false ;
+      argument["padlock"]= ($('#padlock').is(':checked')) ? true : false ;
       _.each(fixedDimensions, function($parameter, k) {
         argument[k] = $parameter.val();
       })
@@ -897,10 +897,7 @@ define([
   };
   Menu.prototype.setAnaglyph = function(callback) { 
     PubSub.subscribe(events.ANAGLYPH_EFFECT, callback);
-  };
-  Menu.prototype.setPadlock = function(callback) { 
-    PubSub.subscribe(events.SET_PADLOCK, callback);
-  };
+  }; 
   Menu.prototype.onFogParameterChange = function(callback) { 
     PubSub.subscribe(events.FOG_PARAMETER_CHANGE, callback);
   };

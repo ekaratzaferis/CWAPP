@@ -186,10 +186,7 @@ require([
     crystalRenderer.setAnaglyph(arg);
     motifRenderer.setAnaglyph(arg);
     unitCellRenderer.setAnaglyph(arg);
-  });
-  menu.setPadlock(function(message, arg) { 
-    motifEditor.setPadlock(arg); 
-  });
+  }); 
   menu.onSoundsSet(function(message, arg) { 
     soundMachine.switcher(arg.sounds); 
   });
@@ -396,8 +393,8 @@ require([
   menu.setAnglesManually(function(message, param) { 
     motifEditor.setAnglesManually(param);
   });
-  menu.onFixedLengthChange(function(message, param) { 
-    motifEditor.fixedLengthMode(param); 
+  menu.onFixedLengthChange(function(message, param) {  
+    motifEditor.padlockMode(param); 
   }); 
   menu.onCameraSyncChange(function(message, param) { 
     var cellCamera = unitCellRenderer.getMainCamera();
