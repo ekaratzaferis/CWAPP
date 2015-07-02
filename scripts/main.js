@@ -193,6 +193,9 @@ require([
   menu.onRadiusToggle(function(message, arg) { 
     lattice.toggleRadius(arg); 
   });
+  menu.onAtomPosModeChange(function(message, arg) { 
+    motifEditor.atomPosMode(arg); 
+  });
   menu.onLightsSet(function(message, arg) { 
      
     if(arg.lights){

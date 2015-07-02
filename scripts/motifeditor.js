@@ -32,7 +32,7 @@ define([
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
     this.viewState = 'Classic';
-    this.editorState = {state : "initial", fixed: false } ;
+    this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute' } ;
     this.atomsData ;
     this.isEmpty = true ;
     this.latticeName = 'none';
@@ -274,6 +274,68 @@ define([
     _this.rotAxis = axis;
      
   };
+  Motifeditor.prototype.atomPosMode = function(arg){   
+    if( _.isUndefined(arg.atomPositioning)){
+      return;
+    }
+    var x = $('#fixedX').val() ;
+    var y = $('#fixedY').val() ;
+    var z = $('#fixedZ').val() ;
+
+    this.editorState.atomPosMode = arg.atomPositioning ;
+    var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
+ 
+    this.padlockMode({padlock : bool, x:x, y:y, z:z}); 
+    $('#padlock').prop('checked', bool); 
+    $('#padlock').prop('disabled', (!bool)); 
+
+    if(this.editorState.atomPosMode === 'relative'){ 
+      this.menu.setSliderMin('atomPosX', 0);
+      this.menu.setSliderMax('atomPosX', 1);
+      this.menu.setSliderValue('atomPosX', 0);
+
+      this.menu.setSliderMin('atomPosY', 0);
+      this.menu.setSliderMax('atomPosY', 1);
+      this.menu.setSliderValue('atomPosY', 0);
+
+      this.menu.setSliderMin('atomPosZ', 0);
+      this.menu.setSliderMax('atomPosZ', 1);
+      this.menu.setSliderValue('atomPosZ', 0);
+
+    }
+    else if(this.editorState.atomPosMode === 'absolute'){
+      this.menu.setSliderMin('atomPosX', -20.0000000000);
+      this.menu.setSliderMax('atomPosX', 20.0000000000);
+      this.menu.setSliderValue('atomPosX', 0);
+
+      this.menu.setSliderMin('atomPosY', -20.0000000000);
+      this.menu.setSliderMax('atomPosY', 20.0000000000);
+      this.menu.setSliderValue('atomPosY', 0);
+
+      this.menu.setSliderMin('atomPosZ', -20.0000000000);
+      this.menu.setSliderMax('atomPosZ', 20.0000000000);
+      this.menu.setSliderValue('atomPosZ', 0);
+
+      this.removeFromUnitCell(this.newSphere.getID());
+      this.newSphere.destroy();
+      if(!_.isUndefined( this.motifsAtoms[0])) {
+        this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
+        this.newSphere =  undefined;  
+        this.configureCellPoints();
+      }
+      else{
+        this.newSphere = undefined ;
+        this.lastSphereAdded = undefined ;
+        this.isEmpty = true ;  
+      }
+      this.dragMode = false;
+      this.setDimsManually( { 'manualSetCellDims' : false });
+      this.setAnglesManually( { 'manualSetCellAngles' : false });
+      PubSub.publish(events.EDITOR_STATE,"initial");
+    }
+    
+ 
+  };
   Motifeditor.prototype.setUIPadlock = function(arg){  
 
     var action = (arg) ? 'disable' : 'enable' ;
@@ -324,19 +386,36 @@ define([
     var _this = this;  
     var oldX,oldY,oldZ;
     var stillColliding = true, doNotOverlap = _this.globalTangency ;
-     
+    var xFactor = 1;
+    var yFactor = 1;
+    var zFactor = 1;
+
+    if(this.editorState.atomPosMode === 'relative'){  
+      xFactor = parseFloat($("#fixedX").val()) ;
+      yFactor = parseFloat($("#fixedY").val()) ;
+      zFactor = parseFloat($("#fixedZ").val()) ;
+ 
+    }
+
     var sliderXVal, sliderYVal, sliderZVal ;
 
     if(param.trigger === 'slider'){
-      sliderXVal = parseFloat($('#atomPosXSlider').slider( "value" ) ); 
-      sliderYVal = parseFloat($('#atomPosYSlider').slider( "value" ) ); 
-      sliderZVal = parseFloat($('#atomPosZSlider').slider( "value" ) ); 
+      sliderXVal = xFactor * parseFloat($('#atomPosXSlider').slider( "value" ) ); 
+      sliderYVal = yFactor * parseFloat($('#atomPosYSlider').slider( "value" ) ); 
+      sliderZVal = zFactor * parseFloat($('#atomPosZSlider').slider( "value" ) ); 
     }
     else{
-      sliderXVal = parseFloat($('#atomPosX').val() ); 
-      sliderYVal = parseFloat($('#atomPosY').val() );
-      sliderZVal = parseFloat($('#atomPosZ').val() );
-    } 
+      sliderXVal = xFactor * parseFloat($('#atomPosX').val() ); 
+      sliderYVal = yFactor * parseFloat($('#atomPosY').val() );
+      sliderZVal = zFactor * parseFloat($('#atomPosZ').val() );
+    }  
+    if(this.editorState.atomPosMode === 'relative'){ 
+      var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
+      _this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
+      _this.translateCellAtoms("x", vecHelper.x ,_this.newSphere.getID());
+      _this.translateCellAtoms("y", vecHelper.y ,_this.newSphere.getID());
+      _this.translateCellAtoms("z", vecHelper.z ,_this.newSphere.getID());
+    }
 
     if(!_.isUndefined(param.atomPosX)){ 
       if(_this.mutex){ 
@@ -446,7 +525,7 @@ define([
         _this.mutex = true; 
 
       }
-    }   
+    }  
 
     _this.configureCellPoints();
 
@@ -3331,6 +3410,7 @@ define([
 
     if(arg.padlock === false) {
       _this.globalTangency = false ;  
+
       $('#tangency').prop('checked', false);
       $('#tangency').prop('disabled', true);
         
@@ -3340,6 +3420,7 @@ define([
     }
     else { 
       $('#tangency').prop('disabled', false);
+      $('#tangency').prop('checked', true);
       _this.globalTangency = true ;
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;

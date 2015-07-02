@@ -54,7 +54,8 @@ define([
     SET_SOUNDS: 'menu.set_sounds',
     SET_LIGHTS: 'menu.set_lights',
     SET_GEAR_BAR: 'menu.set_gear_bar',
-    CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius'
+    CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
+    CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode'
   };
 
   // lattice parameters
@@ -669,7 +670,13 @@ define([
     this.setSlider("reduceRadius",10,1,10.2,0.2);
     $reduceRadius.on('change', function() {
       var arg = jQuery(this).val()  ; 
-      return PubSub.publish(events.CHANGE_CRYSTAL_ATOM_RADIUS, arg);
+      PubSub.publish(events.CHANGE_CRYSTAL_ATOM_RADIUS, arg);
+    });
+    $('input[name=atomPositioning]').on('change', function() {
+       var arg = {};
+       arg['atomPositioning'] = $('input[name=atomPositioning]:checked' ).val(); 
+       PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, arg);
+
     });
 
     this.setVerticalSlider('#gearBarSlider', 1, 1, 5, 1);
@@ -716,6 +723,12 @@ define([
     var name = '#'+name+'Slider'
     require([ "jquery-ui" ], function( slider ) {  
       $(name).slider( "option", "min", val );
+    });
+  };
+  Menu.prototype.setSliderMax = function(name, val) {
+    var name = '#'+name+'Slider'
+    require([ "jquery-ui" ], function( slider ) {  
+      $(name).slider( "option", "max", val );
     });
   };
   Menu.prototype.setSliderValue = function(name,value) {
@@ -915,6 +928,9 @@ define([
   };
   Menu.prototype.onRadiusToggle = function(callback) { 
     PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);
+  };
+  Menu.prototype.onAtomPosModeChange = function(callback) { 
+    PubSub.subscribe(events.CHANGE_ATOM_POSITIONING_MODE, callback);
   };
   Menu.prototype.onGearBarSelection = function(callback) { 
     PubSub.subscribe(events.SET_GEAR_BAR, callback);
