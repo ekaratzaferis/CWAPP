@@ -1102,7 +1102,7 @@ define([
 
       this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
       this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
-      this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
+      this.menu.setSliderValue("Ac", this.cellParameters.scaleY); 
       this.checkForLengthFix(); // calculate the least acceptable length for the cell
     }
     else{
@@ -1234,6 +1234,11 @@ define([
     } 
 
     return r;
+  };
+  Motifeditor.prototype.updateFixedParams = function (params) {
+    $("#fixedX").val(params.x);
+    $("#fixedY").val(params.y);
+    $("#fixedZ").val(params.z); 
   };
   Motifeditor.prototype.updateFixedDimensions = function (latticeParams) {
 
@@ -1958,6 +1963,7 @@ define([
         });
       });
     } 
+ 
   };
   Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id, opacity,wireframe,restore){  
     var _this = this;  
@@ -2177,8 +2183,9 @@ define([
  
     }
     _this.reconstructCellPoints(restore);  
+ 
      
-  };
+  }; 
   Motifeditor.prototype.reconstructCellPoints = function(restore){
     var _this = this; 
     if(restore) return ;
@@ -2490,28 +2497,23 @@ define([
      
     while(false){
       offsets.z -= movingOffset;
-      //console.log('step to reduce '+offsets.z);
+
       _.times(6 , function(_r) {
           
         var v = new THREE.Vector3( a + offsets.z, 0, 0 );
-        console.log(v);
+       
         var axis = new THREE.Vector3( 0, 1, 0 );
         var angle = (Math.PI / 3) * _r ; 
         v.applyAxisAngle( axis, angle );
 
         for (var i = motifHelper.length - 1; i >= 0; i--) {
           motifHelper[i].object3d.position.x += v.x ;
-          motifHelper[i].object3d.position.z += v.z ;
-          if( _r === 1 ) {
-            console.log('=========');
-            console.log(motifHelper[i].object3d.position);
-            console.log('=========');
-          }
+          motifHelper[i].object3d.position.z += v.z ; 
         } 
 
         var ofst = _this.fakeCollision("x", motifHelper, new THREE.Vector3(v.x, 0 , v.z));   
         if( ofst > theZOffset) theZOffset = ofst ;
-        //console.log('theZOffset '+theZOffset);
+
       });
           
       if (offsets.z < -5) finished = true ; 
@@ -2896,10 +2898,7 @@ define([
         var calculatedDistance = parseFloat( (_this.motifsAtoms[j].getRadius() + motifHelper[i].getRadius()).toFixed(parseInt(10)) ) ;  
         
         if (realDistance < calculatedDistance){   
-          if(realDistance ==0){
-            console.log( a);
-            console.log( b);
-          } 
+           
           var val; 
           var bortherPos = new THREE.Vector3(motifCenter.x + b.x, motifCenter.y + b.y, motifCenter.z + b.z ); 
    
@@ -3407,7 +3406,7 @@ define([
     var _this = this, i=0;  
     this.padlock = arg.padlock;
     this.setUIPadlock(arg.padlock);
-
+     
     if(arg.padlock === false) {
       _this.globalTangency = false ;  
 
@@ -3417,6 +3416,10 @@ define([
       this.cellParameters.alpha = parseInt($("#alpha").val());
       this.cellParameters.beta  = parseInt($("#beta").val());
       this.cellParameters.gamma = parseInt($("#gamma").val());
+ 
+      $('#fixedX').val(this.cellParameters.scaleX) ;
+      $('#fixedY').val(this.cellParameters.scaleY) ;
+      $('#fixedZ').val(this.cellParameters.scaleZ) ;
     }
     else { 
       $('#tangency').prop('disabled', false);
@@ -3429,20 +3432,15 @@ define([
 
     this.editorState.fixed = arg.padlock; // keep .fixed var for future uses
 
-    if(_this.latticeName === 'hexagonal'){
-      $('#scaleX').val(arg.x);
-      $('#scaleY').val(arg.y);
-      $('#scaleZ').val(arg.x);
-    }
-    else{
-      $('#scaleX').val(arg.x);
-      $('#scaleY').val(arg.y);
-      $('#scaleZ').val(arg.z); 
-    }
+    $('#scaleX').val(this.cellParameters.scaleX);
+    $('#scaleY').val(this.cellParameters.scaleY);
 
-    this.cellParameters.scaleX = parseFloat(arg.x) ;
-    this.cellParameters.scaleY = parseFloat(arg.y) ;
-    this.cellParameters.scaleZ = parseFloat(arg.z) ;
+    if(_this.latticeName === 'hexagonal'){ 
+      $('#scaleZ').val(this.cellParameters.scaleX);
+    }
+    else{ 
+      $('#scaleZ').val(this.cellParameters.scaleZ); 
+    } 
 
     if(_.isUndefined(restore)) this.configureCellPoints();
      
@@ -3604,8 +3602,7 @@ define([
         else if( this.latticeType === 'hexagonal'){  
           if(_this.motifsAtoms.length >= 1){ 
            
-            dims.xDim = dims.zDim = this.findHexTangentLengths(dims); 
-            console.log(dims.zDim);
+            dims.xDim = dims.zDim = this.findHexTangentLengths(dims);  
           }
         }
       break;

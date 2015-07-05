@@ -29,12 +29,12 @@ require([
   'pubsub', 'underscore', 'three',
   'explorer', 'renderer', 'orbit',
   'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState'
+  'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen'
 ], function(
   PubSub, _, THREE,
   Explorer, Renderer, Orbit,
   Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState
+  CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -132,6 +132,7 @@ require([
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollMachine);
 
+  var fullScreen = new FullScreen();
 
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
@@ -342,6 +343,7 @@ require([
       crystalScreenEvents.state = 'default';
     }
   });
+
   menu.atomSelection(function(message , arg) {
     motifEditor.selectElem(arg);
   }); 
@@ -398,7 +400,56 @@ require([
   });
   menu.onFixedLengthChange(function(message, param) {  
     motifEditor.padlockMode(param); 
-  }); 
+  });  
+  menu.fullScreenApp(function(message, param) {  
+    fullScreen.fs();
+  });  
+  menu.updateNotes(function(message, arg) {  
+      
+    var length = arg.text.length;
+    var divWidth ;
+    if(length < 50 ){
+      divWidth = 100 ;
+    }
+    else if ( length < 100 ){
+      divWidth = 150 ;
+    }
+    else if ( length < 200 ){
+      divWidth = 200 ;
+    }
+    else if ( length < 300 ){
+      divWidth = 250 ;
+    }
+    else{
+      divWidth = 300 ;
+    }
+    
+    var p = $( ".noteTransparent:first" ) ;
+    var position = p.position();
+   
+    $('.noteTransparent').remove();
+      
+    $('<div>', {  
+      style: 'width:'+divWidth+'px; position:fixed; bottom :  20px; left :20px;',
+    })
+    .addClass( "noteTransparent" ) 
+    .draggable()
+    .append( $('<span>', { 
+      id:'close',
+      text:'X',
+      style: 'margin-left:15px',
+    }).click(function(e) {  
+        $(this).parent().remove();
+      })
+    )
+    .append( $('<div>', { 
+      style: 'width:'+divWidth+'px',
+      text: arg.text
+    })) 
+    .appendTo(document.body);
+
+  });
+
   menu.onCameraSyncChange(function(message, param) { 
     var cellCamera = unitCellRenderer.getMainCamera();
     var crystalCamera = crystalRenderer.getMainCamera();
@@ -536,6 +587,8 @@ require([
       restore.configureState(res.data);
     }); 
   } 
+
+  $("#noteTransparent").draggable();
 
 });
  

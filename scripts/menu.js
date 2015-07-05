@@ -55,7 +55,9 @@ define([
     SET_LIGHTS: 'menu.set_lights',
     SET_GEAR_BAR: 'menu.set_gear_bar',
     CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
-    CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode'
+    CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode',
+    FULL_SCREEN_APP: 'menu.full_screen_app', 
+    UPDATE_NOTES: 'menu.update_notes'
   };
 
   // lattice parameters
@@ -525,6 +527,10 @@ define([
         PubSub.publish(events.RENDERER_COLOR_CHANGE, argument);
       });
     });
+    
+    $('#fsApp').click(function(){ 
+      PubSub.publish(events.FULL_SCREEN_APP, argument);
+    }); 
 
     this.setSlider("fogDensity",1,0,50,1);
     $('#tangency').change(function() {  
@@ -625,7 +631,18 @@ define([
       resizable: true, 
       width: 400,
       height: 400,
-      hide:true  
+      hide:true,
+      buttons: [
+        {
+          text: "Submit",
+          click: function() {
+            argument = {}; 
+            argument["text"]= $('#mynotes').val();
+            PubSub.publish(events.UPDATE_NOTES, argument);
+            $( this ).dialog( "close" );
+          }
+        }
+      ]
     });  
     $( "#notepad" ).dialog( "close" ); 
     $( "#notepad" ).on( "dialogresize", function( event, ui ) { 
@@ -634,7 +651,7 @@ define([
     $notes.on('click', function() {
       $( "#notepad" ).dialog( "open" );   
     });
-    $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) })
+    $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
   
     $("#crystalCamTarget").click(function(){
       argument = {}; 
@@ -934,6 +951,12 @@ define([
   };
   Menu.prototype.onGearBarSelection = function(callback) { 
     PubSub.subscribe(events.SET_GEAR_BAR, callback);
+  }; 
+  Menu.prototype.fullScreenApp = function(callback) { 
+    PubSub.subscribe(events.FULL_SCREEN_APP, callback);
+  };
+  Menu.prototype.updateNotes = function(callback) { 
+    PubSub.subscribe(events.UPDATE_NOTES, callback);
   };
   Menu.prototype.setLatticeRestrictions = function(restrictions) {
     var $body = jQuery('body');

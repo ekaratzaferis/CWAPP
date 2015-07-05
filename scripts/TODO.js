@@ -37,17 +37,58 @@ TODO list
  
  
 
+VISUALIZATION TODOs
+
+    2- View modes
+    10- Stereoscopic Effect
+    4- panoramic or ortogonal view (it s called  enable distortion  today)
+    RENDERIZATION
+    1- Texture
+    14- *Wireframe
+    9- Atom radius
+    EVIRONMENT OPTIONS
+    14- Fog on/off - color and density
+    3- x, y, z and a, b, c axes (the same we have on the toggle bar)
+    7- lights on/off
+    12- Sounds on/off
+    5- Full screen option
+    TOOLS
+    6- text notes (button and tranparent box)
+    SCREEN CUSTOMIZATION
+    8- background s color change (all of them)
+    EXTERNAL GADGETS
+    13- Leap Motion
+    11- Rift Oculus
+
+
+TODO 2
+
+    1- change the URL project save/share to be cw.gl/### 
+    2- On the Motif Editor( ME), update the lenght and angles sliders in real time
+    3- On the ME - If the user clicks on fixed length, don t change it to be (1,1,1), let it on hte actual length
+    4-  on the Miller directions, add a line radius editor
+    5- Add a option to change the background color
+    6- Gearbox (tour)
+    7- 3D sound (sonar) on the crystal centar
+    8- Crystal doll
+    9- add the length values on the a, b and c axis
+    10- add fog
+    11- make a change on the unit cell visualization (to consider the neighbourhood atoms) - I ll explain when you choose to do this
+    12- add a lattice padlock
+    13- leap motion and rift oculus
+
+
 List with Ideas
 
-1. Syncing with user dropbox to store a project there and reopen it later
-2. Public library of CW Projects - search by keywords, most popular etc
-3. Miller object use sliders for indexes
-4. all screens resizable 
-5. parameters for lighting (maybe this is too much)
-   
-8- Crystal doll  
-11- make a change on the unit cell visualization (to consider the neighbourhood atoms) 
-13- leap motion and rift oculus
+    1. Syncing with user dropbox to store a project there and reopen it later
+    2. Public library of CW Projects - search by keywords, most popular etc
+    3. Miller object use sliders for indexes
+    4. all screens resizable 
+    5. parameters for lighting (maybe this is too much)
+       
+    8- Crystal doll  
+    11- make a change on the unit cell visualization (to consider the neighbourhood atoms) 
+    13- leap motion and rift oculus
  
 
  
