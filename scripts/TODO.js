@@ -4,19 +4,22 @@ TODO list
 
     1.  xyz labels not moving when zoom in/out  
     2.  hold all data of an atom to be updatable  
-    3.  grid has duplicates
-    4.  merge geometries
+    3.  grid has duplicates 
+
     5.  hex grid (at least) in hex does not update (radius,color) when parameter changes 
-    6. hex faces optimization
-    7. hex grid and faces are not deleted when other lattice is selected 
-    8. change the reference in lattice hex to simpler _x+_y+_z+_r
-    9. change the recreate of hex and use transform function as others
+
+    6.  hex faces optimization
+    7.  hex grid and faces are not deleted when other lattice is selected 
+
+    8.  change the reference in lattice hex to simpler _x+_y+_z+_r
+    9.  change the recreate of hex and use transform function as others
     10. recreate motif fro hexagonal also needs optimization 
     11. adjust hud arrows, cube according to width length (add a constant value + adjustable par)
     12. between changing view mode it must go to classic first (except for gradeLimited)  
     13. sync cams and enable distortion do not work together
     14. distortion doesnt work perfect
-    15. when zoomed in much, the motif cameras are not restored right 
+    
+    
     16. miller objects recreate function can be optimized
     17. delete the restore function object after scene has restored to prevent memory usage 
     18. sync cameras when autoratating do not work great 
@@ -91,4 +94,8 @@ List with Ideas
     13- leap motion and rift oculus
  
 
- 
+ New TODO
+
+ 1. Fix Menu Position when Full Screen ( do this after new UI menu is applied)
+
+

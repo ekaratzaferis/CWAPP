@@ -106,7 +106,7 @@ define([
     this.motifEditor.viewState_("Classic");
  
     this.motifEditor.globalTangency = cell.tangency ;
-    this.motifEditor.fixedLengthMode({ 'fixedLength': cell.fixedLength,  'x': cell.dimensions.x , 'y' : cell.dimensions.y   ,'z': cell.dimensions.z},  true );
+    //this.motifEditor.fixedLengthMode({ 'fixedLength': cell.fixedLength,  'x': cell.dimensions.x , 'y' : cell.dimensions.y   ,'z': cell.dimensions.z},  true );
 
     $("input[name='fixedLength']").prop('checked', cell.fixedLength);
  

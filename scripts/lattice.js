@@ -158,9 +158,9 @@ define([
   Lattice.prototype.destroyGrids = function() {
     var _this = this; 
     _.each(this.grids, function(grid, reference) {
-      grid.grid.destroy();
-      delete _this.grids[reference];
+      grid.grid.destroy(); 
     });
+    this.grids.splice(0);
   }; 
   Lattice.prototype.updateLatticeUI = function( params){
 
@@ -364,7 +364,13 @@ define([
 
     var lattice = this.lattice; 
     this.destroyPoints();
-     
+    this.destroyGrids();
+    _.each(this.faces, function(face, reference) {
+      face.destroy();
+    });
+    this.faces.splice(0);
+    this.viewBox.splice(0);
+
     if (_.isEmpty(lattice)) return; 
 
     var parameters = this.parameters;
@@ -407,13 +413,8 @@ define([
         }); // repeat Y
       }); // repeat Z
     }
-    else{ 
-      _.each(_this.grids, function(grid) {
-        grid.grid.destroy(); 
-      });  
-      while(_this.grids.length > 0) {
-          _this.grids.pop();
-      }; 
+    else{  
+
       _.each(_this.hexGrids, function(g, reference) {
         _this.hexGrids[reference] = false;
       });  
@@ -465,7 +466,9 @@ define([
           });
         });
       }); 
-    };   
+    };  
+
+
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -586,6 +589,12 @@ define([
     if (_.isEmpty(latticeName)) {
       this.lattice = null;
       this.destroyPoints();
+      this.destroyGrids();
+      _.each(this.faces, function(face, reference) {
+        face.destroy();
+      });
+      this.faces.splice(0);
+      this.viewBox.splice(0);
       PubSub.publish(events.LOAD, null);
       return;
     }
@@ -1100,9 +1109,10 @@ define([
   };
 
   Lattice.prototype.update = function() {  
+
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations(); 
-      this.updatePoints();
+      this.updatePoints(); 
       this.forwardTransformations();
     }
     else{
@@ -1239,6 +1249,7 @@ define([
 
     }   
     _this.updateLatticeTypeRL();
+     
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;

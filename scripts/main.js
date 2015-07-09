@@ -81,10 +81,8 @@ require([
   crystalRenderer.startAnimation();  
   
   var canvasSnapshot = new Snapshot(crystalRenderer);
-  // Orbit Controls
-  //var orbitHud = new Orbit(crystalRenderer.hudCamera, '#crystalRenderer', "perspective", false, 'crystal', null );
 
-  var orbitCrystal    = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
+  var orbitCrystal   = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
@@ -123,6 +121,7 @@ require([
   var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
+  crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
 
   // CW Doll
   var dollScene = DollExplorer.getInstance(); 
@@ -417,11 +416,17 @@ require([
     else if ( length < 200 ){
       divWidth = 200 ;
     }
-    else if ( length < 300 ){
+    else if ( length < 400 ){
       divWidth = 250 ;
     }
+    else if ( length < 700 ){
+      divWidth = 350 ;
+    }
+    else if ( length < 1000 ){
+      divWidth = 450 ;
+    }
     else{
-      divWidth = 300 ;
+      divWidth = 700 ;
     }
     
     var p = $( ".noteTransparent:first" ) ;
@@ -430,7 +435,7 @@ require([
     $('.noteTransparent').remove();
       
     $('<div>', {  
-      style: 'width:'+divWidth+'px; position:fixed; bottom :  20px; left :20px;',
+      style: 'width:'+(divWidth+5)+'px; position:fixed; bottom : 20px; left :20px;',
     })
     .addClass( "noteTransparent" ) 
     .draggable()

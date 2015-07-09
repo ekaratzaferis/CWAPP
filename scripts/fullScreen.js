@@ -17,7 +17,7 @@ define([
       var dom, enter, exit, fullscreen
 
       // support for entering fullscreen
-      dom = document.createElement('img')
+      dom = document.createElement('img');
       if ('requestFullscreen' in dom) {
           enter = 'requestFullscreen' // W3C proposal
       }
@@ -77,21 +77,21 @@ define([
  
   };
 
-  FullScreen.prototype.fs = function(div){
+  FullScreen.prototype.fs = function(element){
 
-    var div = (div) ? document.getElementById(div) : document.body;
+    var element = (element) ? document.getElementById(element) : document.body;
     
     if (this.fsapi.enter && this.fsapi.exit && this.fsapi.fullscreen) {
       if (document[this.fsapi.fullscreen]) {
         document[this.fsapi.exit]();
         setTimeout(function () {
-            div.className = ''
+            element.className = ''
         }, 0);
       }
       else {
-        div[this.fsapi.enter]();
+        element[this.fsapi.enter]();
         setTimeout(function () {
-            div.className = 'fullscreen'
+            element.className = 'fullscreen'
         }, 0);
       }
     }

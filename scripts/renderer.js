@@ -72,6 +72,7 @@ define([
     camera.lookAt(lookat);
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);
+    
   };
   Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){  
     var viewSize = 50 ;
@@ -225,6 +226,7 @@ define([
         }
       }
     }  
+    
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
     };
