@@ -19,7 +19,7 @@ define([
   AtomSphere
 ) {
   
-  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene,hudCube, hudArrows )  {  
+  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine )  {  
     this.menu = menu ;
     this.lattice = lattice ;
     this.motifEditor = motifEditor ;
@@ -33,6 +33,9 @@ define([
     this.crystalScene = crystalScene ;
     this.hudCube = hudCube ;
     this.hudArrows = hudArrows ;
+    this.motifRenderer = motifRenderer ;
+    this.unitCellScene = unitCellScene ;
+    this.soundMachine = soundMachine
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
@@ -40,13 +43,17 @@ define([
     var _this = this;
     $("body").css("cursor", "wait");
     var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay'); 
-      
+     
     this.cwObj = cwObj ;  
     this.configureCameras();
     this.configureAxisSelection();
     this.configureTextArea();
     this.configureGradeParams();
-    
+
+    this.configureVisualizationParams();
+    this.soundMachine.switcher(cwObj.sounds);
+    $("input[name='sounds']").prop('checked', cwObj.sounds );
+
     // important to destroy now the crystal atoms
     _.each(_this.lattice.actualAtoms, function(atom,k) {
       atom.destroy();   
@@ -78,6 +85,60 @@ define([
     overlay.remove();
     $("body").css("cursor", "default"); 
   }; 
+  RestoreCWstate.prototype.configureVisualizationParams = function() {
+    var visualizationParams = this.cwObj.visualizationParams ;
+
+    this.crystalScene.fogActive = visualizationParams.fog ;
+      
+    this.crystalScene.object3d.fog.density = parseInt(visualizationParams.fogDensity)/3000;
+    this.crystalScene.object3d.fog.color.setHex( "0x"+(visualizationParams.fogColor) );  
+    $('#fogColor').val(visualizationParams.fogColor);
+    this.menu.setSliderValue("fogDensity", parseInt(visualizationParams.fogDensity) );
+    $("input[name='fog']").prop('checked', visualizationParams.fog ); 
+
+    this.crystalRenderer.backgroundColor = ('#'+visualizationParams.crystalScreenColor); 
+    $('#crystalScreenColor').val(visualizationParams.crystalScreenColor); 
+
+    this.unitCellRenderer.backgroundColor = ('#'+visualizationParams.cellScreenColor);
+    $('#cellScreenColor').val(visualizationParams.cellScreenColor); 
+
+    this.motifRenderer.viewportColors[0] = ('#'+visualizationParams.motifXScreenColor);
+    $('#motifXScreenColor').val(visualizationParams.motifXScreenColor); 
+
+    this.motifRenderer.viewportColors[1] = ('#'+visualizationParams.motifYScreenColor);
+    $('#motifYScreenColor').val(visualizationParams.motifYScreenColor); 
+
+    this.motifRenderer.viewportColors[2] = ('#'+visualizationParams.motifZScreenColor);
+    $('#motifZScreenColor').val(visualizationParams.motifZScreenColor); 
+
+    if(visualizationParams.lights){ 
+      this.crystalScene.AmbLight.color.setHex( 0x4D4D4C ); 
+      this.crystalScene.light.intensity = 1 ;
+      this.crystalScene.light.castShadow = true;  
+
+      this.unitCellScene.AmbLight.color.setHex( 0x4D4D4C ); 
+      this.unitCellScene.light.intensity = 1 ;
+      this.unitCellScene.light.castShadow = true;  
+    }
+    else{ 
+      this.crystalScene.AmbLight.color.setHex( 0xffffff ); 
+      this.crystalScene.light.intensity = 0 ;
+      this.crystalScene.light.castShadow = false;  
+
+      this.unitCellScene.AmbLight.color.setHex( 0xffffff ); 
+      this.unitCellScene.light.intensity = 0.0;
+      this.unitCellScene.light.castShadow = false;  
+
+    }
+    $("input[name='lights']").prop('checked', visualizationParams.lights );
+
+    $("input[name='anaglyph']").prop('checked', visualizationParams.anaglyph ); 
+   
+    this.crystalRenderer.setAnaglyph(visualizationParams.anaglyph);
+    this.motifRenderer.setAnaglyph(visualizationParams.anaglyph);
+    this.unitCellRenderer.setAnaglyph(visualizationParams.anaglyph);
+
+  };
   RestoreCWstate.prototype.configureMotifEditor = function() {
 
     var cell = this.cwObj.unitCell ;
@@ -85,6 +146,8 @@ define([
     var latticeParams = this.cwObj.latticeParams.lattice.defaults ;
     
     var anglesScales = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
+
+    this.motifEditor.cellParameters = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
     // empty array of motif
     for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
@@ -104,25 +167,133 @@ define([
     }
     this.motifEditor.editorState_("initial");
     this.motifEditor.viewState_("Classic");
- 
-    this.motifEditor.globalTangency = cell.tangency ;
-    //this.motifEditor.fixedLengthMode({ 'fixedLength': cell.fixedLength,  'x': cell.dimensions.x , 'y' : cell.dimensions.y   ,'z': cell.dimensions.z},  true );
+    
+    this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
 
-    $("input[name='fixedLength']").prop('checked', cell.fixedLength);
- 
-    // view mode efarmogi
-
-    this.motifEditor.leastCellLengths = cell.tangency ;
-     
+    $("input[name='padlock']").prop('checked', cell.padlock); 
+   
+    this.motifEditor.padlockMode({padlock: cell.padlock}, true ) ;
+  
     this.motifEditor.unitCellPositions ={};
 
-    for (var i = cell.positions.length - 1; i >= 0; i--) {
-      this.motifEditor.unitCellPositions[cell.positions[i].reference] = { 'position':{'x':  cell.positions[i].x, 'y': cell.positions[i].y , 'z':  cell.positions[i].z}}  ;
+    for (var i = cell.positions.length - 1; i >= 0; i--) { 
+      this.motifEditor.unitCellPositions[cell.positions[i].reference] = {"position" : new THREE.Vector3(  cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), "latticeIndex" : cell.positions[i].reference }  ;
     };
+ 
+    /*if( (this.cwObj.latticeParams.lattice.latticeSystem === 'hexagonal'  && this.cwObj.latticeParams.lattice.latticeType === 'hexagonal')){
+
+      var a = latticeParams.scaleZ ;
+      var c = latticeParams.scaleY ; 
+
+      var vertDist = a * Math.sqrt(3);
+
+      _.times(2, function(_y) {
+        _.times(1 , function(_x) {
+          _.times(1 , function(_z) { 
+            _.times(6 , function(_r) {
+              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
+                var v = new THREE.Vector3( a, 0, 0 );
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                var angle = (Math.PI / 3) * _r ; 
+                v.applyAxisAngle( axis, angle );
+
+                var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+                var y =  v.y + _y*c ;
+                var x = v.x + _x*a*1.5 ;
+                var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
+                var yC =  _y*c ;
+                var xC =  _x*a*1.5 ;
+                var position = new THREE.Vector3( x, y, z);  
+                var positionC = new THREE.Vector3( xC, yC, zC);  
+
+                var reference = 'h_'+_x+_y+_z+_r ;
+                var referenceC = 'hc_'+_x+_y+_z ;
+
+                
+                this.motifEditor.unitCellPositions[reference] = {"position" : new THREE.Vector3( position.x, position.y, position.z), "latticeIndex" : reference} ;  
+                this.motifEditor.unitCellPositions[referenceC] = {"position" : new THREE.Vector3( positionC.x, positionC.y, positionC.z), "latticeIndex" : referenceC} ;  
+                 
+              }    
+            });
+          });
+        });
+      }); 
+    }
+    else{  
+      switch(this.cwObj.latticeParams.lattice.latticeType) {
+        case "primitive":    
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                
+                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {
+                    "position" : new THREE.Vector3(cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), 
+                    "latticeIndex" : "_"+_x+_y+_z 
+                    
+                } 
+              });
+            });
+          }); 
+          break;
+        case "face":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                 
+                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                  
+              });
+            });
+          }); 
+          for (var i = 0; i <= 1; i ++) {
+            if(recreate){
+              this.motifEditor.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( dimensions.xDim *i, dimensions.yDim *0.5, dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
+              this.motifEditor.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *i, dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
+              this.motifEditor.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *0.5, dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
+            } 
+          };
+          break;
+        case "body":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                
+                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3(  dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                 
+              });
+            });
+          }); 
+          
+          this.motifEditor.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/2) * dimensions.xDim , (1/2) * dimensions.yDim , (1/2) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
+           
+          break;
+        case "base":   
+          _.times(2 , function(_x) {
+            _.times(2 , function(_y) {
+              _.times(2 , function(_z) {
+                if(recreate){
+                  this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+                }
+                else{
+                  this.motifEditor.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z) ;
+                }
+              });
+            });
+          });  
+          
+          this.motifEditor.unitCellPositions["_up"] = {"position" : new THREE.Vector3( dimensions.xDim /2 ,  dimensions.yDim , dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
+          this.motifEditor.unitCellPositions["_down"] = {"position" : new THREE.Vector3( dimensions.xDim /2, 0 ,  dimensions.zDim /2), "latticeIndex" : "_down" } ;  
+           
+          break; 
+      } 
+    }  */
 
     this.motifEditor.updateLatticeParameters(anglesScales,this.cwObj.latticeParams.lattice.latticeType, this.cwObj.latticeParams.bravaisLattice, this.cwObj.latticeParams.lattice.latticeSystem,1  );
 
-    if (  atoms.length>0) this.motifEditor.isEmpty = false;
+    if ( atoms.length>0 ) {
+      this.motifEditor.isEmpty = false;
+    }
 
     var helperMotif = [];
 
@@ -169,9 +340,11 @@ define([
        
       this.motifEditor.updateAtomList(atoms[i].id, atoms[i].radius, atoms[i].elementName,true);
        
-      if(atoms[i].id == cell.lastSphereAdded) this.motifEditor.lastSphereAdded = atom ;
+      if(atoms[i].id == cell.lastSphereAdded) {
+        this.motifEditor.lastSphereAdded = atom ;
+      }
     } 
-    
+     
     var _this = this ;
 
     this.lattice.currentMotif = helperMotif ;

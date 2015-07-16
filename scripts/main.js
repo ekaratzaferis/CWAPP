@@ -26,15 +26,10 @@ require.config({
 });
 
 require([
-  'pubsub', 'underscore', 'three',
-  'explorer', 'renderer', 'orbit',
-  'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube',
-  'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen'
+  'pubsub', 'underscore', 'three', 'explorer', 'renderer', 'orbit', 'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube', 'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen', 'sceneResizer'
 ], function(
   PubSub, _, THREE,
-  Explorer, Renderer, Orbit,
-  Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube,
-  CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen
+  Explorer, Renderer, Orbit, Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube, CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen, SceneResizer
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -133,6 +128,13 @@ require([
 
   var fullScreen = new FullScreen();
 
+  // resizer
+  var sceneResizer = new SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer);
+
+  window.addEventListener('resize', function () {
+    sceneResizer.resize( $(window).width(), $(window).height(), crystalScreenEvents.state);
+  }, false);
+
   // lattice
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -216,9 +218,7 @@ require([
       unitCellScene.light.intensity = 0.0;
       unitCellScene.light.castShadow = false;  
 
-    }
-    //motifEditor
-    //lattice
+    } 
 
   });
   menu.onFogParameterChange(function(message, arg) { 
@@ -227,7 +227,7 @@ require([
         crystalScene.object3d.fog.color.setHex( "0x"+arg.fogColor );  
       }
       else if(!_.isUndefined(arg.fogDensity)){
-        crystalScene.object3d.fog.density = parseInt(arg.fogDensity)/2000 ;
+        crystalScene.object3d.fog.density = parseInt(arg.fogDensity)/3000 ;
       }
     }
   });
@@ -263,6 +263,9 @@ require([
   // motif
   $("#list li").click(function(e) { 
     
+    height = $(window).height() ;
+    width = $('#app-container').width(); ;
+
     // gear bar tour
     if(lattice.actualAtoms.length > 0){
       menu.setOnOffSlider('gearBar', 'enable'); 
@@ -553,7 +556,7 @@ require([
   });
   
   // to read the json file
-  var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, hudCube, hudArrows );
+  var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
   document.getElementById('localJSON').addEventListener('change', parseJSON, false);
 

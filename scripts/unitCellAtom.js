@@ -15,7 +15,7 @@ define([
 ) {
  
  
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex,opacity,wireframe) { 
+  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, wireframe) { 
      
     var _this = this; 
     this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
@@ -64,18 +64,28 @@ define([
     this.object3d.children[0].material.opacity = opacity/10  ;
     this.object3d.children[1].material.opacity = opacity/10  ;
     this.object3d.children[0].material.needsUpdate = true;
-    this.object3d.children[1].material.needsUpdate = true;
+    this.object3d.children[1].material.needsUpdate = true; 
   };
   UnitCellAtom.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
     _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10   }) ;
     _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10 }) ;
 
-    _this.materials =  [  
-      _this.colorMaterial,
-      _this.materialLetter,
-      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe, opacity:0})
-    ];
+    if(this.wireframe == true){
+      _this.materials =  [  
+        _this.colorMaterial,
+        _this.materialLetter,
+        new THREE.MeshBasicMaterial({color : "#000000", wireframe: true, opacity:0})
+      ];
+    }
+    else{
+      _this.materials =  [  
+        _this.colorMaterial,
+        _this.materialLetter,
+         new THREE.MeshPhongMaterial({transparent:true, opacity:0})
+      ]; 
+    }
+    
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
    
@@ -90,7 +100,7 @@ define([
 
   UnitCellAtom.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;
-    if(bool){ 
+    if(bool === true){ 
       this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
     }
     else{

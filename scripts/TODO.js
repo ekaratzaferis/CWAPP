@@ -1,17 +1,9 @@
  
 
-TODO list
+TODO list 
 
-    1.  xyz labels not moving when zoom in/out  
-    2.  hold all data of an atom to be updatable  
-    3.  grid has duplicates 
-
-    5.  hex grid (at least) in hex does not update (radius,color) when parameter changes 
-
-    6.  hex faces optimization
-    7.  hex grid and faces are not deleted when other lattice is selected 
-
-    8.  change the reference in lattice hex to simpler _x+_y+_z+_r
+    6.  hex faces optimization 
+ 
     9.  change the recreate of hex and use transform function as others
     10. recreate motif fro hexagonal also needs optimization 
     11. adjust hud arrows, cube according to width length (add a constant value + adjustable par)
@@ -25,8 +17,7 @@ TODO list
     18. sync cameras when autoratating do not work great 
     19. check every global array for memory leaks
     20. available atoms list for rotating in drag mode shouldnt have the NewSphere atom in. 
-    21. hexagonal is not restored well
-    22. opacity is not restored well and does not work after the first atom 
+    21. hexagonal is not restored well 
     23. collision with more than 2 atoms (to handle dragging atom inside atom by the user)  
     24. stereoscopic function doesnt work when I first go to motif editor and then enable it  
     25. when change view, if you change tab and return in MT bug    

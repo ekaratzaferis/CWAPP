@@ -29,7 +29,7 @@ define([
     this.latticeIndex = latticeIndex; 
     this.subtractedForGear = { 'object3d': undefined} ; 
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
-
+    
     var textureLoader = new THREE.TextureLoader();
     textureLoader.load(texture,
       function(tex){

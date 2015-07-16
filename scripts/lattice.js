@@ -467,8 +467,7 @@ define([
         });
       }); 
     };  
-
-
+ 
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -564,7 +563,7 @@ define([
             a.z,
             p,
             texture,
-            opacity,
+            opacity/10,
             wireframe,
             kk
           )  
@@ -605,7 +604,7 @@ define([
     require(['lattice/' + latticeName], function(lattice) {
       _this.lattice = lattice; 
       _this.latticeSystem = _this.lattice.latticeSystem ;
-      _this.latticeType = _this.lattice.latticeType ;
+      _this.latticeType = _this.lattice.latticeType ; 
       _this.update();
       PubSub.publish(events.LOAD, lattice); 
     }); 
@@ -1113,10 +1112,13 @@ define([
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations(); 
       this.updatePoints(); 
+      this.createGrid();  
+      this.createFaces(); 
       this.forwardTransformations();
     }
     else{
       this.updatePoints();
+
     } 
   };
 

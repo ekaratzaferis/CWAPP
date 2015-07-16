@@ -68,6 +68,7 @@ define([
       var prName = ( ($('#projectName').val()).length === 0) ? (createRandomName()) : ($('#projectName').val()) ; 
       var projectName = ', "projectName" : "'+prName+'"';
       var tags = this.createJsonTags();  
+      var visualizationParams = this.createJsonVisualizationParams();
 
       // thumbnail
       this.crystalRenderer.renderer.clear();
@@ -76,24 +77,28 @@ define([
       var base64thumbnail = document.getElementsByTagName("canvas")[0].toDataURL("image/png", 1.0);
        
       var thumbnail = ', "thumbnailBase64" : "'+base64thumbnail+'" ';
+
+      var sounds = ', "sounds" : '+($('#anaglyph').is(':checked'));   
        
       var end = "}" ;
 
-      var text =start+
-                latticeParams+
-                cellVisualization+
-                millerObjects+
-                motif+
-                notes+
-                unitCell+
-                cameraSettings+
-                axisSelection+
-                projectName+
-                tags+
-                thumbnail+
-                end ;
+      var text =  start+
+                  latticeParams+
+                  cellVisualization+
+                  millerObjects+
+                  motif+
+                  notes+
+                  unitCell+
+                  cameraSettings+
+                  axisSelection+
+                  projectName+
+                  tags+
+                  visualizationParams+
+                  thumbnail+
+                  sounds+
+                  end ;
 
-       console.log(text);
+     console.log(text);
 
       var obj =  JSON.parse(text) ;  
       var str =  JSON.stringify(obj)
@@ -154,28 +159,39 @@ define([
 
     return text;
   }
+  StoreProject.prototype.createJsonVisualizationParams = function() {
+    var text =[];
+    var fog = ($('#fog').is(':checked')) ? true : false ;
+    var anaglyph = ($('#anaglyph').is(':checked')) ? true : false ;
+    var lights = ($('#lights').is(':checked')) ? true : false ;
+
+    text.push(',"visualizationParams": { "anaglyph": '+anaglyph+', "fog" : ' +fog+', "fogColor" : "'+($( "#fogColor" ).val())+'", "fogDensity" : "'+($( "#fogDensity" ).val())+'" , "crystalScreenColor" : "'+($( "#crystalScreenColor" ).val())+'", "cellScreenColor" : "'+($( "#cellScreenColor" ).val())+'", "motifXScreenColor" : "'+($( "#motifXScreenColor" ).val())+'", "motifYScreenColor" : "'+($( "#motifYScreenColor" ).val())+'", "motifZScreenColor" : "'+($( "#motifZScreenColor" ).val())+'", "lights" : '+lights+' }');
+
+     
+    return text ;
+    
+  };
   StoreProject.prototype.createJsonTags = function(){
-     var tags = $('#tags').val(), text =[];
-     var tagsSplit =  tags.split(',');
+    var tags = $('#tags').val(), text =[];
+    var tagsSplit =  tags.split(',');
  
-     text.push(',"tags": [');
+    text.push(',"tags": [');
       
-     for (var i = 0; i < tagsSplit.length ; i++) { 
-      console.log(tagsSplit[i],i);
-        if(tagsSplit[i].length>0){  
-          if(i>0) text.push(',');
-          text.push( '"'+tagsSplit[i]+'"' );
-        }
-     }; 
-     text.push(']');
-     return (text.join('')); 
+    for (var i = 0; i < tagsSplit.length ; i++) {  
+      if(tagsSplit[i].length>0){  
+        if(i>0) text.push(',');
+        text.push( '"'+tagsSplit[i]+'"' );
+      }
+    }; 
+    text.push(']');
+    return (text.join('')); 
   };
   StoreProject.prototype.createJsonUnitCell = function(){
     var _this = this ;
  
     var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
     var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
-    var start = '"unitCell" :{ "fixedLength" : '+this.motifeditor.editorState.fixed+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
+    var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
     var newSphere = [];
     /*
@@ -238,9 +254,12 @@ define([
 
     var i = 0 , positions = [];
 
-     _.each(this.motifeditor.unitCellPositions, function(p, r ) {
-      if(i>0)  positions.push(', ') ; 
+    _.each(this.motifeditor.unitCellPositions, function(p, r ) {
+      if(i>0)  {
+        positions.push(', ') ; 
+      }
       i++;
+       
       positions.push(' { "x" : '+p.position.x+', "y" :'+p.position.y+', "z" : '+p.position.z+', "reference": "'+r+'"}'  );
     }); 
 
@@ -257,7 +276,7 @@ define([
     var motif = [] ;
     var counter = 0; 
 
-   for (var i = 0 ; i < _this.motifeditor.motifsAtoms.length ; i++) {
+    for (var i = 0 ; i < _this.motifeditor.motifsAtoms.length ; i++) {
       var atom = this.motifeditor.motifsAtoms[i] ;
        
       if(i>0)  motif.push(', ') ; 
@@ -295,7 +314,7 @@ define([
       motif.push('"position" : { "x" : '+atom.object3d.position.x+', "y" :'+atom.object3d.position.y+', "z" : '+atom.object3d.position.z+'}'  );
          
       motif.push(',');
-      console.log(atom.opacity); 
+      
       motif.push('"opacity" : ');
       motif.push(atom.opacity );
 

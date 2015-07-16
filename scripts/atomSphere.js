@@ -55,12 +55,21 @@ define([
 
     _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true, opacity : this.opacity/10    }) ;
     _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true, opacity: this.opacity/10  }) ;
-   
-    _this.materials =  [  
-      _this.colorMaterial,
-      _this.materialLetter,
-      new THREE.MeshBasicMaterial({color : "#000000", wireframe: this.wireframe, opacity:0})
-    ];
+    
+    if(this.wireframe == true){
+      _this.materials =  [  
+        _this.colorMaterial,
+        _this.materialLetter,
+        new THREE.MeshBasicMaterial({color : "#000000", wireframe: true, opacity:0})
+      ];
+    }
+    else{
+      _this.materials =  [  
+        _this.colorMaterial,
+        _this.materialLetter,
+         new THREE.MeshPhongMaterial({transparent:true, opacity:0})
+      ]; 
+    }
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
     sphere.name = 'atom';
@@ -116,7 +125,6 @@ define([
   };
   AtomSphere.prototype.updateText = function(texture){
     var _this = this;
-    this.texture = texture;
     _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide, transparent:true,opacity:this.opacity/10  });
     _this.object3d.children[1].material.needsUpdate = true;
 

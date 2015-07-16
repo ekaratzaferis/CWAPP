@@ -446,12 +446,15 @@ define([
     // Motif
     _.each(motifSliders, function(name) {
       _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE);
+
     }); 
     _.each(cellManDimensionsSliders, function(name) {  
       _this.setSliderInp(name,0,0.000,30.000,0.001, events.AXYZ_CHANGE);
+      _this.setOnOffSlider(name, 'disable');
     }); 
     _.each(cellManAnglesSliders, function(name) {  
       _this.setSliderInp(name,90,30,160,0.001, events.MAN_ANGLE_CHANGE); 
+      _this.setOnOffSlider(name, 'disable');
     }); 
     $(".periodic").click(function(){
       argument = {};
@@ -698,6 +701,12 @@ define([
 
     this.setVerticalSlider('#gearBarSlider', 1, 1, 5, 1);
 
+    $('#crystalScreenColor').val('000000'); 
+    $('#cellScreenColor').val('000000'); 
+    $('#motifXScreenColor').val('000000'); 
+    $('#motifYScreenColor').val('000000'); 
+    $('#motifZScreenColor').val('000000'); 
+
     this.restrictionEvents = []; 
      
   }; 
@@ -731,58 +740,83 @@ define([
   };
 
   Menu.prototype.setOnOffSlider = function(name, action) {
-    var name = '#'+name+'Slider'
-    require([ "jquery-ui" ], function( slider ) { 
-      $(name).slider(action);
-    });
+    var sliderName = name+'Slider';
+
+    $('#'+sliderName)
+      .attr('disabled', action);
+     
   }; 
   Menu.prototype.setSliderMin = function(name, val) {
-    var name = '#'+name+'Slider'
-    require([ "jquery-ui" ], function( slider ) {  
-      $(name).slider( "option", "min", val );
-    });
+    var sliderName = name+'Slider';
+
+    $('#'+sliderName)
+      .attr('min', val);
+     
   };
   Menu.prototype.setSliderMax = function(name, val) {
-    var name = '#'+name+'Slider'
-    require([ "jquery-ui" ], function( slider ) {  
-      $(name).slider( "option", "max", val );
-    });
+    var sliderName = name+'Slider';
+
+    $('#'+sliderName)
+      .attr('max', val);
+     
   };
-  Menu.prototype.setSliderValue = function(name,value) {
-    require([ "jquery-ui" ], function( slider ) {
-      $("#"+name+"Slider").slider('value',value ); 
-      $("#"+name).val(value);
-    });
+  Menu.prototype.setSliderValue = function(name, val) {
+   var sliderName = name+'Slider';
+
+    $('#'+sliderName)
+      .attr('value', val);
+     
   }; 
  
-  Menu.prototype.setSliderInp = function(name,value,min,max,step, eventName) { 
-    
-    var _this = this ;
+  Menu.prototype.setSliderInp = function(inputName, value, min, max, step, eventName) { 
+     
+    var sliderName = inputName+'Slider' ; 
+     
+    $('#'+sliderName)
+      .attr('min', min)
+      .attr('max', max)
+      .attr('disabled', false)
+      .attr('step', step)
+      .attr('value', value);
+      
+    $('#'+sliderName).on("input", function(){
+      var val = $(this).val();  
+      $("#"+inputName).val(val); 
+      var argument = {}; 
+      argument[inputName] = val;
+      argument['trigger'] = 'slider'; 
+      PubSub.publish(eventName, argument);
 
-    require([ "jquery-ui" ], function( slider ) {
-       
-      $("#"+name+"Slider").slider({ 
-        orientation: "horizontal",
-        range: false,
-        min: min,
-        max: max,
-        value: value,
-        step: step,
-        animate: true,
-
-        slide: function (event, ui) {               
-          $("#"+name).val(ui.value); 
-          var argument = {}; 
-          argument[name] = ui.value;
-          argument['trigger'] = 'slider'; 
-          PubSub.publish(eventName, argument);
-        }
-      }); 
     });
+  
+  };
+    Menu.prototype.setSlider = function(inputName,value,min,max,step) {
+    
+    var sliderName = inputName+'Slider' ; 
+     
+    $('#'+sliderName)
+      .attr('min', min)
+      .attr('max', max)
+      .attr('disabled', false)
+      .attr('step', step)
+      .attr('value', value);
+
+    $('#'+sliderName).on("input", function(){
+      var val = $(this).val();  
+      $("#"+inputName).val(val); 
+      var argument = {}; 
+      argument[name] = val;
+      argument['trigger'] = 'slider'; 
+
+      $("#"+inputName).val(val);
+      $("#"+inputName).trigger('change');
+      $("#"+inputName+"Label").text(val);  
+
+    }); 
   };
   Menu.prototype.setVerticalSlider = function( name, value, min, max, step ){
 
-    require([ "jquery-ui" ], function( slider ) {
+    /*require([ "jquery-ui" ], function( slider ) {
 
       $(name).slider({
         orientation: "vertical",
@@ -796,35 +830,8 @@ define([
         }
       });
       
-    });
+    });*/
 
-  }
-  Menu.prototype.setSlider = function(name,value,min,max,step) {
-    require([ "jquery-ui" ], function( slider ) {
-       
-      $("#"+name+"Slider").slider({
-        orientation: "horizontal",
-        range: false,
-        min: min,
-        max: max,
-        value: value,
-        step: step,
-        animate: true,
-
-        change: function (event, ui) {
-          $("#"+name).val(ui.value);
-          $("#"+name).trigger('change');
-          $("#"+name+"Label").text(ui.value); 
-        },
-
-        slide: function (event, ui) {              
-          $("#"+name).val(ui.value);
-          $("#"+name).trigger('change');
-          $("#"+name+"Label").text(ui.value);
-        }
-      });
-        
-    });
   };
   Menu.prototype.onLatticeChange = function(callback) {
     PubSub.subscribe(events.LATTICE_CHANGE, callback);
