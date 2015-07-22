@@ -425,8 +425,8 @@ define([
       _this.translateCellAtoms("x", vecHelper.x ,_this.newSphere.getID());
       _this.translateCellAtoms("y", vecHelper.y ,_this.newSphere.getID());
       _this.translateCellAtoms("z", vecHelper.z ,_this.newSphere.getID());
-    }
-    console.log(param);
+    } 
+
     if(!_.isUndefined(param.atomPosX)){ 
       if(_this.mutex){ 
 
@@ -583,7 +583,7 @@ define([
         this.cellParameters.scaleZ = parseFloat( par.Aa ); 
         // tangency check
         this.configureCellPoints(1);  
-        if(this.globalTangency){ 
+        if(this.globalTangency ||  true){ 
           var offset = this.checkInterMotifCollision('z', parseFloat(par.Aa) );
           this.cellParameters.scaleZ = offset ;
 
@@ -658,7 +658,7 @@ define([
     var lengthFix = ((angleORaxis === 'x') || (angleORaxis === 'y') || (angleORaxis === 'z')) ? true : false ;
 
     if(lengthFix){ 
-      _this.checkForLengthFix( angleORaxis, val ) ;
+      this.checkForLengthFix( angleORaxis, val ) ;
 
       switch(angleORaxis) { 
         case "x": 
@@ -693,34 +693,35 @@ define([
     }
     else{
       // angles fix 
-      _this.checkForAngleFix( angleORaxis, val ) ;
+      var limit = this.checkForAngleFix( angleORaxis, val ) ;
 
       switch(angleORaxis) { 
         case "alpha": 
           if( val != _this.leastCellAngles.alpha){
-            return _this.leastCellAngles.alpha ;
+            return { newVal : _this.leastCellAngles.alpha, limit : limit } ;
           }
           else{
-            return val;
+            return { newVal : val };
           }
         break;
 
         case "beta": 
+
           if( val != _this.leastCellAngles.beta){
-            return _this.leastCellAngles.beta ;
+            return { newVal : _this.leastCellAngles.beta, limit : limit } ;
           }
           else{
-            return val;
+            return { newVal : val };
           }
 
         break;
 
         case "gamma": 
           if( val != _this.leastCellAngles.gamma){
-            return _this.leastCellAngles.gamma ;
+            return { newVal : _this.leastCellAngles.gamma, limit : limit } ;
           }
           else{
-            return val;
+            return { newVal : val };
           }
 
         break;
@@ -758,8 +759,12 @@ define([
       this.latticeSystem === 'rhombohedral' || 
       this.latticeSystem === 'triclinic' || 
       (this.latticeSystem === 'monoclinic' && (this.latticeType === 'primitive' || this.latticeType === 'base')) ||
-      (this.latticeSystem === 'hexagonal' && (this.latticeType === 'primitive'))
-    ) withAngles = 1;
+      (this.latticeSystem === 'hexagonal' && (this.latticeType === 'primitive')) ||
+      (this.cellParameters.alpha !== 90 || this.cellParameters.beta !== 90 || this.cellParameters.gamma !== 90 )
+    ) 
+    {
+      withAngles = 1;
+    }
  
     var _this = this ;
  
@@ -799,7 +804,7 @@ define([
   };
   Motifeditor.prototype.checkForAngleFix = function(angleName, val){
       
-    var _this = this,result ; 
+    var _this = this, result = {newVal : undefined, limit : undefined} ; 
 
     if(angleName === 'alpha'){  
       this.cellParameters.alpha =  val ;
@@ -808,6 +813,7 @@ define([
       this.leastCellAngles.alpha = this.cellParameters.alpha + result.offset ; 
        
       if(this.leastCellAngles.alpha < -1000 ) this.leastCellAngles.alpha = val ;
+
     }
     else if(angleName === 'beta'){  
       this.cellParameters.beta =  val ;
@@ -825,9 +831,39 @@ define([
        
       if(this.leastCellAngles.gamma < -1000 ) this.leastCellAngles.gamma = val ;
     }
-               
+    
+    return result.limit;
+
   };
+
   var bbHelper = [] ;
+  var spHelper = [] ;
+
+  Motifeditor.prototype.sphereHelper = function(a, color){
+     
+    var material = [ new THREE.LineBasicMaterial({ color: color  }) ];
+    var geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
+    
+    var scene = UnitCellExplorer.getInstance().object3d;
+     
+    var g=0;
+
+    if(spHelper.length > 1) {  
+      while(g<spHelper.length) {   
+        scene.remove(spHelper[g] );
+        g++;
+      }
+      spHelper.splice(0);
+    } 
+      
+    
+    var scene = UnitCellExplorer.getInstance().object3d;
+
+    var mesh = new THREE.Mesh(geometry, material[0]);
+    mesh.position.set(a.x, a.y, a.z) ;
+    spHelper.push(mesh);
+    scene.add(mesh); 
+  }
 
   Motifeditor.prototype.lineHelper = function(a,b, color){
      
@@ -838,7 +874,7 @@ define([
     
      
     var g=0;
-    if(bbHelper.length > 10) {  
+    if(bbHelper.length > 7) {  
       while(g<bbHelper.length) {   
         scene.remove(bbHelper[g] );
         g++;
@@ -1007,33 +1043,36 @@ define([
         this.configureCellPoints(1);  
         if(this.globalTangency){ 
           var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
-          this.cellParameters.alpha = offset ;
+          this.cellParameters.alpha = offset.newVal ;
 
-          if(par.cellAlpha != offset ) {
-            //this.menu.setSliderMin('cellAlpha', offset - 2);
-            this.menu.setSliderValue("cellAlpha", offset);
-          }
-
-          if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
-            this.cellParameters.alpha = offset ;
-            if(par.cellAlpha != offset ) {
-              this.menu.setSliderMin('cellAlpha', offset - 2);
-              this.menu.setSliderValue("cellAlpha", offset);
-            } 
-          }
+          if(par.cellAlpha != offset.newVal ) {
+            if(offset.limit === 'upper'){
+              this.menu.setSliderMax('cellAlpha', offset.newVal + 2);
+            }
+            else if(offset.limit === 'downer'){
+              this.menu.setSliderMin('cellAlpha', offset.newVal - 2);
+            }
+            
+            this.menu.setSliderValue("cellAlpha", offset.newVal);
+          } 
         } 
       }
       else if(par.cellBeta != undefined){ 
         this.cellParameters.beta = parseFloat( par.cellBeta ); 
         // tangency check
         this.configureCellPoints(1);  
-        if(this.globalTangency){ 
+        if(this.globalTangency ){ 
           var offset = this.checkInterMotifCollision('beta', parseFloat(par.cellBeta) );
-          this.cellParameters.beta = offset ;
+          this.cellParameters.beta = offset.newVal ;
 
-          if(par.cellBeta != offset ) {
-            this.menu.setSliderMin('cellBeta', offset - 0.1);
-            this.menu.setSliderValue("cellBeta", offset);
+          if(par.cellBeta != offset.newVal ) { 
+            if(offset.limit === 'upper'){
+              this.menu.setSliderMax('cellBeta', offset.newVal + 2);
+            }
+            else if(offset.limit === 'downer'){
+              this.menu.setSliderMin('cellBeta', offset.newVal - 2);
+            }
+            this.menu.setSliderValue("cellBeta", offset.newVal);
           } 
         } 
       }
@@ -1043,11 +1082,16 @@ define([
         this.configureCellPoints(1);  
         if(this.globalTangency){ 
           var offset = this.checkInterMotifCollision('gamma', parseFloat(par.cellGamma) );
-          this.cellParameters.gamma = offset ;
+          this.cellParameters.gamma = offset.newVal ;
 
-          if(par.cellGamma != offset ) {
-            //this.menu.setSliderMin('cellGamma', offset - 2);
-            this.menu.setSliderValue("cellGamma", offset);
+          if(par.cellGamma != offset.newVal ) { 
+            if(offset.limit === 'upper'){
+              this.menu.setSliderMax('cellGamma', offset.newVal + 2);
+            }
+            else if(offset.limit === 'downer'){
+              this.menu.setSliderMin('cellGamma', offset.newVal - 2);
+            }
+            this.menu.setSliderValue("cellGamma", offset.newVal);
           } 
         } 
       }
@@ -1076,6 +1120,8 @@ define([
     if( par.manualSetCellAngles) { 
       $(".manualAngles").css("display", "inline"); 
       $('input[name=manualSetCellAngles]').attr('checked', true);
+      
+      /*
       this.menu.setSliderMin('Aa', 0);
       this.menu.setSliderMin('Ab', 0);
       this.menu.setSliderMin('Ac', 0);
@@ -1083,6 +1129,7 @@ define([
       this.menu.setSliderMin('cellAlpha', 30);
       this.menu.setSliderMin('cellBeta', 30);
       this.menu.setSliderMin('cellGamma', 30);
+      */
 
       this.menu.setSliderValue("cellAlpha", this.cellParameters.alpha);
       this.menu.setSliderValue("cellBeta", this.cellParameters.beta);
@@ -1093,12 +1140,12 @@ define([
       $(".manualAngles").css("display", "none");
       $('input[name=manualSetCellAngles]').attr('checked', false); 
     }
-     
+      
     if(par.manualSetCellAngles === true){
       this.setAtomMovementUI(true);
     }
     else{
-      if(this.manualSetCellDims === false){
+      if(this.manualAabc === false){
         this.setAtomMovementUI(false);
       }
     }
@@ -1110,6 +1157,7 @@ define([
     if( par.manualSetCellDims) { 
       $(".manualDims").css("display", "inline"); 
       $('input[name=manualSetCellDims]').attr('checked', true);
+      /*
       this.menu.setSliderMin('Aa', 0);
       this.menu.setSliderMin('Ab', 0);
       this.menu.setSliderMin('Ac', 0);
@@ -1117,6 +1165,7 @@ define([
       this.menu.setSliderMin('cellAlpha', 30);
       this.menu.setSliderMin('cellBeta', 30);
       this.menu.setSliderMin('cellGamma', 30);
+      */
 
       this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
       this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
@@ -1138,7 +1187,7 @@ define([
     this.manualAabc = par.manualSetCellDims ;
   };
   Motifeditor.prototype.setAtomMovementUI = function (action){
- 
+     
     this.menu.setOnOffSlider('atomPosX', action);
     this.menu.setOnOffSlider('atomPosY', action);
     this.menu.setOnOffSlider('atomPosZ', action);     
@@ -1228,29 +1277,15 @@ define([
     return this.motifsAtoms;
   };
   Motifeditor.prototype.getDimensions = function (){ 
-    var r = {}; 
-    if(this.padlock){  
-       
-      r = {
-        'x' : this.cellParameters.scaleX, 
-        'y' : this.cellParameters.scaleY, 
-        'z' : this.cellParameters.scaleZ,
-        'alpha' : this.cellParameters.alpha,
-        'beta' : this.cellParameters.beta,
-        'gamma' : this.cellParameters.gamma 
-      } ;
-    }
-    else{ 
-      r = {
-        'x' : this.cellParameters.scaleX, 
-        'y' : this.cellParameters.scaleY, 
-        'z' : this.cellParameters.scaleZ,
-        'alpha' : this.cellParameters.alpha,
-        'beta' : this.cellParameters.beta,
-        'gamma' : this.cellParameters.gamma 
-      } ;
-    } 
-
+    var  r = {
+      'x' : this.cellParameters.scaleX, 
+      'y' : this.cellParameters.scaleY, 
+      'z' : this.cellParameters.scaleZ,
+      'alpha' : this.cellParameters.alpha,
+      'beta' : this.cellParameters.beta,
+      'gamma' : this.cellParameters.gamma 
+    } ;
+      
     return r;
   };
   Motifeditor.prototype.updateFixedParams = function (params) {
@@ -1752,7 +1787,7 @@ define([
     if(_this.isEmpty) return; 
     var dimensions;
 
-    if( (!this.padlock) || manual!=undefined){  
+    if( (!this.padlock && this.globalTangency === false) || manual!=undefined){  
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else{ 
@@ -1986,7 +2021,7 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos,radius,color,tang, name,id, opacity,wireframe,restore){  
     var _this = this;  
     var dimensions;
-    console.log(this.unitCellPositions);
+     
     // reset min values of sliders
     this.menu.setSliderMin('Aa', 0);
     this.menu.setSliderMin('Ab', 0);
@@ -1998,7 +2033,7 @@ define([
 
     //$("select option[value='"+this.+"']").attr("selected","selected"); // reset the lattice type
    
-    if( (!this.padlock) && _.isUndefined(restore)){
+    if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else if(_.isUndefined(restore)){ 
@@ -2202,8 +2237,7 @@ define([
  
     }
     _this.reconstructCellPoints(restore);  
-    
-    console.log(_this.unitCellPositions["_111"].position.x);
+     
      
   }; 
   Motifeditor.prototype.reconstructCellPoints = function(restore){
@@ -2602,7 +2636,7 @@ define([
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) {
       var a = this.unitCellAtoms[i];
   
-      var aPos = new THREE.Vector3(
+      var rPos = new THREE.Vector3(
         this.unitCellPositions[a.latticeIndex].position.x + a.userOffset.x ,
         this.unitCellPositions[a.latticeIndex].position.y + a.userOffset.y ,
         this.unitCellPositions[a.latticeIndex].position.z + a.userOffset.z  
@@ -2611,14 +2645,14 @@ define([
       for (var j = this.unitCellAtoms.length - 1; j >= 0; j--) {
         var b = this.unitCellAtoms[j];
         if(a.latticeIndex != b.latticeIndex){ 
-          var bPos = new THREE.Vector3(
+          var lPos = new THREE.Vector3(
             this.unitCellPositions[b.latticeIndex].position.x + b.userOffset.x ,
             this.unitCellPositions[b.latticeIndex].position.y + b.userOffset.y ,
             this.unitCellPositions[b.latticeIndex].position.z + b.userOffset.z  
           ), sign; 
           atomm = j ;
           batomm = i ;
-          if( ((aPos.distanceTo(bPos) + 0.0000001) < (a.getRadius() + b.getRadius())) && (aPos.distanceTo(bPos) != 0 )){ // 0.00000000001 is for precision issues 
+          if( ((rPos.distanceTo(lPos) + 0.0000001) < (a.getRadius() + b.getRadius())) && (rPos.distanceTo(lPos) != 0 )){ // 0.00000000001 is for precision issues 
             var vecHelper;
  
             if( !(this.latticeSystem === 'hexagonal') || !(this.latticeType === 'hexagonal'))
@@ -2626,15 +2660,15 @@ define([
               if(!_.isUndefined( holdSpecialPos[b.latticeIndex+axis]) || !_.isUndefined( holdSpecialPos[a.latticeIndex+axis])) normalize = true;
                
               if(axis == 'x') {
-                sign = (bPos.x>aPos.x) ? -1 : 1 ;
+                sign = (lPos.x>rPos.x) ? -1 : 1 ;
                 vecHelper = this.transformHelper(new THREE.Vector3(this.cellParameters.scaleX,0,0));
               }
               else if(axis == 'y') {
-                sign = (bPos.y>aPos.y) ? -1 : 1 ;
+                sign = (lPos.y>rPos.y) ? -1 : 1 ;
                 vecHelper = this.transformHelper(new THREE.Vector3(0,this.cellParameters.scaleY,0));
               }
               else {
-                sign = (bPos.z>aPos.z) ? -1 : 1 ;
+                sign = (lPos.z>rPos.z) ? -1 : 1 ;
                 vecHelper = vecHelper = this.transformHelper(new THREE.Vector3( 0,0,this.cellParameters.scaleZ)); 
               }
               vecHelper.set(vecHelper.x*sign,vecHelper.y*sign,vecHelper.z*sign); 
@@ -2647,7 +2681,7 @@ define([
               );
             }
 
-            var bortherPos = new THREE.Vector3(vecHelper.x + bPos.x, vecHelper.y + bPos.y, vecHelper.z + bPos.z ); 
+            var bortherPos = new THREE.Vector3(vecHelper.x + lPos.x, vecHelper.y + lPos.y, vecHelper.z + lPos.z ); 
 
             a.changeColor((0xFF0000, 250));
             b.changeColor((0xFF0000, 250)); 
@@ -2662,9 +2696,9 @@ define([
               {
                 "object3d" : {
                   "position" : {
-                    "x": aPos.x, 
-                    "y": aPos.y, 
-                    "z": aPos.z, 
+                    "x": rPos.x, 
+                    "y": rPos.y, 
+                    "z": rPos.z, 
                   }
                 }, 
                 getRadius: function() { return rA; }
@@ -2672,9 +2706,9 @@ define([
               {
                 "object3d" : {
                   "position" : {
-                    "x": bPos.x, 
-                    "y": bPos.y, 
-                    "z": bPos.z, 
+                    "x": lPos.x, 
+                    "y": lPos.y, 
+                    "z": lPos.z, 
                   }
                 }, 
                 getRadius: function() { return rB; }
@@ -2702,132 +2736,155 @@ define([
     var endTime = performance.now(); 
     return {'offset': offset, 'normalize': normalize} ; 
   };
-  Motifeditor.prototype.detectCollisionForAngles = function(angleName){
 
-    var newAngle = -1000000 ;
+  var holdSpecialUnitCellPosFacs = {};
+
+  holdSpecialUnitCellPosFacs['_c'] = {};
+
+  Motifeditor.prototype.detectCollisionForAngles = function(angleName){
+      
+    var _this = this ;
+    var alpha = -1000000;
+    var beta = -1000000;
+    var gamma = -1000000;
+
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) {
       var a = this.unitCellAtoms[i];
-    
-      var aPos = new THREE.Vector3(
-        this.unitCellPositions[a.latticeIndex].position.x + a.userOffset.x ,
-        this.unitCellPositions[a.latticeIndex].position.y + a.userOffset.y ,
-        this.unitCellPositions[a.latticeIndex].position.z + a.userOffset.z  
-      );
-
+      
       for (var j = this.unitCellAtoms.length - 1; j >= 0; j--) {
+
         var b = this.unitCellAtoms[j];
+
         if(a.latticeIndex != b.latticeIndex){ 
-          var bPos = new THREE.Vector3(
-            this.unitCellPositions[b.latticeIndex].position.x + b.userOffset.x ,
-            this.unitCellPositions[b.latticeIndex].position.y + b.userOffset.y ,
-            this.unitCellPositions[b.latticeIndex].position.z + b.userOffset.z  
-          ), sign; 
+  
           atomm = j ;
           batomm = i ;
- 
-          if(a.latticeIndex === '_c' && a.elementName==='H' && b.latticeIndex === "_011" && b.elementName === 'Be'){  
-            var vecHelper,vecHelper2;
+         
+
+          if( ((a.object3d.position.distanceTo(b.object3d.position) + 0.0000001) < (a.getRadius() + b.getRadius())) && (a.object3d.position.distanceTo(b.object3d.position) != 0 )){
              
-            if(angleName == 'beta') { 
-              sign = (bPos.y>aPos.y) ? -1 : 1 ;
-              vecHelper = this.transformHelper(new THREE.Vector3(0, aPos.y ,0));
-              vecHelper2 = this.transformHelper(new THREE.Vector3(0, -bPos.y ,0));
-            } 
-            vecHelper.set(vecHelper.x*-1,vecHelper.y*-1,vecHelper.z*-1); 
-             
-            var thirdPoint,fourthPoint ;
-            
-            thirdPoint =  new THREE.Vector3(vecHelper.x + aPos.x, vecHelper.y + aPos.y, vecHelper.z + aPos.z ); 
-            fourthPoint =  new THREE.Vector3(vecHelper2.x + bPos.x, vecHelper2.y + bPos.y, vecHelper2.z + bPos.z ); 
-            
-            /*
-            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
-            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,aPos.y,aPos.z) , 0xFF0000 );  // brotherOfB to b  : red
-            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
-            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
-
-            this.lineHelper( new THREE.Vector3(-100,aPos.y,aPos.z), new THREE.Vector3(100,aPos.y,aPos.z) , 0xffffbe );   
-            this.lineHelper( new THREE.Vector3(-100,bPos.y,bPos.z), new THREE.Vector3(100,bPos.y,bPos.z) , 0xffffbc ); 
-
-            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xffffbc ); 
-            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xffbfbc );  
-
-            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xfeefbc ); 
-            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xefffbc );  
-            this.lineHelper( new THREE.Vector3(bPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffefbc );  
-            */
-          }
-
-          if( ((aPos.distanceTo(bPos) + 0.0000001) < (a.getRadius() + b.getRadius())) && (aPos.distanceTo(bPos) != 0 )){
             a.changeColor((0xFF0000, 250));
-            b.changeColor((0xFF0000, 250)); 
-            var vecHelperA, vecHelperB, temp = aPos;
-             
-            if(angleName == 'beta') { 
-              vecHelperA = this.transformHelper(new THREE.Vector3(0, -aPos.y ,0)) ;
-              vecHelperB = this.transformHelper(new THREE.Vector3(0, -bPos.y ,0)) ;
-            } 
-             
-            var thirdPoint,fourthPoint ;
-            
-            thirdPoint =  new THREE.Vector3(vecHelperA.x + aPos.x, vecHelperA.y + aPos.y, vecHelperA.z + aPos.z ); 
-            fourthPoint =  new THREE.Vector3(vecHelperB.x + bPos.x, vecHelperB.y + bPos.y, vecHelperB.z + bPos.z );  
-            var a_ = new THREE.Vector3(aPos.x, aPos.y, aPos.z);
-            var b_ = new THREE.Vector3(bPos.x, bPos.y, bPos.z);
-            var c_ = new THREE.Vector3(bPos.x, aPos.y, aPos.z);
-            var d_ = new THREE.Vector3(bPos.x, 0, bPos.z);
-            var e_ = new THREE.Vector3(0, 0, aPos.z);
-            var f_ = new THREE.Vector3(thirdPoint.x, thirdPoint.y, thirdPoint.z);
+            b.changeColor((0xFF0000, 250));
+  
+            if( angleName === 'beta'){ 
+              if(a.object3d.position.x < b.object3d.position.x){
+                // swap because we want to have the "right" atom in Xn2 so Xn2 - Xn1 = L > 0
+                a = this.unitCellAtoms[j] ;
+                b = this.unitCellAtoms[i] ; 
+              }
+              var _1_2 = Math.abs( a.object3d.position.y - b.object3d.position.y );
+              var _1_4 = a.getRadius() + b.getRadius();  
+              var _2_4 = Math.sqrt( _1_4 * _1_4 - _1_2 * _1_2 );
+              var _2_3 = Math.abs(a.object3d.position.z - b.object3d.position.z);
+              var _3_4 = Math.sqrt( _2_4 * _2_4 - _2_3 * _2_3 );
 
-            var baL = a.getRadius() + b.getRadius();
-            var ca = a_.sub(c_);
-            var bc = c_.sub(b_);
+              //this.lineHelper(a.object3d.position, b.object3d.position , 0xffffff );        // a to b : white
+              /*
+              this.lineHelper(new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z) , 0x003399 );        // a to b : blue
+              
+              this.lineHelper(new THREE.Vector3(b.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z) , 0xCC00FF );        // a to b : mov
+              
+              this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z) , 0x00FF00 );        // a to b : green
+              
+              this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(b.object3d.position.x,b.object3d.position.y,b.object3d.position.z) , 0xFFCC00 );        // a to b : kitrino
+              
+              this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0xffffff ); */
+              
 
-            var before = aPos.x ;
+              this.lineHelper(new THREE.Vector3(-100,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(100,b.object3d.position.y,b.object3d.position.z) , 0xffffff ); 
+              this.lineHelper(new THREE.Vector3(-100,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(100,a.object3d.position.y,a.object3d.position.z) , 0xffffff );  
 
-            var caAfter = Math.sqrt( baL * baL - bc.length() * bc.length() );
+              console.log('-----');
+              console.log(_1_2);
+              console.log(_1_4);
+              console.log(_2_4);
+              console.log(_2_3);
+              console.log(_3_4); 
+              /*
+              var _1_2 = a.object3d.position.y - b.object3d.position.y ;
+              var _1_4 = a.getRadius() + b.getRadius();  
+              var _2_4 = Math.sqrt( _1_4 * _1_4 - _1_2 * _1_2 );
+              var _2_3 = Math.abs(a.object3d.position.z - b.object3d.position.z);
+              var _3_4 = Math.sqrt( _2_4 * _2_4 - _2_3 * _2_3 );
+              */
 
-            var edAfter = before - caAfter ; 
-            
-            //newAngle = Math.atan(b_.y/edAfter); //Math.sqrt( baL * baL - bc.length() * bc.length() );
-            
-           
-            j = -1;
-            i = -1;
-            /*
-            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
-            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,aPos.y,aPos.z) , 0xFF0000 );  // brotherOfB to b  : red
-            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
-            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z) , 0x00FF00 );  // a to brotherOfB  :  green 
+              if(a.object3d.position.y > b.object3d.position.y){
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z),new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0x00FF00 );
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z),new THREE.Vector3(b.object3d.position.x,b.object3d.position.y,b.object3d.position.z) , 0x003399 );
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(b.object3d.position.x,b.object3d.position.y,b.object3d.position.z) , 0xCC00FF );
+ 
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0x00FFBE );
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,a.object3d.position.z) , 0xFFCC00 );
+                  
+              }
+              else{
+                this.lineHelper(new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,b.object3d.position.z),new THREE.Vector3(b.object3d.position.x,b.object3d.position.y,b.object3d.position.z) , 0x00FF00 );
+                this.lineHelper(new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0x003399 );
+                this.lineHelper(new THREE.Vector3(a.object3d.position.x,b.object3d.position.y,b.object3d.position.z),new THREE.Vector3(a.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0xCC00FF );
+ 
+                this.lineHelper(new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,a.object3d.position.z) , 0x00FFBE );
+                this.lineHelper(new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,a.object3d.position.z),new THREE.Vector3(b.object3d.position.x,a.object3d.position.y,b.object3d.position.z) , 0xFFCC00 );
+              }
 
-            this.lineHelper( new THREE.Vector3(-100,aPos.y,aPos.z), new THREE.Vector3(100,aPos.y,aPos.z) , 0xffffbe );   
-            this.lineHelper( new THREE.Vector3(-100,bPos.y,bPos.z), new THREE.Vector3(100,bPos.y,bPos.z) , 0xffffbc ); 
+              var _initPos_1 = this.initialCellPositions(b.latticeIndex) ;
+              var _initPos_2 = this.initialCellPositions(a.latticeIndex) ;
+                 
+              var L = _3_4 - a.userOffset.x - b.userOffset.x ; // edw exw lathos. de mporw na vrw swsta to L logw offsets
+              console.log(L);
+              var ac = Math.tan((90 - ((this.cellParameters.gamma) || 90)) * Math.PI / 180);
+              
+              var K1 = _initPos_1.z * ac ;
+              var K2 = _initPos_2.z * ac ;
+                
+              var Xn2 = ( _initPos_1.x * _initPos_2.y + K1 * _initPos_2.y + L * _initPos_2.y - _initPos_2.x * _initPos_1.y - K2 * _initPos_1.y) / (_initPos_2.y - _initPos_1.y);
 
-            this.lineHelper( new THREE.Vector3(bPos.x,bPos.y,bPos.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xffffbc ); 
-            this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xffbfbc );  
+              var ab;
 
-            this.lineHelper( new THREE.Vector3(fourthPoint.x,fourthPoint.y,fourthPoint.z), new THREE.Vector3(bPos.x,0,bPos.z) , 0xfeefbc ); 
-            this.lineHelper( new THREE.Vector3(thirdPoint.x,thirdPoint.y,thirdPoint.z), new THREE.Vector3(aPos.x,0,aPos.z) , 0xefffbc );  
-            this.lineHelper( new THREE.Vector3(bPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffefbc );  
-            */
+              if(_initPos_2.y === 0){
+                ab = ( Xn2 - L - _initPos_1.x - K1 ) / _initPos_1.y ;
+              }
+              else{
+                ab = ( Xn2 - _initPos_2.x - K2 ) / _initPos_2.y ;
+              }
+
+              var atan_ab = Math.atan(ab) ;
+              
+              console.log('--3--');
+              beta =  90 - atan_ab * 180 / Math.PI ; 
+              console.log(beta);
+              var limit = (beta > this.cellParameters.beta) ? 'downer' : 'upper' ;
+              console.log(limit);
+              return {'offset': (beta-this.cellParameters.beta), 'limit': limit} ;
+            }
+            else if( angleName === 'alpha'){
+              return {'offset': (alpha-this.cellParameters.beta), 'limit': limit} ;
+            }
+            else if( angleName === 'gamma'){
+              return {'offset': (gamma-this.cellParameters.beta), 'limit': limit} ;
+            }
+
+            // exit loop
+            j = -1 ;
+            i = -1 ;
+
           } 
         } 
       } 
-    } 
-    return {'offset': ((newAngle*180/Math.PI)-this.cellParameters.beta), 'normalize': false} ; 
+    }  
+    return {'offset': -1000000, 'normalize': false} ;
   };
   Motifeditor.prototype.fixAngles = function(angleName, a, b, thirdPoint){ 
     var _this = this, offset = 0 ;  
     var rA = a.getRadius();
     var rB = b.getRadius();
       
-    var aPos = new THREE.Vector3(a.object3d.position.x, a.object3d.position.y, a.object3d.position.z);
-    var bPos = new THREE.Vector3(b.object3d.position.x, b.object3d.position.y, b.object3d.position.z);
+    var rPos = new THREE.Vector3(a.object3d.position.x, a.object3d.position.y, a.object3d.position.z);
+    var lPos = new THREE.Vector3(b.object3d.position.x, b.object3d.position.y, b.object3d.position.z);
     var bBrPos = new THREE.Vector3(thirdPoint.object3d.position.x, thirdPoint.object3d.position.y, thirdPoint.object3d.position.z);
      
-    //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
-    //this.lineHelper( new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xFF0000 );  // brotherOfB to b  : red
-    //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z) , 0x00FF00 );  // a to brotherOfB  :  green 
+    //this.lineHelper( new THREE.Vector3(rPos.x,rPos.y,rPos.z), new THREE.Vector3(lPos.x,lPos.y,lPos.z) , 0xffffff );        // a to b : white
+    //this.lineHelper( new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z), new THREE.Vector3(lPos.x,lPos.y,lPos.z) , 0xFF0000 );  // brotherOfB to b  : red
+    //this.lineHelper( new THREE.Vector3(rPos.x,rPos.y,rPos.z), new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z) , 0x00FF00 );  // a to brotherOfB  :  green 
  
 
   };
@@ -2846,17 +2903,17 @@ define([
     var rA = a.getRadius();
     var rB = b.getRadius();
       
-    var aPos = new THREE.Vector3(a.object3d.position.x, a.object3d.position.y, a.object3d.position.z);
-    var bPos = new THREE.Vector3(b.object3d.position.x, b.object3d.position.y, b.object3d.position.z);
+    var rPos = new THREE.Vector3(a.object3d.position.x, a.object3d.position.y, a.object3d.position.z);
+    var lPos = new THREE.Vector3(b.object3d.position.x, b.object3d.position.y, b.object3d.position.z);
     var bBrPos = new THREE.Vector3(brotherOfb.object3d.position.x, brotherOfb.object3d.position.y, brotherOfb.object3d.position.z);
      
-    //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xffffff );        // a to b : white
-    //this.lineHelper( new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z), new THREE.Vector3(bPos.x,bPos.y,bPos.z) , 0xFF0000 );  // brotherOfB to b  : red
-    //this.lineHelper( new THREE.Vector3(aPos.x,aPos.y,aPos.z), new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z) , 0x00FF00 );  // a to brotherOfB  :  green  
+    //this.lineHelper( new THREE.Vector3(rPos.x,rPos.y,rPos.z), new THREE.Vector3(lPos.x,lPos.y,lPos.z) , 0xffffff );        // a to b : white
+    //this.lineHelper( new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z), new THREE.Vector3(lPos.x,lPos.y,lPos.z) , 0xFF0000 );  // brotherOfB to b  : red
+    //this.lineHelper( new THREE.Vector3(rPos.x,rPos.y,rPos.z), new THREE.Vector3(bBrPos.x,bBrPos.y,bBrPos.z) , 0x00FF00 );  // a to brotherOfB  :  green  
     
-    var cVector = new THREE.Vector3( aPos.x - bBrPos.x, aPos.y - bBrPos.y, aPos.z - bBrPos.z); 
-    var aVector = new THREE.Vector3( bPos.x - bBrPos.x, bPos.y - bBrPos.y, bPos.z - bBrPos.z);
-    var bVector = new THREE.Vector3( bPos.x - aPos.x, bPos.y - aPos.y, bPos.z - aPos.z);
+    var cVector = new THREE.Vector3( rPos.x - bBrPos.x, rPos.y - bBrPos.y, rPos.z - bBrPos.z); 
+    var aVector = new THREE.Vector3( lPos.x - bBrPos.x, lPos.y - bBrPos.y, lPos.z - bBrPos.z);
+    var bVector = new THREE.Vector3( lPos.x - rPos.x, lPos.y - rPos.y, lPos.z - rPos.z);
     
     var caseNoTriangle = compareWithHighPrecision((cVector.length() + aVector.length()), bVector.length() );
     if(!caseNoTriangle) caseNoTriangle = compareWithHighPrecision((cVector.length() + bVector.length()), aVector.length() );
@@ -2864,7 +2921,7 @@ define([
           
     if( caseNoTriangle ){  
       //  cases : 1. one atom in motif, 2. the collided atoms have their center on the same axis so triangle is not created ( ekfilismeno trigwno)
-      var offset = ( rA + rB -  aPos.distanceTo(bPos) ) ;
+      var offset = ( rA + rB -  rPos.distanceTo(lPos) ) ;
       aVector.setLength(aVector.length() + offset);  
     }
     else{  
@@ -3428,10 +3485,11 @@ define([
     this.setUIPadlock(arg.padlock);
      
     if(arg.padlock === false) {
-      _this.globalTangency = false ;  
-
-      $('#tangency').prop('checked', false);
-      $('#tangency').prop('disabled', true);
+         
+      // old settings
+      //this.globalTangency = false ;
+      //$('#tangency').prop('checked', false);
+      //$('#tangency').prop('disabled', true); 
       
       if(restore === true){
         this.cellParameters.alpha = parseInt($("#alpha").val());
@@ -3690,7 +3748,7 @@ define([
   Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate){ 
     var _this = this; 
 
-    var dimensions = (((!this.padlock) || this.manualAabc || this.manualAlphBtGmm) ) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
+    var dimensions = ((( !this.padlock  && (this.globalTangency === false)) || this.manualAabc || this.manualAlphBtGmm) ) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
 
     _this.cellParameters.scaleX = dimensions.xDim;
     _this.cellParameters.scaleY = dimensions.yDim;
@@ -3833,7 +3891,78 @@ define([
       } 
     }
   }; 
-   
+  Motifeditor.prototype.initialCellPositions = function(latticeIndex){ 
+    var _this = this; 
+    var unitCellPositions = {};
+    var dimensions = { xDim : this.cellParameters.scaleX,  yDim : this.cellParameters.scaleY,  zDim : this.cellParameters.scaleZ};
+
+    switch(this.latticeType) {
+      case "primitive":    
+        _.times(2 , function(_x) {
+          _.times(2 , function(_y) {
+            _.times(2 , function(_z) {
+               
+              unitCellPositions["_"+_x+_y+_z] = {
+                "position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), 
+                "latticeIndex" : "_"+_x+_y+_z 
+              } ;  
+               
+            });
+          });
+        }); 
+        break;
+      case "face":   
+        _.times(2 , function(_x) {
+          _.times(2 , function(_y) {
+            _.times(2 , function(_z) {
+               
+              unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+               
+            });
+          });
+        }); 
+        for (var i = 0; i <= 1; i ++) {
+          
+          unitCellPositions["_"+i] = {"position" : new THREE.Vector3( dimensions.xDim *i, dimensions.yDim *0.5, dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
+          unitCellPositions["__"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *i, dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
+          unitCellPositions["___"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *0.5, dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
+          
+        };
+        break;
+      case "body":   
+        _.times(2 , function(_x) {
+          _.times(2 , function(_y) {
+            _.times(2 , function(_z) {
+              
+              unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3(  dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+               
+            });
+          });
+        }); 
+        
+        unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/2) * dimensions.xDim , (1/2) * dimensions.yDim , (1/2) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
+        
+        break;
+      case "base":   
+        _.times(2 , function(_x) {
+          _.times(2 , function(_y) {
+            _.times(2 , function(_z) {
+             
+              unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
+               
+            });
+          });
+        });   
+
+        unitCellPositions["_up"] = {"position" : new THREE.Vector3( dimensions.xDim /2 ,  dimensions.yDim , dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
+        unitCellPositions["_down"] = {"position" : new THREE.Vector3( dimensions.xDim /2, 0 ,  dimensions.zDim /2), "latticeIndex" : "_down" } ;  
+        break; 
+    } 
+    
+    var returnVec = _.findWhere(unitCellPositions, {latticeIndex: latticeIndex});
+
+    return returnVec.position;
+  };
   Motifeditor.prototype.revertShearing = function() {
     this.transform(reverseShearing, function(value) {  
       return -value;
@@ -3883,7 +4012,7 @@ define([
     var sa = parameter.scaleX || 1; 
     var sb = parameter.scaleZ || 1;
     var sc = parameter.scaleY || 1; 
-    
+     
     var m = new THREE.Matrix4();
     m.set(
       sa, ab, ac,  0,
@@ -3891,6 +4020,7 @@ define([
       xz, bc, sc,  0,
        0,  0,  0,  1
     );
+     
     return m;
   };
 

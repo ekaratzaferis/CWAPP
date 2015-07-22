@@ -443,10 +443,9 @@ define([
 
     this.setSlider("planeOpacity",10,1,10,1); 
 
-    // Motif
+    // Motif Editor
     _.each(motifSliders, function(name) {
-      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE);
-
+      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE); 
     }); 
     _.each(cellManDimensionsSliders, function(name) {  
       _this.setSliderInp(name,0,0.000,30.000,0.001, events.AXYZ_CHANGE);
@@ -456,6 +455,7 @@ define([
       _this.setSliderInp(name,90,30,160,0.001, events.MAN_ANGLE_CHANGE); 
       _this.setOnOffSlider(name, 'disable');
     }); 
+
     $(".periodic").click(function(){
       argument = {};
       argument["element"]=$(this).text() ;
@@ -551,7 +551,7 @@ define([
       argument["manualSetCellAngles"]= ($('#manualSetCellAngles').is(':checked')) ? true : false ;
       PubSub.publish(events.MANUAL_SET_ANGLES, argument);           
     });
-    $('#padlock').change(function() {  
+    $('#padlock').change(function() {
       var argument = {};
       argument["padlock"]= ($('#padlock').is(':checked')) ? true : false ;
       _.each(fixedDimensions, function($parameter, k) {
@@ -761,17 +761,18 @@ define([
      
   };
   Menu.prototype.setSliderValue = function(name, val) {
-   var sliderName = name+'Slider';
+    var sliderName = name+'Slider';
 
     $('#'+sliderName)
-      .attr('value', val);
+    .val(val);
      
   }; 
  
   Menu.prototype.setSliderInp = function(inputName, value, min, max, step, eventName) { 
      
     var sliderName = inputName+'Slider' ; 
-     
+    var _this = this ;
+
     $('#'+sliderName)
       .attr('min', min)
       .attr('max', max)
@@ -779,6 +780,26 @@ define([
       .attr('step', step)
       .attr('value', value);
       
+    $('#'+sliderName).on("mousedown", function(){
+      // for handling the min value of sliders to help bound the slider for collision fixing
+      
+      if(eventName === 'menu.axyz_change' || eventName === 'menu.man_angle_change'){
+ 
+        _.each(cellManDimensionsSliders, function(name) { 
+          if(name !== inputName){
+            _this.setSliderMin(name, 0);
+          }
+        });
+
+        _.each(cellManAnglesSliders, function(name) { 
+          if(name !== inputName){
+            _this.setSliderMin(name, 30);
+          }
+        });
+ 
+      }
+    });
+
     $('#'+sliderName).on("input", function(){
       var val = $(this).val();  
       $("#"+inputName).val(val); 
@@ -790,7 +811,7 @@ define([
     });
   
   };
-    Menu.prototype.setSlider = function(inputName,value,min,max,step) {
+  Menu.prototype.setSlider = function(inputName,value,min,max,step) {
     
     var sliderName = inputName+'Slider' ; 
      

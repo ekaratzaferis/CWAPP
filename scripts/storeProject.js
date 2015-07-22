@@ -316,7 +316,7 @@ define([
       motif.push(',');
       
       motif.push('"opacity" : ');
-      motif.push(atom.opacity );
+      motif.push(atom.opacity/10 );
 
       motif.push(','); 
 

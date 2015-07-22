@@ -31,6 +31,7 @@ define([
     this.viewMode = 'Classic'; 
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};
+    
     var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
 
     var textureLoader = new THREE.TextureLoader();

@@ -563,7 +563,7 @@ define([
             a.z,
             p,
             texture,
-            opacity/10,
+            opacity ,
             wireframe,
             kk
           )  
