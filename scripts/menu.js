@@ -782,7 +782,7 @@ define([
       
     $('#'+sliderName).on("mousedown", function(){
       // for handling the min value of sliders to help bound the slider for collision fixing
-      
+
       if(eventName === 'menu.axyz_change' || eventName === 'menu.man_angle_change'){
  
         _.each(cellManDimensionsSliders, function(name) { 
@@ -794,6 +794,7 @@ define([
         _.each(cellManAnglesSliders, function(name) { 
           if(name !== inputName){
             _this.setSliderMin(name, 30);
+            _this.setSliderMax(name, 160);
           }
         });
  
