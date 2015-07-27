@@ -20,7 +20,7 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2(); 
 
-  function MouseEvents( motifEditor, func,  _camera, domElement,  orbitControls, soundMachine) {
+  function MouseEvents( motifEditor, func, _camera, domElement, orbitControls, soundMachine) {
     this.plane = {'object3d' : undefined} ;
     this.func = func ;
     this.soundMachine = soundMachine;

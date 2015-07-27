@@ -760,6 +760,14 @@ define([
       .attr('max', val);
      
   };
+  Menu.prototype.forceToLooseEvent = function(name) {
+    var sliderName = name+'Slider';
+
+    $('#'+sliderName).prop("readOnly",true);
+    setTimeout( function (){
+      $('#'+sliderName).prop("readOnly",false);
+    }, 100);
+  };
   Menu.prototype.setSliderValue = function(name, val) {
     var sliderName = name+'Slider';
 
