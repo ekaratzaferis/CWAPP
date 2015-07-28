@@ -632,7 +632,7 @@ define([
           this.unitCellAtoms[atomm].object3d.position.z - this.unitCellAtoms[batomm].object3d.position.z
         ) ;
        
-        this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[atomm].getRadius() + this.unitCellAtoms[batomm].getRadius())+' , real distance : '+s.length());
+        this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[atomm].getRadius() + this.unitCellAtoms[batomm].getRadius())+' , distance in cw : '+s.length());
       }
       //this.boxHelper(); 
     ///////////////////////
@@ -867,7 +867,7 @@ define([
     
      
     var g=0;
-    if(bbHelper.length > 7) {  
+    if(bbHelper.length > 2) {  
       while(g<bbHelper.length) {   
         scene.remove(bbHelper[g] );
         g++;
@@ -2777,17 +2777,41 @@ define([
               var leftLatticePointIndex = ((leftSphere.object3d.position.x - leftSphere.userOffset.x) <= (rightSphere.object3d.position.x - rightSphere.userOffset.x)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
 
               if( leftLatticePointIndex === leftSphere.latticeIndex ){
+                console.log('the left atoms lattice point is in the left');
+                console.log(_3_4);
+                console.log(leftSphere.userOffset.x);
+                console.log(rightSphere.userOffset.x);
+                console.log(rightSphere.object3d.position.x - leftSphere.object3d.position.x);
                 var L = _3_4 + leftSphere.userOffset.x - rightSphere.userOffset.x ;
+
               }
               else if( leftLatticePointIndex === rightSphere.latticeIndex ){
+                console.log('the right atoms lattice point is in the left');
                 var L = -1*_3_4 + rightSphere.userOffset.x - leftSphere.userOffset.x ;
               }
-
+ 
               var _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
               var _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
+                // prepei h arxiki thesi na einai swsti me gwnies scales
+              var parameters = this.cellParameters; 
+              var parameterKeys = [ 'alpha' , 'gamma']; 
+
+              _.each(parameterKeys, function(k) {   
+                if (_.isUndefined(parameters[k]) === false) { 
+                  var argument = {};
+                   
+                    argument[k] = parseFloat(parameters[k]);
+                    
+                  var matrix = transformationMatrix(argument); 
+                   
+                    _initPos_1.applyMatrix4(matrix); 
+                    _initPos_2.applyMatrix4(matrix); 
                   
-              var ac = Math.tan((90 - ((this.cellParameters.gamma) || 90)) * Math.PI / 180);
-             
+                }
+              });
+
+              var ac = Math.tan((90 - (90)) * Math.PI / 180);
+              
               var K1 = _initPos_1.z * ac ;
               var K2 = _initPos_2.z * ac ;
                 
@@ -2830,11 +2854,28 @@ define([
               }
               else if( leftLatticePointIndex === rightSphere.latticeIndex ){
                 var L = -1 * _3_4 + rightSphere.userOffset.z - leftSphere.userOffset.z ;
-              }
+              } 
 
               var _initPos_2 = this.initialCellPositions(leftSphere.latticeIndex) ;
               var _initPos_1 = this.initialCellPositions(rightSphere.latticeIndex) ;
+              
+              var parameters = this.cellParameters; 
+              var parameterKeys = [ 'beta' , 'gamma']; 
+
+              _.each(parameterKeys, function(k) {   
+                if (_.isUndefined(parameters[k]) === false) { 
+                  var argument = {};
+                   
+                    argument[k] = parseFloat(parameters[k]);
+                    
+                  var matrix = transformationMatrix(argument); 
+                   
+                    _initPos_1.applyMatrix4(matrix); 
+                    _initPos_2.applyMatrix4(matrix); 
                   
+                }
+              });
+ 
               var Zn2 = ( L * _initPos_2.y + _initPos_2.y * _initPos_1.z - _initPos_1.y * _initPos_2.z ) / ( _initPos_2.y - _initPos_1.y) ;
               
               var bc;
@@ -2878,8 +2919,24 @@ define([
               var _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
               var _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
                  
-              console.log(L);
-              var ab = Math.tan((90 - ((this.cellParameters.beta) || 90)) * Math.PI / 180);
+              var parameters = this.cellParameters; 
+              var parameterKeys = [ 'alpha' , 'beta']; 
+
+              _.each(parameterKeys, function(k) {   
+                if (_.isUndefined(parameters[k]) === false) { 
+                  var argument = {};
+                   
+                  argument[k] = parseFloat(parameters[k]);
+                    
+                  var matrix = transformationMatrix(argument); 
+                   
+                    _initPos_1.applyMatrix4(matrix); 
+                    _initPos_2.applyMatrix4(matrix); 
+                  
+                }
+              });
+
+              var ab = Math.tan((0) * Math.PI / 180);
               
               var K1 = _initPos_1.y * ab ;
               var K2 = _initPos_2.y * ab ;
@@ -2901,8 +2958,7 @@ define([
               gamma =  90 - atan_ac * 180 / Math.PI ; 
 
               limit = (gamma > this.cellParameters.gamma) ? 'downer' : 'upper' ;
-
-              console.log('--');
+ 
               return {'offset': (gamma-this.cellParameters.gamma), 'limit': limit} ;
             }
 

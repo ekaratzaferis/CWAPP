@@ -611,7 +611,7 @@ define([
   };
 
   var transformationMatrix = function(parameter) {
-     
+      
     // According to wikipedia model
     var ab = Math.tan((90 - ((parameter.beta) || 90)) * Math.PI / 180);
     var ac = Math.tan((90 - (parameter.gamma || 90)) * Math.PI / 180);
