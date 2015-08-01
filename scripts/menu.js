@@ -448,11 +448,11 @@ define([
       _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE); 
     }); 
     _.each(cellManDimensionsSliders, function(name) {  
-      _this.setSliderInp(name,0,0.000,30.000,0.001, events.AXYZ_CHANGE);
+      _this.setSliderInp(name,0.53,0.53,30.000,0.00001, events.AXYZ_CHANGE);
       _this.setOnOffSlider(name, 'disable');
     }); 
     _.each(cellManAnglesSliders, function(name) {  
-      _this.setSliderInp(name,90,30,160,0.001, events.MAN_ANGLE_CHANGE); 
+      _this.setSliderInp(name,90,2,178,0.1, events.MAN_ANGLE_CHANGE); 
       _this.setOnOffSlider(name, 'disable');
     }); 
 
@@ -788,7 +788,7 @@ define([
       .attr('step', step)
       .attr('value', value);
       
-    $('#'+sliderName).on("mousedown", function(){
+    /*$('#'+sliderName).on("mousedown", function(){
       // for handling the min value of sliders to help bound the slider for collision fixing
 
       if(eventName === 'menu.axyz_change' || eventName === 'menu.man_angle_change'){
@@ -807,7 +807,7 @@ define([
         });
  
       }
-    });
+    });*/
 
     $('#'+sliderName).on("input", function(){
       var val = $(this).val();  

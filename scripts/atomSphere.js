@@ -43,7 +43,7 @@ define([
   AtomSphere.prototype.setOpacity = function( opacity) { 
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity ;
-    this.colorMaterial = new THREE.MeshBasicMaterial({ color:this.colorMaterial.color,side: THREE.DoubleSide, transparent: true, opacity: opacity/10  });
+    this.colorMaterial = new THREE.MeshBasicMaterial({ color:this.colorMaterial.color,  transparent: true, opacity: opacity/10  });
     this.object3d.children[0].material.opacity = opacity/10  ;
     this.object3d.children[1].material.opacity = opacity/10  ;
     this.object3d.children[0].material.needsUpdate = true;
@@ -53,8 +53,8 @@ define([
     var _this = this ;
      this.color = color ; 
 
-    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide, transparent:true, opacity : this.opacity/10    }) ;
-    _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText, side: THREE.DoubleSide, transparent:true, opacity: this.opacity/10  }) ;
+    _this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : this.opacity/10    }) ;
+    _this.materialLetter = new THREE.MeshBasicMaterial({ map : letterText,   transparent:true, opacity: this.opacity/10  }) ;
     
     if(this.wireframe == true){
       _this.materials =  [  
@@ -107,8 +107,8 @@ define([
   AtomSphere.prototype.setMaterial = function(color, opacity) {
     var _this = this;
     this.color = color ; 
-    _this.colorMaterial = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide  });
-    _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color,side: THREE.DoubleSide, transparent: true, opacity : opacity });
+    _this.colorMaterial = new THREE.MeshBasicMaterial({ color:color  });
+    _this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color , transparent: true, opacity : opacity });
     _this.object3d.children[0].material.needsUpdate = true;
 
   };
@@ -125,14 +125,14 @@ define([
   };
   AtomSphere.prototype.updateText = function(texture){
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide, transparent:true,opacity:this.opacity/10  });
+    _this.object3d.children[1].material  = new THREE.MeshBasicMaterial({ map : texture , transparent:true,opacity:this.opacity/10  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   AtomSphere.prototype.changeColor = function(color, forTime) { 
     var _this = this;
     this.color = color ;
-    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
+    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color  });
     _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[0].material = _this.colorMaterial;

@@ -40,8 +40,8 @@ define([
   }
   CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe, identity) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:opacity    }) ;
-    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:opacity  }) ;
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
+    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
     var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
     if(wireframe) wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
   
@@ -143,14 +143,14 @@ define([
   }; 
   CrystalAtom.prototype.setMaterial = function(color) {
     var _this = this;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color});
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:color });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   CrystalAtom.prototype.collided = function() {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000",side: THREE.FrontSide  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000" });
     _this.object3d.children[1].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[1].material = _this.colorMaterial;

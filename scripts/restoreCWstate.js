@@ -299,7 +299,7 @@ define([
 
     for (var i = 0; i < atoms.length; i++) { 
        
-      var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id, atoms[i].opacity,atoms[i].wireframe);
+      var atom = new AtomSphere( atoms[i].visible, (new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z)) , atoms[i].radius , atoms[i].color, undefined, atoms[i].elementName, atoms[i].id, atoms[i].opacity*10, atoms[i].wireframe);
 
       this.motifEditor.motifsAtoms.push(atom); 
        
@@ -334,7 +334,7 @@ define([
         undefined, 
         atoms[i].elementName, 
         atoms[i].id,  
-        atoms[i].opacity,
+        atoms[i].opacity*10,
         atoms[i].wireframe,
         1); 
        

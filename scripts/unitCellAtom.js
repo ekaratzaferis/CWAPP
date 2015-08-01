@@ -55,13 +55,13 @@ define([
   };
   UnitCellAtom.prototype.updateText = function(texture){
     var _this = this; 
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10  });
+    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, transparent:true,opacity:this.opacity/10  });
     _this.object3d.children[1].material.needsUpdate = true;
 
   };
   UnitCellAtom.prototype.setOpacity = function( opacity) { 
     if(_.isUndefined(opacity)) return;
-    this.colorMaterial = new THREE.MeshPhongMaterial({ color:this.colorMaterial.color,side: THREE.FrontSide, transparent: true, opacity: opacity/10  });
+    this.colorMaterial = new THREE.MeshPhongMaterial({ color:this.colorMaterial.color, transparent: true, opacity: opacity/10  });
     this.object3d.children[0].material.opacity = opacity/10  ;
     this.object3d.children[1].material.opacity = opacity/10  ;
     this.object3d.children[0].material.needsUpdate = true;
@@ -69,8 +69,8 @@ define([
   };
   UnitCellAtom.prototype.addMaterial = function(letterText, geometry, color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10   }) ;
-    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, side: THREE.FrontSide, transparent:true,opacity:this.opacity/10 }) ;
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:this.opacity/10   }) ;
+    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, transparent:true,opacity:this.opacity/10 }) ;
 
     if(this.wireframe == true){
       _this.materials =  [  
@@ -193,14 +193,14 @@ define([
   }; 
   UnitCellAtom.prototype.setMaterial = function(color, opacity) {
     var _this = this;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide  });
-    _this.object3d.children[0].material  = new THREE.MeshPhongMaterial({ color:color,side: THREE.FrontSide, transparent: true, opacity : opacity/10  });
+    _this.colorMaterial = new THREE.MeshPhongMaterial({ color:color, });
+    _this.object3d.children[0].material  = new THREE.MeshPhongMaterial({ color:color, transparent: true, opacity : opacity/10  });
     _this.object3d.children[0].material.needsUpdate = true; 
   }; 
   UnitCellAtom.prototype.changeColor = function(color, forTime) { 
     var _this = this;
     this.color = color ;
-    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color,side: THREE.DoubleSide  });
+    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color  });
     _this.object3d.children[0].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[0].material = _this.colorMaterial;

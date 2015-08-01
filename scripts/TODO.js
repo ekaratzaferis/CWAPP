@@ -11,7 +11,8 @@ TODO list
     13. sync cams and enable distortion do not work together
     14. distortion doesnt work perfect
     
-    
+    --- hex is ok for 1x1x1 subtracted, solid
+
     16. miller objects recreate function can be optimized
     17. delete the restore function object after scene has restored to prevent memory usage 
     18. sync cameras when autoratating do not work great 
@@ -28,9 +29,8 @@ TODO list
     30. When go bak to classic view from subtracted in cell, distances appear.
     31. Add loader which freezes mouse events 
     32. When applying new motif to crystal auto position camera far from crystal.
- 
- 
-
+  
+    
 VISUALIZATION TODOs
 
     2- View modes
