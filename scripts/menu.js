@@ -762,7 +762,7 @@ define([
   };
   Menu.prototype.forceToLooseEvent = function(name) {
     var sliderName = name+'Slider';
-
+    console.log(name);
     $('#'+sliderName).prop("readOnly",true);
     setTimeout( function (){
       $('#'+sliderName).prop("readOnly",false);

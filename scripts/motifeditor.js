@@ -609,8 +609,7 @@ define([
 
             if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
               this.cellParameters.scaleX = offset ;
-              if(par.Ab != offset ) { 
-                this.menu.forceToLooseEvent('Ab');
+              if(par.Ab != offset ) {  
                 this.menu.setSliderValue("Ab", offset);
                 $("#Ab").val(offset);
               } 
@@ -1078,14 +1077,8 @@ define([
             var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
             this.cellParameters.alpha = offset.newVal ;
 
-            if(par.cellAlpha != offset.newVal ) {
-              if(offset.limit === 'upper'){
-                this.menu.forceToLooseEvent('cellAlpha'); 
-              }
-              else if(offset.limit === 'downer'){
-                this.menu.forceToLooseEvent('cellAlpha'); 
-              }
-              
+            if(par.cellAlpha != offset.newVal ) { 
+              this.menu.forceToLooseEvent('cellAlpha');
               this.menu.setSliderValue("cellAlpha", offset.newVal);
               $('#cellAlpha').val(offset.newVal);
             } 
@@ -1101,12 +1094,7 @@ define([
             this.cellParameters.beta = offset.newVal ;
              
             if(par.cellBeta != offset.newVal ) { 
-              if(offset.limit === 'upper'){
-                this.menu.forceToLooseEvent('cellBeta'); 
-              }
-              else if(offset.limit === 'downer'){
-                this.menu.forceToLooseEvent('cellBeta'); 
-              }
+              this.menu.forceToLooseEvent('cellBeta');
               this.menu.setSliderValue("cellBeta", offset.newVal);
               $('#cellBeta').val(offset.newVal);
             } 
@@ -1121,12 +1109,7 @@ define([
             this.cellParameters.gamma = offset.newVal ;
 
             if(par.cellGamma != offset.newVal ) { 
-              if(offset.limit === 'upper'){
-                this.menu.forceToLooseEvent('cellGamma'); 
-              }
-              else if(offset.limit === 'downer'){
-                this.menu.forceToLooseEvent('cellGamma'); 
-              }
+              this.menu.forceToLooseEvent('cellGamma');
               this.menu.setSliderValue("cellGamma", offset.newVal);
               $('#cellGamma').val(offset.newVal);
             } 
@@ -2774,7 +2757,7 @@ define([
     var alpha = -1000000;
     var beta = -1000000;
     var gamma = -1000000;
-    var limit;
+    
     aAtomIndex = undefined;
     bAtomIndex = undefined;
  
@@ -2793,7 +2776,7 @@ define([
             bAtomIndex = i ;
 
             rightSphere.changeColor((0xFF0000, 250));
-            leftSphere.changeColor((0xFF0000, 250));
+            leftSphere.changeColor((0xFFFFFF, 250));
   
             if( angleName === 'beta'){ 
               if(rightSphere.object3d.position.x < leftSphere.object3d.position.x){
@@ -2807,29 +2790,23 @@ define([
               var _2_3 = Math.abs(leftSphere.object3d.position.z - rightSphere.object3d.position.z);
               var _3_4 = Math.sqrt( _2_4 * _2_4 - _2_3 * _2_3 );
   
-              var leftLatticePointIndex = ((leftSphere.object3d.position.x - leftSphere.userOffset.x) <= (rightSphere.object3d.position.x - rightSphere.userOffset.x)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
+              var leftLatticePointIndex = ((leftSphere.object3d.position.x - leftSphere.userOffset.x) < (rightSphere.object3d.position.x - rightSphere.userOffset.x)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
 
-              if( leftLatticePointIndex === leftSphere.latticeIndex ){
-                console.log('the left atoms lattice point is in the left');
-                console.log(_3_4);
-                console.log(leftSphere.userOffset.x);
-                console.log(rightSphere.userOffset.x);
-                console.log(rightSphere.object3d.position.x - leftSphere.object3d.position.x);
+              var _initPos_1;
+              var _initPos_2;
+
+              if( leftLatticePointIndex === leftSphere.latticeIndex ){  
                 var L = _3_4 + leftSphere.userOffset.x - rightSphere.userOffset.x ;
+                _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
 
               }
-              else if( leftLatticePointIndex === rightSphere.latticeIndex ){
-                console.log('the right atoms lattice point is in the left');
-                console.log(_3_4);
-                console.log(leftSphere.userOffset.x);
-                console.log(rightSphere.userOffset.x);
-                console.log(rightSphere.object3d.position.x - leftSphere.object3d.position.x);
+              else if( leftLatticePointIndex === rightSphere.latticeIndex ){ 
                 var L = -1*_3_4 + rightSphere.userOffset.x - leftSphere.userOffset.x ;
+                _initPos_1 = this.initialCellPositions(rightSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(leftSphere.latticeIndex) ;
               }
- 
-              var _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
-              var _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
-                // prepei h arxiki thesi na einai swsti me gwnies scales
+   
               var parameters = this.cellParameters; 
               var parameterKeys = [ 'alpha' , 'gamma']; 
 
@@ -2837,43 +2814,37 @@ define([
                 if (_.isUndefined(parameters[k]) === false) { 
                   var argument = {};
                    
-                    argument[k] = parseFloat(parameters[k]);
+                  argument[k] = parseFloat(parameters[k]);
                     
                   var matrix = transformationMatrix(argument); 
                    
-                    _initPos_1.applyMatrix4(matrix); 
-                    _initPos_2.applyMatrix4(matrix); 
+                  _initPos_1.applyMatrix4(matrix); 
+                  _initPos_2.applyMatrix4(matrix); 
                   
                 }
-              });
+              }); 
 
-              var ac = Math.tan((90 - (90)) * Math.PI / 180);
-              
-              var K1 = _initPos_1.z * ac ;
-              var K2 = _initPos_2.z * ac ;
-                
-              var Xn2 = ( _initPos_1.x * _initPos_2.y + K1 * _initPos_2.y + L * _initPos_2.y - _initPos_2.x * _initPos_1.y - K2 * _initPos_1.y) / (_initPos_2.y - _initPos_1.y);
-
-              var ab;
+              var ab, Xn2, Xn1;
 
               if(_initPos_2.y === 0){
-                ab = ( Xn2 - L - _initPos_1.x - K1 ) / _initPos_1.y ;
+                Xn1 = ( L * _initPos_1.y - _initPos_2.x * _initPos_1.y + _initPos_1.x * _initPos_2.y) / (_initPos_2.y - _initPos_1.y);
+
+                ab = ( Xn1 - _initPos_1.x ) / _initPos_1.y ;
               }
               else{
-                ab = ( Xn2 - _initPos_2.x - K2 ) / _initPos_2.y ;
-              }
+                Xn2 = ( L * _initPos_2.y + _initPos_1.x * _initPos_2.y - _initPos_2.x * _initPos_1.y ) / (_initPos_2.y - _initPos_1.y);
 
+                ab = ( Xn2 - _initPos_2.x ) / _initPos_2.y ;
+              }
+  
               var atan_ab = Math.atan(ab) ;
                
               beta =  90 - atan_ab * 180 / Math.PI ; 
-               
-              limit = (beta > this.cellParameters.beta) ? 'downer' : 'upper' ;
-               
-              return { 'offset': (beta-this.cellParameters.beta), 'limit': limit } ;
+                 
+              return { 'offset': (beta-this.cellParameters.beta) } ;
             }
             else if( angleName === 'alpha'){
-              if(rightSphere.object3d.position.z > leftSphere.object3d.position.z){
-                // swap because we want to have the "right" atom in Xn2 so Xn2 - Xn1 = L > 0
+              if(rightSphere.object3d.position.z < leftSphere.object3d.position.z){ 
                 rightSphere = this.unitCellAtoms[j] ;
                 leftSphere = this.unitCellAtoms[i] ; 
               }
@@ -2884,21 +2855,22 @@ define([
               var _2_3 = Math.abs(leftSphere.object3d.position.x - rightSphere.object3d.position.x);
               var _3_4 = Math.sqrt( _2_4 * _2_4 - _2_3 * _2_3 );
   
-              var leftLatticePointIndex = ((leftSphere.object3d.position.z - leftSphere.userOffset.z) > (rightSphere.object3d.position.z - rightSphere.userOffset.z)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
+              var leftLatticePointIndex = ((leftSphere.object3d.position.z - leftSphere.userOffset.z) < (rightSphere.object3d.position.z - rightSphere.userOffset.z)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
+
+              var _initPos_2;
+              var _initPos_1;
 
               if( leftLatticePointIndex === leftSphere.latticeIndex ){
                 var L = _3_4 + leftSphere.userOffset.z - rightSphere.userOffset.z ;
+                _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
               }
               else if( leftLatticePointIndex === rightSphere.latticeIndex ){
                 var L = -1 * _3_4 + rightSphere.userOffset.z - leftSphere.userOffset.z ;
-              } 
-              console.log(_3_4);
-                console.log(leftSphere.userOffset.x);
-                console.log(rightSphere.userOffset.x);
-                console.log(rightSphere.object3d.position.x - leftSphere.object3d.position.x);
-              var _initPos_2 = this.initialCellPositions(leftSphere.latticeIndex) ;
-              var _initPos_1 = this.initialCellPositions(rightSphere.latticeIndex) ;
-              
+                _initPos_1 = this.initialCellPositions(rightSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(leftSphere.latticeIndex) ;
+              }  
+
               var parameters = this.cellParameters; 
               var parameterKeys = [ 'beta' , 'gamma']; 
 
@@ -2906,34 +2878,33 @@ define([
                 if (_.isUndefined(parameters[k]) === false) { 
                   var argument = {};
                    
-                    argument[k] = parseFloat(parameters[k]);
+                  argument[k] = parseFloat(parameters[k]);
                     
                   var matrix = transformationMatrix(argument); 
                    
-                    _initPos_1.applyMatrix4(matrix); 
-                    _initPos_2.applyMatrix4(matrix); 
+                  _initPos_1.applyMatrix4(matrix); 
+                  _initPos_2.applyMatrix4(matrix); 
                   
                 }
               });
  
-              var Zn2 = ( L * _initPos_2.y + _initPos_2.y * _initPos_1.z - _initPos_1.y * _initPos_2.z ) / ( _initPos_2.y - _initPos_1.y) ;
-              
+              var Zn2,Zn1; 
               var bc;
-
+ 
               if(_initPos_2.y === 0){
-                bc = ( Zn2 - L - _initPos_1.z ) / _initPos_1.y ;
+                Zn1 = ( L * _initPos_1.y + _initPos_1.z * _initPos_2.y - _initPos_2.z * _initPos_1.y ) / ( _initPos_2.y - _initPos_1.y) ;
+                bc = ( Zn1 - _initPos_1.z ) / _initPos_1.y ;
               }
               else{
-                bc = ( Zn2 - _initPos_2.z ) / _initPos_2.y ;
-              }
+                Zn2 = ( L * _initPos_2.y + _initPos_2.y * _initPos_1.z - _initPos_1.y * _initPos_2.z ) / ( _initPos_2.y - _initPos_1.y) ;
+                bc = ( Zn2 - _initPos_2.z ) / _initPos_2.y ; 
+              } 
 
               var bc = Math.atan(bc) ; 
 
               alpha =  90 - bc * 180 / Math.PI ; 
-
-              limit = (alpha > this.cellParameters.alpha) ? 'downer' : 'upper' ;
-
-              return {'offset': (alpha-this.cellParameters.alpha), 'limit': limit} ;
+  
+              return {'offset': (alpha-this.cellParameters.alpha), } ;
             }
             else if( angleName === 'gamma'){
               if(rightSphere.object3d.position.x < leftSphere.object3d.position.x){
@@ -2949,19 +2920,21 @@ define([
   
               var leftLatticePointIndex = ((leftSphere.object3d.position.x - leftSphere.userOffset.x) <= (rightSphere.object3d.position.x - rightSphere.userOffset.x)) ? leftSphere.latticeIndex : rightSphere.latticeIndex ;
 
-              if( leftLatticePointIndex === leftSphere.latticeIndex ){
+              var _initPos_2;
+              var _initPos_1;
+  
+              if( leftLatticePointIndex === leftSphere.latticeIndex ){  
                 var L = _3_4 + leftSphere.userOffset.x - rightSphere.userOffset.x ;
+                _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
+
               }
-              else if( leftLatticePointIndex === rightSphere.latticeIndex ){
+              else if( leftLatticePointIndex === rightSphere.latticeIndex ){ 
                 var L = -1*_3_4 + rightSphere.userOffset.x - leftSphere.userOffset.x ;
+                _initPos_1 = this.initialCellPositions(rightSphere.latticeIndex) ;
+                _initPos_2 = this.initialCellPositions(leftSphere.latticeIndex) ;
               }
-console.log(_3_4);
-                console.log(leftSphere.userOffset.x);
-                console.log(rightSphere.userOffset.x);
-                console.log(rightSphere.object3d.position.x - leftSphere.object3d.position.x);
-              var _initPos_1 = this.initialCellPositions(leftSphere.latticeIndex) ;
-              var _initPos_2 = this.initialCellPositions(rightSphere.latticeIndex) ;
-                 
+
               var parameters = this.cellParameters; 
               var parameterKeys = [ 'alpha' , 'beta']; 
 
@@ -2973,36 +2946,29 @@ console.log(_3_4);
                     
                   var matrix = transformationMatrix(argument); 
                    
-                    _initPos_1.applyMatrix4(matrix); 
-                    _initPos_2.applyMatrix4(matrix); 
+                  _initPos_1.applyMatrix4(matrix); 
+                  _initPos_2.applyMatrix4(matrix); 
                   
                 }
               });
-
-              var ab = Math.tan((0) * Math.PI / 180);
-              
-              var K1 = _initPos_1.y * ab ;
-              var K2 = _initPos_2.y * ab ;
-                
-              var Xn2 = ( _initPos_1.x * _initPos_2.z + K1 * _initPos_2.z + L * _initPos_2.z - _initPos_2.x * _initPos_1.z - K2 * _initPos_1.z) / (_initPos_2.z - _initPos_1.z);
-
+ 
+              var Xn2, Xn1 ; 
               var ac;
 
-              if(_initPos_2.z === 0){
-                ac = ( Xn2 - L - _initPos_1.x - K1 ) / _initPos_1.z ;
+              if(_initPos_2.z === 0){ 
+                Xn1 = (  L * _initPos_1.z - _initPos_2.x * _initPos_1.z + _initPos_1.x * _initPos_2.z) / (_initPos_2.z - _initPos_1.z);
+                ac = ( Xn1 - _initPos_1.x ) / _initPos_1.z ;
               }
               else{
-                ac = ( Xn2 - _initPos_2.x - K2 ) / _initPos_2.z ;
+                Xn2 = ( _initPos_1.x * _initPos_2.z + L * _initPos_2.z - _initPos_2.x * _initPos_1.z ) / (_initPos_2.z - _initPos_1.z);
+                ac = ( Xn2 - _initPos_2.x ) / _initPos_2.z ;
               }
-
+  
               var atan_ac = Math.atan(ac) ;
-              
-
-              gamma =  90 - atan_ac * 180 / Math.PI ; 
-
-              limit = (gamma > this.cellParameters.gamma) ? 'downer' : 'upper' ;
+               
+              gamma =  90 - atan_ac * 180 / Math.PI ;  
  
-              return {'offset': (gamma-this.cellParameters.gamma), 'limit': limit} ;
+              return {'offset': (gamma-this.cellParameters.gamma), } ;
             }
 
             // exit loop
