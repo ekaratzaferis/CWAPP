@@ -157,6 +157,7 @@ define([
     'deleteDirection': $deleteDirection,
     'newDirection': $newDirection
   };
+
   // grade parameters
   var $radius = jQuery('#radius');
   var $cylinderColor = jQuery('#cylinderColor');
@@ -258,6 +259,7 @@ define([
   };
     
   var $unitCellView = jQuery('#unitCellView');
+  
   var $showViewInCrystal = jQuery('#showViewInCrystal');
 
   var $notes = jQuery('#notes');

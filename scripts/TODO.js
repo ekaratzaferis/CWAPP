@@ -29,7 +29,8 @@ TODO list
     30. When go bak to classic view from subtracted in cell, distances appear.
     31. Add loader which freezes mouse events 
     32. When applying new motif to crystal auto position camera far from crystal.
-  
+    
+    -- when moving atom with sliders and collides unit cell atoms do not get tangent
     
 VISUALIZATION TODOs
 

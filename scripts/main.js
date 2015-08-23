@@ -13,7 +13,9 @@ require.config({
     'jquery-ui': '../vendor/jquery-ui/jquery-ui',
     'csg': '../vendor/csg',
     'threeCSG': '../vendor/ThreeCSG',
-    'keyboardState': '../vendor/keyboardState'
+    'keyboardState': '../vendor/keyboardState',
+    'rStats': '../vendor/rStats',
+    'rStatsExtras': '../vendor/rStatsExtras',
   },
   shim: {
     'three': { exports: 'THREE' },
@@ -21,15 +23,16 @@ require.config({
     'keyboardState': { deps: [ 'three' ] },
     'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] },
     'scg': { deps: [ 'three' ] },
-    'threeCSG': { deps: [ 'three' ] }
+    'threeCSG': { deps: [ 'three' ] },
+    'rStats': { deps: [ 'three' ] }
   }
 });
 
 require([
-  'pubsub', 'underscore', 'three', 'explorer', 'renderer', 'orbit', 'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube', 'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen', 'sceneResizer'
+  'pubsub', 'underscore', 'three', 'explorer', 'renderer', 'orbit', 'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube', 'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen', 'sceneResizer', 'rStats', 'rStatsExtras'
 ], function(
   PubSub, _, THREE,
-  Explorer, Renderer, Orbit, Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube, CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen, SceneResizer
+  Explorer, Renderer, Orbit, Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube, CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen, SceneResizer, RStats, RStatsExtras
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -41,9 +44,37 @@ require([
   var height = $(window).height(); 
   $('#crystalRenderer').width(width);
   $('#crystalRenderer').height(height);
-   
+
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
+
+  // crystal scene stats
+  var glS = new glStats();
+  var tS = new threeStats( crystalRenderer.renderer );
+
+  var rS = rStats(  {
+    values: {
+      frame: { caption: 'Total frame time (ms)', over: 16 },
+      fps: { caption: 'Framerate (FPS)', below: 30 },
+      calls: { caption: 'Calls (three.js)', over: 3000 },
+      raf: { caption: 'Time since last rAF (ms)' },
+      rstats: { caption: 'rStats update (ms)' }
+    },
+    groups: [
+      { caption: 'Framerate', values: [ 'fps', 'raf' ] },
+      { caption: 'Frame Budget', values: [ 'frame', 'texture', 'setup', 'render' ] }
+    ],
+    fractions: [
+      { base: 'frame', steps: [ 'texture', 'setup', 'render' ] }
+    ],
+    plugins: [
+      tS,
+      glS
+    ]
+  } );
+
+  crystalRenderer.rS = rS;
+  crystalRenderer.glS = glS;
 
   // sound & animations
   var animationMachine = new Animate(crystalScene);

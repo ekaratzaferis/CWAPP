@@ -32,7 +32,7 @@ define([
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};
     
-    var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
+    var geometry = new THREE.SphereGeometry(this.radius,64, 64); 
 
     var textureLoader = new THREE.TextureLoader();
     //textureLoader.load("Images/atoms/"+elementName+".png",
@@ -114,7 +114,7 @@ define([
 
     UnitCellExplorer.remove({'object3d':_this.object3d}); 
      
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 64, 64), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);
@@ -155,7 +155,7 @@ define([
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
 
-    var geometry = new THREE.SphereGeometry(_this.radius,32, 32);  
+    var geometry = new THREE.SphereGeometry(_this.radius, 64, 64);  
     var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, [_this.materialLetter, _this.colorMaterial ]);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 

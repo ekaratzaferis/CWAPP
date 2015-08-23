@@ -18,18 +18,19 @@ define([
     this.crystalScene = crystalScene;  
     this.orbitCrystal = orbitCrystal;  
     this.dollmode = false;  
- 
+    this.mutex = false;
+    this.hidden = false;
   };
 
   KeyboardKeys.prototype.handleKeys = function(){
-
+    var _this = this;
     if(this.dollmode){ 
       var delta = clock.getDelta(), helperVec;  
       var camPos = this.orbitCrystal.camera.position ;
       var cubePos = this.crystalScene.movingCube.position;
       var rotationDistance = 0.5 * delta;
       var moveDistance = 10 * delta ;
-
+      
       var camToCubeVec = (cubePos.clone()).sub(camPos) ;
 
       camToCubeVec.setLength(camToCubeVec.length() + moveDistance);
@@ -81,11 +82,25 @@ define([
       if ( this.keyboard.pressed("right") ){
         this.orbitCrystal.control.rotateLeft(  rotationDistance);  
       }
-  
+      
       this.orbitCrystal.control.target =  cubePos;  
       this.orbitCrystal.control.rotateSpeed =  0.2;  
     } 
- 
+    if ( this.keyboard.pressed("P") ){
+         
+        if(this.mutex === false){ 
+          this.mutex = true;
+          if( this.hidden === true){
+            $('#grainStats').show(); 
+            this.hidden = false;
+          }
+          else{  
+            $('#grainStats').hide();
+            this.hidden = true;
+          }
+          setTimeout(function(){ _this.mutex = false;}, 200 );
+        } 
+      }
  
   };
   

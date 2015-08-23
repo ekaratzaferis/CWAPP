@@ -61,6 +61,10 @@ define([
     this.dollScene;
     this.dollCamera;
 
+    // stats
+    this.glS;
+    this.rS;
+
     jQuery('#'+container).append(this.renderer.domElement);
  
   }; 
@@ -117,6 +121,24 @@ define([
     }
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + 'explorer', true);
+
+    if(this.rS !== undefined){ 
+      this.rS( 'frame' ).start();
+      this.glS.start();
+      
+      this.rS( 'rAF' ).tick();
+      this.rS( 'FPS' ).frame();
+
+      this.rS( 'texture' ).start();
+        
+      this.rS( 'texture' ).end();
+
+      this.rS( 'setup' ).start();
+    
+      this.rS( 'setup' ).end();
+    
+      this.rS( 'render' ).start();
+    }
 
     if(this.cameras.length === 1){ 
       if(this.container === 'unitCellRenderer') this.renderer.clear();
@@ -227,6 +249,22 @@ define([
       }
     }  
     
+    if(this.rS !== undefined){ 
+
+      this.rS( 'render' ).end();
+
+      this.rS( 'frame' ).end();
+
+      this.rS( 'memory.limit' ).set( performance.memory.jsHeapSizeLimit );
+      this.rS( 'memory.used' ).set( performance.memory.usedJSHeapSize );
+      this.rS( 'memory.total' ).set( performance.memory.totalJSHeapSize );
+
+      //this.rS( 'mouse' ).set( mouseOps );
+      this.rS( 'rStats' ).start();
+      this.rS().update();
+      this.rS( 'rStats' ).end();
+    }
+
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
     };
