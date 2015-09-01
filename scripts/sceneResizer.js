@@ -14,7 +14,6 @@ define([
     this.unitCellRenderer = unitCellRenderer ;
     this.motifRenderer = motifRenderer ; 
  
-  
   };
 
   SceneResizer.prototype.resize = function(width, height, state){

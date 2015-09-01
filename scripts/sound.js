@@ -32,11 +32,7 @@ define([
         this.procced = false;
         alert('Web Audio API not supported in this browser.'); 
     }
-    if(this.procced){  
-      for (var i = mp3names.length - 1; i >= 0; i--) {
-        this.loadSamples(mp3names[i]);
-      }; 
-    }
+    
   };
 
   Sound.prototype.loadSamples = function(url){
@@ -83,6 +79,12 @@ define([
 
   Sound.prototype.switcher = function(start) {
     
+    if(this.procced && this.buffers.length === 0){  
+      for (var i = mp3names.length - 1; i >= 0; i--) {
+        this.loadSamples(mp3names[i]);
+      }; 
+    }
+
     var _this = this ;
 
     if(start){
@@ -122,8 +124,8 @@ define([
       voice.start(0); 
     }
   };
-  Sound.prototype.play = function(sampleName, sourcePos, calcPanning) {
-    if(!this.mute){ 
+  Sound.prototype.play = function(sampleName, sourcePos, calcPanning) { 
+    if(!this.mute && mp3names.length === Object.keys(this.buffers).length){ 
 
       var data;
       var voice = this.context.createBufferSource();

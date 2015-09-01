@@ -20,7 +20,7 @@
   <body class="dark">
 
     <script data-main="scripts/main" src="vendor/require.js"></script> <!-- loads main.js file -->
-    <script data-main="scripts/main" src="vendor/jscolor/jscolor.js"></script>  
+    <script data-main="scripts/main" src="vendor/jscolor/jscolor.js"></script>
 
     <div class="container-fluid">
       <section>
@@ -898,7 +898,7 @@
                                         <input type="range" id='atomPosXSlider'> 
                                       </div>
                                     </div>
-                                  </div>
+                                  </div> 
                                   <div class="row form-group">
                                     <div class="col-md-12">
                                       <div class="col-md-5">
@@ -912,12 +912,25 @@
                                       </div>
                                     </div>
                                   </div>  
+                                  <div class="row form-group ">
+                                    <div class="col-md-12">
+                                      <div class="col-md-5">
+                                        <div class="input-group input-group-sm">
+                                          <span class="input-group-addon atomInput">vol. (%)</span>
+                                          <input type="text" id="cellVolume" class="form-control atomInput disableME" >
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6 atomInput" style="padding-top:7px;"> 
+                                        <input type="range" id='cellVolumeSlider'> 
+                                      </div>
+                                    </div>
+                                  </div> 
                                   <div class="col-md-12">
                                     <div class="col-md-5 input-group input-group-md atomInput">
                                       <span class="input-group-addon">Set Manually Cell Lengths</span> 
                                       <input id="manualSetCellDims" type="checkbox" name="manualSetCellDims" value="0"  >
                                     </div> 
-                                  </div> 
+                                  </div>  
                                   <div class="row form-group manualDims">
                                     <div class="col-md-12">
                                       <div class="col-md-5">
@@ -1379,9 +1392,7 @@
           </div>
         </div>
       </section>
-    </div> 
-     
-
+    </div>  
 
     <div id="notepad" title="Notes">  
       <textarea id='mynotes'> </textarea> 

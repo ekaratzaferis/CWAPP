@@ -91,6 +91,7 @@ define([
     bAxis.vertices.push(
       new THREE.Vector3( 1000,0,0 ),
       new THREE.Vector3(-1000,0,0)
+      
     );
    
     var cAxis = new THREE.Geometry();

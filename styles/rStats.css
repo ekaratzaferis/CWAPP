@@ -11,6 +11,7 @@
     left: 0;
     top: 0;
     overflow: hidden;
+    display: none;
 }
 
 .rs-base h1{

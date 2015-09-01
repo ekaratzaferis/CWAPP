@@ -417,7 +417,10 @@ require([
     motifEditor.setAtomsPosition(param);
   });
   menu.onManuallyCellDimsChange(function(message, param) { 
-    motifEditor.setManuallyCellDims(param);
+    motifEditor.setManuallyCellLengths(param);
+  });
+  menu.onManuallyCellVolumeChange(function(message, param) { 
+    motifEditor.setManuallyCellVolume(param);
   });
   menu.onManuallyCellAnglesChange(function(message, param) { 
     motifEditor.setManuallyCellAngles(param);

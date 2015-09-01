@@ -19,7 +19,7 @@ define([
     this.orbitCrystal = orbitCrystal;  
     this.dollmode = false;  
     this.mutex = false;
-    this.hidden = false;
+    this.hidden = true;
   };
 
   KeyboardKeys.prototype.handleKeys = function(){

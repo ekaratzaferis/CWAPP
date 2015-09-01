@@ -1,5 +1,10 @@
  
 
+New features
+    1. slider to change the volume of vurrent Unit cell
+    2. every time user adds atom it begins in minified cell
+    3. mp3s to load asynchronously 
+
 TODO list 
 
     6.  hex faces optimization 
@@ -10,6 +15,7 @@ TODO list
     12. between changing view mode it must go to classic first (except for gradeLimited)  
     13. sync cams and enable distortion do not work together
     14. distortion doesnt work perfect
+    15. WASD speeds to be optimised from the crystal size
     
     --- hex is ok for 1x1x1 subtracted, solid
 

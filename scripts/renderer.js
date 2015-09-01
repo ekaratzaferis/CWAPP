@@ -159,8 +159,9 @@ define([
           this.renderer.render( this.scene, this.cameras[0], undefined, true);
 
           if(this.doll !== undefined){  
+            this.dollCamera.aspect = this.containerWidth/this.containerHeight;  
             this.dollCamera.updateProjectionMatrix();
-            this.renderer.setClearColor( 0x000000 );  
+            this.renderer.setClearColor( 0x000000 );
             this.renderer.render( this.dollScene, this.dollCamera);        
           }
 

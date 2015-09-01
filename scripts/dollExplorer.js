@@ -22,7 +22,7 @@ define([
       
     this.dollHolder = new THREE.Mesh( new THREE.PlaneBufferGeometry(0.08,0.08), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }) );  
     this.dollHolder.name = 'dollHolder';
-    this.dollHolder.position.set(width/-1150,0,0); 
+    this.dollHolder.position.set(-1,0,0); 
 
     this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(0.05,0.05), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
     this.doll.name = 'doll';

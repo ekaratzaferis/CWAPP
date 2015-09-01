@@ -404,7 +404,7 @@ define([
               {     
                 reference = 'r_' + _x + '_' + _y + '_' + _z + '_' + index;
                  
-                if (_.isUndefined(_this.points[reference])) {
+                if (_.isUndefined(_this.points[reference])) { c
                   _this.points[reference] = new Point(position);   
                 }
               }                   

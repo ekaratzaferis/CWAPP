@@ -9,7 +9,7 @@ define([
 ], function(
   jQuery,
   jQuery_ui,
-  PubSub,
+  PubSub, 
   _
 ) {
   var events = {
@@ -41,6 +41,7 @@ define([
     CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
     AXIS_MODE: 'menu.axis_mode',
     AXYZ_CHANGE: 'menu.axyz_change',
+    CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
     MAN_ANGLE_CHANGE: 'menu.man_angle_change',
     MANUAL_SET_DIMS: 'menu.manual_set_dims',
     MANUAL_SET_ANGLES: 'menu.manual_set_angles',
@@ -75,6 +76,7 @@ define([
   var $addRepeatX = jQuery('#addRepeatX'); 
   var $addRepeatY = jQuery('#addRepeatY'); 
   var $addRepeatZ = jQuery('#addRepeatZ'); 
+
   var $subRepeatX = jQuery('#subRepeatX'); 
   var $subRepeatY = jQuery('#subRepeatY'); 
   var $subRepeatZ = jQuery('#subRepeatZ'); 
@@ -449,6 +451,9 @@ define([
     _.each(motifSliders, function(name) {
       _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE); 
     }); 
+
+    _this.setSliderInp('cellVolume',100,10,400.000,0.1,events.CELL_VOLUME_CHANGE); 
+
     _.each(cellManDimensionsSliders, function(name) {  
       _this.setSliderInp(name,0.53,0.53,30.000,0.00001, events.AXYZ_CHANGE);
       _this.setOnOffSlider(name, 'disable');
@@ -501,6 +506,12 @@ define([
         argument['trigger'] = 'textbox';
         PubSub.publish(events.ATOM_POSITION_CHANGE, argument);
       });
+    });
+    $('#cellVolume').on('change', function() {
+      argument = {}; 
+      argument['cellVolume'] = $('#cellVolume').val(); 
+      _this.setSliderValue('cellVolume',argument['cellVolume']); 
+      PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
     });
     _.each(cellManDimensions, function($parameter, k) {
       $parameter.on('change', function() {
@@ -763,8 +774,7 @@ define([
      
   };
   Menu.prototype.forceToLooseEvent = function(name) {
-    var sliderName = name+'Slider';
-    console.log(name);
+    var sliderName = name+'Slider'; 
     $('#'+sliderName).prop("readOnly",true);
     setTimeout( function (){
       $('#'+sliderName).prop("readOnly",false);
@@ -916,6 +926,9 @@ define([
   Menu.prototype.onManuallyCellDimsChange = function(callback) {
     PubSub.subscribe(events.AXYZ_CHANGE, callback);
   };
+  Menu.prototype.onManuallyCellVolumeChange = function(callback) {
+    PubSub.subscribe(events.CELL_VOLUME_CHANGE, callback);
+  };
   Menu.prototype.onManuallyCellAnglesChange = function(callback) {
     PubSub.subscribe(events.MAN_ANGLE_CHANGE, callback);
   };
@@ -1024,68 +1037,67 @@ define([
 
       if (_.isUndefined(restrictions[pk]) === false) {
           
-          left[pk] = $parameter;
+        left[pk] = $parameter;
 
-          _.each(restrictions[pk], function(operator, rk) {
+        _.each(restrictions[pk], function(operator, rk) {
 
-              right[rk] = latticeParameters[rk];
- 
-              if (operator === '=') {
+          right[rk] = latticeParameters[rk];
 
-                  left[pk].attr('disabled', 'disabled');
+          if (operator === '=') {
 
-                  restrictionEvent = function() {
+            left[pk].attr('disabled', 'disabled');
 
-                      left[pk].val(right[rk].val());
-                      left[pk].trigger('change');       
+            restrictionEvent = function() {
 
-                  };
-                  id = right[rk].attr('id');
-                  _this.restrictionEvents.push({
+                left[pk].val(right[rk].val());
+                left[pk].trigger('change');       
 
-                      ev: restrictionEvent,
-                      id: id
+            };
+            id = right[rk].attr('id');
+            _this.restrictionEvents.push({
 
-                  });
+                ev: restrictionEvent,
+                id: id
 
-                  //$body.on('change', '#' + id, restrictionEvent);
+            });
 
+            //$body.on('change', '#' + id, restrictionEvent);
+
+          } 
+          else if (operator === '≠') {
+
+            restrictionEvent = function() {
+
+              // sometimes right value may be bounded to a number instead of an input
+              rightValue = _.isUndefined(right[rk]) ? parseFloat(rk) : right[rk].val();
+
+              if (parseFloat(left[pk].val()) == rightValue) {
+                  
+                  /*
+                  alert("The value "+rightValue+" you entered for "+pk+" is not valid.");
+                  left[pk].val(LastLatticeParameters[pk]);
+                  left[pk].trigger('change');   
+                  */       
+                             
               } 
-              else if (operator === '≠') {
 
-                  restrictionEvent = function() {
+            };
 
-                      // sometimes right value may be bounded to a number instead of an input
-                      rightValue = _.isUndefined(right[rk]) ? parseFloat(rk) : right[rk].val();
+            id = left[pk].attr('id');
+            _this.restrictionEvents.push({
 
-                      if (parseFloat(left[pk].val()) == rightValue) {
-                          
-                          /*
-                          alert("The value "+rightValue+" you entered for "+pk+" is not valid.");
-                          left[pk].val(LastLatticeParameters[pk]);
-                          left[pk].trigger('change');   
-                          */       
-                                     
-                      } 
+                ev: restrictionEvent,
+                id: id
 
-                  };
+            });
 
-                  id = left[pk].attr('id');
-                  _this.restrictionEvents.push({
+           // $body.on('change', '#' + id, restrictionEvent);
 
-                      ev: restrictionEvent,
-                      id: id
-
-                  });
-
-                 // $body.on('change', '#' + id, restrictionEvent);
-
-              }
-          });
+          }
+        });
       }
 
-    });
-
+    }); 
   };
 
   return Menu;
