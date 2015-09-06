@@ -54,6 +54,7 @@ define([
     RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
     SET_SOUNDS: 'menu.set_sounds',
     SET_LIGHTS: 'menu.set_lights',
+    LEAP_MOTION: 'menu.leap_motion',
     SET_GEAR_BAR: 'menu.set_gear_bar',
     CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
     CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode',
@@ -699,6 +700,11 @@ define([
       argument["lights"]= ($('#lights').is(':checked')) ? true : false ;
       PubSub.publish(events.SET_LIGHTS, argument);           
     }); 
+    $('#leap').change(function() {  
+      var argument = {};
+      argument["leap"]= ($('#leap').is(':checked')) ? true : false ;
+      PubSub.publish(events.LEAP_MOTION, argument);           
+    }); 
 
     this.setSlider("reduceRadius",10,1,10.2,0.2);
     $reduceRadius.on('change', function() {
@@ -753,10 +759,8 @@ define([
   };
 
   Menu.prototype.setOnOffSlider = function(name, action) {
-    var sliderName = name+'Slider';
-
-    $('#'+sliderName)
-      .attr('disabled', action);
+    var sliderName = name+'Slider'; 
+    $('#'+sliderName).attr('disabled', action);
      
   }; 
   Menu.prototype.setSliderMin = function(name, val) {
@@ -828,7 +832,6 @@ define([
       argument[inputName] = val;
       argument['trigger'] = 'slider'; 
       PubSub.publish(eventName, argument);
-
     });
   
   };
@@ -994,6 +997,9 @@ define([
   };
   Menu.prototype.onLightsSet = function(callback) { 
     PubSub.subscribe(events.SET_LIGHTS, callback);
+  };
+  Menu.prototype.onLeapMotionSet = function(callback) { 
+    PubSub.subscribe(events.LEAP_MOTION, callback);
   };
   Menu.prototype.onRadiusToggle = function(callback) { 
     PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);

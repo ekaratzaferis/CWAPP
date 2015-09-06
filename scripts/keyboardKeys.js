@@ -12,7 +12,7 @@ define([
   
   var clock = new THREE.Clock();
 
-  function KeyboardKeys(keyboard, crystalScene, orbitCrystal) { 
+  function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal) { 
 
     this.keyboard = keyboard;  
     this.crystalScene = crystalScene;  
@@ -20,6 +20,7 @@ define([
     this.dollmode = false;  
     this.mutex = false;
     this.hidden = true;
+    this.meTemporal = meTemporal; 
   };
 
   KeyboardKeys.prototype.handleKeys = function(){
@@ -88,19 +89,32 @@ define([
     } 
     if ( this.keyboard.pressed("P") ){
          
-        if(this.mutex === false){ 
-          this.mutex = true;
-          if( this.hidden === true){
-            $('#grainStats').show(); 
-            this.hidden = false;
-          }
-          else{  
-            $('#grainStats').hide();
-            this.hidden = true;
-          }
-          setTimeout(function(){ _this.mutex = false;}, 200 );
-        } 
-      }
+      if(this.mutex === false){ 
+        this.mutex = true;
+        if( this.hidden === true){
+          $('#grainStats').show(); 
+          this.hidden = false;
+        }
+        else{  
+          $('#grainStats').hide();
+          this.hidden = true;
+        }
+        setTimeout(function(){ _this.mutex = false;}, 200 );
+      } 
+    }
+    if ( this.keyboard.pressed("B") ){
+         
+      if(this.mutex === false){ 
+        this.mutex = true;
+        if( this.meTemporal.box3.bool === true){ 
+          this.meTemporal.box3.bool = false;
+        }
+        else{   
+          this.meTemporal.box3.bool = true;
+        }
+        setTimeout(function(){ _this.mutex = false;}, 200 );
+      } 
+    }
  
   };
   

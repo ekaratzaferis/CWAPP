@@ -1,5 +1,7 @@
  
-
+TODOs UI alexandros
+    1. delete setting values to inputs (automated process from slider)
+    
 New features
     1. slider to change the volume of vurrent Unit cell
     2. every time user adds atom it begins in minified cell
@@ -11,7 +13,7 @@ TODO list
  
     9.  change the recreate of hex and use transform function as others
     10. recreate motif fro hexagonal also needs optimization 
-    11. adjust hud arrows, cube according to width length (add a constant value + adjustable par)
+    
     12. between changing view mode it must go to classic first (except for gradeLimited)  
     13. sync cams and enable distortion do not work together
     14. distortion doesnt work perfect

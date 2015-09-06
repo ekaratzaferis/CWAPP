@@ -16,6 +16,7 @@ require.config({
     'keyboardState': '../vendor/keyboardState',
     'rStats': '../vendor/rStats',
     'rStatsExtras': '../vendor/rStatsExtras',
+    'leapMotion': '../vendor/leap-0.6.4',
   },
   shim: {
     'three': { exports: 'THREE' },
@@ -29,10 +30,71 @@ require.config({
 });
 
 require([
-  'pubsub', 'underscore', 'three', 'explorer', 'renderer', 'orbit', 'menu', 'lattice', 'snapshot','navArrowsHud','navCubeHud','motifeditor','unitCellExplorer','motifExplorer', 'mouseEvents', 'navArrows', 'navCube', 'crystalMouseEvents', 'storeProject', 'restoreCWstate', 'sound', 'animate', 'gearTour', 'doll', 'dollExplorer', 'keyboardKeys', 'keyboardState', 'fullScreen', 'sceneResizer', 'rStats', 'rStatsExtras'
+  'pubsub', 
+  'underscore', 
+  'three', 
+  'explorer', 
+  'renderer', 
+  'orbit', 
+  'menu', 
+  'lattice', 
+  'snapshot',
+  'navArrowsHud',
+  'navCubeHud',
+  'motifeditor',
+  'unitCellExplorer',
+  'motifExplorer',
+  'mouseEvents',
+  'navArrows',
+  'navCube',
+  'crystalMouseEvents',
+  'storeProject',
+  'restoreCWstate',
+  'sound',
+  'animate',
+  'gearTour',
+  'doll', 
+  'dollExplorer',
+  'keyboardKeys',
+  'keyboardState',
+  'fullScreen',
+  'sceneResizer',
+  'rStats', 
+  'rStatsExtras', 
+  'leapMotionHandler'
 ], function(
-  PubSub, _, THREE,
-  Explorer, Renderer, Orbit, Menu, Lattice, Snapshot, NavArrowsHud, NavCubeHud, Motifeditor, UnitCellExplorer, MotifExplorer, MouseEvents, NavArrows, NavCube, CrystalMouseEvents, StoreProject, RestoreCWstate, Sound, Animate, GearTour, Doll, DollExplorer, KeyboardKeys, KeyboardState, FullScreen, SceneResizer, RStats, RStatsExtras
+  PubSub, 
+  _, 
+  THREE,
+  Explorer, 
+  Renderer, 
+  Orbit, 
+  Menu, 
+  Lattice, 
+  Snapshot, 
+  NavArrowsHud, 
+  NavCubeHud, 
+  Motifeditor, 
+  UnitCellExplorer, 
+  MotifExplorer, 
+  MouseEvents, 
+  NavArrows, 
+  NavCube, 
+  CrystalMouseEvents, 
+  StoreProject, 
+  RestoreCWstate, 
+  Sound, 
+  Animate, 
+  GearTour, 
+  Doll, 
+  DollExplorer, 
+  KeyboardKeys, 
+  KeyboardState, 
+  FullScreen, 
+  SceneResizer, 
+  RStats, 
+  RStatsExtras, 
+  LeapMotionHandler
 ) {
   // Scenes
   var crystalScene = Explorer.getInstance();
@@ -144,7 +206,7 @@ require([
   var gearTour = new GearTour(crystalScene, motifEditor, lattice);
  
   // handel keyboard keys
-  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal);
+  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
@@ -166,7 +228,10 @@ require([
     sceneResizer.resize( $(window).width(), $(window).height(), crystalScreenEvents.state);
   }, false);
 
-  // lattice
+  // leap motion
+  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal);
+
+  // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
   });
@@ -252,6 +317,9 @@ require([
     } 
 
   });
+  menu.onLeapMotionSet(function(message, arg) { 
+    leapM.toggle(arg.leap);
+  });
   menu.onFogParameterChange(function(message, arg) { 
     if(crystalScene.fogActive === true){ 
       if(!_.isUndefined(arg.fogColor)){
@@ -291,7 +359,7 @@ require([
     } 
   });
   
-  // motif
+  // motif editor events binding
   $("#list li").click(function(e) { 
     
     height = $(window).height() ;
@@ -631,6 +699,7 @@ require([
   } 
 
   $("#noteTransparent").draggable();
+ 
 
 });
  

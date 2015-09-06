@@ -26,6 +26,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
 
+	this.leapMotion = false ; // enable control of camera by leap motion device
 	// API
 
 	// Set to false to disable this control
@@ -139,7 +140,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	};
 
 	this.rotateUp = function ( angle ) {
-
+		console.log(angle);
 		if ( angle === undefined ) {
 
 			angle = getAutoRotationAngle();
@@ -348,6 +349,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 		this.dispatchEvent( changeEvent );
 	}
+	
 	this.reset = function () {
 
 		state = STATE.NONE;
@@ -359,17 +361,24 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 	};
 
+	this.leap_zoom = function (distFromCenter) {
+		var pos = this.object.position.clone();
+		pos.setLength(distFromCenter);
+		this.object.position.set(pos.x, pos.y, pos.z);
+
+	};
+
 	function getAutoRotationAngle() {
 
 		return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
 
-	}
+	};
 
 	function getZoomScale() {
 
 		return Math.pow( 0.95, scope.zoomSpeed );
 
-	}
+	};
 
 	function onMouseDown( event ) {
 
@@ -403,7 +412,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		scope.domElement.addEventListener( 'mouseup', onMouseUp, false );
 		scope.dispatchEvent( startEvent );
 
-	}
+	};
 
 	function onMouseMove( event ) {
 
@@ -462,7 +471,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 		scope.update();
 
-	}
+	};
 
 	function onMouseUp( /* event */ ) {
 
@@ -473,7 +482,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		scope.dispatchEvent( endEvent );
 		state = STATE.NONE;
 
-	}
+	};
 
 	function onMouseWheel( event ) {
 
@@ -508,7 +517,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		scope.dispatchEvent( startEvent );
 		scope.dispatchEvent( endEvent );
 
-	}
+	};
 
 	function onKeyDown( event ) {
 
@@ -538,7 +547,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 		}
 
-	}
+	};
 
 	function touchstart( event ) {
 
@@ -584,7 +593,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 		scope.dispatchEvent( startEvent );
 
-	}
+	};
 
 	function touchmove( event ) {
 
@@ -663,7 +672,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 		}
 
-	}
+	};
 
 	function touchend( /* event */ ) {
 
@@ -672,7 +681,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		scope.dispatchEvent( endEvent );
 		state = STATE.NONE;
 
-	}
+	};
 
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 	this.domElement.addEventListener( 'mousedown', onMouseDown, false );

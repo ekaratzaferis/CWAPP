@@ -43,7 +43,8 @@ define([
     return this.camName ;
   };
   Orbit.prototype.setThetaPhi = function(theta,phi) {
-  
+    console.log(theta);
+    console.log(phi);
     this.theta = theta;
     this.phi = phi;
     this.control.myTheta = this.theta ;
@@ -51,6 +52,9 @@ define([
     
     this.control.makeMovement = true ;
 
+  }
+  Orbit.prototype.leap_zoom = function(distFromCenter){
+    this.control.leap_zoom(distFromCenter);
   }
   Orbit.prototype.getAutoRotate = function(){
     return this.control.autoRotate ;

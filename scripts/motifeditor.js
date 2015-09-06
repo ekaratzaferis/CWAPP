@@ -1,5 +1,5 @@
 /*global define*/
-'use strict';
+ 
 
 define([
   'pubsub', 'three', 'underscore', 
@@ -55,6 +55,9 @@ define([
     this.cellMutex = true ;
     this.globalTangency = true;
     this.padlock = true;
+
+    this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
+  
   };
   Motifeditor.prototype.loadAtoms = function(){
     var _this = this;
@@ -120,7 +123,9 @@ define([
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
     }  
-    if(_.isUndefined(restore) ) this.configureCellPoints(1);
+    if(_.isUndefined(restore) ) {
+      this.configureCellPoints('manual');
+    }
 
   };
   Motifeditor.prototype.onEditorStateChange = function(callback) {
@@ -532,7 +537,7 @@ define([
     }  
 
     _this.configureCellPoints();
-
+ 
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -581,7 +586,7 @@ define([
   };
 
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
-
+     
     this.manualAabc = true; // for cellPointsWithScaling
 
     var val = parseFloat(par.cellVolume);
@@ -601,27 +606,34 @@ define([
     this.cellVolume.cCol = undefined;
  
     var newValA = newVals.z ;
-    this.setManuallyCellLengths({'Aa' : newValA , 'trigger' : par.trigger}, 0);
+    this.setManuallyCellLengths({'Aa' : newValA }, 'volume');
     this.menu.setSliderValue("Aa", newValA);
     $("#Aa").val(newValA);
   
     var newValB = newVals.x ;
-    this.setManuallyCellLengths({'Ab' : newValB , 'trigger' : par.trigger}, 0);
+    this.setManuallyCellLengths({'Ab' : newValB }, 'volume');
     this.menu.setSliderValue("Ab", newValB);
     $("#Ab").val(newValB);
 
     var newValC = newVals.y ;
-    this.setManuallyCellLengths({'Ac' : newValC , 'trigger' : par.trigger}, 0);
+    this.setManuallyCellLengths({'Ac' : newValC }, 'volume');
     this.menu.setSliderValue("Ac", newValC);
     $("#Ac").val(newValC);
 
     if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
-      this.cellVolume.aCol = (this.cellVolume.aCol === undefined ) ? -1 : this.cellVolume.aCol ;
-      this.cellVolume.bCol = (this.cellVolume.bCol === undefined ) ? -1 : this.cellVolume.bCol ;
-      this.cellVolume.cCol = (this.cellVolume.cCol === undefined ) ? -1 : this.cellVolume.cCol ;
-
+        
+      if( this.cellVolume.aCol === undefined){
+        this.cellVolume.aCol = -1;
+      } 
+      if( this.cellVolume.bCol === undefined){
+        this.cellVolume.bCol = -1;
+      } 
+      if( this.cellVolume.cCol === undefined){
+        this.cellVolume.cCol = -1;
+      } 
+  
       if(this.cellVolume.bCol >= this.cellVolume.aCol && this.cellVolume.bCol >= this.cellVolume.cCol  ){ 
-       
+         
         var newPercX = this.cellParameters.scaleX/this.cellVolume.xInitVal ;
         
         var newZsc = this.cellVolume.zInitVal*newPercX; 
@@ -673,16 +685,20 @@ define([
         this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
         $("#Aa").val(this.cellParameters.scaleZ); 
 
-      }
+      } 
 
-      // this.configureCellPoints(1);
+      var newPerc = 100*this.cellParameters.scaleX/this.cellVolume.xInitVal ;
+      this.menu.setSliderValue("cellVolume", 100);
+      this.menu.setSliderMin("cellVolume", 90 );
+      $("#cellVolume").val(100); 
+
     }
-
-    var newPerc = 100*this.cellParameters.scaleX/this.cellVolume.xInitVal ;
-    this.menu.setSliderValue("cellVolume", newPerc);
-    $("#cellVolume").val(newPerc);
+ 
+    this.configureCellPoints('manual'); // final fix
 
     this.manualAabc = false;
+
+    this.boxHelper(); // remove after testing 
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
      
@@ -700,7 +716,7 @@ define([
         if(par.Aa != undefined){ 
           this.cellParameters.scaleZ = parseFloat( par.Aa ); 
           // tangency check
-          this.configureCellPoints(1);  
+          this.configureCellPoints('manual');  
           if(this.globalTangency ||  true){ 
             var offset = this.checkInterMotifCollision('z', parseFloat(par.Aa) );
             this.cellParameters.scaleZ = offset ; 
@@ -728,7 +744,7 @@ define([
           this.cellParameters.scaleX = parseFloat( par.Ab );
           // tangency check
 
-          this.configureCellPoints(1);   
+          this.configureCellPoints('manual');   
           if(this.globalTangency){ 
             var offset = this.checkInterMotifCollision('x', parseFloat(par.Ab) ); 
             this.cellParameters.scaleX = offset ; 
@@ -746,7 +762,7 @@ define([
         else if(par.Ac != undefined){ 
           this.cellParameters.scaleY = parseFloat( par.Ac );
           // tangency check
-          this.configureCellPoints(1);
+          this.configureCellPoints('manual');
           if(this.globalTangency){    
             var offset = this.checkInterMotifCollision('y', parseFloat(par.Ac) ); 
             this.cellParameters.scaleY = offset ;
@@ -760,7 +776,7 @@ define([
           }
           par.Ac = this.cellParameters.scaleY ; // for recurrency of collision checks
         } 
-        this.configureCellPoints(1); //second time
+        this.configureCellPoints('manual'); //second time
         this.updateLatticeTypeRL();
   
         moreCollisions = this.checkForMoreColls(); 
@@ -776,11 +792,11 @@ define([
        
         this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , distance in CW : '+s.length());
       }
-
-      //this.boxHelper(); 
+       
+      
     ///////////////////////
     this.cellMutex = true ;
-    /////////////////////// 
+    ///////////////////////  
   };
   Motifeditor.prototype.giveInfo = function(string) {
      $('#infoBox').css('display', 'inline');
@@ -901,7 +917,7 @@ define([
     {
       withAngles = 1;
     }
- 
+    
     var _this = this ;
  
     if(axis === 'x'){  
@@ -1031,49 +1047,64 @@ define([
 
   Motifeditor.prototype.boxHelper = function( ){
     
-    var scene = UnitCellExplorer.getInstance().object3d;
-     
-    var g=0;
-    while(g<bbHelper.length) {   
-      scene.remove(bbHelper[g] );
-      g++;
-    }
-    var j = 0,_this = this;  
-    
-    var objs = new THREE.Object3D();
+    if(this.box3.bool === true) { 
 
-    this.motifsAtoms.push(this.newSphere);
-
-    while(j<_this.motifsAtoms.length) {   
-      objs.add(_this.motifsAtoms[j].object3d.clone() );
-      j++;
-    }
-      
-    _.each(_this.unitCellPositions, function(obj, reference) {  
+      var scene = UnitCellExplorer.getInstance().object3d;
+       
+      var g=0;
+      while(g<bbHelper.length) {   
+        scene.remove(bbHelper[g] );
+        g++;
+      }
+      var j = 0,_this = this;  
       
       var objs = new THREE.Object3D();
+    
+      while(j<_this.motifsAtoms.length) {
+        objs.add(_this.motifsAtoms[j].object3d.clone() );
+        j++;
+      }
+      var mm = new THREE.Mesh(new THREE.SphereGeometry(this.newSphere.getRadius(), 32, 32), new THREE.MeshPhongMaterial());
 
-      for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
+      if(this.newSphere.object3d !== undefined){
+        mm.position.set(this.newSphere.object3d.position.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z );
+      }
+      else{
+        mm.position.set(this.box3.pos.x, this.box3.pos.y, this.box3.pos.z );
 
-        if(_this.unitCellAtoms[i].latticeIndex == reference ){ 
-          objs.add(_this.unitCellAtoms[i].object3d.clone());
-        } 
-      };
+      }
 
-      var x2 = new THREE.BoundingBoxHelper( objs, 0xffffff );
- 
-      x2.update();
+      objs.add(mm);
 
-      scene.add( x2 );
+      _.each(_this.unitCellPositions, function(pos, k) {  
+         
+        var x2 = new THREE.BoundingBoxHelper( objs, 0xffffff );
+   
+        x2.update();
+        x2.position.x +=  pos.position.x;  
+        x2.position.y +=  pos.position.y;  
+        x2.position.z +=  pos.position.z; 
 
-      bbHelper.push( x2  );
+        scene.add( x2 );
 
-    });
- 
-    this.motifsAtoms.pop();
+        bbHelper.push( x2  );
+
+      });
+    }else{
+      var scene = UnitCellExplorer.getInstance().object3d; 
+      var g=0;
+      if(bbHelper.length > 1) {  
+        while(g<bbHelper.length) {   
+          scene.remove(bbHelper[g] );
+          g++;
+        }
+        bbHelper.splice(0);
+      } 
+    }
+    
 
   };
-  Motifeditor.prototype.fakeFixAtomPositionWithAngles = function(helperAtom, otherAtom,eqAtom,axis){
+  Motifeditor.prototype.fakeFixAtomPositionWithAngles = function(helperAtom, otherAtom, eqAtom, axis){
     var _this = this,sign = 1; 
 
     var atomOverlapping = helperAtom.object3d.position.clone();
@@ -1181,7 +1212,7 @@ define([
         if(par.cellAlpha != undefined){ 
           this.cellParameters.alpha = parseFloat( par.cellAlpha ); 
           // tangency check
-          this.configureCellPoints(1);  
+          this.configureCellPoints('manual');  
           if(this.globalTangency){ 
             var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
             this.cellParameters.alpha = offset.newVal ;
@@ -1197,7 +1228,7 @@ define([
           this.cellParameters.beta = parseFloat( par.cellBeta ); 
           // tangency check
            
-          this.configureCellPoints(1);  
+          this.configureCellPoints('manual');  
           if(this.globalTangency ){ 
             var offset = this.checkInterMotifCollision('beta', parseFloat(par.cellBeta) );
             this.cellParameters.beta = offset.newVal ;
@@ -1212,7 +1243,7 @@ define([
         else if(par.cellGamma != undefined){ 
           this.cellParameters.gamma = parseFloat( par.cellGamma ); 
           // tangency check
-          this.configureCellPoints(1);  
+          this.configureCellPoints('manual');  
           if(this.globalTangency){ 
             var offset = this.checkInterMotifCollision('gamma', parseFloat(par.cellGamma) );
             this.cellParameters.gamma = offset.newVal ;
@@ -1225,7 +1256,7 @@ define([
           } 
         }
         
-        this.configureCellPoints(1);  
+        this.configureCellPoints('manual');  
          
         this.updateLatticeTypeRL();
         moreCollisions = false;  
@@ -1452,7 +1483,7 @@ define([
           this.setDimsManually( { 'manualSetCellDims' : false });
           this.setAnglesManually( { 'manualSetCellAngles' : false });
           break;
-        case "deleteAtom":
+        case "deleteAtom": 
           this.removeFromUnitCell(this.newSphere.getID());
           this.newSphere.destroy();
           if(!_.isUndefined( this.motifsAtoms[0])) {   
@@ -1471,7 +1502,7 @@ define([
           PubSub.publish(events.EDITOR_STATE,"initial");
           this.initVolumeState(); 
           break;
-        case "cancel":
+        case "cancel": 
           this.removeFromUnitCell(this.newSphere.getID());
           this.newSphere.destroy();
           if(!_.isUndefined( this.motifsAtoms[0])) {
@@ -1666,9 +1697,12 @@ define([
     angles.phi = Math.atan(p.x/p.z) * (180/Math.PI);
     return angles;
   };   
+
+
+
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
-    
+     
     if(!_this.dragMode && _this.globalTangency){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
@@ -1785,6 +1819,20 @@ define([
         $("#rotAnglePhi").val((angles.phi).toFixed(4));
       }
     } 
+
+    if(this.padlock === true && this.globalTangency === true){
+    
+        
+
+      var _dimensions = this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
+
+      var dimensions = _this.calcABCforParticularCases(_dimensions);
+
+      // for volume reduce functionality 
+      this.initVolumeState();
+
+      }
+
   };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
     var _this = this ; 
@@ -1840,7 +1888,7 @@ define([
       if(a==360) a=0.000;
       $("#rotAngleZ").text(a); 
     } 
-          
+     
   };
   function calculateAngle(vec1, vec2){ 
     vec1.normalize();
@@ -1913,15 +1961,15 @@ define([
     if(_this.isEmpty) return; 
     var dimensions;
 
-    if( (!this.padlock && this.globalTangency === false) || manual != undefined){ 
+    if( (!this.padlock && this.globalTangency === false) || (manual != undefined)){ 
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
     else{ 
       if(_this.newSphere === undefined){
-        dimensions = _this.findMotifsDimensions(undefined, undefined, manual);  
+        dimensions = _this.findMotifsDimensions(undefined, undefined);  
       }
       else{
-        dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius(), manual);   
+        dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
       }
     }   
     this.revertShearing();
@@ -2149,7 +2197,7 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
     var dimensions, identity ;
-   
+    
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
       dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
     } 
@@ -2160,6 +2208,8 @@ define([
     if(_.isUndefined(restore)) _this.cellPointsWithScaling(dimensions, true); // todo fix that true 
     
     if(_.isUndefined(restore)) _this.cellPointsWithAngles();
+
+    this.box3.pos = pos;
 
     function createHelperObj(pos, radius, latticeIndex, x, y, z){
       var o = 
@@ -2399,22 +2449,13 @@ define([
       });   
     }
     _this.reconstructCellPoints(restore);  
+       
+    this.leastVolume(); 
     
-    // for volume reduce functionality
     this.cellVolume.xInitVal = this.cellParameters.scaleX;
     this.cellVolume.yInitVal = this.cellParameters.scaleY;
-    this.cellVolume.zInitVal = this.cellParameters.scaleZ;  
- 
-    this.leastVolume();
+    this.cellVolume.zInitVal = this.cellParameters.scaleZ;
 
-    // for volume reduce functionality
-    this.cellVolume.xInitVal = this.cellParameters.scaleX;
-    this.cellVolume.yInitVal = this.cellParameters.scaleY;
-    this.cellVolume.zInitVal = this.cellParameters.scaleZ;  
-    
-    $("#cellVolume").val(100);  
-    this.menu.setSliderValue("cellVolume", 100 ); 
- 
     if(_this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
@@ -2640,20 +2681,27 @@ define([
       if(this.unitCellAtoms[i].wireframe === undefined){ 
         this.unitCellAtoms.splice(i,1);
       }
-    };  
+    }; 
+ 
   }; 
   Motifeditor.prototype.leastVolume = function(){ 
-    
+ 
     var coll = false;
-    var percentage = 100; 
+    var percentage = 100;  
 
     while(coll === false && this.unitCellAtoms.length !== 0){
-      percentage -= 10; 
+  
+      percentage -= 1; 
       this.setManuallyCellVolume({ 'cellVolume' : percentage, 'trigger' : 'reducer'});
       if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){ 
         coll = true;
       }
     }   
+
+    $("#cellVolume").val(100);  
+    this.menu.setSliderValue("cellVolume", 100 );
+    this.menu.setSliderMin("cellVolume", 90 );
+
   };
   Motifeditor.prototype.reconstructCellPoints = function(restore){
     var _this = this; 
@@ -2872,7 +2920,7 @@ define([
       }
     }
   };
-  Motifeditor.prototype.findMotifsDimensions = function(pos, radius, manual){
+  Motifeditor.prototype.findMotifsDimensions = function(pos, radius){
 
     var _this = this, offsets = {x : 0, y : 0, z : 0 }, myf ;   
        
@@ -4026,14 +4074,12 @@ define([
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
-      
-      if( _.isUndefined(restore) ) {
-        
-      } 
-       // for volume reduce functionality
+       
+      // for volume reduce functionality
       this.cellVolume.xInitVal = this.cellParameters.scaleX;
       this.cellVolume.yInitVal = this.cellParameters.scaleY;
-      this.cellVolume.zInitVal = this.cellParameters.scaleZ; 
+      this.cellVolume.zInitVal = this.cellParameters.scaleZ;  
+       // for volume reduce functionality 
       this.initVolumeState(); 
     }
 
@@ -4054,25 +4100,16 @@ define([
     }  
   }; 
 
-  Motifeditor.prototype.initVolumeState = function(){  
-      
-
+  Motifeditor.prototype.initVolumeState = function(){   
     this.leastVolume();
-
-    // for volume reduce functionality
-    this.cellVolume.xInitVal = this.cellParameters.scaleX;
-    this.cellVolume.yInitVal = this.cellParameters.scaleY;
-    this.cellVolume.zInitVal = this.cellParameters.scaleZ;  
     
-    this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
-    $("#Aa").val(this.cellParameters.scaleZ); 
-    this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
-    $("#Ac").val(this.cellParameters.scaleY); 
-    this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
-    $("#Ab").val(this.cellParameters.scaleX);
-  
     $("#cellVolume").val(100);   
     this.menu.setSliderValue("cellVolume", 100 ); 
+    this.menu.setSliderMin("cellVolume", 90 );
+
+    this.cellVolume.xInitVal = this.cellParameters.scaleX;
+    this.cellVolume.yInitVal = this.cellParameters.scaleY;
+    this.cellVolume.zInitVal = this.cellParameters.scaleZ;
 
   };
   Motifeditor.prototype.removeFromUnitCell = function( id ){  //
@@ -4197,16 +4234,15 @@ define([
             dims.xDim = 1.1 * LL;
             dims.yDim = 1.2 * LL;
           }
-          else if(_this.latticeType === 'face'){ Math.sqrt(2) * dims.xDim
-            dims.xDim = Math.sqrt(2) * dims.xDim  ;
-            dims.yDim = Math.sqrt(2) * dims.xDim ;
-            dims.zDim = Math.sqrt(2) * dims.xDim ;
+          else if(_this.latticeType === 'face'){  
+            dims.xDim = Math.sqrt(2) * dimensions.xDim * 1.1 ;
+            dims.yDim = Math.sqrt(2) * dimensions.yDim * 1.2 ;
+            dims.zDim = Math.sqrt(2) * dimensions.zDim   ;
           }
-          else if(_this.latticeType === 'body'){
-            var rr = 2*(_this.newSphere.getRadius());
-            dims.zDim = (2/Math.sqrt(3)) * dimensions.zDim * 1.1 ;
-            dims.xDim = (2/Math.sqrt(3)) * dimensions.xDim * 1.2 ;
-            dims.yDim = (2/Math.sqrt(3)) * dimensions.yDim * 1.3 ;
+          else if(_this.latticeType === 'body'){ 
+            dims.zDim = (2/Math.sqrt(3)) * dimensions.zDim 
+            dims.xDim = (2/Math.sqrt(3)) * dimensions.xDim * 1.1 ;
+            dims.yDim = (2/Math.sqrt(3)) * dimensions.yDim * 1.2 ;
           } 
           else if(_this.latticeType === 'base'){ 
             dims.zDim = Math.sqrt(2) * dims.zDim ;
@@ -4299,11 +4335,22 @@ define([
   Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate){ 
     var _this = this; 
 
-    var dimensions = ((( !this.padlock  && (this.globalTangency === false)) || this.manualAabc || this.manualAlphBtGmm) ) ? _dimensions : _this.calcABCforParticularCases(_dimensions);
+    var dimensions;
+    if((( !this.padlock  && (this.globalTangency === false)) || this.manualAabc || this.manualAlphBtGmm) ){
+      dimensions = _dimensions ;  
+    }
+    else{  
+      dimensions = _this.calcABCforParticularCases(_dimensions);
 
-    _this.cellParameters.scaleX = dimensions.xDim;
-    _this.cellParameters.scaleY = dimensions.yDim;
-    _this.cellParameters.scaleZ = dimensions.zDim;
+      // store initial values for reduce volume feature
+      this.cellVolume.xInitVal = dimensions.xDim;
+      this.cellVolume.yInitVal = dimensions.yDim;
+      this.cellVolume.zInitVal = dimensions.zDim; 
+    } 
+
+    this.cellParameters.scaleX = dimensions.xDim;
+    this.cellParameters.scaleY = dimensions.yDim;
+    this.cellParameters.scaleZ = dimensions.zDim;
 
     if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
 
