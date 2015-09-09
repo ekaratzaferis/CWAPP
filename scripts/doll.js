@@ -16,20 +16,18 @@ define([
   DollExplorer 
   
 ) { 
-  var raycaster = new THREE.Raycaster(); 
-  var mouse = new THREE.Vector2(); 
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
   var dollHolderOffMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }); 
   var dollHolderOnMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolder.png' )) }); 
 
-  function Doll( doll, camera, crystalOrbit, lattice, animationMachine , dollHolder, keyboard, soundMachine) {
+  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
-    
-    this.doll = doll;
-    this.soundMachine = soundMachine;
-    this.dollHolder = dollHolder;
-    this.keyboard = keyboard;
+     
+    this.soundMachine = soundMachine; 
+    this.keyboard = keyboard; 
     this.dollOn = false;
     this.camera = camera;
     this.lattice = lattice;
@@ -43,12 +41,32 @@ define([
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
-      new THREE.MeshBasicMaterial( { transparent: true, opacity : 0.1, color: "#"+((1<<24)*Math.random()|0).toString(16)  } )
+      new THREE.MeshBasicMaterial( { transparent: true, opacity : 0.1   } )
     ); 
     this.plane.object3d.visible = false; 
-    this.plane.object3d.lookAt(camera.position);
+    this.plane.object3d.lookAt(this.camera.position);
  
     DollExplorer.add(this.plane);
+
+    /// doll icon
+
+    this.dollHolder = new THREE.Mesh( new THREE.PlaneBufferGeometry(2,2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }) );  
+    this.dollHolder.name = 'dollHolder';
+    this.dollHolder.position.set(0,0,0); 
+
+    this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(2,2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
+    this.doll.name = 'doll';
+    this.doll.visible = false;
+    this.doll.position.z =  -0.1;  
+    this.xIntersect = 0;
+
+    DollExplorer.add( { object3d : this.doll });
+    DollExplorer.add( { object3d :this.dollHolder });
+ 
+    //var cameraHelper = new THREE.CameraHelper(camera); 
+    //DollExplorer.add( { object3d :cameraHelper}); 
+   
+    this.rePosition();
 
     var mMoove = this.onDocumentMouseMove.bind(this) ;
     var mDown  = this.onDocumentMouseDown.bind(this) ;
@@ -57,9 +75,26 @@ define([
     document.getElementById('crystalRenderer').addEventListener("mousemove", mMoove, false);
     document.getElementById('crystalRenderer').addEventListener("mousedown",  mDown, false);
     document.getElementById('crystalRenderer').addEventListener("mouseup"  ,    mUp, false);
-     
+
   }; 
 
+  Doll.prototype.rePosition = function(){  
+    var frustum = new THREE.Frustum(); 
+
+    this.camera.updateProjectionMatrix();
+
+    frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) ); 
+
+    for (var i = frustum.planes.length - 1; i >= 0; i--) {    
+      var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(-1000,0,0) ) ) ; 
+     
+      if(px !== undefined ) {  
+        this.xIntersect = px.x;
+        this.doll.position.x = this.xIntersect + 9;
+        this.dollHolder.position.x = this.xIntersect + 5.5 ; 
+      } 
+    };
+  }
   Doll.prototype.setAtomUnderDoll = function(atom){  
     this.atomUnderDoll = atom ;  
   };
@@ -158,8 +193,7 @@ define([
         if(this.dollOn){
           intersects[0].object.material = dollHolderOffMat ;
           this.dollOn = false;
-          this.doll.visible = false;
-          this.doll.position.z = -100000000;  
+          this.doll.visible = false; 
 
           this.animationMachine.doll_toAtomMovement = undefined ;
           this.keyboard.dollmode = false;
@@ -171,8 +205,7 @@ define([
         } 
         else{
           intersects[0].object.material = dollHolderOnMat ;
-          this.dollOn = true;
-          this.doll.position.set(($('#app-container').width())/-1150 + 0.1,0,0);  
+          this.dollOn = true; 
           this.doll.visible = true;
       
         }
@@ -250,6 +283,7 @@ define([
         newCamPos.z - this.crystalOrbit.camera.position.z 
       )
     }; 
+    this.rePosition();
   };
 
   return Doll;

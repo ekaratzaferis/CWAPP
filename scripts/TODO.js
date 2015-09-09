@@ -1,11 +1,8 @@
  
 TODOs UI alexandros
     1. delete setting values to inputs (automated process from slider)
-    
-New features
-    1. slider to change the volume of vurrent Unit cell
-    2. every time user adds atom it begins in minified cell
-    3. mp3s to load asynchronously 
+    2. alex has to add leap motion div
+      
 
 TODO list 
 
@@ -37,7 +34,7 @@ TODO list
     30. When go bak to classic view from subtracted in cell, distances appear.
     31. Add loader which freezes mouse events 
     32. When applying new motif to crystal auto position camera far from crystal.
-    
+    33. speed of WASD to be analogous to crystal size or analogous to the distance of the center
     -- when moving atom with sliders and collides unit cell atoms do not get tangent
     
 VISUALIZATION TODOs

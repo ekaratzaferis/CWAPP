@@ -21,6 +21,9 @@
 
     <script data-main="scripts/main" src="vendor/require.js"></script> <!-- loads main.js file -->
     <script data-main="scripts/main" src="vendor/jscolor/jscolor.js"></script>
+    
+    <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"> 
+    </div> <!-- temporary -->
 
     <div class="container-fluid">
       <section>
@@ -36,7 +39,8 @@
               <div id="motifPosX"  style="display: table-cell;"></div>
               <div id="motifPosY"  style="display: table-cell;"></div>
               <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
-            </div>              
+            </div> 
+            <div id="leapIcon" style = "display : block; background-image: url('Images/leapicon.png'); position: absolute; z-index:11; "></div>             
           </div> 
           <div id="infoBox" > </div>
           <div class="col-md-3 right-panel" id="controls">

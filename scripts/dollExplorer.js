@@ -16,19 +16,8 @@ define([
   };
 
   function dollExplorer(options) {
-    options = options || {};
-    var width = jQuery('#app-container').width() ;
-    var height = jQuery(window).height() ; 
-      
-    this.dollHolder = new THREE.Mesh( new THREE.PlaneBufferGeometry(0.08,0.08), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }) );  
-    this.dollHolder.name = 'dollHolder';
-    this.dollHolder.position.set(-1,0,0); 
-
-    this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(0.05,0.05), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
-    this.doll.name = 'doll';
-    this.doll.visible = false;
-    this.doll.position.z = -10000000000;  
-
+    options = options || {}; 
+       
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
@@ -38,8 +27,6 @@ define([
     });
 
     this.object3d = new THREE.Scene();
-    this.object3d.add( this.doll );
-    this.object3d.add( this.dollHolder );
 
   }  
   dollExplorer.prototype.add = function(object) {

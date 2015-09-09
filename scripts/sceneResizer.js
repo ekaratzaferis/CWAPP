@@ -9,15 +9,26 @@ define([
   _
 ) { 
 
-  function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer ) {
+  function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, hudDisplayFactor, dollEditor) {
+    
     this.crystalRenderer = crystalRenderer ;
     this.unitCellRenderer = unitCellRenderer ;
-    this.motifRenderer = motifRenderer ; 
- 
+    this.motifRenderer = motifRenderer ;   
+    this.hudDisplayFactor = hudDisplayFactor ;  
+    this.dollEditor = dollEditor ;  
   };
 
-  SceneResizer.prototype.resize = function(width, height, state){
-    width = jQuery('#app-container').width() ;
+  SceneResizer.prototype.resize = function(state){
+    var width = jQuery('#app-container').width() ;
+    var height = $(window).height() ;
+
+    $("#leapIcon").css({ 
+      "width": width/15,
+      "height": width/30,  
+      "right": 5,  
+      "top": 5,  
+     "background-size": (width/15)+"px "+(width/30)+"px"
+    });
 
     if( state === 'motifScreen'){
       this.crystalRenderer.changeContainerDimensions(width/2, height/2);
@@ -43,10 +54,13 @@ define([
 
       $('#motifPosZ').css( "width", width/3 );
       $('#motifPosZ').css( "height", height/2 );
-
+ 
+      $('#hudRendererCube').width((0.5 * 1.5 * width) / this.hudDisplayFactor);
+      $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor);
+      
     }
     else{
-      this.crystalRenderer.changeContainerDimensions(width,height);
+      this.crystalRenderer.changeContainerDimensions(width, height);
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0); 
 
@@ -69,9 +83,12 @@ define([
       $('#motifPosZ').css( "width", 0 );
       $('#motifPosZ').css( "height", 0 );
       
-    }
+      $('#hudRendererCube').width(width/this.hudDisplayFactor);
+      $('#hudRendererCube').height(height/this.hudDisplayFactor);
 
+    }
     
+    this.dollEditor.rePosition();
   };
  
   return SceneResizer;

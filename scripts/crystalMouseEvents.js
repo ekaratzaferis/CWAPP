@@ -20,7 +20,7 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2();
 
-  function CrystalMouseEvents( client, func, _camera, domElement, state, dollMachine ) {
+  function CrystalMouseEvents( client, func, _camera, domElement, state, dollEditor ) {
     this.plane = {'object3d' : undefined} ;
     this.camera = _camera;
     this.container = domElement; 
@@ -29,7 +29,7 @@ define([
     this.client = client ;
     this.state = state ;
     var _this =this ;
-    this.dollMachine = dollMachine;
+    this.dollEditor = dollEditor;
     this.offset = new THREE.Vector3(); 
 
     var mMoove = this.onDocumentMouseMove.bind(this) ; 
@@ -57,7 +57,7 @@ define([
      
     if ( crystalobjsIntersects.length > 0 ) {
 
-      if(crystalobjsIntersects[0].object.parent.name === 'atom') this.dollMachine.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
+      if(crystalobjsIntersects[0].object.parent.name === 'atom') this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
 
       var obj = crystalobjsIntersects[0].object ;
 
@@ -67,7 +67,7 @@ define([
        
     } 
     else{
-      this.dollMachine.setAtomUnderDoll(undefined);
+      this.dollEditor.setAtomUnderDoll(undefined);
       $('#infoBox').css('display', 'none');
     }
   }

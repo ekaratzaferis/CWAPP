@@ -28,7 +28,7 @@ define([
     this.orbitControls = orbitControls; 
     this.objects = [] ;
     this.camera = _camera ;
-    this.motifEditor = motifEditor ;
+    this.motifEditor = motifEditor ;  
     var _this =this;
 
     this.offset = new THREE.Vector3();
@@ -89,18 +89,20 @@ define([
       mouse.y = (  3 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) );  
     } 
     else if(this.container === 'hudRendererCube' ) {
+       
+      var contWidth = $('#hudRendererCube').width() ;
+      var contHeight = $('#hudRendererCube').height() ;
+      var crCanvWidth = $('#crystalRenderer').width(); 
 
-      var contWidth = $('#crystalRenderer').width() ;
-       
-      if(contWidth < 800 ){
-        mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) );  
+      if($('#motifPosZ').width() === 0){  
+        mouse.x =  -1 + 2 * ( event.clientX / contWidth );
+        mouse.y =   1 - 2 * (  event.clientY  / contHeight ); 
       }
-      else{  
-        mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      else{
+        mouse.x =  -1 + 2 * ( (event.clientX - crCanvWidth)/ contWidth );
+        mouse.y =   1 - 2 * ( event.clientY  / contHeight ); 
       }
-       
+            
       raycaster.setFromCamera( mouse, _this.camera );
        
       var intersects = raycaster.intersectObjects( _this.getAtoms() );
@@ -234,18 +236,20 @@ define([
       }
      }
      else if(this.func === 'navCubeDetect'){
+ 
+      var contWidth = $('#hudRendererCube').width() ;
+      var contHeight = $('#hudRendererCube').height() ;
+      var crCanvWidth = $('#crystalRenderer').width(); 
 
-      var contWidth = $('#crystalRenderer').width() ;
-       
-      if(contWidth < 800 ){
-        mouse.x = (  -7 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) );  
+      if($('#motifPosZ').width() === 0){  
+        mouse.x =  -1 + 2 * ( event.clientX / contWidth );
+        mouse.y =   1 - 2 * (  event.clientY  / contHeight ); 
       }
-      else{  
-        mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
-        mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
+      else{
+        mouse.x =  -1 + 2 * ( (event.clientX - crCanvWidth)/ contWidth );
+        mouse.y =   1 - 2 * ( event.clientY  / contHeight ); 
       }
-    
+ 
       raycaster.setFromCamera( mouse, _this.camera );
        
       var intersects = raycaster.intersectObjects( _this.getAtoms() );

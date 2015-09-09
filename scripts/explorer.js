@@ -151,12 +151,11 @@ define([
     var bmat = new THREE.SpriteMaterial( { map: btext, color: 0xffffff, fog: true } );
     this.bSprite = new THREE.Sprite( bmat ); 
     this.object3d.add( this.bSprite );
-
+ 
     this.aSprite.visible = false;
     this.bSprite.visible = false;
     this.cSprite.visible = false; 
      
-
   };
 
   Explorer.prototype.updateXYZlabelPos = function(camera){

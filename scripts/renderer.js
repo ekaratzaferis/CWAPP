@@ -17,11 +17,12 @@ define([
     ANIMATION_UPDATE: 'renderer.animation_update'
   };
 
-  function Renderer( scene, container, type ) {
+  function Renderer(scene, container, type) {
      
     var width = (type==='crystal') ? jQuery('#app-container').width() : 0;
     var height = (type==='crystal') ? jQuery(window).height() : 0; 
 
+    this.rType = type;
     this.containerWidth = width ;
     this.containerHeight = height ;
     this.scene = scene.object3d;
@@ -120,7 +121,7 @@ define([
       return;
     }
     window.requestAnimationFrame(this.animate.bind(this));
-    PubSub.publish(events.ANIMATION_UPDATE + '_' + 'explorer', true);
+    PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
     if(this.rS !== undefined){ 
       this.rS( 'frame' ).start();
@@ -141,7 +142,9 @@ define([
     }
 
     if(this.cameras.length === 1){ 
-      if(this.container === 'unitCellRenderer') this.renderer.clear();
+      if(this.container === 'unitCellRenderer') {
+        this.renderer.clear();
+      }
 
       this.cameras[0].aspect =this.containerWidth/this.containerHeight;
       this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
@@ -159,9 +162,10 @@ define([
           this.renderer.render( this.scene, this.cameras[0], undefined, true);
 
           if(this.doll !== undefined){  
-            this.dollCamera.aspect = this.containerWidth/this.containerHeight;  
-            this.dollCamera.updateProjectionMatrix();
-            this.renderer.setClearColor( 0x000000 );
+            this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
+            this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
+            this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
+            this.dollCamera.updateProjectionMatrix();  
             this.renderer.render( this.dollScene, this.dollCamera);        
           }
 
@@ -175,48 +179,90 @@ define([
       // hud arrows
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
-        if(this.containerWidth < 800 ){ 
-          this.hudCamera.aspect = (this.containerWidth)/(this.containerHeight);
-          this.renderer.setViewport(0, 0,  this.containerWidth/3, this.containerHeight/3 );
-          this.renderer.setScissor( 0, 0,  this.containerWidth/3, this.containerHeight/3 );
+        if(this.containerWidth < 800 ){  
+          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
+          this.renderer.setViewport(
+            0, 
+            0,  
+            1.2 * 1.5 * this.containerWidth/this.displayFactor, 
+            1.2 * 1.5 * this.containerHeight/this.displayFactor  
+          );
+
+          this.renderer.setScissor( 
+            0, 
+            0,  
+            (1.2 * 1.5 * this.containerWidth)/this.displayFactor, 
+            (1.2 * 1.5 * this.containerHeight)/this.displayFactor  
+          ); 
         }
         else{ 
-          this.hudCamera.aspect = (this.containerWidth)/(this.containerHeight); 
-          this.renderer.setViewport(0, 0,  this.containerWidth/4, this.containerHeight/4 );
-          this.renderer.setScissor( 0, 0,  this.containerWidth/4, this.containerHeight/4 );
+          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
+          this.renderer.setViewport(
+            0, 
+            0,  
+            1.2 * this.containerWidth/this.displayFactor, 
+            1.2 * this.containerHeight/this.displayFactor  
+          );
+
+          this.renderer.setScissor( 
+            0, 
+            0,  
+            1.2 * this.containerWidth/this.displayFactor, 
+            1.2 * this.containerHeight/this.displayFactor  
+          ); 
+ 
         }
         
         this.renderer.enableScissorTest ( true );  
          
         this.hudCamera.updateProjectionMatrix();
 
-        this.renderer.setClearColor( this.backgroundColor  );
+        this.renderer.setClearColor( this.backgroundColor );
         this.renderer.render( this.hudScene, this.hudCamera);
          
       }
       // hud cube
       if(this.hudCameraCube !== undefined ){  
           
-        if(this.containerWidth < 800 ){ 
+        if(this.containerWidth < 800 ){  
           this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
-          this.renderer.setViewport(0, this.containerHeight*2/3,  this.containerWidth/3, this.containerHeight/3  );
-          this.renderer.setScissor( 0, this.containerHeight*2/3,  this.containerWidth/3, this.containerHeight/3  );
-          $('#hudRendererCube').width(this.containerWidth/3);
-          $('#hudRendererCube').height(this.containerHeight/3);
+          this.renderer.setViewport(
+            0, 
+            this.containerHeight - 1.5 * this.containerHeight/this.displayFactor,  
+            1.5 * this.containerWidth/this.displayFactor, 
+            1.5 * this.containerHeight/this.displayFactor  
+          );
+
+          this.renderer.setScissor( 
+            0, 
+            this.containerHeight - (1.5 * this.containerHeight)/this.displayFactor,  
+            (1.5 * this.containerWidth)/this.displayFactor, 
+            (1.5 * this.containerHeight)/this.displayFactor  
+          ); 
         }
         else{ 
           this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
-          this.renderer.setViewport(0, this.containerHeight*4/5,  this.containerWidth/5, this.containerHeight/5  );
-          this.renderer.setScissor( 0, this.containerHeight*4/5,  this.containerWidth/5, this.containerHeight/5  );
-          $('#hudRendererCube').width(this.containerWidth/5);
-          $('#hudRendererCube').height(this.containerHeight/5);
+          this.renderer.setViewport(
+            0, 
+            this.containerHeight - this.containerHeight/this.displayFactor,  
+            this.containerWidth/this.displayFactor, 
+            this.containerHeight/this.displayFactor  
+          );
+
+          this.renderer.setScissor( 
+            0, 
+            this.containerHeight - this.containerHeight/this.displayFactor,  
+            this.containerWidth/this.displayFactor, 
+            this.containerHeight/this.displayFactor  
+          ); 
+ 
         }
         
         this.renderer.enableScissorTest ( true ); 
 
         this.renderer.setClearColor( this.backgroundColor ); 
         this.hudCameraCube.updateProjectionMatrix();
-          
+        
         this.renderer.render( this.hudSceneCube, this.hudCameraCube);
         
         var arrowL = this.hudSceneCube.getObjectByName( "arrowLine" );
@@ -268,20 +314,32 @@ define([
 
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
-    };
+    }; 
   };
   Renderer.prototype.setDoll = function(scene, doll) { 
-    this.doll = doll;
-    this.dollScene = scene;
-    this.dollCamera = new THREE.PerspectiveCamera(75, 1, 0.1 , 100); 
-    this.dollCamera.lookAt(new THREE.Vector3(0,0,0));
-    this.dollCamera.position.set(0, 0, 1); 
-    this.dollCamera.aspect = this.containerWidth/this.containerHeight;  
+    if( doll !== undefined) {
+      this.doll = doll;
+    } 
+    else { 
+      this.dollScene = scene;
+      this.dollCamera = new THREE.PerspectiveCamera(90, 1, 0.1 , 1000); 
+      this.dollCamera.lookAt(new THREE.Vector3(0,0,0));
+      this.dollCamera.position.set(0,0,20); 
+      this.dollCamera.aspect = this.containerWidth/this.containerHeight;  
 
-    this.dollScene.add(this.dollCamera);
+      this.dollScene.add(this.dollCamera);
+    }
+
+    if(this.doll !== undefined){  
+      this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
+      this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
+      this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
+      this.dollCamera.updateProjectionMatrix();  
+      this.renderer.render( this.dollScene, this.dollCamera);        
+    }
 
   };
-  Renderer.prototype.initHud = function(scene1, scene2) {  
+  Renderer.prototype.initHud = function(scene1, scene2, displayFactor) {  
     this.hudScene = scene1; 
     this.hudCamera = new THREE.PerspectiveCamera(15, 1, 0.01 , 500);
     this.hudCamera.lookAt(new THREE.Vector3(0,0,0)); 
@@ -296,6 +354,7 @@ define([
     this.hudCameraCube.aspect = this.containerWidth/this.containerHeight;  
     this.hudSceneCube.add(this.hudCameraCube);
 
+    this.displayFactor = displayFactor;
   }; 
   Renderer.prototype.getHudCameraCube = function() {
      
@@ -312,7 +371,7 @@ define([
      return this.cameras[x];
   };
   Renderer.prototype.onAnimationUpdate = function(callback) { 
-    PubSub.subscribe(events.ANIMATION_UPDATE + '_' + 'explorer', callback);
+    PubSub.subscribe(events.ANIMATION_UPDATE + '_' + this.rType, callback);
   }; 
   Renderer.prototype.renderHud = function(mode) {   // preserveDrawingBuffer: true
     //this.renderer.render( this.hudScene, this.hudCamera);

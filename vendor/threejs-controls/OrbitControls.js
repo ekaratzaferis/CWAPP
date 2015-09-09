@@ -140,7 +140,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	};
 
 	this.rotateUp = function ( angle ) {
-		console.log(angle);
+		 
 		if ( angle === undefined ) {
 
 			angle = getAutoRotationAngle();
@@ -267,7 +267,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		    			this.rotateUp(0); 
 					}
 					else{   
-						var x = (phi<this.myPhi) ? -1 : 1 ;
+						var x = (phi < this.myPhi) ? -1 : 1 ;
 		    			this.rotateUp( x * 0.5 * Math.PI/180);  
 					}
 				break;

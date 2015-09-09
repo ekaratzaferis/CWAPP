@@ -43,8 +43,7 @@ define([
     return this.camName ;
   };
   Orbit.prototype.setThetaPhi = function(theta,phi) {
-    console.log(theta);
-    console.log(phi);
+    // these are for constant rotate not direct values for setting the camera
     this.theta = theta;
     this.phi = phi;
     this.control.myTheta = this.theta ;

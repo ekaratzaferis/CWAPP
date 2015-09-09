@@ -10,7 +10,7 @@ define([
   _
 ) {
   
-  var mp3names = ['crystalCenter', 'cellCollision', 'atomCollision', 'popOutOfAtom', 'dollHolder', 'atomUnderDoll', 'navCube', 'dollArrived'];
+  var mp3names = ['crystalCenter', 'cellCollision', 'atomCollision', 'popOutOfAtom', 'dollHolder', 'atomUnderDoll', 'navCube', 'dollArrived', 'leapGrab', 'leapNoGrab'];
 
   function Sound(animationMachine) {
 

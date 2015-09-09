@@ -155,8 +155,8 @@ require([
   var hudCube = new NavCube(navCubeScene.object3d, lattice);
  
   //  WebGL Renderers and cameras
-   
-  crystalRenderer.initHud(navArrowsScene.object3d, navCubeScene.object3d);
+  var displayFactor = 6 ; // changes how big or small will be the Hud 
+  crystalRenderer.initHud(navArrowsScene.object3d, navCubeScene.object3d, displayFactor);
 
   var unitCellRenderer = new Renderer(unitCellScene, 'unitCellRenderer', 'cell');
   unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
@@ -212,24 +212,29 @@ require([
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
 
   // CW Doll
-  var dollScene = DollExplorer.getInstance(); 
-  crystalRenderer.setDoll(dollScene.object3d, dollScene.doll);
-  var dollMachine = new Doll(dollScene.doll, crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, dollScene.dollHolder, keyboard, soundMachine);
-  
-  // mouse events happen in crytal screen 
-  var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollMachine);
+  var dollScene = DollExplorer.getInstance();  
+  crystalRenderer.setDoll(dollScene.object3d ); 
+  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine);
+  crystalRenderer.setDoll(undefined, dollEditor.doll);  
+  dollEditor.rePosition();
 
+  // mouse events happen in crytal screen 
+  var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollEditor);
+
+  // full screen
   var fullScreen = new FullScreen();
 
   // resizer
-  var sceneResizer = new SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer);
-
+  var sceneResizer = new SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, displayFactor, dollEditor);
+  $( document ).ready(function() {
+    sceneResizer.resize( 'crystal');
+  });
   window.addEventListener('resize', function () {
-    sceneResizer.resize( $(window).width(), $(window).height(), crystalScreenEvents.state);
+    sceneResizer.resize( crystalScreenEvents.state);
   }, false);
 
   // leap motion
-  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal);
+  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal, soundMachine, dollEditor, keyboard);
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -386,29 +391,8 @@ require([
     } 
     if($(this).attr('id') === "motifLI" ){     
       
-      $('#crystalRenderer').width(width/2);
-      $('#crystalRenderer').height(height/2);
-      $('#crystalRenderer').css( "left", width/2 );
-
-      $('#unitCellRenderer').width(width/2);
-      $('#unitCellRenderer').height(height/2);
-
-      $('#motifRenderer').width(width);
-      $('#motifRenderer').height(height/2);
-      $('#motifRenderer').css( "top", height/2 );
-
-      $('#motifPosX').css( "width", width/3 );
-      $('#motifPosX').css( "height", height/2 );
-
-      $('#motifPosY').css( "width", width/3 );
-      $('#motifPosY').css( "height", height/2 );
-
-      $('#motifPosZ').css( "width", width/3 );
-      $('#motifPosZ').css( "height", height/2 );
-      
-      crystalRenderer.changeContainerDimensions(width/2, height/2);
-      unitCellRenderer.changeContainerDimensions(width/2, height/2);
-      motifRenderer.changeContainerDimensions(width, height/2);  
+      sceneResizer.resize('motifScreen');
+        
       unitCellRenderer.startAnimation();                                                                    
       motifRenderer.startAnimation(); 
       motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName(), lattice.getLatticeSystem());
@@ -416,25 +400,9 @@ require([
       crystalScreenEvents.state = 'motifScreen';
     }
     else{  
-      $('#crystalRenderer').width(width);
-      $('#crystalRenderer').height(height);
-      $('#crystalRenderer').css( "left", 0 );
 
-      $('#unitCellRenderer').width(0);
-      $('#unitCellRenderer').height(0);
-
-      $('#motifRenderer').width(0); 
-      $('#motifRenderer').height(0);
-
-      $('#motifPosX').css( "width", 0 );
-      $('#motifPosX').css( "height", 0 );
-
-      $('#motifPosY').css( "width", 0 );
-      $('#motifPosY').css( "height", 0 );
-
-      $('#motifPosZ').css( "width", 0 );
-      $('#motifPosZ').css( "height", 0 );
-
+      sceneResizer.resize('crystal');
+       
       crystalRenderer.changeContainerDimensions(width,height);
       unitCellRenderer.changeContainerDimensions(0,0);
       motifRenderer.changeContainerDimensions(0, 0);
