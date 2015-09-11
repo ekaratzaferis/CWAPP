@@ -17,11 +17,11 @@ define([
   
 ) { 
   var raycaster = new THREE.Raycaster();
-  var mouse = new THREE.Vector2();
-  var dollHolderOffMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }); 
-  var dollHolderOnMat = new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolder.png' )) }); 
+  var mouse = new THREE.Vector2();  
+  var yPosGearSlider = [-5.7 , -4.35 , -3 , -1.65 , -0.30];
+  var levelNames = [ 'Lattice Points', 'The motif', 'The cropped unit cell', 'Whole unit cell', 'the crystal' ];
 
-  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine) {
+  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
@@ -32,12 +32,17 @@ define([
     this.camera = camera;
     this.lattice = lattice;
     this.animationMachine = animationMachine;
+    this.gearTour = gearTour;
     this.container = 'crystalRenderer';
     this.INTERSECTED;
     this.SELECTED;
     this.offset = new THREE.Vector3();
     this.crystalOrbit = crystalOrbit;
     this.atomUnderDoll ; 
+    this.objsToIntersect = [];
+    this.gearState = 1;
+    this.levels = [];
+    this.levelLabels = [];
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -48,24 +53,58 @@ define([
  
     DollExplorer.add(this.plane);
 
-    /// doll icon
+    /// doll icon  
+ 
+    this.dollHolder = createDollHolder();
+    
+    this.dollHolder.position.y = 4;  
 
-    this.dollHolder = new THREE.Mesh( new THREE.PlaneBufferGeometry(2,2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/dollHolderOff.png' )) }) );  
-    this.dollHolder.name = 'dollHolder';
-    this.dollHolder.position.set(0,0,0); 
-
-    this.doll = new THREE.Mesh( new THREE.PlaneBufferGeometry(2,2), new THREE.MeshBasicMaterial( { transparent : true, map: (THREE.ImageUtils.loadTexture( 'Images/doll.png' )) }) );  
+    this.doll = createDoll();   
     this.doll.name = 'doll';
     this.doll.visible = false;
-    this.doll.position.z =  -0.1;  
-    this.xIntersect = 0;
+    this.doll.position.y =  4;  
 
     DollExplorer.add( { object3d : this.doll });
+    this.objsToIntersect.push(this.doll);
+
     DollExplorer.add( { object3d :this.dollHolder });
- 
-    //var cameraHelper = new THREE.CameraHelper(camera); 
-    //DollExplorer.add( { object3d :cameraHelper}); 
-   
+    this.objsToIntersect.push(this.dollHolder);
+
+    this.gearBar = createGearBar(); 
+    this.gearBarSlider = createGearBarSlider(); 
+    this.gearBarSlider.position.y = -5.7;
+    
+    DollExplorer.add( { object3d :this.gearBar });
+    this.objsToIntersect.push(this.gearBar);
+
+    DollExplorer.add( { object3d :this.gearBarSlider });
+    this.objsToIntersect.push(this.gearBarSlider);
+
+    for (var i = 0; i < yPosGearSlider.length ; i++) {
+      var m = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.2,0.75), new THREE.MeshBasicMaterial({ transparent: true, opacity : 0.5, color: 0xffffff}) );
+      m.position.y = yPosGearSlider[i];
+      m.name = i;
+      m.visible = false;
+      DollExplorer.add({object3d : m});
+      this.levels[i] = m ;
+      this.objsToIntersect.push(m);
+    };
+
+    for (var g = 0; g < levelNames.length ; g++) {
+      this.levelLabels[g] = makeTextSprite(
+        levelNames[g],  
+        { 
+          fontsize: 100, 
+          fontface: "Arial", 
+          borderColor: {r:0, g:128, b:255, a:1.0},  
+          fontColor: {r:0, g:128, b:255, a:1.0} 
+        } 
+      );
+      this.levelLabels[g].position.y = yPosGearSlider[i]; 
+      this.levelLabels[g].lookAt(this.camera);
+      DollExplorer.add({object3d : this.levelLabels[g]});
+    };
+        
     this.rePosition();
 
     var mMoove = this.onDocumentMouseMove.bind(this) ;
@@ -77,11 +116,226 @@ define([
     document.getElementById('crystalRenderer').addEventListener("mouseup"  ,    mUp, false);
 
   }; 
+  function createGearBarSlider(){
 
+    var obj = new THREE.Object3D();
+
+    var sliderG = new THREE.Geometry();
+    var v1 = new THREE.Vector3(-0.6 ,  0.3,  0);
+    var v2 = new THREE.Vector3(-0.6 , -0.3,  0); 
+    var v3 = new THREE.Vector3( 0.6 , -0.3,  0);  
+    var v4 = new THREE.Vector3( 0.6 ,  0.3,  0);  
+     
+    sliderG.vertices.push(v1);
+    sliderG.vertices.push(v2);
+    sliderG.vertices.push(v3);
+    sliderG.vertices.push(v4);
+    
+    sliderG.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    sliderG.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    sliderG.computeFaceNormals(); 
+    
+    var slider = new THREE.Mesh( sliderG, new THREE.MeshBasicMaterial({ color: /*0xC8C2CE */ 0xE3E3E4}) );
+    slider.name = 'gearBarSlider';  
+
+    obj.add(slider);
+    return obj;
+  };
+
+  function createGearBar(){
+
+    var obj = new THREE.Object3D();
+
+    // line 
+    var lineG = new THREE.Geometry();
+    var Lv1 = new THREE.Vector3(-0.15,  0,  0);
+    var Lv2 = new THREE.Vector3(-0.15, -6,  0); 
+    var Lv3 = new THREE.Vector3( 0.15, -6,  0);  
+    var Lv4 = new THREE.Vector3( 0.15,  0,  0);  
+     
+    lineG.vertices.push(Lv1);
+    lineG.vertices.push(Lv2);
+    lineG.vertices.push(Lv3);
+    lineG.vertices.push(Lv4);
+    
+    lineG.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    lineG.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    lineG.computeFaceNormals(); 
+    
+    var line = new THREE.Mesh( lineG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    line.name = 'line'; 
+ 
+    obj.add(line);
+     
+    // plus plane
+    var plusSquareG = new THREE.Geometry();
+    var Sv1 = new THREE.Vector3(-0.6 ,  0.6,  0);
+    var Sv2 = new THREE.Vector3(-0.6 , -0.6,  0); 
+    var Sv3 = new THREE.Vector3( 0.6 , -0.6,  0);  
+    var Sv4 = new THREE.Vector3( 0.6 ,  0.6,  0);  
+     
+    plusSquareG.vertices.push(Sv1);
+    plusSquareG.vertices.push(Sv2);
+    plusSquareG.vertices.push(Sv3);
+    plusSquareG.vertices.push(Sv4);
+    
+    plusSquareG.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    plusSquareG.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    plusSquareG.computeFaceNormals(); 
+    
+    var plusSquare = new THREE.Mesh( plusSquareG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    plusSquare.name = 'plus'; 
+    plusSquare.position.y = 0.6 ; 
+
+    // plus symbol
+    var plusSquareGp = new THREE.Geometry(); 
+    var Pv1 = new THREE.Vector3(-0.4 ,  0.1,  0);
+    var Pv2 = new THREE.Vector3(-0.4 , -0.1,  0); 
+    var Pv3 = new THREE.Vector3( 0.4 , -0.1,  0);  
+    var Pv4 = new THREE.Vector3( 0.4 ,  0.1,  0);
+
+    var Pv5 = new THREE.Vector3( -0.1 ,   0.4,  0);
+    var Pv6 = new THREE.Vector3( -0.1 ,  -0.4,  0);
+    var Pv7 = new THREE.Vector3(  0.1 ,  -0.4,  0);
+    var Pv8 = new THREE.Vector3(  0.1 ,   0.4,  0);
+
+    plusSquareGp.vertices.push(Pv1);
+    plusSquareGp.vertices.push(Pv2);
+    plusSquareGp.vertices.push(Pv3);
+    plusSquareGp.vertices.push(Pv4);
+
+    plusSquareGp.vertices.push(Pv5);
+    plusSquareGp.vertices.push(Pv6);
+    plusSquareGp.vertices.push(Pv7);
+    plusSquareGp.vertices.push(Pv8);
+
+    plusSquareGp.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    plusSquareGp.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    plusSquareGp.faces.push( new THREE.Face3( 4, 5, 6 ) );
+    plusSquareGp.faces.push( new THREE.Face3( 4, 6, 7 ) );
+
+    plusSquareGp.computeFaceNormals(); 
+    
+    var plusSquareP = new THREE.Mesh( plusSquareGp, new THREE.MeshBasicMaterial({ color: 0x2B262F }) );
+    plusSquareP.name = 'plusSymbol'; 
+    plusSquareP.position.y = 0.6 ; 
+
+    obj.add(plusSquare);
+    obj.add(plusSquareP);
+
+    // minus plane 
+    var minusSquareG = plusSquareG.clone();
+
+    var minusSquare = new THREE.Mesh( minusSquareG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    minusSquare.name = 'minus'; 
+    minusSquare.position.y = -6.6 ;  
+
+    // plus symbol
+    var minusSquareGp = new THREE.Geometry(); 
+    var Pv1 = new THREE.Vector3(-0.4 ,  0.1,  0);
+    var Pv2 = new THREE.Vector3(-0.4 , -0.1,  0); 
+    var Pv3 = new THREE.Vector3( 0.4 , -0.1,  0);  
+    var Pv4 = new THREE.Vector3( 0.4 ,  0.1,  0);
+  
+    minusSquareGp.vertices.push(Pv1);
+    minusSquareGp.vertices.push(Pv2);
+    minusSquareGp.vertices.push(Pv3);
+    minusSquareGp.vertices.push(Pv4); 
+
+    minusSquareGp.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    minusSquareGp.faces.push( new THREE.Face3( 0, 2, 3 ) );
+  
+    minusSquareGp.computeFaceNormals(); 
+    
+    var minusSquareM = new THREE.Mesh( minusSquareGp, new THREE.MeshBasicMaterial({ color: 0x2B262F }) );
+    minusSquareM.name = 'minusSymbol'; 
+    minusSquareM.position.y = -6.6 ;  
+
+    obj.add(minusSquare);
+    obj.add(minusSquareM);
+
+    // levels 
+    var levelsGeom = new THREE.Geometry();
+
+    for (var i = 0; i < 5; i++) {
+      var Sv1 = new THREE.Vector3(-0.35,  0.12 + i*1.4,  0);
+      var Sv2 = new THREE.Vector3(-0.35, -0.12 + i*1.4,  0); 
+      var Sv3 = new THREE.Vector3( 0.35, -0.12 + i*1.4,  0);  
+      var Sv4 = new THREE.Vector3( 0.35,  0.12 + i*1.4,  0);  
+       
+      levelsGeom.vertices.push(Sv1);
+      levelsGeom.vertices.push(Sv2);
+      levelsGeom.vertices.push(Sv3);
+      levelsGeom.vertices.push(Sv4);
+      
+      levelsGeom.faces.push( new THREE.Face3( 0+4*i, 1+4*i, 2+4*i ) );
+      levelsGeom.faces.push( new THREE.Face3( 0+4*i, 2+4*i, 3+4*i ) );
+    };
+ 
+    levelsGeom.computeFaceNormals(); 
+    
+    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    levels.name = 'levels';  
+    levels.position.y = -5.8 ;    
+   
+    obj.add(levels);
+ 
+    return obj;
+  };
+  function createDoll(){
+
+    var geom = new THREE.Geometry();
+    var v1 = new THREE.Vector3(0,-0.2,0);
+    var v2 = new THREE.Vector3(-0.9,0,0);
+    var v3 = new THREE.Vector3(0,-1.2,0);
+    var v4 = new THREE.Vector3(0.9,0,0);
+     
+    geom.vertices.push(v1);
+    geom.vertices.push(v2);
+    geom.vertices.push(v3);
+    geom.vertices.push(v4);
+    
+    geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    geom.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    geom.computeFaceNormals();
+    
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color: 0x71469A }) );
+  
+    return mesh;
+  };
+  function createDollHolder(){
+
+    var obj = new THREE.Object3D();
+
+    var obj1 = new THREE.Mesh( new THREE.CircleGeometry( 1, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    obj1.name = 'dollHolder'; 
+    obj.add(obj1);
+
+    var obj2 = new THREE.Mesh( new THREE.CircleGeometry( 0.8, 32 ), new THREE.MeshBasicMaterial({ color: 0x000000 }) );
+    obj2.name = 'dollHolder';   
+    obj.add(obj2);
+
+    var obj3 = new THREE.Mesh( new THREE.CircleGeometry( 0.45, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    obj3.name = 'dollHolder';   
+    obj.add(obj3);
+
+    var obj4 = new THREE.Mesh( new THREE.CircleGeometry( 0.32, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    obj4.name = 'dollHolder';
+    obj4.position.y = 0.9;  
+    obj.add(obj4);
+
+    return obj;
+  };
+ 
   Doll.prototype.rePosition = function(){  
     var frustum = new THREE.Frustum(); 
-
-    this.camera.updateProjectionMatrix();
+    var _this = this;
+    this.camera.updateProjectionMatrix(); 
 
     frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) ); 
 
@@ -90,11 +344,19 @@ define([
      
       if(px !== undefined ) {  
         this.xIntersect = px.x;
-        this.doll.position.x = this.xIntersect + 9;
+        this.doll.position.x = this.xIntersect + 9 ; 
+        this.doll.position.y = 4; 
         this.dollHolder.position.x = this.xIntersect + 5.5 ; 
+        this.gearBar.position.x = this.xIntersect + 5.5 ; 
+        this.gearBarSlider.position.x = this.xIntersect + 5.5 ;
+
+        for (var j = 0; j < this.levels.length ; j++) { 
+           this.levels[j].position.x = this.xIntersect + 5.5 ;
+         }; 
       } 
-    };
-  }
+    }; 
+
+  } 
   Doll.prototype.setAtomUnderDoll = function(atom){  
     this.atomUnderDoll = atom ;  
   };
@@ -123,52 +385,69 @@ define([
 
       this.SELECTED.position.copy( pos );
         
-      if(this.atomUnderDoll){ 
-        
+      if(this.atomUnderDoll){  
         for (var i = 0; i < this.lattice.actualAtoms.length; i++) { 
           this.lattice.actualAtoms[i].object3d.children[0].material.color.set( this.lattice.actualAtoms[i].color) ;
         };
         this.atomUnderDoll.children[0].material.color.setHex(0x1ADB17);  
-
       }
       else{
         for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
           this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
         };
-      }
-
-      return;
-
+      } 
+      return; 
     }
 
-    var dollIntersect = raycaster.intersectObjects( [this.doll, this.dollHolder] );
-        
-    if ( dollIntersect.length > 0 ) {
-        
-      if ( this.INTERSECTED !== dollIntersect[0].object && dollIntersect[0].object.name === 'doll') {
-         
-        this.INTERSECTED = dollIntersect[0].object;
+    var intersects2 = raycaster.intersectObjects( this.objsToIntersect, true );
+    var entered = false;
 
+    for (var i = intersects2.length - 1; i >= 0; i--) {  
+      if ( this.INTERSECTED !== intersects2[i].object && intersects2[i].object.name === 'doll') {
+        entered = true;
+        this.INTERSECTED = intersects2[i].object; 
         this.plane.object3d.position.copy( this.INTERSECTED.position );  
-
-      } 
-      
-      document.getElementById(this.container).style.cursor = 'pointer';
-
-    } 
-    else {
+        document.getElementById(this.container).style.cursor = 'pointer';
+      }  
+      if(intersects2[i].object.name === 'dollHolder' ){
+        entered = true;
+        this.dollHolder.children[0].material.color.setHex(0xCA6A04);
+        this.dollHolder.children[2].material.color.setHex(0xCA6A04);
+        this.dollHolder.children[3].material.color.setHex(0xCA6A04);
+        document.getElementById(this.container).style.cursor = 'pointer';
+      }
+      if((intersects2[i].object.name === 'doll' && this.dollOn === true) || (intersects2[i].object.name === 0) || (intersects2[i].object.name === 1) || (intersects2[i].object.name === 2) || (intersects2[i].object.name === 3) || (intersects2[i].object.name === 4) ){
+        entered = true;
+        intersects2[i].object.visible = true;
+        document.getElementById(this.container).style.cursor = 'pointer';
+      }
+      if(intersects2[i].object.name === 'minus' || intersects2[i].object.name === 'plus'){
+        entered = true;
+        document.getElementById(this.container).style.cursor = 'pointer';
+        intersects2[i].object.material.color.setHex(0xCA6A04); 
+      }   
+    };
+    if(entered === false ){
 
       this.INTERSECTED = null; 
-      document.getElementById(this.container).style.cursor = 'auto';
+      document.getElementById(this.container).style.cursor = 'auto';  
+      this.gearBar.children[1].material.color.setHex(0x717071);
+      this.gearBar.children[3].material.color.setHex(0x717071);   
+      this.dollHolder.children[0].material.color.setHex(0x717071);
+      this.dollHolder.children[2].material.color.setHex(0x717071);
+      this.dollHolder.children[3].material.color.setHex(0x717071);
 
-    } 
-  }
+      for (var f = this.levels.length - 1; f >= 0; f--) { 
+        this.levels[f].visible = false;
+      };
+
+    }  
+  };
   Doll.prototype.onDocumentMouseDown = function(event){  
     var _this =this;
 
     event.preventDefault();
-
-     
+ 
     this.SELECTED = undefined;
     
     var contWidth = $('#'+this.container).width() ;
@@ -182,16 +461,21 @@ define([
       mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) ); 
     }
 
-    raycaster.setFromCamera( mouse, this.camera );
-        
-    var intersects = raycaster.intersectObjects( [this.doll, this.dollHolder] );
+    raycaster.setFromCamera( mouse, this.camera ); 
 
-    if ( intersects.length > 0 )  {
+    var intersects = raycaster.intersectObjects( this.objsToIntersect, true );
+ 
+    for (var i = intersects.length - 1; i >= 0; i--) { 
       
-      if(intersects[0].object.name === 'dollHolder'){ 
-        if(this.soundMachine.procced) this.soundMachine.play('dollHolder');
+      if(intersects[i].object.name === 'dollHolder'){  
+        if(this.soundMachine.procced) {
+          this.soundMachine.play('dollHolder');
+        }
         if(this.dollOn){
-          intersects[0].object.material = dollHolderOffMat ;
+          intersects[i].object.parent.children[0].material.color.setHex(0x717071);
+          intersects[i].object.parent.children[2].material.color.setHex(0x717071);
+          intersects[i].object.parent.children[3].material.color.setHex(0x717071); 
+          this.rePosition();
           this.dollOn = false;
           this.doll.visible = false; 
 
@@ -203,22 +487,47 @@ define([
           this.crystalOrbit.disableUpdate = false;
           this.crystalOrbit.control.enabled = true;
         } 
-        else{
-          intersects[0].object.material = dollHolderOnMat ;
+        else if(intersects[i].object.name === 'dollHolder'){ 
+          intersects[i].object.parent.children[0].material.color.setHex(0x71469A);
+          intersects[i].object.parent.children[2].material.color.setHex(0x71469A);
+          intersects[i].object.parent.children[3].material.color.setHex(0x71469A); 
+
           this.dollOn = true; 
           this.doll.visible = true;
       
         }
       }
-      else{   
+      else if(intersects[i].object.name === 'minus'){
+        this.soundMachine.play('dollHolder'); // to change
+        if(this.gearState > 1 ){
+          this.gearState--;
+          this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
+          this.gearTour.setState(this.gearState);
+        } 
+      }  
+      else if(intersects[i].object.name === 'plus'){ 
+        this.soundMachine.play('dollHolder'); //to change 
+        if(this.gearState < 5 ){
+          this.gearState++;
+          this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
+          this.gearTour.setState(this.gearState);
+        } 
+      } 
+      else if(intersects[i].object.name === 0 || intersects[i].object.name === 1 || intersects[i].object.name === 2 || intersects[i].object.name === 3 ||intersects[i].object.name === 4 ){ 
+        this.gearBarSlider.position.y = yPosGearSlider[intersects[i].object.name];
+        this.gearState = intersects[i].object.name + 1 ;
+        if(this.soundMachine.procced) this.soundMachine.storePlay('dollHolder'); 
+        this.gearTour.setState(this.gearState);
+      }  
+      else if(intersects[i].object.name === 'doll'){   // tooltip na kanw
         this.crystalOrbit.control.enabled = false;
-        this.SELECTED = intersects[0].object; 
+        this.SELECTED = intersects[i].object; 
         var intersects = raycaster.intersectObject( this.plane.object3d ); 
-        this.offset.copy( intersects[ 0 ].point ).sub( this.plane.object3d.position ); 
+        this.offset.copy( intersects[i].point ).sub( this.plane.object3d.position ); 
         document.getElementById(this.container).style.cursor = 'none';
 
       }
-    } 
+    };
        
   }; 
    
@@ -242,7 +551,7 @@ define([
           this.lattice.actualAtoms[j].object3d.visible = true ;
         }; 
       }  
-    }
+    } 
 
     document.getElementById(this.container).style.cursor = 'auto';
      
@@ -285,6 +594,45 @@ define([
     }; 
     this.rePosition();
   };
+  function makeTextSprite( message, parameters ) { 
+    if ( parameters === undefined ) parameters = {};
+    
+    var fontface = parameters.hasOwnProperty("fontface") ?  parameters["fontface"] : "Arial"; 
+    var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 18; 
+    var borderThickness = parameters.hasOwnProperty("borderThickness") ?   parameters["borderThickness"] : 0; 
+    var borderColor = parameters.hasOwnProperty("borderColor") ? parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 }; 
+    var backgroundColor = parameters.hasOwnProperty("backgroundColor") ? parameters["backgroundColor"] : { r:255, g:255, b:255, a:0};
+  
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.font = " bold " + fontsize + "px " + fontface;
+      
+    // get size data (height depends only on font size)
+    var metrics = context.measureText( message );
+    var textWidth = metrics.width;
+    
+    // background color
+    context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","  + backgroundColor.b + "," + backgroundColor.a + ")";
+    // border color
+    context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","  + borderColor.b + "," + borderColor.a + ")";
+
+    context.lineWidth = borderThickness; 
+    // text color 
+    context.fillStyle = "rgba("+parameters.fontColor.r+", "+parameters.fontColor.g+", "+parameters.fontColor.b+", 1.0)";
+
+    context.fillText( message, borderThickness, fontsize + borderThickness);
+    
+    // canvas contents will be used for a texture
+    var texture = new THREE.Texture(canvas) 
+    texture.minFilter = THREE.NearestFilter;
+    texture.needsUpdate = true;
+
+    var spriteMaterial = new THREE.SpriteMaterial( 
+      { map: texture, useScreenCoordinates: false, transparent:true, opacity:1 } );
+    var sprite = new THREE.Sprite( spriteMaterial );
+    sprite.scale.set(10,5,1.0);
+    return sprite;  
+  }
 
   return Doll;
   

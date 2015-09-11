@@ -214,7 +214,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance();  
   crystalRenderer.setDoll(dollScene.object3d ); 
-  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine);
+  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   dollEditor.rePosition();
 
@@ -369,15 +369,7 @@ require([
     
     height = $(window).height() ;
     width = $('#app-container').width(); ;
-
-    // gear bar tour
-    if(lattice.actualAtoms.length > 0){
-      menu.setOnOffSlider('gearBar', 'enable'); 
-    }
-    else{
-      menu.setOnOffSlider('gearBar', 'disable');
-    }
-    menu.setSliderValue('gearBar', 1);
+ 
     gearTour.removeSubtractedCell();
     //
 
@@ -601,10 +593,7 @@ require([
   }); 
   menu.storeProject(function(message, arg) { 
     storingMachine.createJSONfile();
-  });
-  menu.onGearBarSelection(function(message, arg) { 
-    gearTour.setState( arg.state );
-  });
+  }); 
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;

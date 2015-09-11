@@ -14,7 +14,7 @@ define([
   _
 ) { 
 
-  function Hud( scene, latticeParams) {
+  function NavArrows( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.arrowLength =  (height+width)/290 ; 
@@ -113,7 +113,7 @@ define([
     scene.add( this.gamma );
 
 };
-Hud.prototype.updateLengths = function(params) {
+NavArrows.prototype.updateLengths = function(params) {
     var l = this.arrowLength ;
     var _this = this;  
 
@@ -126,6 +126,7 @@ Hud.prototype.updateLengths = function(params) {
     // sprites
     if(params.scaleZ !== undefined)  { 
         this.scene.remove(this.aScale);
+        console.log(this.arrowLength*7.5);
         this.aScale = makeTextSprite( "a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
         scene.add( this.aScale  );
     }
@@ -142,7 +143,7 @@ Hud.prototype.updateLengths = function(params) {
     }
 
 };
-Hud.prototype.updateAngles = function(angle) {
+NavArrows.prototype.updateAngles = function(angle) {
     var l = this.arrowLength ;
     var _this = this; 
     var matrix;
@@ -357,6 +358,6 @@ var transformationMatrix = function(parameter) {
     ctx.fill();
     ctx.stroke();   
   }
-  return Hud;
+  return NavArrows;
   
 });

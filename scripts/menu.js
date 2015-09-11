@@ -54,8 +54,7 @@ define([
     RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
     SET_SOUNDS: 'menu.set_sounds',
     SET_LIGHTS: 'menu.set_lights',
-    LEAP_MOTION: 'menu.leap_motion',
-    SET_GEAR_BAR: 'menu.set_gear_bar',
+    LEAP_MOTION: 'menu.leap_motion', 
     CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
     CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode',
     FULL_SCREEN_APP: 'menu.full_screen_app', 
@@ -716,9 +715,7 @@ define([
        arg['atomPositioning'] = $('input[name=atomPositioning]:checked' ).val(); 
        PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, arg);
 
-    });
-
-    this.setVerticalSlider('#gearBarSlider', 1, 1, 5, 1);
+    }); 
 
     $('#crystalScreenColor').val('000000'); 
     $('#cellScreenColor').val('000000'); 
@@ -858,26 +855,7 @@ define([
       $("#"+inputName+"Label").text(val);  
 
     }); 
-  };
-  Menu.prototype.setVerticalSlider = function( name, value, min, max, step ){
-
-    /*require([ "jquery-ui" ], function( slider ) {
-
-      $(name).slider({
-        orientation: "vertical",
-        range: "min",
-        min: 1,
-        max: 5,
-        value: 1,
-        slide: function( event, ui ) { 
-          var argument = {'state' : ui.value } ;
-          PubSub.publish(events.SET_GEAR_BAR, argument);
-        }
-      });
-      
-    });*/
-
-  };
+  }; 
   Menu.prototype.onLatticeChange = function(callback) {
     PubSub.subscribe(events.LATTICE_CHANGE, callback);
   };
@@ -1006,9 +984,6 @@ define([
   };
   Menu.prototype.onAtomPosModeChange = function(callback) { 
     PubSub.subscribe(events.CHANGE_ATOM_POSITIONING_MODE, callback);
-  };
-  Menu.prototype.onGearBarSelection = function(callback) { 
-    PubSub.subscribe(events.SET_GEAR_BAR, callback);
   }; 
   Menu.prototype.fullScreenApp = function(callback) { 
     PubSub.subscribe(events.FULL_SCREEN_APP, callback);

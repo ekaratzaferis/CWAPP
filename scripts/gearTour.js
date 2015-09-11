@@ -20,9 +20,11 @@ define([
   };
  
   GearTour.prototype.setState = function(state){
+    
+    if(this.lattice.actualAtoms.length === 0) {
+      return;
+    }
 
-    $("#gearBarLabel").text(stateNames[state-1]);
- 
     switch(state){ 
 
       case 1:  
@@ -96,8 +98,7 @@ define([
     var scene = this.crystalScene.object3d;
     while(j < this.lattice.actualAtoms.length ) {  
       if(this.lattice.actualAtoms[j].subtractedForGear.object3d !== undefined) {
-        this.lattice.actualAtoms[j].removeSubtractedForGear();  
-         
+        this.lattice.actualAtoms[j].removeSubtractedForGear();   
       };
       j++;
     } 
