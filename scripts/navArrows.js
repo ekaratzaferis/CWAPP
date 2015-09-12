@@ -17,7 +17,7 @@ define([
   function NavArrows( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.arrowLength =  (height+width)/290 ; 
+    this.arrowLength =  (height+width)/280 ; 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     this.scales = {'aScale':1, 'bScale':1, 'cScale':1 }; 
@@ -125,8 +125,7 @@ NavArrows.prototype.updateLengths = function(params) {
    
     // sprites
     if(params.scaleZ !== undefined)  { 
-        this.scene.remove(this.aScale);
-        console.log(this.arrowLength*7.5);
+        this.scene.remove(this.aScale); 
         this.aScale = makeTextSprite( "a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
         scene.add( this.aScale  );
     }

@@ -25,6 +25,7 @@ define([
     this.soundMachine = soundMachine;
     this.active = false;
     this.dollEditor = dollEditor;
+    this.trackingSystem = 'grab';
     this.leapVars = {
       rightGrab : false, 
       initCameraDist : undefined, 
@@ -36,6 +37,9 @@ define([
     this.toggle(false);
   };
 
+  LeapMotionHandler.prototype.selectTS = function(arg) {
+    this.trackingSystem = arg ;
+  };
   LeapMotionHandler.prototype.toggle = function(bool) {
     
     var _this = this;
@@ -71,126 +75,210 @@ define([
           var numOfHands = frame.hands.length ;
 
           if(_this.dollEditor.dollOn === true){
-            
-            // leap palm position varies : -200 < x < 200 , 50 < y < 550 , -200 < z < 200  approximately!
-               
-            if(numOfHands === 2){
-              // rotate camera
-              _this.leapVars.rightGrab = false; // deactivate zooming
-              if(frame.hands[0].type === 'right') {
-                rightHand = frame.hands[0] ;
-                leftHand = frame.hands[1] ;
-              }
-              else{
-                leftHand = frame.hands[0] ;
-                rightHand = frame.hands[1] ;
-              }
+          
+            if(_this.trackingSystem === 'palm'){
+              if( frame.hands[0] !== undefined) console.log(frame.hands[0].palmNormal);
+              if(numOfHands === 2){
+                // rotate camera
+                _this.leapVars.rightGrab = false; // deactivate zooming
+                if(frame.hands[0].type === 'right') {
+                  rightHand = frame.hands[0] ;
+                  leftHand = frame.hands[1] ;
+                }
+                else{
+                  leftHand = frame.hands[0] ;
+                  rightHand = frame.hands[1] ;
+                }
 
-              if(_this.leapVars.bothGrab === true){ 
-                if((rightHand.grabStrength < 0.90) || (leftHand.grabStrength < 0.90) ){
-                  _this.leapVars.bothGrab = false;
-                  _this.soundMachine.play('leapNoGrab');
-                }
-                else{  
-                  var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x)  ;  
-                  var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y)  ; 
-                   
-                  if(xOffs > 50){
-                    _this.keyboard.handleKeys({rotLeft : true}, 4);
-                  }
-                  else if(xOffs < -50){
-                    _this.keyboard.handleKeys({rotRight : true}, 4);
-                  } 
-                  if(yOffs > 50){
-                    _this.keyboard.handleKeys({rotDown : true}, 4);
-                  }
-                  else if(yOffs < -50){
-                    _this.keyboard.handleKeys({rotUp : true}, 4);
-                  } 
-                }
-              }
-              else{
-                if((rightHand.grabStrength > 0.90) && (leftHand.grabStrength > 0.90)){ 
-                  _this.leapVars.bothGrab = true;
-                  _this.soundMachine.play('leapGrab');
-                  _this.leapVars.bothHandsInitPos.x = (rightHand.palmPosition[0] + leftHand.palmPosition[0])/2; 
-                  _this.leapVars.bothHandsInitPos.y = (rightHand.palmPosition[1] + leftHand.palmPosition[1])/2; 
-                  _this.leapVars.bothHandsInitPos.z = (rightHand.palmPosition[2] + leftHand.palmPosition[2])/2; 
-                }
-              } 
-            }    
-            else if(numOfHands === 1){ 
-              // zomming in/out
-              _this.leapVars.bothGrab = false; // deactivate
-              rightHand = frame.hands[0];
-              if(rightHand.type === 'right'){ 
-                if(_this.leapVars.rightGrab === true){
-                  if(hand.grabStrength <= 0.90){
-                    _this.leapVars.rightGrab = false;
+                if(_this.leapVars.bothGrab === true){ 
+                  if((rightHand.grabStrength < 0.90) || (leftHand.grabStrength < 0.90) ){
+                    _this.leapVars.bothGrab = false;
                     _this.soundMachine.play('leapNoGrab');
                   }
-                  else{   
-                    if(
-                      rightHand.palmPosition[0] < -70 && 
-                      rightHand.palmPosition[0] < rightHand.palmPosition[1] -300 &&
-                      rightHand.palmPosition[0] < rightHand.palmPosition[2]  
-                    ){
-                      _this.keyboard.handleKeys({left : true}, 8);
+                  else{  
+                    var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x)  ;  
+                    var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y)  ; 
+                     
+                    if(xOffs > 50){
+                      _this.keyboard.handleKeys({rotLeft : true}, 4);
                     }
-                    else if(
-                      rightHand.palmPosition[0] > 70 && 
-                      rightHand.palmPosition[0] > rightHand.palmPosition[1] - 300 &&
-                      rightHand.palmPosition[0] > rightHand.palmPosition[2]  
-                    ){
-                      _this.keyboard.handleKeys({right : true}, 8);
-                    }
-                    
-                    if(
-                      rightHand.palmPosition[1] < 230 && 
-                      rightHand.palmPosition[1] - 300 < rightHand.palmPosition[0] &&
-                      rightHand.palmPosition[1] - 300 < rightHand.palmPosition[2]  
-                    ){
-                      _this.keyboard.handleKeys({down : true}, 8);
+                    else if(xOffs < -50){
+                      _this.keyboard.handleKeys({rotRight : true}, 4);
                     } 
-                    else if(
-                      rightHand.palmPosition[1] > 370 && 
-                      rightHand.palmPosition[1] - 300 > rightHand.palmPosition[0] &&
-                      rightHand.palmPosition[1] - 300 > rightHand.palmPosition[2]  
-                    ){
-                      _this.keyboard.handleKeys({up : true}, 8);
+                    if(yOffs > 50){
+                      _this.keyboard.handleKeys({rotDown : true}, 4);
                     }
- 
-                    if(
-                      rightHand.palmPosition[2] < -70 && 
-                      rightHand.palmPosition[2] < rightHand.palmPosition[0] &&
-                      rightHand.palmPosition[2] < rightHand.palmPosition[1] - 300 
-                    ){
-                      _this.keyboard.handleKeys({forth : true}, 24);
+                    else if(yOffs < -50){
+                      _this.keyboard.handleKeys({rotUp : true}, 4);
                     } 
-                    else if(
-                      rightHand.palmPosition[2] > 70 && 
-                      rightHand.palmPosition[2] > rightHand.palmPosition[0] &&
-                      rightHand.palmPosition[2] > rightHand.palmPosition[1] - 300 
-                    ){
-                      _this.keyboard.handleKeys({back : true}, 24);
-                    }
                   }
                 }
                 else{
-                  if(rightHand.grabStrength > 0.90){ 
-                    _this.leapVars.rightGrab = true;
-                    _this.soundMachine.play('leapGrab');  
+                  if((rightHand.grabStrength > 0.90) && (leftHand.grabStrength > 0.90)){ 
+                    _this.leapVars.bothGrab = true;
+                    _this.soundMachine.play('leapGrab');
+                    _this.leapVars.bothHandsInitPos.x = (rightHand.palmPosition[0] + leftHand.palmPosition[0])/2; 
+                    _this.leapVars.bothHandsInitPos.y = (rightHand.palmPosition[1] + leftHand.palmPosition[1])/2; 
+                    _this.leapVars.bothHandsInitPos.z = (rightHand.palmPosition[2] + leftHand.palmPosition[2])/2; 
+                  }
+                } 
+              }    
+              else if(numOfHands === 1){ 
+                // zomming in/out 
+                _this.leapVars.bothGrab = false; // deactivate
+                rightHand = frame.hands[0];
+                if(rightHand.type === 'right'){   
+                  if(frame.hands[0].palmNormal[0] < -0.9){
+                    _this.keyboard.handleKeys({left : true}, 1);
+                  }
+                   
+                  if(frame.hands[0].palmNormal[1] < -0.9){
+                    _this.keyboard.handleKeys({down : true}, 1);
+                  } 
+                  else if(frame.hands[0].palmNormal[1] > 0.65){
+                    _this.keyboard.handleKeys({up : true}, 1);
+                  }
+
+                  if(frame.hands[0].palmNormal[2] < -0.9){
+                    _this.keyboard.handleKeys({forth : true}, 4);
+                  } 
+                  else if(frame.hands[0].palmNormal[2] > 0.9){
+                    _this.keyboard.handleKeys({back : true}, 4);
+                  } 
+                } 
+                else{ 
+                  if(frame.hands[0].palmNormal[0] > 0.9){
+                    _this.keyboard.handleKeys({right : true}, 1);
                   }
                 }
               } 
-              else{ 
+              else{
                 _this.leapVars.rightGrab = false;
+                _this.leapVars.bothGrab = false;
+              }
+            }
+            else if( this.trackingSystem === 'grab'){
+              
+              // leap palm position varies : -200 < x < 200 , 50 < y < 550 , -200 < z < 200  approximately!
+               
+              if(numOfHands === 2){
+                // rotate camera
+                _this.leapVars.rightGrab = false; // deactivate zooming
+                if(frame.hands[0].type === 'right') {
+                  rightHand = frame.hands[0] ;
+                  leftHand = frame.hands[1] ;
+                }
+                else{
+                  leftHand = frame.hands[0] ;
+                  rightHand = frame.hands[1] ;
+                }
+
+                if(_this.leapVars.bothGrab === true){ 
+                  if((rightHand.grabStrength < 0.90) || (leftHand.grabStrength < 0.90) ){
+                    _this.leapVars.bothGrab = false;
+                    _this.soundMachine.play('leapNoGrab');
+                  }
+                  else{  
+                    var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x)  ;  
+                    var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y)  ; 
+                     
+                    if(xOffs > 50){
+                      _this.keyboard.handleKeys({rotLeft : true}, 4);
+                    }
+                    else if(xOffs < -50){
+                      _this.keyboard.handleKeys({rotRight : true}, 4);
+                    } 
+                    if(yOffs > 50){
+                      _this.keyboard.handleKeys({rotDown : true}, 4);
+                    }
+                    else if(yOffs < -50){
+                      _this.keyboard.handleKeys({rotUp : true}, 4);
+                    } 
+                  }
+                }
+                else{
+                  if((rightHand.grabStrength > 0.90) && (leftHand.grabStrength > 0.90)){ 
+                    _this.leapVars.bothGrab = true;
+                    _this.soundMachine.play('leapGrab');
+                    _this.leapVars.bothHandsInitPos.x = (rightHand.palmPosition[0] + leftHand.palmPosition[0])/2; 
+                    _this.leapVars.bothHandsInitPos.y = (rightHand.palmPosition[1] + leftHand.palmPosition[1])/2; 
+                    _this.leapVars.bothHandsInitPos.z = (rightHand.palmPosition[2] + leftHand.palmPosition[2])/2; 
+                  }
+                } 
+              }    
+              else if(numOfHands === 1){ 
+                // zomming in/out
+                _this.leapVars.bothGrab = false; // deactivate
+                rightHand = frame.hands[0];
+                if(rightHand.type === 'right'){ 
+                  if(_this.leapVars.rightGrab === true){
+                    if(hand.grabStrength <= 0.90){
+                      _this.leapVars.rightGrab = false;
+                      _this.soundMachine.play('leapNoGrab');
+                    }
+                    else{   
+                      if(
+                        rightHand.palmPosition[0] < -70 && 
+                        rightHand.palmPosition[0] < rightHand.palmPosition[1] -300 &&
+                        rightHand.palmPosition[0] < rightHand.palmPosition[2]  
+                      ){
+                        _this.keyboard.handleKeys({left : true}, 8);
+                      }
+                      else if(
+                        rightHand.palmPosition[0] > 70 && 
+                        rightHand.palmPosition[0] > rightHand.palmPosition[1] - 300 &&
+                        rightHand.palmPosition[0] > rightHand.palmPosition[2]  
+                      ){
+                        _this.keyboard.handleKeys({right : true}, 8);
+                      }
+                      
+                      if(
+                        rightHand.palmPosition[1] < 230 && 
+                        rightHand.palmPosition[1] - 300 < rightHand.palmPosition[0] &&
+                        rightHand.palmPosition[1] - 300 < rightHand.palmPosition[2]  
+                      ){
+                        _this.keyboard.handleKeys({down : true}, 8);
+                      } 
+                      else if(
+                        rightHand.palmPosition[1] > 370 && 
+                        rightHand.palmPosition[1] - 300 > rightHand.palmPosition[0] &&
+                        rightHand.palmPosition[1] - 300 > rightHand.palmPosition[2]  
+                      ){
+                        _this.keyboard.handleKeys({up : true}, 8);
+                      }
+   
+                      if(
+                        rightHand.palmPosition[2] < -70 && 
+                        rightHand.palmPosition[2] < rightHand.palmPosition[0] &&
+                        rightHand.palmPosition[2] < rightHand.palmPosition[1] - 300 
+                      ){
+                        _this.keyboard.handleKeys({forth : true}, 24);
+                      } 
+                      else if(
+                        rightHand.palmPosition[2] > 70 && 
+                        rightHand.palmPosition[2] > rightHand.palmPosition[0] &&
+                        rightHand.palmPosition[2] > rightHand.palmPosition[1] - 300 
+                      ){
+                        _this.keyboard.handleKeys({back : true}, 24);
+                      }
+                    }
+                  }
+                  else{
+                    if(rightHand.grabStrength > 0.90){ 
+                      _this.leapVars.rightGrab = true;
+                      _this.soundMachine.play('leapGrab');  
+                    }
+                  }
+                } 
+                else{ 
+                  _this.leapVars.rightGrab = false;
+                }
+              } 
+              else{
+                _this.leapVars.rightGrab = false;
+                _this.leapVars.bothGrab = false;
               }
             } 
-            else{
-              _this.leapVars.rightGrab = false;
-              _this.leapVars.bothGrab = false;
-            }
           }
           else if(_this.dollEditor.dollOn === false){ 
             if(numOfHands === 2){
@@ -273,8 +361,7 @@ define([
               _this.leapVars.bothGrab = false;
             }
           }
- 
- 
+  
 
           //////////////
           frameString = concatData("frame_id", frame.id);

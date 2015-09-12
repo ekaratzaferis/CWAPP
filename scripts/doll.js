@@ -19,7 +19,7 @@ define([
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();  
   var yPosGearSlider = [-5.7 , -4.35 , -3 , -1.65 , -0.30];
-  var levelNames = [ 'Lattice Points', 'The motif', 'The cropped unit cell', 'Whole unit cell', 'the crystal' ];
+  var levelNames = [ 'Lattice Points', 'Motif', 'Cropped unit cell', 'Unit cell', 'Crystal' ];
 
   function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour) {
 
@@ -81,27 +81,28 @@ define([
     this.objsToIntersect.push(this.gearBarSlider);
 
     for (var i = 0; i < yPosGearSlider.length ; i++) {
-      var m = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.2,0.75), new THREE.MeshBasicMaterial({ transparent: true, opacity : 0.5, color: 0xffffff}) );
+      var m = new THREE.Mesh( new THREE.PlaneBufferGeometry(1.2,0.6), new THREE.MeshBasicMaterial({ transparent: true, opacity : 0.4, color: 0xffffff}) );
       m.position.y = yPosGearSlider[i];
       m.name = i;
       m.visible = false;
       DollExplorer.add({object3d : m});
       this.levels[i] = m ;
       this.objsToIntersect.push(m);
-    };
-
+    };  
+ 
     for (var g = 0; g < levelNames.length ; g++) {
       this.levelLabels[g] = makeTextSprite(
         levelNames[g],  
         { 
-          fontsize: 100, 
+          fontsize: 25.0, 
           fontface: "Arial", 
           borderColor: {r:0, g:128, b:255, a:1.0},  
-          fontColor: {r:0, g:128, b:255, a:1.0} 
+          fontColor: {r:189, g:189, b:189, a:1.0} 
         } 
       );
-      this.levelLabels[g].position.y = yPosGearSlider[i]; 
-      this.levelLabels[g].lookAt(this.camera);
+      this.levelLabels[g].position.y = yPosGearSlider[g] - 2;   
+      this.levelLabels[g].visible = false;  
+      this.objsToIntersect.push(this.levelLabels[g]);
       DollExplorer.add({object3d : this.levelLabels[g]});
     };
         
@@ -121,10 +122,10 @@ define([
     var obj = new THREE.Object3D();
 
     var sliderG = new THREE.Geometry();
-    var v1 = new THREE.Vector3(-0.6 ,  0.3,  0);
-    var v2 = new THREE.Vector3(-0.6 , -0.3,  0); 
-    var v3 = new THREE.Vector3( 0.6 , -0.3,  0);  
-    var v4 = new THREE.Vector3( 0.6 ,  0.3,  0);  
+    var v1 = new THREE.Vector3(-0.625 ,  0.3,  0);
+    var v2 = new THREE.Vector3(-0.625 , -0.3,  0); 
+    var v3 = new THREE.Vector3( 0.625 , -0.3,  0);  
+    var v4 = new THREE.Vector3( 0.625 ,  0.3,  0);  
      
     sliderG.vertices.push(v1);
     sliderG.vertices.push(v2);
@@ -136,9 +137,22 @@ define([
 
     sliderG.computeFaceNormals(); 
     
-    var slider = new THREE.Mesh( sliderG, new THREE.MeshBasicMaterial({ color: /*0xC8C2CE */ 0xE3E3E4}) );
+    var slider = new THREE.Mesh( sliderG, new THREE.MeshBasicMaterial({ color: 0x830EFF}));
+    
+    var geometryL = new THREE.Geometry();
+    geometryL.vertices.push(
+      v1,
+      v2,
+      v3,
+      v4,
+      v1
+    );
+
+    var line = new THREE.Line( geometryL, new THREE.LineBasicMaterial({ color: 0x15002B}) );
+
     slider.name = 'gearBarSlider';  
 
+    obj.add(line);
     obj.add(slider);
     return obj;
   };
@@ -223,9 +237,9 @@ define([
     var plusSquareP = new THREE.Mesh( plusSquareGp, new THREE.MeshBasicMaterial({ color: 0x2B262F }) );
     plusSquareP.name = 'plusSymbol'; 
     plusSquareP.position.y = 0.6 ; 
-
+ 
     obj.add(plusSquare);
-    obj.add(plusSquareP);
+    obj.add(plusSquareP); 
 
     // minus plane 
     var minusSquareG = plusSquareG.clone();
@@ -304,7 +318,7 @@ define([
 
     geom.computeFaceNormals();
     
-    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color: 0x71469A }) );
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color: 0x830EFF }) );
   
     return mesh;
   };
@@ -351,8 +365,9 @@ define([
         this.gearBarSlider.position.x = this.xIntersect + 5.5 ;
 
         for (var j = 0; j < this.levels.length ; j++) { 
-           this.levels[j].position.x = this.xIntersect + 5.5 ;
-         }; 
+          this.levels[j].position.x = this.xIntersect + 5.5 ;
+          this.levelLabels[j].position.x = this.xIntersect + 12 ; 
+        }; 
       } 
     }; 
 
@@ -411,20 +426,34 @@ define([
       }  
       if(intersects2[i].object.name === 'dollHolder' ){
         entered = true;
-        this.dollHolder.children[0].material.color.setHex(0xCA6A04);
-        this.dollHolder.children[2].material.color.setHex(0xCA6A04);
-        this.dollHolder.children[3].material.color.setHex(0xCA6A04);
+        this.dollHolder.children[0].material.color.setHex(0x830EFF); // 0xCA_6A04 D537FF
+        this.dollHolder.children[2].material.color.setHex(0x830EFF);
+        this.dollHolder.children[3].material.color.setHex(0x830EFF);
         document.getElementById(this.container).style.cursor = 'pointer';
       }
-      if((intersects2[i].object.name === 'doll' && this.dollOn === true) || (intersects2[i].object.name === 0) || (intersects2[i].object.name === 1) || (intersects2[i].object.name === 2) || (intersects2[i].object.name === 3) || (intersects2[i].object.name === 4) ){
+      if((intersects2[i].object.name === 'doll' && this.dollOn === true)){
+        document.getElementById(this.container).style.cursor = 'pointer';
         entered = true;
-        intersects2[i].object.visible = true;
-        document.getElementById(this.container).style.cursor = 'pointer';
       }
+      if((intersects2[i].object.name === 0) || (intersects2[i].object.name === 1) || (intersects2[i].object.name === 2) || (intersects2[i].object.name === 3) || (intersects2[i].object.name === 4) ){
+        entered = true;
+        intersects2[i].object.visible = true; 
+        this.levelLabels[intersects2[i].object.name].visible = true;
+        document.getElementById(this.container).style.cursor = 'pointer';
+      } 
       if(intersects2[i].object.name === 'minus' || intersects2[i].object.name === 'plus'){
-        entered = true;
+        entered = true; 
+        if(this.gearState !== 5 && intersects2[i].object.name === 'plus') { 
+          this.levelLabels[4].visible = false;
+        } 
+        if(this.gearState !== 1 && intersects2[i].object.name === 'minus') { 
+          this.levelLabels[0].visible = false;
+        } 
+        this.levels[0].visible = false; 
+        this.levels[4].visible = false; 
+         
         document.getElementById(this.container).style.cursor = 'pointer';
-        intersects2[i].object.material.color.setHex(0xCA6A04); 
+        intersects2[i].object.material.color.setHex(0x830EFF); 
       }   
     };
     if(entered === false ){
@@ -439,12 +468,13 @@ define([
 
       for (var f = this.levels.length - 1; f >= 0; f--) { 
         this.levels[f].visible = false;
+        this.levelLabels[f].visible = false;
       };
 
     }  
   };
   Doll.prototype.onDocumentMouseDown = function(event){  
-    var _this =this;
+    var _this = this;
 
     event.preventDefault();
  
@@ -498,9 +528,15 @@ define([
         }
       }
       else if(intersects[i].object.name === 'minus'){
-        this.soundMachine.play('dollHolder'); // to change
+        this.soundMachine.play('dollHolder'); // to change 
+         
         if(this.gearState > 1 ){
           this.gearState--;
+          for (var k = this.levelLabels.length - 1; k >= 0; k--) {
+            this.levelLabels[k].visible = false;
+          };
+          this.levelLabels[this.gearState-1].visible = true;
+          setTimeout(function() {_this.levelLabels[_this.gearState-1].visible = false;}, 1000);
           this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
           this.gearTour.setState(this.gearState);
         } 
@@ -509,6 +545,11 @@ define([
         this.soundMachine.play('dollHolder'); //to change 
         if(this.gearState < 5 ){
           this.gearState++;
+          for (var k = this.levelLabels.length - 1; k >= 0; k--) {
+            this.levelLabels[k].visible = false;
+          };
+          this.levelLabels[this.gearState-1].visible = true;
+          setTimeout(function() {_this.levelLabels[_this.gearState-1].visible = false;}, 1000);
           this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
           this.gearTour.setState(this.gearState);
         } 
@@ -519,13 +560,12 @@ define([
         if(this.soundMachine.procced) this.soundMachine.storePlay('dollHolder'); 
         this.gearTour.setState(this.gearState);
       }  
-      else if(intersects[i].object.name === 'doll'){   // tooltip na kanw
+      else if(intersects[i].object.name === 'doll'){    
         this.crystalOrbit.control.enabled = false;
         this.SELECTED = intersects[i].object; 
-        var intersects = raycaster.intersectObject( this.plane.object3d ); 
-        this.offset.copy( intersects[i].point ).sub( this.plane.object3d.position ); 
-        document.getElementById(this.container).style.cursor = 'none';
-
+        var intersects_ = raycaster.intersectObject( this.plane.object3d ); 
+        this.offset.copy( intersects_[0].point ).sub( this.plane.object3d.position ); 
+        document.getElementById(this.container).style.cursor = 'none'; 
       }
     };
        

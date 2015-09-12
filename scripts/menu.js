@@ -54,11 +54,16 @@ define([
     RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
     SET_SOUNDS: 'menu.set_sounds',
     SET_LIGHTS: 'menu.set_lights',
+
+    /// merge this with alexandros
     LEAP_MOTION: 'menu.leap_motion', 
+    LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system', 
+    //////////
+
     CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
     CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode',
     FULL_SCREEN_APP: 'menu.full_screen_app', 
-    UPDATE_NOTES: 'menu.update_notes'
+    UPDATE_NOTES: 'menu.update_notes' 
   };
 
   // lattice parameters
@@ -699,11 +704,19 @@ define([
       argument["lights"]= ($('#lights').is(':checked')) ? true : false ;
       PubSub.publish(events.SET_LIGHTS, argument);           
     }); 
+
+    // merge this with alexandros
     $('#leap').change(function() {  
       var argument = {};
       argument["leap"]= ($('#leap').is(':checked')) ? true : false ;
       PubSub.publish(events.LEAP_MOTION, argument);           
     }); 
+    
+    $('#leapOptions').on('change', function() {  
+      return PubSub.publish(events.LEAP_TRACKING_SYSTEM, jQuery(this).val());
+    });
+
+    ////////////////// merge the above ///////////////////////
 
     this.setSlider("reduceRadius",10,1,10.2,0.2);
     $reduceRadius.on('change', function() {
@@ -799,28 +812,7 @@ define([
       .attr('max', max)
       .attr('disabled', false)
       .attr('step', step)
-      .attr('value', value);
-      
-    /*$('#'+sliderName).on("mousedown", function(){
-      // for handling the min value of sliders to help bound the slider for collision fixing
-
-      if(eventName === 'menu.axyz_change' || eventName === 'menu.man_angle_change'){
- 
-        _.each(cellManDimensionsSliders, function(name) { 
-          if(name !== inputName){
-            _this.setSliderMin(name, 0);
-          }
-        });
-
-        _.each(cellManAnglesSliders, function(name) { 
-          if(name !== inputName){
-            _this.setSliderMin(name, 30);
-            _this.setSliderMax(name, 160);
-          }
-        });
- 
-      }
-    });*/
+      .attr('value', value); 
 
     $('#'+sliderName).on("input", function(){
       var val = $(this).val();  
@@ -976,9 +968,16 @@ define([
   Menu.prototype.onLightsSet = function(callback) { 
     PubSub.subscribe(events.SET_LIGHTS, callback);
   };
+
+  /// merge this with alexandros
   Menu.prototype.onLeapMotionSet = function(callback) { 
     PubSub.subscribe(events.LEAP_MOTION, callback);
   };
+  Menu.prototype.onLeapTrackingSystemChange = function(callback) { 
+    PubSub.subscribe(events.LEAP_TRACKING_SYSTEM, callback);
+  };
+  ////////////////
+
   Menu.prototype.onRadiusToggle = function(callback) { 
     PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);
   };
