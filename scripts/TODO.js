@@ -2,7 +2,7 @@
 TODOs UI alexandros
     1. delete setting values to inputs (automated process from slider)
     2. alex has to add leap motion div
-      
+    3. in addatom na erxontai ta parameters ola ap ti menu. na mh painrei to moitf editor amesa ap to ui menu tpt
 
 TODO list 
 

@@ -441,6 +441,10 @@ define([
         this.levelLabels[intersects2[i].object.name].visible = true;
         document.getElementById(this.container).style.cursor = 'pointer';
       } 
+      if(intersects2[i].object.name === 'plusSymbol' || intersects2[i].object.name === 'minusSymbol'){
+        entered = true; 
+        document.getElementById(this.container).style.cursor = 'pointer';
+      }
       if(intersects2[i].object.name === 'minus' || intersects2[i].object.name === 'plus'){
         entered = true; 
         if(this.gearState !== 5 && intersects2[i].object.name === 'plus') { 
@@ -448,9 +452,7 @@ define([
         } 
         if(this.gearState !== 1 && intersects2[i].object.name === 'minus') { 
           this.levelLabels[0].visible = false;
-        } 
-        this.levels[0].visible = false; 
-        this.levels[4].visible = false; 
+        }  
          
         document.getElementById(this.container).style.cursor = 'pointer';
         intersects2[i].object.material.color.setHex(0x830EFF); 

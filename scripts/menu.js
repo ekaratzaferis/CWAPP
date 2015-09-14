@@ -454,7 +454,7 @@ define([
 
     // Motif Editor
     _.each(motifSliders, function(name) {
-      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE); 
+      _this.setSliderInp(name,0,-20.0000000000,20.0000000000,0.01, events.ATOM_POSITION_CHANGE); 
     }); 
 
     _this.setSliderInp('cellVolume',100,10,400.000,0.1,events.CELL_VOLUME_CHANGE); 

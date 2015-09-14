@@ -74,13 +74,10 @@ define([
           var leftHand, rightHand; 
           var numOfHands = frame.hands.length ;
 
-          if(_this.dollEditor.dollOn === true){
-          
-            if(_this.trackingSystem === 'palm'){
-              if( frame.hands[0] !== undefined) console.log(frame.hands[0].palmNormal);
+          if(_this.dollEditor.dollOn === true){  
+            if(_this.trackingSystem === 'palm'){ 
               if(numOfHands === 2){
-                // rotate camera
-                _this.leapVars.rightGrab = false; // deactivate zooming
+                // rotate camera 
                 if(frame.hands[0].type === 'right') {
                   rightHand = frame.hands[0] ;
                   leftHand = frame.hands[1] ;
@@ -99,17 +96,17 @@ define([
                     var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x)  ;  
                     var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y)  ; 
                      
-                    if(xOffs > 50){
-                      _this.keyboard.handleKeys({rotLeft : true}, 4);
+                    if(xOffs > 50 && yOffs < xOffs){
+                      _this.keyboard.handleKeys({rotLeft : true}, 3);
                     }
-                    else if(xOffs < -50){
-                      _this.keyboard.handleKeys({rotRight : true}, 4);
+                    else if(xOffs < -50 && yOffs > xOffs){
+                      _this.keyboard.handleKeys({rotRight : true}, 3);
                     } 
-                    if(yOffs > 50){
-                      _this.keyboard.handleKeys({rotDown : true}, 4);
+                    if(yOffs > 50 && yOffs > xOffs){
+                      _this.keyboard.handleKeys({rotDown : true}, 3);
                     }
-                    else if(yOffs < -50){
-                      _this.keyboard.handleKeys({rotUp : true}, 4);
+                    else if(yOffs < -50 && yOffs < xOffs){
+                      _this.keyboard.handleKeys({rotUp : true}, 3);
                     } 
                   }
                 }
@@ -123,44 +120,41 @@ define([
                   }
                 } 
               }    
-              else if(numOfHands === 1){ 
-                // zomming in/out 
-                _this.leapVars.bothGrab = false; // deactivate
+              else if(numOfHands === 1){  
+                _this.leapVars.bothGrab = false;  
                 rightHand = frame.hands[0];
-                if(rightHand.type === 'right'){   
-                  if(frame.hands[0].palmNormal[0] < -0.9){
-                    _this.keyboard.handleKeys({left : true}, 1);
+                if(rightHand.type === 'right' && rightHand.grabStrength < 0.2 ){   
+                  if(frame.hands[0].palmNormal[0] < -0.8){
+                    _this.keyboard.handleKeys({left : true}, 2);
                   }
                    
-                  if(frame.hands[0].palmNormal[1] < -0.9){
-                    _this.keyboard.handleKeys({down : true}, 1);
+                  if(frame.hands[0].palmNormal[1] < -0.8){
+                    _this.keyboard.handleKeys({down : true}, 2);
                   } 
                   else if(frame.hands[0].palmNormal[1] > 0.65){
-                    _this.keyboard.handleKeys({up : true}, 1);
+                    _this.keyboard.handleKeys({up : true}, 2);
                   }
 
-                  if(frame.hands[0].palmNormal[2] < -0.9){
-                    _this.keyboard.handleKeys({forth : true}, 4);
+                  if(frame.hands[0].palmNormal[2] < -0.8){
+                    _this.keyboard.handleKeys({forth : true}, 8);
                   } 
-                  else if(frame.hands[0].palmNormal[2] > 0.9){
-                    _this.keyboard.handleKeys({back : true}, 4);
+                  else if(frame.hands[0].palmNormal[2] > 0.8){
+                    _this.keyboard.handleKeys({back : true}, 8);
                   } 
                 } 
-                else{ 
+                else if(rightHand.grabStrength < 0.2 ){ 
                   if(frame.hands[0].palmNormal[0] > 0.9){
-                    _this.keyboard.handleKeys({right : true}, 1);
+                    _this.keyboard.handleKeys({right : true}, 2);
                   }
                 }
               } 
-              else{
-                _this.leapVars.rightGrab = false;
+              else{ 
                 _this.leapVars.bothGrab = false;
               }
             }
-            else if( this.trackingSystem === 'grab'){
-              
-              // leap palm position varies : -200 < x < 200 , 50 < y < 550 , -200 < z < 200  approximately!
+            else if( _this.trackingSystem === 'grab'){
                
+              // leap palm position varies : -200 < x < 200 , 50 < y < 550 , -200 < z < 200  approximately! 
               if(numOfHands === 2){
                 // rotate camera
                 _this.leapVars.rightGrab = false; // deactivate zooming
@@ -182,17 +176,17 @@ define([
                     var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x)  ;  
                     var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y)  ; 
                      
-                    if(xOffs > 50){
-                      _this.keyboard.handleKeys({rotLeft : true}, 4);
+                    if(xOffs > 50 && yOffs < xOffs){
+                      _this.keyboard.handleKeys({rotLeft : true}, 3);
                     }
-                    else if(xOffs < -50){
-                      _this.keyboard.handleKeys({rotRight : true}, 4);
+                    else if(xOffs < -50 && yOffs > xOffs){
+                      _this.keyboard.handleKeys({rotRight : true}, 3);
                     } 
-                    if(yOffs > 50){
-                      _this.keyboard.handleKeys({rotDown : true}, 4);
+                    if(yOffs > 50 && yOffs > xOffs){
+                      _this.keyboard.handleKeys({rotDown : true}, 3);
                     }
-                    else if(yOffs < -50){
-                      _this.keyboard.handleKeys({rotUp : true}, 4);
+                    else if(yOffs < -50 && yOffs < xOffs){
+                      _this.keyboard.handleKeys({rotUp : true}, 3);
                     } 
                   }
                 }
@@ -364,7 +358,7 @@ define([
   
 
           //////////////
-          frameString = concatData("frame_id", frame.id);
+          frameString = concatData("Leap Motion info", "");
           frameString += concatData("num_hands", frame.hands.length);
           frameString += concatData("num_fingers", frame.fingers.length);
           frameString += "<br>"; 
@@ -376,6 +370,7 @@ define([
             handString += concatData("confidence", hand.confidence);
             //handString += concatData("pinch_strength", hand.pinchStrength);
             handString += concatData("grab_strength", hand.grabStrength);
+            handString += concatData("palm normalh", hand.palmNormal);
         
             handString += '<br>';
           
