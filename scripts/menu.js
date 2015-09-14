@@ -648,8 +648,8 @@ define([
                 PubSub.publish(events.GRADE_PARAMETER_CHANGE, argument);
             });
         });
-        _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
-        _this.setSlider("faceOpacity",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
+        _this.setSlider("radius",1,0,11,1,events.GRADE_PARAMETER_CHANGE);
+        _this.setSlider("faceOpacity",1,0,11,1,events.GRADE_PARAMETER_CHANGE);
         
 
         //ColorPickers
