@@ -377,14 +377,14 @@ define([
             frameString += handString; 
           }
         
-          $('#leap_id').html( frameString); 
+          //$('#leap_id').html( frameString); 
         }); 
         this.controller.loopWhileDisconnected = false;
       }
       this.controller.connect(); 
     }
     else{
-      setTimeout(function (){document.getElementById("leap_id").innerHTML = ""}, 700);;
+     // setTimeout(function (){document.getElementById("leap_id").innerHTML = ""}, 700);;
       if(this.controller !== undefined){
         this.controller.disconnect();
       } 

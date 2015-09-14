@@ -1,5 +1,6 @@
  
 .rs-base{
+    display: none;
     position: absolute;
     z-index: 10000;
     padding: 10px;
@@ -11,7 +12,6 @@
     left: 0;
     top: 0;
     overflow: hidden;
-    display: none;
 }
 
 .rs-base h1{

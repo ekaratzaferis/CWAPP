@@ -17,6 +17,12 @@ require.config({
     'rStats': '../vendor/rStats',
     'rStatsExtras': '../vendor/rStatsExtras',
     'leapMotion': '../vendor/leap-0.6.4',
+    'icheck': '../vendor/icheck/icheck',
+    'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
+    'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select.min',
+    'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
+    'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
+    'jColor': '../vendor/colorpicker/spectrum'
   },
   shim: {
     'three': { exports: 'THREE' },
@@ -620,7 +626,7 @@ require([
   // to read the json file
   var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
-  document.getElementById('localJSON').addEventListener('change', parseJSON, false);
+  //document.getElementById('localJSON').addEventListener('change', parseJSON, false);
 
   function parseJSON(evt) { 
      

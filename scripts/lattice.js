@@ -643,6 +643,14 @@ define([
      
     return m;
   }; 
+  var times_ = {
+    'actualatoms' : 0,
+    'planes' : 0,
+    'directions' : 0,
+    'pointsANDgrids' : 0,
+    'faces' : 0,
+    'grids' : 0
+  };
   Lattice.prototype.transform = function(caller, parameterKeys, operation) {  
     var matrix; 
     var argument;
@@ -652,6 +660,10 @@ define([
     var _this = this;
       
     _.each(parameterKeys, function(k) { 
+
+      ///////////////////////////////////
+      var startTime1 = new Date();
+
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
         argument[k] = operation(parameters[k]); 
@@ -664,6 +676,13 @@ define([
             atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ; 
           } 
         }); 
+
+        var endTime1 = new Date();
+        times_['actualatoms'] +=(endTime1 - startTime1);
+
+        ///////////////////////
+
+        var startTime2 = new Date();
         _.each(points, function(point, reference) { 
           var pos = point.object3d.position.applyMatrix4(matrix);   
           if(caller==0) { 
@@ -687,13 +706,23 @@ define([
             }); 
           } 
         });   
+        var endTime2 = new Date();
+        times_['pointsANDgrids'] +=(endTime2 - startTime2); 
+
+        ////////////////////
+
+        var startTime3 = new Date();
         _.each(_this.faces, function(face, k) {
           _.each(face.object3d.geometry.vertices, function(vertex , k){ 
             face.object3d.geometry.verticesNeedUpdate = true ; 
             vertex.applyMatrix4(matrix); 
           });   
-        });             
+        });  
+        var endTime3 = new Date();   
+        times_['faces'] +=(endTime3 - startTime3);        
       } 
+
+      var startTime4 = new Date();
       _.each(_this.millerPlanes, function(plane, reference) { 
         plane.plane.object3d.geometry.verticesNeedUpdate = true ;
         var vertices = plane.plane.object3d.geometry.vertices;
@@ -701,13 +730,20 @@ define([
           vertex.applyMatrix4(matrix); 
         });
       });
+      var endTime4 = new Date();   
+      times_['planes'] +=(endTime4 - startTime4);
+
+      var startTime5 = new Date();
       _.each(_this.millerDirections, function(directional, reference) {
         directional.startPoint.applyMatrix4(matrix);
         directional.endpointPoint.applyMatrix4(matrix)
-        updateMillerVector(directional);  
-
+        updateMillerVector(directional);   
       }); 
+      var endTime5 = new Date(); 
+      times_['directions'] +=(endTime5 - startTime5);
+
     }); 
+
   };
  
   Lattice.prototype.createFaces = function(){ 
@@ -1108,7 +1144,7 @@ define([
   };
 
   Lattice.prototype.update = function() {  
-
+    
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations(); 
       this.updatePoints(); 
@@ -1118,8 +1154,7 @@ define([
     }
     else{
       this.updatePoints();
-
-    } 
+    }  
   };
 
   Lattice.prototype.setGrade = function(gradeParameters) { 
@@ -1210,26 +1245,59 @@ define([
     }
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
-
+    console.log('setParameters');
+    var startTime1 = new Date();
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
       var deltaKeys = _.keys(delta); // keys : retrieve all names of object properties
-
+      var a = new Date();
       this.backwardTransformations();
-
+      var b = new Date();
+      console.log(' backwards : '+(b-a));
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX')!=-1 || _.indexOf(deltaKeys, 'repeatY')!=-1 || _.indexOf(deltaKeys, 'repeatZ')!=-1) {  
         _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
-        this.actualAtoms.splice(0);   
+        var a1 = new Date();
+        this.actualAtoms.splice(0); 
+        var b1 = new Date();
+      console.log(' actualAtoms : '+(b1-a1));
+
+        var a2 = new Date();  
         this.updatePoints();  
+        var b2 = new Date();
+      console.log(' updatePoints : '+(b2-a2));
+
+        var a3 = new Date();
         this.createGrid();  
+        var b3 = new Date();
+      console.log(' createGrid : '+(b3-a3));
+
+        var a4 = new Date();
         this.createFaces();
+        var b4 = new Date();
+      console.log(' createFaces : '+(b4-a4));
+
+        var a5 = new Date();
         this.setGradeParameters();
+        var b5 = new Date();
+      console.log(' setGradeParameters : '+(b5-a5));
+
+        var a6 = new Date();
         this.forwardTransformations();  // todo may be useless
+        var b6 = new Date();
+      console.log(' forwardTransformations : '+(b6-a6));
+
+        var a7 = new Date();
         this.reCreateMillers();
+        var b7 = new Date();
+      console.log(' reCreateMillers : '+(b7-a7));
+
+        var a8 = new Date();
         this.recreateMotif(); 
+        var b8 = new Date();
+      console.log(' recreateMotif : '+(b8-a8));
       }
       else{
         this.forwardTransformations();  
@@ -1251,7 +1319,9 @@ define([
 
     }   
     _this.updateLatticeTypeRL();
-     
+    var startTime2 = new Date();
+     console.log('all '+(startTime2-startTime1));
+     console.log(times_);
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;

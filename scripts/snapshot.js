@@ -32,11 +32,11 @@ define([
     logo.name="logo";
     myHud.add(logo);
 
-    document.getElementById('download').addEventListener('click', function() {
+    /*document.getElementById('download').addEventListener('click', function() {
       addLogo();
       downloadCanvas(this , $bravaisLatticeInp.val());
       removeLogo();
-    }, false);
+    }, false);*/
         
   };
   
