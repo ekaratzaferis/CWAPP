@@ -22,7 +22,7 @@ define([
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
     var _this = this;
-console.log(999);
+
     $("#leapIcon").css({ 
       "width": width/15,
       "height": width/30,  

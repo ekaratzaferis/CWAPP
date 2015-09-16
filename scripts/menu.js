@@ -337,6 +337,8 @@ define([
     var $SolidVoid = jQuery('#SolidVoid');
     var $GradeLimited = jQuery('#GradeLimited');
     
+    var $notepad = jQuery('#noteWrapper');
+    
     var renderizationMode = {
         'Classic': $Classic,
         'Subtracted': $Subtracted,
@@ -744,15 +746,13 @@ define([
                     return false;
                 }
             });
-        });
-        
+        });        
 
         $('#leap').change(function() {  
           var argument = {};
           argument["leap"]= ($('#leap').is(':checked')) ? true : false ;
           PubSub.publish(events.LEAP_MOTION, argument);           
         }); 
-        
         $('#leapOptions').on('change', function() {  
           return PubSub.publish(events.LEAP_TRACKING_SYSTEM, jQuery(this).val());
         });
@@ -797,8 +797,8 @@ define([
             });
         });
         _.each(directionButtons, function($parameter, k ) {
-            $parameter.on('click', function(){
-                if (!($select.hasClass('disabled'))){
+            $parameter.on('click', function(){ 
+                if (!($parameter.hasClass('disabled'))){  
                     argument = {};
                     argument["button"]=this.id;
                     _.each(directionParameters, function($param, a ) {
@@ -1201,34 +1201,9 @@ define([
         
 
         // Notepad
-        /*$("#notepad").dialog({ 
-draggable: true,
-resizable: true, 
-width: 400,
-height: 400,
-hide:true,
-buttons: [
-{
-text: "Submit",
-click: function() {
-argument = {}; 
-argument["text"]= $('#mynotes').val();
-PubSub.publish(events.UPDATE_NOTES, argument);
-$( this ).dialog( "close" );
-}
-}
-]
-});  
-$( "#notepad" ).dialog( "close" ); 
-$( "#notepad" ).on( "dialogresize", function( event, ui ) { 
-$( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
-} ); 
-$notes.on('click', function() {
-$( "#notepad" ).dialog( "open" );   
-});
-$( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
-        
-        */
+        $notepad.draggable({
+            scroll: false
+        });
         
         
         
@@ -1284,16 +1259,6 @@ $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* (
       argument["dragMode"]= ($('#dragMode').is(':checked')) ? true : false ;
       PubSub.publish(events.DRAG_ATOM, argument);           
     });
-    
-    
-    
-    
-    
-   
-  
-  
-  
-  
   
     $("#crystalCamTarget").click(function(){
       argument = {}; 
@@ -1304,8 +1269,6 @@ $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* (
     $storeState.on('click', function() {
       PubSub.publish(events.STORE_PROJECT, argument);   
     });
-    
-     
     
      
 
@@ -1500,35 +1463,45 @@ $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* (
             case 'save':
                 $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                 $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
-                $planesTable.find('.planeButton').on('click', function(){
-                    PubSub.publish(events.PLANE_SELECTION, argument['id']);
-                    $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
-                    $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
-                    $planesTable.find('.planeButton').removeClass('active');
-                    $planesTable.find('#'+argument['id']).find('.planeButton').addClass('active');
-                });
-                $planesTable.find('#'+argument['id']).find('.planeButton').hover(
-                    function(){
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
-                    },
-                    function(){
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#1f2227');
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#1f2227');
-                    }
-                );
                 break;  
 
             case 'edit':
-                $planesTable.find('#'+argument['id']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                 $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;
             
             case 'delete':
-                $planesTable.find('#'+argument['id']).remove();
+                $planesTable.find('#'+argument['oldId']).remove();
                 break;
             
         }
+        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
+                PubSub.publish(events.PLANE_SELECTION, argument['id']);
+                $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
+                $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
+                if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active')){
+                    $planesTable.find('.planeButton').removeClass('active');
+                }
+                else {
+                    $planesTable.find('.planeButton').removeClass('active');
+                    $planesTable.find('#'+argument['id']).find('.planeButton').addClass('active');
+                }
+            });
+            $planesTable.find('#'+argument['id']).find('.planeButton').hover(
+                function(){
+                    $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
+                    $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
+                },
+                function(){
+                    if (!($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active'))){
+                        $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#1f2227');
+                        $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#1f2227');
+                    }
+                }
+            );
+        }
+        
         if ($planesTable.find('tr').length > 0) $planesTable.css('display','block');
         else $planesTable.css('display','none');
     };
@@ -1612,34 +1585,43 @@ $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* (
             case 'save':
                 $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                 $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
-                $directionTable.find('.directionButton').on('click', function(){
-                    PubSub.publish(events.DIRECTION_SELECTION, argument['id']);
-                    $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
-                    $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
-                    $directionTable.find('.directionButton').removeClass('active');
-                    $directionTable.find('#'+argument['id']).find('.directionButton').addClass('active');
-                });
-                $directionTable.find('#'+argument['id']).find('.directionButton').hover(
-                    function(){
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
-                    },
-                    function(){
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#1f2227');
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#1f2227');
-                    }
-                );
                 break;  
 
             case 'edit':
-                $directionTable.find('#'+argument['id']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                 $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;
             
             case 'delete':
-                $directionTable.find('#'+argument['id']).remove();
+                $directionTable.find('#'+argument['oldId']).remove();
                 break;
             
+        }
+        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
+                PubSub.publish(events.DIRECTION_SELECTION, argument['id']);
+                $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
+                $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
+                if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active')){
+                    $directionTable.find('.directionButton').removeClass('active');
+                }
+                else {
+                    $directionTable.find('.directionButton').removeClass('active');
+                    $directionTable.find('#'+argument['id']).find('.directionButton').addClass('active');
+                }
+            });
+            $directionTable.find('#'+argument['id']).find('.directionButton').hover(
+                function(){
+                    $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
+                    $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
+                },
+                function(){
+                    if (!($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active'))){
+                        $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#1f2227');
+                        $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#1f2227');
+                    }
+                }
+            );
         }
         if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
         else $directionTable.css('display','none');
@@ -1668,7 +1650,7 @@ $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* (
     Menu.prototype.onGradeChoices = function(callback) {
         PubSub.subscribe(events.GRADE_CHOICES, callback);
     };
-    Menu.prototype.onDirectionalSubmit = function(callback) {
+    Menu.prototype.onDirectionalSubmit = function(callback) { 
         PubSub.subscribe(events.MILLER_DIRECTIONAL_SUBMIT, callback);
     };
     Menu.prototype.onPlaneSubmit = function(callback) {

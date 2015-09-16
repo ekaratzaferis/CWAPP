@@ -265,7 +265,7 @@ require([
   });
 
   // miller
-  menu.onDirectionalSubmit(function(message, millerParameters) {
+  menu.onDirectionalSubmit(function(message, millerParameters) {  
     lattice.millerParameters = millerParameters ;
     lattice.submitDirectional(millerParameters);
   });
