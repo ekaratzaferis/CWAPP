@@ -229,7 +229,7 @@ define([
         'newPlane': $newPlane
     };
     
-    var directionalButtons = { 
+    var directionButtons = { 
         'saveDirection': $saveDirection,
         'deleteDirection': $deleteDirection,
         'newDirection': $newDirection
@@ -733,16 +733,19 @@ define([
         });
         _.each(planeButtons, function($select, k ) {
             $select.on('click', function(){
-                argument = {};
-                argument["button"] = k;
-                _.each(planeParameters, function($param, a ) {
-                    if (a == 'planeColor') argument[a] = $param.spectrum("get").toHex();
-                    else argument[a] = $param.val();
-                });
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
-                return false;
+                if (!($select.hasClass('disabled'))){
+                    argument = {};
+                    argument["button"] = k;
+                    _.each(planeParameters, function($param, a ) {
+                        if (a == 'planeColor') argument[a] = $param.spectrum("get").toHex();
+                        else argument[a] = $param.val();
+                    });
+                    PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
+                    return false;
+                }
             });
         });
+        
 
         $('#leap').change(function() {  
           var argument = {};
@@ -793,15 +796,17 @@ define([
                 PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
             });
         });
-        _.each(directionalButtons, function($parameter, k ) {
+        _.each(directionButtons, function($parameter, k ) {
             $parameter.on('click', function(){
-                argument = {};
-                argument["button"]=this.id;
-                _.each(directionParameters, function($param, a ) {
-                    if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
-                    else argument[a] = $param.val();
-                });
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
+                if (!($select.hasClass('disabled'))){
+                    argument = {};
+                    argument["button"]=this.id;
+                    _.each(directionParameters, function($param, a ) {
+                        if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
+                        else argument[a] = $param.val();
+                    });
+                    PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
+                }
             });
         });
     
@@ -1195,7 +1200,38 @@ define([
         });
         
 
-       
+        // Notepad
+        /*$("#notepad").dialog({ 
+draggable: true,
+resizable: true, 
+width: 400,
+height: 400,
+hide:true,
+buttons: [
+{
+text: "Submit",
+click: function() {
+argument = {}; 
+argument["text"]= $('#mynotes').val();
+PubSub.publish(events.UPDATE_NOTES, argument);
+$( this ).dialog( "close" );
+}
+}
+]
+});  
+$( "#notepad" ).dialog( "close" ); 
+$( "#notepad" ).on( "dialogresize", function( event, ui ) { 
+$( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
+} ); 
+$notes.on('click', function() {
+$( "#notepad" ).dialog( "open" );   
+});
+$( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
+        
+        */
+        
+        
+        
         
         
         
@@ -1250,32 +1286,14 @@ define([
     });
     
     
-    $("#notepad").dialog({ 
-      draggable: true,
-      resizable: true, 
-      width: 400,
-      height: 400,
-      hide:true,
-      buttons: [
-        {
-          text: "Submit",
-          click: function() {
-            argument = {}; 
-            argument["text"]= $('#mynotes').val();
-            PubSub.publish(events.UPDATE_NOTES, argument);
-            $( this ).dialog( "close" );
-          }
-        }
-      ]
-    });  
-    $( "#notepad" ).dialog( "close" ); 
-    $( "#notepad" ).on( "dialogresize", function( event, ui ) { 
-      $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
-    } ); 
-    $notes.on('click', function() {
-      $( "#notepad" ).dialog( "open" );   
-    });
-    $( "#mynotes" ).css({"width":(0.95* ($( "#notepad" ).width())),"height":(0.95* ($( "#notepad" ).height())) });
+    
+    
+    
+   
+  
+  
+  
+  
   
     $("#crystalCamTarget").click(function(){
       argument = {}; 
@@ -1434,6 +1452,42 @@ define([
                         $parameter.prop('disabled', argument[k]);
                         break;
                     default: break;
+                }
+            }
+        });
+    }
+    Menu.prototype.disablePlaneButtons = function(argument){
+        _.each(planeButtons, function($parameter, k) {
+            if (argument[k] !== undefined){
+                if (argument[k] === true) {
+                    $parameter.children().css('background','#2F3238');
+                    $parameter.addClass('disabled');
+                }
+                else {
+                    $parameter.children().css('background','#15171b');
+                    $parameter.children().hover(
+                        function(){$parameter.children().css('background','#08090b');},
+                        function(){$parameter.children().css('background','#15171b');}
+                    );
+                    $parameter.removeClass('disabled');
+                }
+            }
+        });
+    }
+    Menu.prototype.disableDirectionButtons = function(argument){
+        _.each(directionButtons, function($parameter, k) {
+            if (argument[k] !== undefined){
+                if (argument[k] === true) {
+                    $parameter.children().css('background','#2F3238');
+                    $parameter.addClass('disabled');
+                }
+                else {
+                    $parameter.children().css('background','#15171b');
+                    $parameter.children().hover(
+                        function(){$parameter.children().css('background','#08090b');},
+                        function(){$parameter.children().css('background','#15171b');}
+                    );
+                    $parameter.removeClass('disabled');
                 }
             }
         });

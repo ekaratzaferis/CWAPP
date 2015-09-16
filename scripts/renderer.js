@@ -180,7 +180,7 @@ define([
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
         if(this.containerWidth < 800 ){  
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
+          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight );
           this.renderer.setViewport(
             0, 
             0,  
@@ -196,7 +196,7 @@ define([
           ); 
         }
         else{ 
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
+          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
           this.renderer.setViewport(
             0, 
             0,  

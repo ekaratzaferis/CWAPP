@@ -1245,7 +1245,7 @@ define([
     }
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
-    console.log('setParameters');
+    //console.log('setParameters');
     var startTime1 = new Date();
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
@@ -1254,7 +1254,7 @@ define([
       var a = new Date();
       this.backwardTransformations();
       var b = new Date();
-      console.log(' backwards : '+(b-a));
+      //console.log(' backwards : '+(b-a));
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX')!=-1 || _.indexOf(deltaKeys, 'repeatY')!=-1 || _.indexOf(deltaKeys, 'repeatZ')!=-1) {  
@@ -1262,42 +1262,42 @@ define([
         var a1 = new Date();
         this.actualAtoms.splice(0); 
         var b1 = new Date();
-      console.log(' actualAtoms : '+(b1-a1));
+      //console.log(' actualAtoms : '+(b1-a1));
 
         var a2 = new Date();  
         this.updatePoints();  
         var b2 = new Date();
-      console.log(' updatePoints : '+(b2-a2));
+      //console.log(' updatePoints : '+(b2-a2));
 
         var a3 = new Date();
         this.createGrid();  
         var b3 = new Date();
-      console.log(' createGrid : '+(b3-a3));
+      //console.log(' createGrid : '+(b3-a3));
 
         var a4 = new Date();
         this.createFaces();
         var b4 = new Date();
-      console.log(' createFaces : '+(b4-a4));
+      //console.log(' createFaces : '+(b4-a4));
 
         var a5 = new Date();
         this.setGradeParameters();
         var b5 = new Date();
-      console.log(' setGradeParameters : '+(b5-a5));
+      //console.log(' setGradeParameters : '+(b5-a5));
 
         var a6 = new Date();
         this.forwardTransformations();  // todo may be useless
         var b6 = new Date();
-      console.log(' forwardTransformations : '+(b6-a6));
+      //console.log(' forwardTransformations : '+(b6-a6));
 
         var a7 = new Date();
         this.reCreateMillers();
         var b7 = new Date();
-      console.log(' reCreateMillers : '+(b7-a7));
+      //console.log(' reCreateMillers : '+(b7-a7));
 
         var a8 = new Date();
         this.recreateMotif(); 
         var b8 = new Date();
-      console.log(' recreateMotif : '+(b8-a8));
+      //console.log(' recreateMotif : '+(b8-a8));
       }
       else{
         this.forwardTransformations();  
@@ -1320,8 +1320,8 @@ define([
     }   
     _this.updateLatticeTypeRL();
     var startTime2 = new Date();
-     console.log('all '+(startTime2-startTime1));
-     console.log(times_);
+     //console.log('all '+(startTime2-startTime1));
+     //console.log(times_);
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1778,34 +1778,86 @@ define([
     _this.directionalState.state = state;
     switch(state) {
         case "initial": 
-          jQuery('#newDirection').removeAttr('disabled'); 
-          jQuery('#deleteDirection').attr('disabled', 'disabled'); 
-          jQuery('#saveDirection').attr('disabled', 'disabled');
-          $("input.dirInput").val('');
-          $("input.dirInput").attr("disabled", true); 
-          $("#directionalStatus").html( "<strong>Status : </strong> starting..." );
-          $("#millerU").val('1');
-          $("#millerV").val('1');
-          $("#millerW").val('1');
-          $("#millerT").val('-1'); 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : true,
+              'newDirection' : false
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : true,
+              'millerV' : true,
+              'millerW' : true,
+              'millerT' : true,
+              'directionColor' : true,
+              'dirRadius' : true,
+              'directionName' : true
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : 1,
+              'millerV' : 1,
+              'millerW' : 1,
+              'millerT' : -1,
+              'directionColor' : '#FFFFFF',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );  
           break;
-        case "creating":
-          jQuery('#saveDirection').removeAttr('disabled'); 
-          jQuery('#newDirection').attr('disabled', 'disabled');
-          jQuery('#deleteDirection').removeAttr('disabled', 'disabled');
-          $("input.dirInput").removeAttr("disabled");
-          $("#directionalStatus").html( "<strong>Status : </strong> creating..." );
-          $("#millerU").val('1');
-          $("#millerV").val('1');
-          $("#millerW").val('1');
-          $("#millerT").val('-1');
+        case "creating": 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : false,
+              'deleteDirection' : false,
+              'newDirection' : true 
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : 1,
+              'millerV' : 1,
+              'millerW' : 1,
+              'millerT' : -1,
+              'directionColor' : '#FFFFFF',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );
           break;
-        case "editing":
-          jQuery('#saveDirection').removeAttr('disabled'); 
-          jQuery('#deleteDirection').removeAttr('disabled');
-          jQuery('#newDirection').attr('disabled', 'disabled'); 
-          $("input.dirInput").removeAttr("disabled");
-          $("#directionalStatus").html( "<strong>Status : </strong> editing direction <strong>"+_this.directionalState.dname+"</strong> ..." );
+        case "editing":  
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : true,
+              'newDirection' : false
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
           break;
       }
   }
@@ -1813,35 +1865,87 @@ define([
     var _this = this ;
     _this.planeState.state = state;
     switch(state) {
-        case "initial": 
-          jQuery('#newPlane').removeAttr('disabled');
-          jQuery('#deletePlane').attr('disabled', 'disabled'); 
-          jQuery('#savePlane').attr('disabled', 'disabled');
-          $("input.planeInput").val('');
-          $("input.planeInput").attr("disabled", true);
-          $("#planeStatus").html( "<strong>Status : </strong> starting..." );
-          $("#millerH").val('1');
-          $("#millerK").val('1');
-          $("#millerL").val('1');
-          $("#millerI").val('-1'); 
+        case "initial":  
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : false,
+              'deletePlane' : true,
+              'savePlane' : true 
+            }
+          );
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : 1,
+              'millerK' : 1,
+              'millerL' : 1,
+              'millerI' : -1,
+              'planeColor' : "#FFFFFF",
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : true,
+              'millerK' : true,
+              'millerL' : true,
+              'millerI' : true,
+              'planeColor' : true,
+              'planeOpacity' : true,
+              'planeName' : true
+            } 
+          );  
           break;
-        case "creating":
-          jQuery('#savePlane').removeAttr('disabled'); 
-          jQuery('#newPlane').attr('disabled', 'disabled');
-          jQuery('#deletePlane').removeAttr('disabled', 'disabled');
-          $("input.planeInput").removeAttr('disabled');
-          $("#planeStatus").html( "<strong>Status : </strong> creating..." );
-          $("#millerH").val('1');
-          $("#millerK").val('1');
-          $("#millerL").val('1');
-          $("#millerI").val('-1'); 
+        case "creating": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : true,
+              'deletePlane' : true,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          );
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : 1,
+              'millerK' : 1,
+              'millerL' : 1,
+              'millerI' : -1,
+              'planeColor' : '#FFFFFF',
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
           break;
-        case "editing":
-          jQuery('#savePlane').removeAttr('disabled'); 
-          jQuery('#deletePlane').removeAttr('disabled');
-          jQuery('#newPlane').removeAttr('disabled'); 
-          $("input.planeInput").removeAttr("disabled");  
-          $("#planeStatus").html( "<strong>Status : </strong> editing direction <strong>"+_this.planeState.dname+"</strong> ..." );
+        case "editing": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : false,
+              'deletePlane' : false,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          ); 
           break;
       }
   }
@@ -1920,7 +2024,10 @@ define([
 
   Lattice.prototype.submitPlane = function(millerParameters) { 
     if(
-      (millerParameters.millerH==="" || millerParameters.millerK==="" || millerParameters.millerL==="")
+      ( millerParameters.millerH === "" || 
+        millerParameters.millerK === "" || 
+        millerParameters.millerL === ""
+      )
       && ( millerParameters.button==="savePlane")) {
       return;
     }
