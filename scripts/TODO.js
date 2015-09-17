@@ -1,7 +1,13 @@
  
-TODOs UI alexandros
-    1. delete setting values to inputs (automated process from slider)
-    2. alex has to add leap motion div
+ 1. disable/enable save/preview/atomPalette
+ 2. disable/enable oti exei mesa to div pou exei tis parametrous gia to atomo
+ 2. edit oti exei mesa to div pou exei tis parametrous gia to atomo
+ 3. 
+
+
+
+
+TODOs UI alexandros  
     3. in addatom na erxontai ta parameters ola ap ti menu. na mh painrei to moitf editor amesa ap to ui menu tpt
 
 TODO list 
