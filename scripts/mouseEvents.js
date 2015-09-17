@@ -102,7 +102,7 @@ define([
         mouse.x =  -1 + 2 * ( (event.clientX - crCanvWidth)/ contWidth );
         mouse.y =   1 - 2 * ( event.clientY  / contHeight ); 
       }
-            
+             
       raycaster.setFromCamera( mouse, _this.camera );
        
       var intersects = raycaster.intersectObjects( _this.getAtoms() );
