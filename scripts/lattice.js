@@ -162,12 +162,15 @@ define([
     });
     this.grids.splice(0);
   }; 
-  Lattice.prototype.updateLatticeUI = function( params){
-
-
+  Lattice.prototype.updateLatticeUI = function(params){
+ 
     this.menu.setSliderValue("beta", params.beta );
     this.menu.setSliderValue("gamma", params.gamma );
     this.menu.setSliderValue("alpha", params.alpha );
+
+    this.menu.setSliderValue("scaleX", params.scaleX );
+    this.menu.setSliderValue("scaleY", params.scaleY );
+    this.menu.setSliderValue("scaleZ", params.scaleZ );
 
     $('#beta').val(params.scaleZ);
     $('#alpha').val(params.scaleZ);
@@ -1245,7 +1248,7 @@ define([
     }
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
-    console.log('setParameters');
+    //console.log('setParameters');
     var startTime1 = new Date();
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
@@ -1254,7 +1257,7 @@ define([
       var a = new Date();
       this.backwardTransformations();
       var b = new Date();
-      console.log(' backwards : '+(b-a));
+      //console.log(' backwards : '+(b-a));
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX')!=-1 || _.indexOf(deltaKeys, 'repeatY')!=-1 || _.indexOf(deltaKeys, 'repeatZ')!=-1) {  
@@ -1262,42 +1265,42 @@ define([
         var a1 = new Date();
         this.actualAtoms.splice(0); 
         var b1 = new Date();
-      console.log(' actualAtoms : '+(b1-a1));
+      //console.log(' actualAtoms : '+(b1-a1));
 
         var a2 = new Date();  
         this.updatePoints();  
         var b2 = new Date();
-      console.log(' updatePoints : '+(b2-a2));
+      //console.log(' updatePoints : '+(b2-a2));
 
         var a3 = new Date();
         this.createGrid();  
         var b3 = new Date();
-      console.log(' createGrid : '+(b3-a3));
+      //console.log(' createGrid : '+(b3-a3));
 
         var a4 = new Date();
         this.createFaces();
         var b4 = new Date();
-      console.log(' createFaces : '+(b4-a4));
+      //console.log(' createFaces : '+(b4-a4));
 
         var a5 = new Date();
         this.setGradeParameters();
         var b5 = new Date();
-      console.log(' setGradeParameters : '+(b5-a5));
+      //console.log(' setGradeParameters : '+(b5-a5));
 
         var a6 = new Date();
         this.forwardTransformations();  // todo may be useless
         var b6 = new Date();
-      console.log(' forwardTransformations : '+(b6-a6));
+      //console.log(' forwardTransformations : '+(b6-a6));
 
         var a7 = new Date();
         this.reCreateMillers();
         var b7 = new Date();
-      console.log(' reCreateMillers : '+(b7-a7));
+      //console.log(' reCreateMillers : '+(b7-a7));
 
         var a8 = new Date();
         this.recreateMotif(); 
         var b8 = new Date();
-      console.log(' recreateMotif : '+(b8-a8));
+      //console.log(' recreateMotif : '+(b8-a8));
       }
       else{
         this.forwardTransformations();  
@@ -1320,8 +1323,8 @@ define([
     }   
     _this.updateLatticeTypeRL();
     var startTime2 = new Date();
-     console.log('all '+(startTime2-startTime1));
-     console.log(times_);
+     //console.log('all '+(startTime2-startTime1));
+     //console.log(times_);
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1711,7 +1714,7 @@ define([
   Lattice.prototype.selectDirection = function (which){
     if(which==="---") return;
     var _this = this;
-    var u,v,w,name,color;
+    var u,v,w,name,color, dirRadius;
     PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
     var index ;
@@ -1724,20 +1727,28 @@ define([
         w = this.millerDirections[i].w;
         name = this.millerDirections[i].name;
         color = this.millerDirections[i].directionColor; 
+        dirRadius = this.millerDirections[i].direction.radius ;
       }
     };
     this.millerDirections.splice(index,1);
     _this.directionalState.editing = which;
     _this.directionalState.dname = name;
-    $("#millerU").val(u);
-    $("#millerV").val(v);
-    $("#millerW").val(w);
-    $("#directionName").val(name);
-    $("#inner-editor").val(color);  
+  
+    this.menu.editDirectionInputs(
+      {
+        'millerU' : u,
+        'millerV' : v,
+        'millerW' : w,
+        'millerT' : -1,
+        'directionColor' : '#'+color,
+        'dirRadius' : dirRadius,
+        'directionName' : name
+      } 
+    );
 
   };
-  Lattice.prototype.selectPlane = function (which){
-    if(which==="---") return;
+  Lattice.prototype.selectPlane = function (which){ 
+    console.log(which);
     var _this = this;
     var h,k,l,name,color, opacity;
     PubSub.publish(events.PLANE_STATE,"editing");
@@ -1761,11 +1772,20 @@ define([
 
     _this.planeState.editing = which;
     _this.planeState.dname = name;
-    $("#millerH").val(h);
-    $("#millerK").val(k);
-    $("#millerL").val(l);
-    $("#planeName").val(name);
-    // $("#").val(opacity);  TODO opacity slider
+    
+    //TODO UI (update also color opacity)
+    this.menu.editPlaneInputs(
+      {
+        'millerH' : h,
+        'millerK' : k,
+        'millerL' : l,
+        'millerI' : -1,
+        'planeColor' : '#'+color,
+        'planeOpacity' : opacity,
+        'planeName' : name
+      } 
+    );
+
   };
   Lattice.prototype.onDirectionStateChange = function(callback) {
     PubSub.subscribe(events.DIRECTION_STATE, callback);
@@ -1778,34 +1798,86 @@ define([
     _this.directionalState.state = state;
     switch(state) {
         case "initial": 
-          jQuery('#newDirection').removeAttr('disabled'); 
-          jQuery('#deleteDirection').attr('disabled', 'disabled'); 
-          jQuery('#saveDirection').attr('disabled', 'disabled');
-          $("input.dirInput").val('');
-          $("input.dirInput").attr("disabled", true); 
-          $("#directionalStatus").html( "<strong>Status : </strong> starting..." );
-          $("#millerU").val('1');
-          $("#millerV").val('1');
-          $("#millerW").val('1');
-          $("#millerT").val('-1'); 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : true,
+              'newDirection' : false
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : true,
+              'millerV' : true,
+              'millerW' : true,
+              'millerT' : true,
+              'directionColor' : true,
+              'dirRadius' : true,
+              'directionName' : true
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : 1,
+              'millerV' : 1,
+              'millerW' : 1,
+              'millerT' : -1,
+              'directionColor' : '#FFFFFF',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );  
           break;
-        case "creating":
-          jQuery('#saveDirection').removeAttr('disabled'); 
-          jQuery('#newDirection').attr('disabled', 'disabled');
-          jQuery('#deleteDirection').removeAttr('disabled', 'disabled');
-          $("input.dirInput").removeAttr("disabled");
-          $("#directionalStatus").html( "<strong>Status : </strong> creating..." );
-          $("#millerU").val('1');
-          $("#millerV").val('1');
-          $("#millerW").val('1');
-          $("#millerT").val('-1');
+        case "creating": 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : false,
+              'deleteDirection' : false,
+              'newDirection' : true 
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : 1,
+              'millerV' : 1,
+              'millerW' : 1,
+              'millerT' : -1,
+              'directionColor' : '#FFFFFF',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );
           break;
-        case "editing":
-          jQuery('#saveDirection').removeAttr('disabled'); 
-          jQuery('#deleteDirection').removeAttr('disabled');
-          jQuery('#newDirection').attr('disabled', 'disabled'); 
-          $("input.dirInput").removeAttr("disabled");
-          $("#directionalStatus").html( "<strong>Status : </strong> editing direction <strong>"+_this.directionalState.dname+"</strong> ..." );
+        case "editing":  
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : true,
+              'newDirection' : false
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
           break;
       }
   }
@@ -1813,35 +1885,87 @@ define([
     var _this = this ;
     _this.planeState.state = state;
     switch(state) {
-        case "initial": 
-          jQuery('#newPlane').removeAttr('disabled');
-          jQuery('#deletePlane').attr('disabled', 'disabled'); 
-          jQuery('#savePlane').attr('disabled', 'disabled');
-          $("input.planeInput").val('');
-          $("input.planeInput").attr("disabled", true);
-          $("#planeStatus").html( "<strong>Status : </strong> starting..." );
-          $("#millerH").val('1');
-          $("#millerK").val('1');
-          $("#millerL").val('1');
-          $("#millerI").val('-1'); 
+        case "initial":  
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : false,
+              'deletePlane' : true,
+              'savePlane' : true 
+            }
+          );
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : 1,
+              'millerK' : 1,
+              'millerL' : 1,
+              'millerI' : -1,
+              'planeColor' : "#FFFFFF",
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : true,
+              'millerK' : true,
+              'millerL' : true,
+              'millerI' : true,
+              'planeColor' : true,
+              'planeOpacity' : true,
+              'planeName' : true
+            } 
+          );  
           break;
-        case "creating":
-          jQuery('#savePlane').removeAttr('disabled'); 
-          jQuery('#newPlane').attr('disabled', 'disabled');
-          jQuery('#deletePlane').removeAttr('disabled', 'disabled');
-          $("input.planeInput").removeAttr('disabled');
-          $("#planeStatus").html( "<strong>Status : </strong> creating..." );
-          $("#millerH").val('1');
-          $("#millerK").val('1');
-          $("#millerL").val('1');
-          $("#millerI").val('-1'); 
+        case "creating": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : true,
+              'deletePlane' : true,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          );
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : 1,
+              'millerK' : 1,
+              'millerL' : 1,
+              'millerI' : -1,
+              'planeColor' : '#FFFFFF',
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
           break;
-        case "editing":
-          jQuery('#savePlane').removeAttr('disabled'); 
-          jQuery('#deletePlane').removeAttr('disabled');
-          jQuery('#newPlane').removeAttr('disabled'); 
-          $("input.planeInput").removeAttr("disabled");  
-          $("#planeStatus").html( "<strong>Status : </strong> editing direction <strong>"+_this.planeState.dname+"</strong> ..." );
+        case "editing": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : false,
+              'deletePlane' : false,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          ); 
           break;
       }
   }
@@ -1867,16 +1991,7 @@ define([
       }
     }
     else if (_this.directionalState.state === "creating"){
-      switch(buttonClicked) {
-        case "deleteDirection": 
-          PubSub.publish(events.DIRECTION_STATE,"initial");
-          for (var i = 0; i < this.tempDirs.length; i++) {
-            this.tempDirs[i].direction.destroy(); 
-          };  
-          this.tempDirs.splice(0);
-          _this.removeDirectionList();
-          break;
-
+      switch(buttonClicked) {  
         case "saveDirection":
           PubSub.publish(events.DIRECTION_STATE,"initial");
           for (var i = 0; i < this.tempDirs.length; i++) {
@@ -1886,7 +2001,7 @@ define([
           var found = _.find(_this.directionalList, function(directional){ return directional.id === directionID; });
           if(_.isUndefined(found)){
             this.createMillerDirection(millerParameters, false, false);
-            _this.updateDirectionList(millerParameters); 
+            _this.updateDirectionList(millerParameters, undefined, 'save'); 
           } 
           break;
       }
@@ -1902,7 +2017,7 @@ define([
           };  
           this.tempDirs.splice(0);
           this.createMillerDirection(millerParameters, false, false);
-          _this.updateDirectionList(millerParameters, _this.directionalState.editing);
+          _this.updateDirectionList(millerParameters, _this.directionalState.editing, 'edit');
            
           break;
   
@@ -1912,7 +2027,7 @@ define([
             this.tempDirs[i].direction.destroy(); 
           };  
           this.tempDirs.splice(0);
-          _this.removeDirectionList();
+          _this.updateDirectionList(millerParameters,  this.directionalState.editing, 'delete'); 
           break;
       } 
     } 
@@ -1920,7 +2035,10 @@ define([
 
   Lattice.prototype.submitPlane = function(millerParameters) { 
     if(
-      (millerParameters.millerH==="" || millerParameters.millerK==="" || millerParameters.millerL==="")
+      ( millerParameters.millerH === "" || 
+        millerParameters.millerK === "" || 
+        millerParameters.millerL === ""
+      )
       && ( millerParameters.button==="savePlane")) {
       return;
     }
@@ -1949,17 +2067,9 @@ define([
           var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
           if(_.isUndefined(found)){
             this.createMillerPlane(millerParameters, false, false);
-            _this.updatePlaneList(millerParameters); 
+            this.updatePlaneList(millerParameters, undefined, 'save'); 
           }
-          break;
-        case "deletePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial"); 
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          _this.removePlaneList();
-          break;
+          break; 
       }
     }
     else if (_this.planeState.state === "editing"){
@@ -1973,8 +2083,7 @@ define([
           };  
           this.tempPlanes.splice(0);
           this.createMillerPlane(millerParameters, false, false);
-          _this.updatePlaneList(millerParameters, _this.planeState.editing);
-           
+          this.updatePlaneList(millerParameters, _this.planeState.editing, 'edit'); 
           break;
 
         case "deletePlane": 
@@ -1983,63 +2092,91 @@ define([
             this.tempPlanes[i].plane.destroy(); 
           };  
           this.tempPlanes.splice(0);
-          _this.removePlaneList();
+          this.updatePlaneList(undefined, this.planeState.editing, 'delete'); 
           break;
-      }
-
-    }
-    
+      } 
+    } 
   };
     
-  Lattice.prototype.updatePlaneList = function(millerParameters, oldId)  {
-    var _this = this ;
-    var $planes = jQuery('#planes');
+  Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
+    var _this = this ; 
 
-    if(!_.isUndefined(oldId)){
-      var $option = jQuery("#"+oldId);
-      $option.remove();
+    if(!_.isUndefined(oldId)){ 
       _.each(_this.planeList, function(x, reference) {
         if(x.id===oldId) delete _this.planeList[reference];
-      });
+      }); 
+    } 
+    var id; 
+    if( action === 'delete'){
+      id = oldId ;
+      this.menu.editSavedPlane(
+      { 
+        'action' : action, 
+        'id' : id
+      } 
+    );
+    } 
+    else{
+      id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+      this.menu.editSavedPlane(
+        { 
+          'action' : action,
+          'h' : millerParameters.millerH,
+          'k' : millerParameters.millerK,
+          'l' : millerParameters.millerL,
+          'i' : undefined,
+          'name' : millerParameters.planeName,
+          'id' : id,
+          'color' : '#'+millerParameters.planeColor
+        } 
+      );
 
     }
-
-    var text = "Plane : "+millerParameters.planeName+"  ["+millerParameters.millerH+","+millerParameters.millerK+","+millerParameters.millerL+"] ";
-    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
-    var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
-    $planes.append(option) ;
-
+    
+    console.log('update plane list id : '+id);
     var item = { id : id};
     _this.planeList.push(item); // TODO when it searches for pre existed option look at the select element not in this
      
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId)  {
-    var _this = this ;
-    var $vectors = jQuery('#vectors');
+    var _this = this ; 
     
     if(!_.isUndefined(oldId)){
-      var $option = jQuery("#"+oldId);
-      $option.remove();
       _.each(_this.directionalList, function(x, reference) {
         if(x.id===oldId) delete _this.directionalList[reference];
       }); 
-    }
+    } 
 
-    var text = "Vector : "+millerParameters.directionName+"  ["+millerParameters.millerU+","+millerParameters.millerV+","+millerParameters.millerW+"] ";
-    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
-    var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
-    $vectors.append(option) ;
+    var id; 
+    if( action === 'delete'){
+      id = oldId ;
+      this.menu.editSavedDirection(
+        { 
+          'action' : 'save',  
+          'id' : id 
+        } 
+      );
+    } 
+    else{
+      id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+      this.menu.editSavedDirection(
+        { 
+          'action' : 'save',
+          'u' : millerParameters.millerU,
+          'v' : millerParameters.millerU,
+          'w' : millerParameters.millerW,
+          't' : undefined,
+          'name' : millerParameters.directionName,
+          'id' : id,
+          'color' : '#'+millerParameters.directionColor
+        } 
+      );
+    } 
 
     var item = { id : id};
     _this.directionalList.push(item); // TODO when it searches for pre existed option look at the select element not in this
      
-  };
-  Lattice.prototype.removeDirectionList = function(millerParameters, oldId)  {
-    jQuery("#"+this.directionalState.editing).remove();    
-  };
-  Lattice.prototype.removePlaneList = function(millerParameters, oldId)  {
-    jQuery("#"+this.planeState.editing).remove();    
-  };
+  }; 
   Lattice.prototype.transformMiller = function( shape, parameterKeys, operation ) {
     var matrix; 
     var argument;

@@ -45,27 +45,38 @@
 	</head>
 	<body class="dark">
         
-		<main id="cnt_main_screen" class="main-screen-container">
-        	 
-            <div id="app-container">
-            
-                <div id="crystalRenderer" class="canvasContainer" style="float: left;">
-                  <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: absolute; z-index:10; bottom:0px; left:0px;"></div> 
-                  <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div>
+        <div id="screenWrapper">
+            <div id="noteWrapper">
+                <div id="noteBar">
+                    Notes
+                    <img src="Images/close.png" />
                 </div>
-                <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
-                <div id="motifRenderer" class="canvasContainer" > </div>              
-                <div style=" display: table; position:fixed;bottom:0; "> 
-                  <div id="motifPosX"  style="display: table-cell;"></div>
-                  <div id="motifPosY"  style="display: table-cell;"></div>
-                  <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
-                </div>   
-                
-                
+                <div id="notesScroll" class="custom_scrollbar">
+                    <div id="notes" contenteditable="true">
+                        Start Typing...
+                    </div>
+                </div>
             </div>
+            <main id="cnt_main_screen" class="main-screen-container">
 
-            
-        </main>
+                <div id="app-container">
+
+                    <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
+                    <div id="crystalRenderer" class="canvasContainer" style="float: left;">
+                      <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: absolute; z-index:10; bottom:0px; left:0px;"></div> 
+                      <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div>
+                    </div>
+                    <div id="motifRenderer" class="canvasContainer" style="position:fixed;bottom:0;"> </div>              
+                    <div style=" display: table; position:fixed;bottom:0; "> 
+                      <div id="motifPosX"  style="display: table-cell;"></div>
+                      <div id="motifPosY"  style="display: table-cell;"></div>
+                      <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
+                    </div>   
+
+                </div>
+
+            </main>
+        </div>
 		
 		<section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
 			<div class="main-controls-inner">
@@ -1805,7 +1816,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-notes">
-																		<a href="#" class="btn btn-light"><img src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
+																		<a href="#" class="btn btn-light"><img id="notesButton" src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -2467,6 +2478,7 @@
 					</div>
 				</div>
 			</article>
+            
 		</section>
 		
 	</body>

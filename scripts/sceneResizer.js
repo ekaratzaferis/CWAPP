@@ -57,6 +57,8 @@ define([
  
       $('#hudRendererCube').width((0.5 * 1.5 * width) / this.hudDisplayFactor);
       $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor);
+      $('#hudRendererCube').css( "left", width/2 );
+        
       
     }
     else{
