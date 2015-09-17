@@ -2979,3 +2979,36 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     cursor:pointer;
     overflow: hidden;
 }
+#noteWrapper{
+    display: none;
+    z-index:9999;
+    color:white;
+    border:#2F3238 solid 1px;
+    position: absolute;
+    margin-top: 10%;
+    margin-left:18%;
+    min-height: 80px;
+    min-width: 250px;}
+#notes{
+    color:#2F3238;
+    background-color: transparent;
+    border: none;
+    font-size: 12px;
+    overflow: auto;}
+#notesScroll{
+    border: none;
+    width:100%;
+    height: 70%;
+    overflow: auto;}
+#noteBar{
+    font-size: 12.68px;
+    color:#2F3238;
+    border-bottom: #2F3238 dotted 1px;
+    text-align: center;}
+#noteBar img{
+    margin-top: 4px;
+    margin-right: 4px;
+    float: right;
+    height: 10px;}
+#screenWrapper{
+    position: relative;}

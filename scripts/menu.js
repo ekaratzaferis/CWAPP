@@ -338,6 +338,8 @@ define([
     var $GradeLimited = jQuery('#GradeLimited');
     
     var $notepad = jQuery('#noteWrapper');
+
+    var $notepadButton = jQuery('#notesButton');
     
     var renderizationMode = {
         'Classic': $Classic,
@@ -797,8 +799,8 @@ define([
             });
         });
         _.each(directionButtons, function($parameter, k ) {
-            $parameter.on('click', function(){ 
-                if (!($parameter.hasClass('disabled'))){  
+            $parameter.on('click', function(){
+                if (!($parameter.hasClass('disabled'))){
                     argument = {};
                     argument["button"]=this.id;
                     _.each(directionParameters, function($param, a ) {
@@ -1202,12 +1204,18 @@ define([
 
         // Notepad
         $notepad.draggable({
-            scroll: false
+            scroll: false,
+            handle: '#noteBar'
         });
-        
-        
-        
-        
+        $notepad.find('#notes').on('focus',function(){
+            jQuery(this).attr('contenteditable','true');
+        });
+        $notepad.resizable();
+        $notepad.find('.mCSB_1_scrollbar_vertical').css('display','block');
+        $notepad.find('img').on('click',function(){$notepad.css('display','none');});
+        $notepadButton.on('click',function(){$notepad.css('display','block');});
+    
+
         
         
         
