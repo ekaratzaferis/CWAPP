@@ -1585,16 +1585,26 @@ define([
     _this.editorState.state = state;
 
     switch(state) {
-      case "initial": 
-        $("#atomPalette").prop("disabled",false);
-        $(".atomInput").css("visibility", "hidden");
-        $('option:selected', 'select[id="savedAtoms"]').removeAttr('selected'); 
-        $('select[id="savedAtoms"]').find('option[id="---"]').attr("selected",true);
+      case "initial":  
+        this.menu.disableAtomButtons(
+          {
+            'atomPalette' : false,
+            'saveChanges' : true,
+            'previewAtomChanges' : true 
+          }
+        );
+        this.menu.editAtomInputs(
+          {
+            'atomPalette' : false,
+            'saveChanges' : true,
+            'previewAtomChanges' : true 
+          }
+        );
+
         $("#savedAtomsCont").css("visibility", "visible");
         $("#atomOpacity").val(10);
         this.menu.setSliderValue('atomOpacity', 10);
-        $('input[name=dragMode]').attr('checked', false);
-
+        $('input[name=dragMode]').attr('checked', false); 
         break;
       case "creating":
         $("#atomPalette").prop("disabled",true);

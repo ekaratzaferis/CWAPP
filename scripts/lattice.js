@@ -1711,23 +1711,33 @@ define([
     }
   };
 
-  Lattice.prototype.selectDirection = function (which){
-    if(which==="---") return;
+  Lattice.prototype.selectDirection = function (which){ 
+    if(which === this.directionalState.editing && this.directionalState === 'editing'){
+      return;
+    }
+    for (var i = 0; i < this.tempDirs.length; i++) {
+      this.tempDirs[i].direction.destroy(); 
+      if( i === 0){
+        this.menu.editSavedDirection({ action : 'delete', oldId : this.tempDirs[0].id});
+      }
+    };  
+    this.tempDirs.splice(0); 
+
     var _this = this;
     var u,v,w,name,color, dirRadius;
     PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
     var index ;
-    for (var i = 0; i < this.millerDirections.length; i++) {
-
+    for (var i = 0; i < this.millerDirections.length; i++) { 
       if(this.millerDirections[i].id === which) {
         this.tempDirs.push(this.millerDirections[i]);
         u = this.millerDirections[i].u;
         v = this.millerDirections[i].v;
         w = this.millerDirections[i].w;
-        name = this.millerDirections[i].name;
+        name = this.millerDirections[i].directionName;
         color = this.millerDirections[i].directionColor; 
         dirRadius = this.millerDirections[i].direction.radius ;
+        index = i;
       }
     };
     this.millerDirections.splice(index,1);
@@ -1748,23 +1758,32 @@ define([
 
   };
   Lattice.prototype.selectPlane = function (which){ 
-    console.log(which);
+    
+    if(which === this.planeState.editing && this.planeState === 'editing'){
+      return;
+    } 
+    for (var i = 0; i < this.tempPlanes.length; i++) {
+      this.tempPlanes[i].plane.destroy(); 
+      if( i === 0){
+        this.menu.editSavedPlane({ action : 'delete', oldId : this.tempPlanes[0].id});
+      }
+    };  
+    this.tempPlanes.splice(0); 
+
     var _this = this;
     var h,k,l,name,color, opacity;
     PubSub.publish(events.PLANE_STATE,"editing");
  
     var index ;
-    for (var i = 0; i < this.millerPlanes.length; i++) {
-
+    for (var i = 0; i < this.millerPlanes.length; i++) { 
       if(this.millerPlanes[i].id === which) {
         this.tempPlanes.push(this.millerPlanes[i]);
         h = this.millerPlanes[i].h; 
         k = this.millerPlanes[i].k;
         l = this.millerPlanes[i].l;
-        name = this.millerPlanes[i].name;
+        name = this.millerPlanes[i].planeName;
         color =  this.millerPlanes[i].planeColor;
-        opacity =  this.millerPlanes[i].planeOpacity; 
-        
+        opacity =  this.millerPlanes[i].planeOpacity;  
         index=i;
       }
     }   
@@ -1772,7 +1791,7 @@ define([
 
     _this.planeState.editing = which;
     _this.planeState.dname = name;
-    
+      
     //TODO UI (update also color opacity)
     this.menu.editPlaneInputs(
       {
@@ -1860,11 +1879,11 @@ define([
           );
           break;
         case "editing":  
-          this.menu.disableDirectionButtons(
+          this.menu.disableDirectionButtons( 
             {
-              'saveDirection' : true,
-              'deleteDirection' : true,
-              'newDirection' : false
+              'saveDirection' : false,
+              'deleteDirection' : false,
+              'newDirection' : true
             }
           );
           this.menu.disableDirectionInputs(
@@ -1969,9 +1988,9 @@ define([
           break;
       }
   }
-  Lattice.prototype.submitDirectional = function(millerParameters) {  
-    if( (millerParameters.millerU==="" || millerParameters.millerV==="" || millerParameters.millerW==="")
-      && ( millerParameters.button==="saveDirection")) { 
+  Lattice.prototype.submitDirectional = function(millerParameters) {   
+    if( (millerParameters.millerU === "" || millerParameters.millerV === "" || millerParameters.millerW==="")
+      && ( millerParameters.button === "saveDirection")) { 
       return;
     }
     var _this = this ;
@@ -1998,7 +2017,7 @@ define([
             this.tempDirs[i].direction.destroy(); 
           };  
           this.tempDirs.splice(0);
-          var found = _.find(_this.directionalList, function(directional){ return directional.id === directionID; });
+          var found = _.find(_this.directionalList, function(directional){ return directional.id === directionID; }); 
           if(_.isUndefined(found)){
             this.createMillerDirection(millerParameters, false, false);
             _this.updateDirectionList(millerParameters, undefined, 'save'); 
@@ -2016,9 +2035,11 @@ define([
             this.tempDirs[i].direction.destroy(); 
           };  
           this.tempDirs.splice(0);
-          this.createMillerDirection(millerParameters, false, false);
-          _this.updateDirectionList(millerParameters, _this.directionalState.editing, 'edit');
-           
+          
+          var suc = this.updateDirectionList(millerParameters, _this.directionalState.editing, 'edit');
+          if( suc === undefined){
+            this.createMillerDirection(millerParameters, false, false);  
+          }
           break;
   
         case "deleteDirection": 
@@ -2030,7 +2051,7 @@ define([
           _this.updateDirectionList(millerParameters,  this.directionalState.editing, 'delete'); 
           break;
       } 
-    } 
+    }  
   };
 
   Lattice.prototype.submitPlane = function(millerParameters) { 
@@ -2082,8 +2103,11 @@ define([
             this.tempPlanes[i].plane.destroy(); 
           };  
           this.tempPlanes.splice(0);
-          this.createMillerPlane(millerParameters, false, false);
-          this.updatePlaneList(millerParameters, _this.planeState.editing, 'edit'); 
+          var suc = this.updatePlaneList(millerParameters, this.planeState.editing, 'edit'); 
+          if( suc === undefined){
+            this.createMillerPlane(millerParameters, false, false); 
+          }
+          
           break;
 
         case "deletePlane": 
@@ -2092,32 +2116,25 @@ define([
             this.tempPlanes[i].plane.destroy(); 
           };  
           this.tempPlanes.splice(0);
-          this.updatePlaneList(undefined, this.planeState.editing, 'delete'); 
+          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
           break;
       } 
-    } 
+    }  
   };
     
   Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
     var _this = this ; 
 
-    if(!_.isUndefined(oldId)){ 
+    if( oldId !== undefined){ 
       _.each(_this.planeList, function(x, reference) {
-        if(x.id===oldId) delete _this.planeList[reference];
+        if(x.id === oldId) delete _this.planeList[reference];
       }); 
     } 
-    var id; 
-    if( action === 'delete'){
-      id = oldId ;
-      this.menu.editSavedPlane(
-      { 
-        'action' : action, 
-        'id' : id
-      } 
-    );
-    } 
-    else{
-      id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";  
+    
+    var found = (action === 'edit') ? _.find(_this.planeList, function(plane){ return plane.id === id; }) : undefined; 
+
+    if( found === undefined){ 
       this.menu.editSavedPlane(
         { 
           'action' : action,
@@ -2127,55 +2144,54 @@ define([
           'i' : undefined,
           'name' : millerParameters.planeName,
           'id' : id,
+          'oldId' : oldId,
           'color' : '#'+millerParameters.planeColor
         } 
       );
-
-    }
     
-    console.log('update plane list id : '+id);
-    var item = { id : id};
-    _this.planeList.push(item); // TODO when it searches for pre existed option look at the select element not in this
-     
+      if( action !== 'delete'){
+        var item = { id : id};
+        _this.planeList.push(item); 
+      }    
+    }
+    return found;
   };
-  Lattice.prototype.updateDirectionList = function(millerParameters, oldId)  {
+  Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
     
-    if(!_.isUndefined(oldId)){
+    if( oldId !== undefined){
       _.each(_this.directionalList, function(x, reference) {
-        if(x.id===oldId) delete _this.directionalList[reference];
+        if(x.id === oldId) {
+          delete _this.directionalList[reference];
+        }
       }); 
     } 
 
-    var id; 
-    if( action === 'delete'){
-      id = oldId ;
+    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+
+    var found = (action === 'edit') ? _.find(_this.directionalList, function(directional){ return directional.id === directionID; }) : undefined; 
+    
+    if( found === undefined){ 
       this.menu.editSavedDirection(
         { 
-          'action' : 'save',  
-          'id' : id 
-        } 
-      );
-    } 
-    else{
-      id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
-      this.menu.editSavedDirection(
-        { 
-          'action' : 'save',
+          'action' : action,
           'u' : millerParameters.millerU,
           'v' : millerParameters.millerU,
           'w' : millerParameters.millerW,
           't' : undefined,
           'name' : millerParameters.directionName,
           'id' : id,
+          'oldId' : oldId,
           'color' : '#'+millerParameters.directionColor
         } 
       );
-    } 
-
-    var item = { id : id};
-    _this.directionalList.push(item); // TODO when it searches for pre existed option look at the select element not in this
-     
+      
+      if( action !== 'delete'){
+        var item = { id : id};
+        _this.directionalList.push(item); 
+      } 
+    }
+    return found;
   }; 
   Lattice.prototype.transformMiller = function( shape, parameterKeys, operation ) {
     var matrix; 

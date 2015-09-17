@@ -338,6 +338,7 @@ define([
     var $GradeLimited = jQuery('#GradeLimited');
     
     var $notepad = jQuery('#noteWrapper');
+
     var $notepadButton = jQuery('#notesButton');
     
     var renderizationMode = {
@@ -1213,11 +1214,8 @@ define([
         $notepad.find('.mCSB_1_scrollbar_vertical').css('display','block');
         $notepad.find('img').on('click',function(){$notepad.css('display','none');});
         $notepadButton.on('click',function(){$notepad.css('display','block');});
-        
-        
-        
-        
-        
+    
+
         
         
         
@@ -1660,7 +1658,7 @@ define([
     Menu.prototype.onGradeChoices = function(callback) {
         PubSub.subscribe(events.GRADE_CHOICES, callback);
     };
-    Menu.prototype.onDirectionalSubmit = function(callback) {
+    Menu.prototype.onDirectionalSubmit = function(callback) { 
         PubSub.subscribe(events.MILLER_DIRECTIONAL_SUBMIT, callback);
     };
     Menu.prototype.onPlaneSubmit = function(callback) {
