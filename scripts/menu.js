@@ -1248,7 +1248,8 @@ define([
             }
         });
         function progressDelay(){$progressBarWrapper.fadeOut('slow');};
-
+        
+        
     /*$
     
     
@@ -1302,15 +1303,14 @@ define([
     
     
     Menu.prototype.resetProgressBar = function(taskNum,title) {
-        $progressBar.progressbar('value', false);
+        $progressBar.progressbar('value', 0);
         $progressBar.find('.progressLabel').html(title);
-        $progressN = parseFloat(100) / (parseFloat(taskNum));
+        $progressN = 100 / (parseFloat(taskNum));
         $progressBarWrapper.css('display','block');
     }
     Menu.prototype.progressBarIncrease = function(){
         var val;
-        if ($progressBar.progressbar('value') === false) val = $progressN;
-        else val = parseFloat($progressBar.progressbar('value')) + $progressN;
+        val = parseFloat($progressBar.progressbar('value')) + $progressN;
         $progressBar.progressbar("value", val);
     }
     Menu.prototype.editProgressTitle = function(title){
