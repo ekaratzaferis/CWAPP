@@ -3015,16 +3015,25 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     display: none;
     z-index: 1000;
     position: fixed;
-    background-color: purple;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-    filter: alpha(opacity=50);
-    opacity: 0.8;
+    background-color: #15171b;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+    filter: alpha(opacity=90);
+    opacity: 0.9;
+}
+#progressBarWrapper img{
+    margin-top: 10%;
+    margin-left: 31%;
+    
 }
 #progressBar{
-    margin-top: 24%;
+    margin-top: -2%;
     margin-left: 20%;
     margin-right: 20%;
 }
+#progressBar > .ui-progressbar-value {
+   background: purple;
+   border-color: purple;
+}
 .progressLabel{
-    text-align: center;
+    text-align: left;
 }
