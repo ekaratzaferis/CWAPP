@@ -347,6 +347,9 @@ define([
     var $GradeLimited = jQuery('#GradeLimited');
     
     var $notepad = jQuery('#noteWrapper');
+    var $progressBarWrapper = jQuery('#progressBarWrapper');
+    var $progressBar = jQuery('#progressBar');
+    var $progressN;
 
     var $notepadButton = jQuery('#notesButton');
     
@@ -573,7 +576,7 @@ define([
                 });
             }
             else{
-                $parameter.on('focusout',function(){
+                $parameter.on('change',function(){
                     argument = {};
                     argument[k] = $parameter.val();
                     PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
@@ -1231,8 +1234,28 @@ define([
         $notepadButton.on('click',function(){$notepad.css('display','block');});
 
    
-        
-        
+        // Progress Bar
+        var screen_width = jQuery(window).width();
+        var screen_height = jQuery(window).height();
+        $progressBarWrapper.width(screen_width);
+        $progressBarWrapper.height(screen_height);
+        $progressBar.progressbar({
+            max: 100,
+            value: false,
+            complete: function() {
+                setTimeout(progressDelay, 500);
+            }
+        });
+        function progressDelay(){$progressBarWrapper.css('display','none');};
+
+
+        _this.resetProgressBar(200,'THano mpine');
+        _this.progressBarIncrease();
+        _this.progressBarIncrease();
+        _this.progressBarIncrease();
+        _this.progressBarIncrease();
+        _this.progressBarIncrease();
+        _this.progressBarIncrease();
         
     /*$
     
@@ -1284,6 +1307,25 @@ define([
      
   };
     
+    
+    
+    Menu.prototype.resetProgressBar = function(taskNum,title) {
+        $progressBar.progressbar('value', false);
+        $progressBar.find('.progressLabel').html(title);
+        $progressN = parseFloat(100) / (parseFloat(taskNum));
+        console.log($progressN);
+        $progressBarWrapper.css('display','block');
+    }
+    Menu.prototype.progressBarIncrease = function(){
+        var val;
+        if ($progressBar.progressbar('value') === false) val = 0;
+        else val = parseFloat($progressBar.progressbar('value')) + $progressN;
+        console.log(val);
+        $progressBar.progressbar("value", val);
+    }
+    Menu.prototype.editProgressTitle = function(title){
+        $progressBar.find('.progressLabel').html(title);
+    }
     Menu.prototype.getLatticeParameters = function() {
         var parameters = {};
         _.each(latticeParameters, function($latticeParameter, k) {
