@@ -347,6 +347,7 @@ define([
   };
  
   Doll.prototype.rePosition = function(){  
+     
     var frustum = new THREE.Frustum(); 
     var _this = this;
     this.camera.updateProjectionMatrix(); 

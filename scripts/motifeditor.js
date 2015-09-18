@@ -1595,26 +1595,80 @@ define([
         );
         this.menu.editAtomInputs(
           {
-            'atomPalette' : false,
+            'atomPosX' : 1,
+            'atomPosY' : 1,
+            'atomPosZ' : 1,
             'saveChanges' : true,
-            'previewAtomChanges' : true 
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : false, 
+            'atomColor' : '#ffffff', 
+            'atomOpacity' : 10, 
+            'rotAngleTheta' : 90, 
+            'rotAnglePhi' : 90 
           }
-        );
-
-        $("#savedAtomsCont").css("visibility", "visible");
-        $("#atomOpacity").val(10);
-        this.menu.setSliderValue('atomOpacity', 10);
-        $('input[name=dragMode]').attr('checked', false); 
+        ); 
+        this.menu.disableAtomInputs(
+          {
+            'atomPosX' : true,
+            'atomPosY' : true,
+            'atomPosZ' : true,
+            'saveChanges' : true,
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : true, 
+            'atomColor' : true, 
+            'atomOpacity' : true, 
+            'rotAngleTheta' : true, 
+            'rotAnglePhi' : true 
+          }
+        ); 
+ 
+        //$('input[name=dragMode]').attr('checked', false); 
         break;
       case "creating":
-        $("#atomPalette").prop("disabled",true);
-        $(".atomInput").css("visibility", "visible");
-        $("#savedAtomsCont").css("visibility", "hidden");
+        this.menu.disableAtomButtons(
+          {
+            'atomPalette' : true,
+            'saveChanges' : false,
+            'previewAtomChanges' : false 
+          }
+        ); 
+        this.menu.disableAtomInputs(
+          {
+            'atomPosX' : false,
+            'atomPosY' : false,
+            'atomPosZ' : false,
+            'saveChanges' : false,
+            'atomPositioningXYZ' : false,
+            'atomPositioningABC' : false, 
+            'atomColor' : false, 
+            'atomOpacity' : false, 
+            'rotAngleTheta' : false, 
+            'rotAnglePhi' : false 
+          }
+        );    
         break;
       case "editing":
-        $("#atomPalette").prop("disabled",true);
-        $(".atomInput").css("visibility", "visible");
-        $("#savedAtomsCont").css("visibility", "hidden");
+        this.menu.disableAtomButtons(
+          {
+            'atomPalette' : true,
+            'saveChanges' : false,
+            'previewAtomChanges' : false 
+          }
+        ); 
+        this.menu.disableAtomInputs(
+          {
+            'atomPosX' : false,
+            'atomPosY' : false,
+            'atomPosZ' : false,
+            'saveChanges' : false,
+            'atomPositioningXYZ' : false,
+            'atomPositioningABC' : false, 
+            'atomColor' : false, 
+            'atomOpacity' : false, 
+            'rotAngleTheta' : false, 
+            'rotAnglePhi' : false 
+          }
+        );  
         break;
     }
   };

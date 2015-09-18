@@ -2,7 +2,7 @@
  1. disable/enable save/preview/atomPalette
  2. disable/enable oti exei mesa to div pou exei tis parametrous gia to atomo
  2. edit oti exei mesa to div pou exei tis parametrous gia to atomo
- 3. 
+
 
 
 

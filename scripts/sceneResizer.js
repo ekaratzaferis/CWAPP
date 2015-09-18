@@ -21,6 +21,7 @@ define([
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
+    var _this = this;
 
     $("#leapIcon").css({ 
       "width": width/15,
@@ -90,7 +91,7 @@ define([
 
     }
     
-    this.dollEditor.rePosition();
+    setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
  
   return SceneResizer;
