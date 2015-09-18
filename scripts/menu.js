@@ -1248,8 +1248,7 @@ define([
             }
         });
         function progressDelay(){$progressBarWrapper.fadeOut('slow');};
-        
-        
+
     /*$
     
     
@@ -1310,7 +1309,7 @@ define([
     }
     Menu.prototype.progressBarIncrease = function(){
         var val;
-        if ($progressBar.progressbar('value') === false) val = 0;
+        if ($progressBar.progressbar('value') === false) val = $progressN;
         else val = parseFloat($progressBar.progressbar('value')) + $progressN;
         $progressBar.progressbar("value", val);
     }
