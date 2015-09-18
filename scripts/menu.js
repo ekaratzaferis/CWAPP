@@ -390,6 +390,7 @@ define([
         jQuery('#motifPosY').width(screen_width-y);
         jQuery('#motifPosZ').width(screen_width-y);
         jQuery('#crystalRenderer').children(2).width(screen_width-y);
+        jQuery('#progressBarWrapper').width(screen_width);
     };
 
     function init_dimensions()
@@ -1246,9 +1247,8 @@ define([
                 setTimeout(progressDelay, 500);
             }
         });
-        function progressDelay(){/*$progressBarWrapper.fadeOut('slow');*/};
-
-      
+        function progressDelay(){$progressBarWrapper.fadeOut('slow');};
+        
         
     /*$
     
