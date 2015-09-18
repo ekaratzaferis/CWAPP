@@ -236,10 +236,18 @@ define([
     };
 
     // Motif
+    var $atomPalette = jQuery('#atomPalette');
     var $previewAtomChanges = jQuery('#previewAtomChanges');
     var $saveAtomChanges = jQuery('#saveAtomChanges');
     var $deleteAtom = jQuery('#deleteAtom');
+    var $atomTable = jQuery('#atomTable');
 
+    var $atomButtons = {
+        'atomPalette': $atomPalette,
+        'previewAtomChanges': $previewAtomChanges,
+        'saveAtomChanges': $saveAtomChanges
+    };
+    
     var $latticePadlock = jQuery('#latticePadlock');
     var $motifPadlock = jQuery('#motifPadlock');
     var $distortion = jQuery('#distortion');
@@ -331,6 +339,7 @@ define([
     var $reduceRadius = jQuery('#reduceRadius');
     var $sounds = jQuery('#sounds');
     var $lights = jQuery('#lights');
+    var $fullScreen = jQuery('#fullScreen');
     
     var $Classic = jQuery('#Classic');
     var $Subtracted = jQuery('#Subtracted');
@@ -560,6 +569,8 @@ define([
                 jQuery('#'+k+'Slider').slider('value',argument[k]);
                 PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
             });
+            $parameter.on('keydown',function(){console.log('eisai mpines');});
+            $parameter.on('keyup',function(){console.log('eisai mpines');});
         });
         $spinner.spinner({
             min: 1,
@@ -960,6 +971,7 @@ define([
         
         
         // Atom Parameters
+        $atomTable.css('display','none');
         _.each(atomParameters, function($parameter, k ) {
             switch(k){
                 case 'atomOpacity':
@@ -1008,54 +1020,37 @@ define([
             function(){if(!($tangency.hasClass('buttonPressed')))$tangency.parent().css('background','#15171b');}
         );
         $previewAtomChanges.on('click', function(){  
-            $previewAtomChanges.toggleClass('buttonPressed');
-            PubSub.publish(events.MOTIF_TO_LATTICE, 0);
-        });
-        $previewAtomChanges.hover(
-            function(){
-                $previewAtomChanges.parent().css('background','#08090b');
-                $previewAtomChanges.children().css('background','#08090b');
-            },
-            function(){
-                if(!($previewAtomChanges.hasClass('buttonPressed'))) {
-                    $previewAtomChanges.children().css('background','#15171b');
-                    $previewAtomChanges.parent().css('background','#15171b');
-                }
+            if (!($parameter.hasClass('disabled'))){
+                $previewAtomChanges.toggleClass('buttonPressed');
+                PubSub.publish(events.MOTIF_TO_LATTICE, 0);
             }
-        );
+        });
         $saveAtomChanges.on('click', function(){
-            argument = {};
-            argument["button"] = 'saveChanges';
-            _.each(atomParameters, function($parameter, k ) {
-                switch(k){
-                    case 'wireframe':
-                        // argument[k]= ($('#wireframe').is(':checked')) ? true : false ;
-                        argument[k]= false;
-                        break;
-                    case 'atomTexture':
-                        argument[k] = 'None';
-                        break;
-                    case 'atomColor':
-                        argument[k] = $parameter.spectrum("get").toHex();
-                        break;
-                    case 'atomOpacity':
-                        jQuery('#'+k+'Slider').slider('value',argument[k]);
-                        argument[k] = $parameter.val();
-                        break;
-                }
-            });
-            PubSub.publish(events.ATOM_SUBMIT, argument);
-        });
-        $saveAtomChanges.hover(
-            function(){
-                $saveAtomChanges.parent().css('background','#08090b');
-                $saveAtomChanges.children().css('background','#08090b');
-            },
-            function(){
-                $saveAtomChanges.children().css('background','#15171b');
-                $saveAtomChanges.parent().css('background','#15171b');
+            if (!($parameter.hasClass('disabled'))){
+                argument = {};
+                argument["button"] = 'saveChanges';
+                _.each(atomParameters, function($parameter, k ) {
+                    switch(k){
+                        case 'wireframe':
+                            // argument[k]= ($('#wireframe').is(':checked')) ? true : false ;
+                            argument[k]= false;
+                            break;
+                        case 'atomTexture':
+                            argument[k] = 'None';
+                            break;
+                        case 'atomColor':
+                            argument[k] = $parameter.spectrum("get").toHex();
+                            break;
+                        case 'atomOpacity':
+                            jQuery('#'+k+'Slider').slider('value',argument[k]);
+                            argument[k] = $parameter.val();
+                            break;
+                    }
+                });
+                PubSub.publish(events.ATOM_SUBMIT, argument);
             }
-        );
+        });
+        
         
         // Periodic Table
         $periodicModal.on('click',function(){
@@ -1110,47 +1105,51 @@ define([
         
         $atomPositioningXYZ.on('click', function() {
             argument = {};
-            if (!($atomPositioningXYZ.hasClass('buttonPressed'))){
-                $atomPositioningXYZ.addClass('buttonPressed');
-                $atomPositioningXYZ.removeClass('btn-light');
-                $atomPositioningXYZ.addClass('btn-purple-light');
-                $atomPositioningABC.removeClass('buttonPressed');
-                $atomPositioningABC.removeClass('btn-purple-light');
-                $atomPositioningABC.addClass('btn-light');
-                argument['atomPositioning'] = true;
+            if (!($atomPositioningXYZ.hasClass('disabled'))){
+                if (!($atomPositioningXYZ.hasClass('buttonPressed'))){
+                    $atomPositioningXYZ.addClass('buttonPressed');
+                    $atomPositioningXYZ.removeClass('btn-light');
+                    $atomPositioningXYZ.addClass('btn-purple-light');
+                    $atomPositioningABC.removeClass('buttonPressed');
+                    $atomPositioningABC.removeClass('btn-purple-light');
+                    $atomPositioningABC.addClass('btn-light');
+                    argument['atomPositioning'] = true;
+                }
+                else{
+                    $atomPositioningXYZ.removeClass('buttonPressed');
+                    $atomPositioningXYZ.removeClass('btn-purple-light');
+                    $atomPositioningXYZ.addClass('btn-light');
+                    $atomPositioningABC.addClass('buttonPressed');
+                    $atomPositioningABC.removeClass('btn-light');
+                    $atomPositioningABC.addClass('btn-purple-light');
+                    argument['atomPositioning'] = false;
+                }
+                PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
             }
-            else{
-                $atomPositioningXYZ.removeClass('buttonPressed');
-                $atomPositioningXYZ.removeClass('btn-purple-light');
-                $atomPositioningXYZ.addClass('btn-light');
-                $atomPositioningABC.addClass('buttonPressed');
-                $atomPositioningABC.removeClass('btn-light');
-                $atomPositioningABC.addClass('btn-purple-light');
-                argument['atomPositioning'] = false;
-            }
-            PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
         });
         $atomPositioningABC.on('click', function() {
             argument = {};
-            if (!($atomPositioningABC.hasClass('buttonPressed'))){
-                $atomPositioningABC.addClass('buttonPressed');
-                $atomPositioningABC.removeClass('btn-light');
-                $atomPositioningABC.addClass('btn-purple-light');
-                $atomPositioningXYZ.removeClass('buttonPressed');
-                $atomPositioningXYZ.removeClass('btn-purple-light');
-                $atomPositioningXYZ.addClass('btn-light');
-                argument['atomPositioning'] = true;
+            if (!($atomPositioningABC.hasClass('disabled'))){
+                if (!($atomPositioningABC.hasClass('buttonPressed'))){
+                    $atomPositioningABC.addClass('buttonPressed');
+                    $atomPositioningABC.removeClass('btn-light');
+                    $atomPositioningABC.addClass('btn-purple-light');
+                    $atomPositioningXYZ.removeClass('buttonPressed');
+                    $atomPositioningXYZ.removeClass('btn-purple-light');
+                    $atomPositioningXYZ.addClass('btn-light');
+                    argument['atomPositioning'] = true;
+                }
+                else{
+                    $atomPositioningABC.removeClass('buttonPressed');
+                    $atomPositioningABC.removeClass('btn-purple-light');
+                    $atomPositioningABC.addClass('btn-light');
+                    $atomPositioningXYZ.addClass('buttonPressed');
+                    $atomPositioningXYZ.removeClass('btn-light');
+                    $atomPositioningXYZ.addClass('btn-purple-light');
+                    argument['atomPositioning'] = false;
+                }
+                PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
             }
-            else{
-                $atomPositioningABC.removeClass('buttonPressed');
-                $atomPositioningABC.removeClass('btn-purple-light');
-                $atomPositioningABC.addClass('btn-light');
-                $atomPositioningXYZ.addClass('buttonPressed');
-                $atomPositioningXYZ.removeClass('btn-light');
-                $atomPositioningXYZ.addClass('btn-purple-light');
-                argument['atomPositioning'] = false;
-            }
-            PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
         });
         
         //Fog Density
@@ -1190,6 +1189,13 @@ define([
         });
         
         
+        // Full Screen
+        $fullScreen.click(function(){
+            console.log('full');
+            PubSub.publish(events.FULL_SCREEN_APP, argument);
+        }); 
+        
+        
         // Renderization Mode
         _.each(renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
@@ -1214,23 +1220,13 @@ define([
         $notepad.find('.mCSB_1_scrollbar_vertical').css('display','block');
         $notepad.find('img').on('click',function(){$notepad.css('display','none');});
         $notepadButton.on('click',function(){$notepad.css('display','block');});
-    
 
+   
         
         
         
         
-    // Motif Editor
-    /* 
-
-    _this.setSliderInp('cellVolume',100,0,300.000,0.1,events.CELL_VOLUME_CHANGE); */
-
     /*$
-    
-    $savedAtoms.on('change', function() {
-      var id = jQuery(this).val()  ;
-      return PubSub.publish(events.SAVED_ATOM_SELECTION, id);
-    });
     
     
     $('#cellVolume').on('change', function() {
@@ -1240,10 +1236,6 @@ define([
       PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
     });
     
-    
-    $('#fsApp').click(function(){ 
-      PubSub.publish(events.FULL_SCREEN_APP, argument);
-    }); 
     
     $('#distortion').change(function() {  
       var argument = {};
@@ -1287,8 +1279,10 @@ define([
     Menu.prototype.getLatticeParameters = function() {
         var parameters = {};
         _.each(latticeParameters, function($latticeParameter, k) {
-            parameters[k] = $latticeParameter.val();
-            LastLatticeParameters[k] = parameters[k];
+            if( k !== 'repeatX' && k !== 'repeatY' && k !== 'repeatZ'){
+                parameters[k] = $latticeParameter.val();
+                LastLatticeParameters[k] = parameters[k];
+            }
         });
         return parameters;
     };
@@ -1342,9 +1336,9 @@ define([
             max: max,
             step: step,
             animate: true,
-            slide: function(){
+            slide: function(event, ui){
                 var argument = {};
-                var value = jQuery(this).slider("value");
+                var value = ui.value;
                 argument[inputName] = value;
                 PubSub.publish(event, argument);
                 jQuery('#'+inputName).val(value);
@@ -1634,6 +1628,144 @@ define([
         if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
         else $directionTable.css('display','none');
     };
+    /*Menu.prototype.editSavedAtoms = function(argument){
+        
+        
+        var backColor; //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
+        var buttonState; //visible hidden
+        var blankTD; //<td class="blank"></td>
+        var chainTD; //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
+        var elementCode; //lowercase
+        var elementName; //first cap
+        var colSpan; //no, 2 , 3 colspan="3"
+        var atomParameters;
+        var buttonTangent; // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td> or <td></td> an exei mono vis,ele,eleserial
+        
+        var HTMLQuery = '<tr class="'+backColor+'"><td class="visibility"><a><img src="Images/'+buttonState+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomParameters+'</a></td>'+buttonTangent+'</tr>';
+        
+        switch(argument['action']){
+            case 'save':
+                $atomTable.find('tbody').append(HTMLQuery);
+                break;  
+
+            case 'edit':
+                $atomTable.find('#'+argument['oldId']).replaceWith(HTMLQuery);
+                break;
+            
+            case 'delete':
+                $atomTable.find('#'+argument['oldId']).remove();
+                break;
+            
+        }
+        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
+                PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
+                $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
+                $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active')){
+                    $atomTable.find('.atomButton').removeClass('active');
+                }
+                else {
+                    $atomTable.find('.atomButton').removeClass('active');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').addClass('active');
+                }
+            });
+            $atomTable.find('#'+argument['id']).find('.atomButton').hover(
+                function(){
+                    $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                },
+                function(){
+                    if (!($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active'))){
+                        $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#1f2227');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#1f2227');
+                    }
+                }
+            );
+        }
+        if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
+        else $atomTable.css('display','none');
+    }*/
+    Menu.prototype.disableAtomInputs = function(argument){
+        _.each(atomParameters, function($parameter, k) {
+            if (argument[k] !== undefined){
+                switch(k){
+                    case 'atomColor':
+                        if(argument[k]) $parameter.spectrum("disable");
+                        else $parameter.spectrum("enable");
+                        break;
+
+                    case 'atomOpacity':
+                        $('#atomOpacitySlider').slider('option','disabled',argument[k]);
+                        $parameter.prop('disabled', argument[k]);
+                        break;
+
+                    case 'atomTexture':
+                        break;
+
+                    case 'wireframe':
+                        break;
+                    
+                    default: break;
+                }
+            }
+        });
+        _.each(motifInputs, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.prop('disabled', argument[k]);
+                $('#'+k+'Slider').slider('option','disabled',argument[k]);
+            }
+        }); 
+        _.each(rotatingAngles, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.prop('disabled', argument[k]);
+            }
+        });
+        if (argument['atomPositioningXYZ'] !== undefined){
+            if (argument['atomPositioningXYZ']) {
+                $atomPositioningXYZ.addClass('disabled');
+                $atomPositioningXYZ.trigger('click');
+            }
+            else {
+                $atomPositioningXYZ.removeClass('disabled');
+                $atomPositioningXYZ.trigger('click');
+            }
+        }
+        if (argument['atomPositioningABC'] !== undefined){
+            if (argument['atomPositioningABC']) {
+                $atomPositioningABC.addClass('disabled');
+                $atomPositioningABC.trigger('click');
+            }
+            else {
+                $atomPositioningABC.removeClass('disabled');
+                $atomPositioningABC.trigger('click');
+            }
+        }
+    }
+    Menu.prototype.disableAtomButtons = function(argument){
+       _.each($atomButtons, function($parameter, k) {
+            if (argument[k] !== undefined){
+                if (argument[k] === true) {
+                    $parameter.children().css('background','#2F3238');
+                    $parameter.children().hover(
+                        function(){},
+                        function(){}
+                    );
+                    $parameter.addClass('disabled');
+                    if (k === 'atomPalette') $parameter.children().removeAttr('data-toggle');
+                }
+                else {
+                    $parameter.children().css('background','#15171b');
+                    $parameter.children().hover(
+                        function(){$parameter.children().css('background','#08090b');},
+                        function(){$parameter.children().css('background','#15171b');}
+                    );
+                    $parameter.removeClass('disabled');
+                    if (k === 'atomPalette') $parameter.children().attr('data-toggle','modal');
+                }
+            }
+        });
+    }
     Menu.prototype.onPlaneToggle = function(callback){
         PubSub.subscribe(events.PLANE_TOGGLE, callback);  
     };
