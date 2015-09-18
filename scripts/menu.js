@@ -1246,16 +1246,9 @@ define([
                 setTimeout(progressDelay, 500);
             }
         });
-        function progressDelay(){$progressBarWrapper.css('display','none');};
+        function progressDelay(){/*$progressBarWrapper.fadeOut('slow');*/};
 
-
-        _this.resetProgressBar(200,'THano mpine');
-        _this.progressBarIncrease();
-        _this.progressBarIncrease();
-        _this.progressBarIncrease();
-        _this.progressBarIncrease();
-        _this.progressBarIncrease();
-        _this.progressBarIncrease();
+      
         
     /*$
     
@@ -1313,14 +1306,12 @@ define([
         $progressBar.progressbar('value', false);
         $progressBar.find('.progressLabel').html(title);
         $progressN = parseFloat(100) / (parseFloat(taskNum));
-        console.log($progressN);
         $progressBarWrapper.css('display','block');
     }
     Menu.prototype.progressBarIncrease = function(){
         var val;
         if ($progressBar.progressbar('value') === false) val = 0;
         else val = parseFloat($progressBar.progressbar('value')) + $progressN;
-        console.log(val);
         $progressBar.progressbar("value", val);
     }
     Menu.prototype.editProgressTitle = function(title){
