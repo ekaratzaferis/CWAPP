@@ -563,19 +563,29 @@ define([
         _.each(latticeParameters, function($parameter, k) {
             if ( ($parameter.attr('id') == 'alpha')|($parameter.attr('id') == 'beta')|($parameter.attr('id') == 'gamma')) $parameter.val(90);
             else $parameter.val(1);
-            $parameter.on('change', function() {
-                argument = {};
-                argument[k] = $parameter.val();
-                jQuery('#'+k+'Slider').slider('value',argument[k]);
-                PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
-            });
-            $parameter.on('keydown',function(){console.log('eisai mpines');});
-            $parameter.on('keyup',function(){console.log('eisai mpines');});
+            
+            if ( ($parameter.attr('id') !== 'repeatX')&&($parameter.attr('id') !== 'repeatY')&&($parameter.attr('id') !== 'repeatZ')){
+                $parameter.on('change', function() {
+                    argument = {};
+                    argument[k] = $parameter.val();
+                    jQuery('#'+k+'Slider').slider('value',argument[k]);
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
+            }
+            else{
+                $parameter.on('focusout',function(){
+                    argument = {};
+                    argument[k] = $parameter.val();
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
+            }
         });
         $spinner.spinner({
             min: 1,
-            stop: function(){
-                jQuery(this).change();
+            spin: function(event,ui){
+                argument = {};
+                argument[jQuery(this).attr('id')] = ui.value;
+                PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
             }
         });
         _.each(lengthSlider, function(name) {
@@ -663,8 +673,8 @@ define([
                 PubSub.publish(events.GRADE_PARAMETER_CHANGE, argument);
             });
         });
-        _this.setSlider("radius",1,0,11,1,events.GRADE_PARAMETER_CHANGE);
-        _this.setSlider("faceOpacity",1,0,11,1,events.GRADE_PARAMETER_CHANGE);
+        _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
+        _this.setSlider("faceOpacity",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
         
 
         //ColorPickers
@@ -1191,7 +1201,6 @@ define([
         
         // Full Screen
         $fullScreen.click(function(){
-            console.log('full');
             PubSub.publish(events.FULL_SCREEN_APP, argument);
         }); 
         
@@ -1222,7 +1231,6 @@ define([
         $notepadButton.on('click',function(){$notepad.css('display','block');});
 
    
-        
         
         
         
@@ -1327,7 +1335,7 @@ define([
         jQuery('#'+sliderName).slider('value',val);
         jQuery('#'+name).val(val);
     };
-    Menu.prototype.setSlider = function(inputName,value,min,max,step,event) {
+    Menu.prototype.setSlider = function(inputName,value,min,max,step,eventIn) {
         var _this = this;
         var sliderName = '#'+inputName+'Slider' ;
         jQuery(sliderName).slider({
@@ -1338,10 +1346,9 @@ define([
             animate: true,
             slide: function(event, ui){
                 var argument = {};
-                var value = ui.value;
-                argument[inputName] = value;
-                PubSub.publish(event, argument);
-                jQuery('#'+inputName).val(value);
+                argument[inputName] = ui.value;
+                PubSub.publish(eventIn, argument);
+                jQuery('#'+inputName).val(ui.value);
             }
         });
     };
@@ -1686,6 +1693,48 @@ define([
         if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
         else $atomTable.css('display','none');
     }*/
+    Menu.prototype.editAtomInputs = function(argument){
+        _.each(atomParameters, function($parameter, k) {
+            if (argument[k] !== undefined){
+                switch(k){
+                    case 'atomColor':
+                        $parameter.spectrum('set',argument['atomColor']);
+                        $parameter.children().css('background',argument['atomColor']);
+                        break;
+
+                    case 'atomOpacity':
+                        $('#atomOpacitySlider').slider('value',argument['atomOpacity']);
+                        $parameter.val(argument['atomOpacity']);
+                        break;
+
+                    case 'atomTexture':
+                        break;
+
+                    case 'wireframe':
+                        break;
+                    
+                    default: break;
+                }
+            }
+        });
+        _.each(motifInputs, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.val(argument[k]);
+                $('#'+k+'Slider').slider('value',argument[k]);
+            }
+        }); 
+        _.each(rotatingAngles, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.val(argument[k]);
+            }
+        });
+        if (argument['atomPositioningXYZ'] !== undefined){
+            if (argument['atomPositioningXYZ']) if (!($atomPositioningXYZ.hasClass('buttonPressed'))) $atomPositioningXYZ.trigger('click');
+        }
+        if (argument['atomPositioningABC'] !== undefined){
+            if (argument['atomPositioningABC']) if (!($atomPositioningABC.hasClass('buttonPressed'))) $atomPositioningABC.trigger('click');
+        }
+    }
     Menu.prototype.disableAtomInputs = function(argument){
         _.each(atomParameters, function($parameter, k) {
             if (argument[k] !== undefined){
