@@ -223,7 +223,6 @@ header {
 
 footer {
   /*-----  Start Styling From Here  ------*/ }
-
 body {
   background: #000;
   overflow-x: hidden;
@@ -3012,3 +3011,20 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     height: 10px;}
 #screenWrapper{
     position: relative;}
+#progressBarWrapper{
+    display: none;
+    z-index: 1000;
+    position: fixed;
+    background-color: purple;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    opacity: 0.8;
+}
+#progressBar{
+    margin-top: 24%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+.progressLabel{
+    text-align: center;
+}
