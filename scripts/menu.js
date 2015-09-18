@@ -239,6 +239,7 @@ define([
     var $previewAtomChanges = jQuery('#previewAtomChanges');
     var $saveAtomChanges = jQuery('#saveAtomChanges');
     var $deleteAtom = jQuery('#deleteAtom');
+    var $atomTable = jQuery('#atomTable');
 
     var $latticePadlock = jQuery('#latticePadlock');
     var $motifPadlock = jQuery('#motifPadlock');
@@ -331,6 +332,7 @@ define([
     var $reduceRadius = jQuery('#reduceRadius');
     var $sounds = jQuery('#sounds');
     var $lights = jQuery('#lights');
+    var $fullScreen = jQuery('#fullScreen');
     
     var $Classic = jQuery('#Classic');
     var $Subtracted = jQuery('#Subtracted');
@@ -960,6 +962,7 @@ define([
         
         
         // Atom Parameters
+        $atomTable.css('display','none');
         _.each(atomParameters, function($parameter, k ) {
             switch(k){
                 case 'atomOpacity':
@@ -1190,6 +1193,13 @@ define([
         });
         
         
+        // Full Screen
+        $fullScreen.click(function(){
+            console.log('full');
+            PubSub.publish(events.FULL_SCREEN_APP, argument);
+        }); 
+        
+        
         // Renderization Mode
         _.each(renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
@@ -1217,20 +1227,8 @@ define([
     
 
         
-        
-        
-        
-    // Motif Editor
-    /* 
-
-    _this.setSliderInp('cellVolume',100,0,300.000,0.1,events.CELL_VOLUME_CHANGE); */
-
+   
     /*$
-    
-    $savedAtoms.on('change', function() {
-      var id = jQuery(this).val()  ;
-      return PubSub.publish(events.SAVED_ATOM_SELECTION, id);
-    });
     
     
     $('#cellVolume').on('change', function() {
@@ -1240,10 +1238,6 @@ define([
       PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
     });
     
-    
-    $('#fsApp').click(function(){ 
-      PubSub.publish(events.FULL_SCREEN_APP, argument);
-    }); 
     
     $('#distortion').change(function() {  
       var argument = {};
@@ -1344,7 +1338,14 @@ define([
             animate: true,
             slide: function(){
                 var argument = {};
-                var value = jQuery(this).slider("value");
+                var value = jQuery('#'+inputName+'Slider').slider("value");
+                argument[inputName] = value;
+                PubSub.publish(event, argument);
+                jQuery('#'+inputName).val(value);
+            },
+            stop: function(){
+                var argument = {};
+                var value = jQuery('#'+inputName+'Slider').slider("value");
                 argument[inputName] = value;
                 PubSub.publish(event, argument);
                 jQuery('#'+inputName).val(value);
@@ -1634,6 +1635,64 @@ define([
         if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
         else $directionTable.css('display','none');
     };
+    /*Menu.prototype.editSavedAtoms = function(argument){
+        
+        
+        var backColor; //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
+        var buttonState; //visible hidden
+        var blankTD; //<td class="blank"></td>
+        var chainTD; //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
+        var elementCode; //lowercase
+        var elementName; //first cap
+        var colSpan; //no, 2 , 3 colspan="3"
+        var atomParameters;
+        var buttonTangent; // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td> or <td></td> an exei mono vis,ele,eleserial
+        
+        var HTMLQuery = '<tr class="'+backColor+'"><td class="visibility"><a><img src="Images/'+buttonState+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomParameters+'</a></td>'+buttonTangent+'</tr>';
+        
+        switch(argument['action']){
+            case 'save':
+                $atomTable.find('tbody').append(HTMLQuery);
+                break;  
+
+            case 'edit':
+                $atomTable.find('#'+argument['oldId']).replaceWith(HTMLQuery);
+                break;
+            
+            case 'delete':
+                $atomTable.find('#'+argument['oldId']).remove();
+                break;
+            
+        }
+        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
+                PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
+                $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
+                $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active')){
+                    $atomTable.find('.atomButton').removeClass('active');
+                }
+                else {
+                    $atomTable.find('.atomButton').removeClass('active');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').addClass('active');
+                }
+            });
+            $atomTable.find('#'+argument['id']).find('.atomButton').hover(
+                function(){
+                    $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                },
+                function(){
+                    if (!($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active'))){
+                        $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#1f2227');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#1f2227');
+                    }
+                }
+            );
+        }
+        if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
+        else $atomTable.css('display','none');
+    }*/
     Menu.prototype.onPlaneToggle = function(callback){
         PubSub.subscribe(events.PLANE_TOGGLE, callback);  
     };
