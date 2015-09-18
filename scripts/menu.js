@@ -1034,13 +1034,13 @@ define([
             function(){if(!($tangency.hasClass('buttonPressed')))$tangency.parent().css('background','#15171b');}
         );
         $previewAtomChanges.on('click', function(){  
-            if (!($parameter.hasClass('disabled'))){
+            if (!($previewAtomChanges.hasClass('disabled'))){
                 $previewAtomChanges.toggleClass('buttonPressed');
                 PubSub.publish(events.MOTIF_TO_LATTICE, 0);
             }
         });
         $saveAtomChanges.on('click', function(){
-            if (!($parameter.hasClass('disabled'))){
+            if (!($saveAtomChanges.hasClass('disabled'))){
                 argument = {};
                 argument["button"] = 'saveChanges';
                 _.each(atomParameters, function($parameter, k ) {
