@@ -1589,8 +1589,9 @@ define([
         this.menu.disableAtomButtons(
           {
             'atomPalette' : false,
-            'saveChanges' : true,
-            'previewAtomChanges' : true 
+            'saveAtomChanges' : true,
+            'previewAtomChanges' : true, 
+            'deleteAtom' : true 
           }
         );
         this.menu.editAtomInputs(
@@ -1612,7 +1613,6 @@ define([
             'atomPosX' : true,
             'atomPosY' : true,
             'atomPosZ' : true,
-            'saveChanges' : true,
             'atomPositioningXYZ' : true,
             'atomPositioningABC' : true, 
             'atomColor' : true, 
@@ -1628,8 +1628,9 @@ define([
         this.menu.disableAtomButtons(
           {
             'atomPalette' : true,
-            'saveChanges' : false,
-            'previewAtomChanges' : false 
+            'saveAtomChanges' : false,
+            'previewAtomChanges' : false, 
+            'deleteAtom' : false 
           }
         ); 
         this.menu.disableAtomInputs(
@@ -1637,7 +1638,6 @@ define([
             'atomPosX' : false,
             'atomPosY' : false,
             'atomPosZ' : false,
-            'saveChanges' : false,
             'atomPositioningXYZ' : false,
             'atomPositioningABC' : false, 
             'atomColor' : false, 
@@ -1651,8 +1651,9 @@ define([
         this.menu.disableAtomButtons(
           {
             'atomPalette' : true,
-            'saveChanges' : false,
-            'previewAtomChanges' : false 
+            'saveAtomChanges' : false,
+            'previewAtomChanges' : false, 
+            'deleteAtom' : false 
           }
         ); 
         this.menu.disableAtomInputs(
@@ -1660,7 +1661,6 @@ define([
             'atomPosX' : false,
             'atomPosY' : false,
             'atomPosZ' : false,
-            'saveChanges' : false,
             'atomPositioningXYZ' : false,
             'atomPositioningABC' : false, 
             'atomColor' : false, 
@@ -1760,10 +1760,7 @@ define([
     angles.theta = Math.acos(p.y/n) * (180/Math.PI);
     angles.phi = Math.atan(p.x/p.z) * (180/Math.PI);
     return angles;
-  };   
-
-
-
+  };    
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
      
@@ -1885,9 +1882,7 @@ define([
     } 
 
     if(this.padlock === true && this.globalTangency === true){
-    
-        
-
+     
       var _dimensions = this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
 
       var dimensions = _this.calcABCforParticularCases(_dimensions);

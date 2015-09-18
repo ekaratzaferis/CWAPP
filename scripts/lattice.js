@@ -43,7 +43,7 @@ define([
     this.latticeName = 'none';  
     this.latticeType = 'none'; // may be useless
     this.latticeSystem = 'none'; // may be useless 
-    this.actualAtoms =[]; 
+    this.actualAtoms = []; 
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -230,7 +230,7 @@ define([
  
   }; 
   Lattice.prototype.createGrid = function() {
-    
+
     var gridPoints = this.lattice.gridPoints;
     var usedGridOrigins = [];
      
@@ -364,13 +364,13 @@ define([
  
   }; 
   var _times = {'a':0,'b':0,'c':0};
-  Lattice.prototype.updatePoints = function() { 
-
-    console.log('updatePoints');
+   
+  Lattice.prototype.updatePoints = function(callbacks) { 
+    var spawnCounter, spawns = 0;
     _times['c'] = 0;
-
+ 
     var lattice = this.lattice;  
-  
+    
     this.destroyPoints();
     this.destroyGrids();
 
@@ -386,6 +386,8 @@ define([
     var origin = lattice.originArray[0];
     var vector = lattice.vector;
 
+    //progress bar
+    
     var limit = new THREE.Vector3(
       parameters.repeatX * vector.x + origin.x,
       parameters.repeatY * vector.y + origin.y,
@@ -403,6 +405,10 @@ define([
     parameters.repeatX = parseInt(parameters.repeatX);
     parameters.repeatY = parseInt(parameters.repeatY);
     parameters.repeatZ = parseInt(parameters.repeatZ);
+
+    spawnCounter = (parameters.repeatX +1) * (parameters.repeatY +1) * (parameters.repeatZ + 1) ;
+    
+    this.menu.resetProgressBar(spawnCounter, 'Constructing lattice...');
 
     if(_this.latticeName !== 'hexagonal'){ 
 
@@ -487,34 +493,43 @@ define([
             });
           });
         });
-      }
-         
-      */
+      } 
+      */ 
       _.times(parameters.repeatX +1, function(_x) {
         _.times(parameters.repeatY +1, function(_y) {
           _.times(parameters.repeatZ +1, function(_z) {  
-             
-            for (var index = 0; index < originLength; index++) { 
-               _times['c'] +=1;
-              origin = lattice.originArray[index];
-              position = new THREE.Vector3(
-                _x * vector.x + origin.x,
-                _y * vector.y + origin.y,
-                _z * vector.z + origin.z
-              ); 
-              if (position.x <= limit.x && position.y <= limit.y && position.z <= limit.z) 
-              {     
-                reference = 'r_' + _x + '_' + _y + '_' + _z + '_' + index;
-                 
-                if (_.isUndefined(_this.points[reference])) {  
-                  _this.points[reference] = new Point(position);   
+            setTimeout( 
+              function(){ 
+                _this.menu.progressBarIncrease();
+                spawns++; 
+                for (var index = 0; index < originLength; index++) {  
+                  origin = lattice.originArray[index];
+                  position = new THREE.Vector3(
+                    _x * vector.x + origin.x,
+                    _y * vector.y + origin.y,
+                    _z * vector.z + origin.z
+                  ); 
+                  if (position.x <= limit.x && position.y <= limit.y && position.z <= limit.z) 
+                  {     
+                    reference = 'r_' + _x + '_' + _y + '_' + _z + '_' + index;
+                     
+                    if (_.isUndefined(_this.points[reference])) {  
+                      _this.points[reference] = new Point(position);   
+                    }
+                  }                   
+                }  
+                if(spawns === spawnCounter){  
+                  for (var countF = 0; countF < callbacks.length ; countF++) { 
+                    callbacks[countF].bind(_this)();
+                  };
+                  _this.menu.progressBarIncrease();
                 }
-              }                   
-            }  
+              },
+              0
+            );
           });  
         });  
-      }); 
-         
+      });  
     }
     else{  
 
@@ -569,11 +584,17 @@ define([
           });
         });
       }); 
-    };  
-    _times['b'] += (new Date())-aa ;
-    console.log('ms : '+_times['b']);
-    console.log('loop times : '+_times['c']);
-    console.log(this.points);
+    };   
+    var scene = Explorer.getInstance().object3d;
+    scene.traverse (function (object)
+    {
+        if (object instanceof THREE.Mesh)
+        {
+            if (object.name === 'aaa'){}
+               // console.log(1);
+        }
+    });
+     
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -1253,13 +1274,10 @@ define([
     
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations(); 
-      this.updatePoints();  
-      this.createGrid();  
-      this.createFaces(); 
-      this.forwardTransformations();
+      this.updatePoints([this.createGrid,this.createFaces,this.forwardTransformations]);   
     }
     else{
-      this.updatePoints();
+      this.updatePoints([]);
     }  
   };
 
@@ -1275,7 +1293,7 @@ define([
   Lattice.prototype.setGradeChoices = function(gradeChoices) { 
      
     if(!_.isUndefined(gradeChoices["faceCheckButton"])) {
-
+      console.log(gradeChoices);
       this.gradeChoice.face = gradeChoices["faceCheckButton"];
 
       if(this.gradeChoice.face == false){
@@ -1363,41 +1381,39 @@ define([
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX') !== -1 || _.indexOf(deltaKeys, 'repeatY') !== -1 || _.indexOf(deltaKeys, 'repeatZ') !== -1) {  
+        
         _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
         
         this.actualAtoms.splice(0); 
          
-        this.updatePoints();  
-         
-        this.createGrid();  
-         
-        this.createFaces();
-         
-        this.setGradeParameters();
-         
-        this.forwardTransformations();  // todo may be useless
-         
-        this.reCreateMillers();
-         
-        this.recreateMotif(); 
+        this.updatePoints(
+          [ 
+            this.createGrid,   
+            this.createFaces, 
+            this.setGradeParameters, 
+            this.forwardTransformations,   
+            this.reCreateMillers, 
+            this.recreateMotif
+          ]
+        );
          
       }
       else{
-        this.forwardTransformations();  
-      } 
-      this.setGradeChoices(this.gradeChoice);
+        this.forwardTransformations();   
+      }  
     }
-    else{
+    else{ 
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
-      _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
+      _.each(_this.actualAtoms, function(atom,k) { 
+        atom.destroy(); 
+      });
       this.actualAtoms.splice(0); 
       this.updatePoints();   
       this.createFaces();
-      this.setGradeParameters();
-      this.setGradeChoices(this.gradeChoice); 
+      this.setGradeParameters(); 
       this.recreateMotif();
 
     }   

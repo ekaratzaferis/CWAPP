@@ -1034,7 +1034,7 @@ define([
             function(){if(!($tangency.hasClass('buttonPressed')))$tangency.parent().css('background','#15171b');}
         );
         $previewAtomChanges.on('click', function(){  
-            if (!($parameter.hasClass('disabled'))){
+            if (!($previewAtomChanges.hasClass('disabled'))){
                 $previewAtomChanges.toggleClass('buttonPressed');
                 PubSub.publish(events.MOTIF_TO_LATTICE, 0);
             }
@@ -1248,8 +1248,7 @@ define([
             }
         });
         function progressDelay(){$progressBarWrapper.fadeOut('slow');};
-        
-        
+
     /*$
     
     
@@ -1303,14 +1302,15 @@ define([
     
     
     Menu.prototype.resetProgressBar = function(taskNum,title) {
-        $progressBar.progressbar('value', 0);
+        $progressBar.progressbar('value', false);
         $progressBar.find('.progressLabel').html(title);
-        $progressN = 100 / (parseFloat(taskNum));
+        $progressN = parseFloat(100) / (parseFloat(taskNum));
         $progressBarWrapper.css('display','block');
     }
     Menu.prototype.progressBarIncrease = function(){
         var val;
-        val = parseFloat($progressBar.progressbar('value')) + $progressN;
+        if ($progressBar.progressbar('value') === false) val = $progressN;
+        else val = parseFloat($progressBar.progressbar('value')) + $progressN;
         $progressBar.progressbar("value", val);
     }
     Menu.prototype.editProgressTitle = function(title){
