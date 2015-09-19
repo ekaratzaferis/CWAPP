@@ -1,9 +1,9 @@
  performance TODOs
- 1. ola ta sphereGeometry na einai ena me scaling.
- 2. stin updatePoints na omadopoiountai ta calls ana 10 px
+ 1. ola ta sphereGeometry na einai ena me scaling. 
  3. na dw ti paizei me grids faces.
- 
-
+ 4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
+  5. fps drop in unit cell renderern motif renderer
+  
 TODO list 
 
     6.  hex faces optimization 

@@ -1040,7 +1040,7 @@ define([
             }
         });
         $saveAtomChanges.on('click', function(){
-            if (!($parameter.hasClass('disabled'))){
+            if (!($saveAtomChanges.hasClass('disabled'))){
                 argument = {};
                 argument["button"] = 'saveChanges';
                 _.each(atomParameters, function($parameter, k ) {

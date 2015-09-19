@@ -361,14 +361,13 @@ define([
         });
       });
     }); 
- 
+    this.menu.progressBarIncrease();
   }; 
   var _times = {'a':0,'b':0,'c':0};
    
   Lattice.prototype.updatePoints = function(callbacks) { 
     var spawnCounter, spawns = 0;
-    _times['c'] = 0;
- 
+     
     var lattice = this.lattice;  
     
     this.destroyPoints();
@@ -406,101 +405,19 @@ define([
     parameters.repeatY = parseInt(parameters.repeatY);
     parameters.repeatZ = parseInt(parameters.repeatZ);
 
-    spawnCounter = (parameters.repeatX +1) * (parameters.repeatY +1) * (parameters.repeatZ + 1) ;
+    spawnCounter = (parameters.repeatX +1) * (parameters.repeatY +1) * (parameters.repeatZ + 1);
     
-    this.menu.resetProgressBar(spawnCounter, 'Constructing lattice...');
+    
+    _times['c'] = new Date();
 
     if(_this.latticeName !== 'hexagonal'){ 
-
-     // new method for finding points : much quicker but not algorithmecally clever and universal
-    /*
-      _.times(parameters.repeatX +1, function(_x) {
-        _.times(parameters.repeatY +1, function(_y) {
-          _.times(parameters.repeatZ +1, function(_z) { 
-            _times['c'] +=1;
-            
-            reference = 'r_' + _x + '_' + _y + '_' + _z + '_' + '0';
-            position = new THREE.Vector3(_x, _y, _z); 
-            _this.points[reference] = new Point(position);   
-               
-          }); 
-        }); 
-      });  
-      if(_this.latticeType === 'face'){ 
-        _.times(parameters.repeatX , function(_x1) {
-          _.times(parameters.repeatY +1, function(_y1) {
-            _.times(parameters.repeatZ  , function(_z1) {
-               _times['c'] += 1;
-
-              reference = 'r_' + _x1 + '_' + _y1 + '_' + _z1 + '_' + 'y';
-              position = new THREE.Vector3(_x1 + 0.5, _y1, _z1 + 0.5);
-    
-              _this.points[reference] = new Point(position);
-            });
-          });
-        });
-        _.times(parameters.repeatX +1, function(_x2) {
-          _.times(parameters.repeatY , function(_y2) {
-            _.times(parameters.repeatZ  , function(_z2) {
-               _times['c'] += 1;
-
-              reference = 'r_' + _x2 + '_' + _y2 + '_' + _z2 + '_' + 'x';
-              position = new THREE.Vector3(_x2, _y2 + 0.5, _z2 + 0.5);
-    
-              _this.points[reference] = new Point(position);
-            });
-          });
-        });
-        _.times(parameters.repeatX , function(_x3) {
-          _.times(parameters.repeatY , function(_y3) {
-            _.times(parameters.repeatZ +1 , function(_z3) {
-               _times['c'] += 1;
-
-              reference = 'r_' + _x3 + '_' + _y3 + '_' + _z3 + '_' + 'z';
-              position = new THREE.Vector3(_x3 + 0.5, _y3 + 0.5, _z3);
-    
-              _this.points[reference] = new Point(position);
-            });
-          });
-        });
-      }
-      else if(_this.latticeType === 'body'){ 
-        _.times(parameters.repeatX , function(_x1) {
-          _.times(parameters.repeatY , function(_y1) {
-            _.times(parameters.repeatZ , function(_z1) {
-
-               _times['c'] += 1;
-
-              reference = 'r_' + _x1 + '_' + _y1 + '_' + _z1 + '_' + 'c';
-              position = new THREE.Vector3(_x1 + 0.5, _y1 + 0.5, _z1 + 0.5);
-    
-              _this.points[reference] = new Point(position);
-            });
-          });
-        });
-      }
-      else if(_this.latticeType === 'base'){ 
-        _.times(parameters.repeatX , function(_x1) {
-          _.times(parameters.repeatY +1, function(_y1) {
-            _.times(parameters.repeatZ , function(_z1) { 
-
-              _times['c'] += 1;
-
-              reference = 'r_' + _x1 + '_' + _y1 + '_' + _z1 + '_' + 'b';
-              position = new THREE.Vector3(_x1 + 0.5, _y1, _z1 + 0.5);
-    
-              _this.points[reference] = new Point(position);
-            });
-          });
-        });
-      } 
-      */ 
-      _.times(parameters.repeatX +1, function(_x) {
-        _.times(parameters.repeatY +1, function(_y) {
-          _.times(parameters.repeatZ +1, function(_z) {  
-            setTimeout( 
-              function(){ 
-                _this.menu.progressBarIncrease();
+      
+      // the above concept of execution keeps the speed of execution high but also prevents the js thread to be idle processing only the above
+        
+      _.times(parameters.repeatZ +1, function(_z) {
+          _.times(parameters.repeatY +1, function(_y) { 
+            _.times(parameters.repeatX +1, function(_x) {   
+              setTimeout( function(){ 
                 spawns++; 
                 for (var index = 0; index < originLength; index++) {  
                   origin = lattice.originArray[index];
@@ -521,15 +438,14 @@ define([
                 if(spawns === spawnCounter){  
                   for (var countF = 0; countF < callbacks.length ; countF++) { 
                     callbacks[countF].bind(_this)();
-                  };
-                  _this.menu.progressBarIncrease();
+                  }; 
                 }
               },
-              0
-            );
+              0);
+            });      
           });  
-        });  
-      });  
+      });
+       
     }
     else{  
 
@@ -584,17 +500,7 @@ define([
           });
         });
       }); 
-    };   
-    var scene = Explorer.getInstance().object3d;
-    scene.traverse (function (object)
-    {
-        if (object instanceof THREE.Mesh)
-        {
-            if (object.name === 'aaa'){}
-               // console.log(1);
-        }
-    });
-     
+    };  
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -697,6 +603,7 @@ define([
         );
       });
     });   
+    this.menu.progressBarIncrease();
   };
   Lattice.prototype.getAnglesScales = function(){
 
@@ -952,6 +859,7 @@ define([
         _this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
       }; 
     }  
+    this.menu.progressBarIncrease();
   };
   Lattice.prototype.createHexFace = function(hexagon, faceOpacity, faceColor, visible){
 
@@ -1268,17 +1176,23 @@ define([
     this.transform(0,_.union(scaling, shearing), function(value) {
       return value;
     });
+    this.menu.progressBarIncrease();
   };
 
   Lattice.prototype.update = function() {  
     
+    this.menu.resetProgressBar(3, 'Constructing lattice...');
+
     if(this.latticeName !== 'hexagonal'){
-      this.backwardTransformations(); 
+      this.backwardTransformations();  
       this.updatePoints([this.createGrid,this.createFaces,this.forwardTransformations]);   
     }
     else{
+      this.menu.progressBarIncrease(); 
       this.updatePoints([]);
-    }  
+      this.menu.progressBarIncrease(); 
+      this.menu.progressBarIncrease();
+    }    
   };
 
   Lattice.prototype.setGrade = function(gradeParameters) { 
@@ -1293,7 +1207,7 @@ define([
   Lattice.prototype.setGradeChoices = function(gradeChoices) { 
      
     if(!_.isUndefined(gradeChoices["faceCheckButton"])) {
-      console.log(gradeChoices);
+     
       this.gradeChoice.face = gradeChoices["faceCheckButton"];
 
       if(this.gradeChoice.face == false){
@@ -1343,6 +1257,8 @@ define([
       face.setColor( _this.gradeParameters.faceColor);
     });
 
+    this.menu.progressBarIncrease();
+
   }
   Lattice.prototype.updateLatticeTypeRL = function(){ return 0;
     var params = this.parameters ;
@@ -1369,23 +1285,28 @@ define([
     }
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
-    console.log('setParameters');
- 
+    
+    
+
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
       var deltaKeys = _.keys(delta); // keys : retrieve all names of object properties
        
       this.backwardTransformations(); 
-
+   
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX') !== -1 || _.indexOf(deltaKeys, 'repeatY') !== -1 || _.indexOf(deltaKeys, 'repeatZ') !== -1) {  
         
+        this.menu.resetProgressBar(8, 'Constructing lattice...');
+
         _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
         
+        this.menu.progressBarIncrease();
+
         this.actualAtoms.splice(0); 
-         
+        
         this.updatePoints(
           [ 
             this.createGrid,   
@@ -1396,7 +1317,9 @@ define([
             this.recreateMotif
           ]
         );
-         
+        
+        this.menu.progressBarIncrease();
+
       }
       else{
         this.forwardTransformations();   
@@ -1418,7 +1341,9 @@ define([
 
     }   
     _this.updateLatticeTypeRL(); 
-        
+     
+    this.menu.progressBarIncrease();
+
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -1470,7 +1395,8 @@ define([
         dirRadius : directional.direction.radius
       };   
       this.createMillerDirection(params, false, true); 
-    }   
+    } 
+    this.menu.progressBarIncrease();  
   }
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform) {
     var _this = this ;

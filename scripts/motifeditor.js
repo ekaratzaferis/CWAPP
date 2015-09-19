@@ -2,15 +2,27 @@
  
 
 define([
-  'pubsub', 'three', 'underscore', 
-  'atomSphere','jquery-ui', 'jquery', 'unitCellAtom', 'unitCellExplorer' ,
+  'pubsub', 
+  'three', 
+  'underscore', 
+  'atomSphere',
+  'jquery-ui', 
+  'jquery', 
+  'unitCellAtom',
+  'unitCellExplorer' ,
   'csg',
-  'threeCSG'
+  'threeCSG',
+  'motifExplorer'
 ], function(
   PubSub, THREE, _,
-  AtomSphere, jQuery_ui, jQuery, UnitCellAtom , UnitCellExplorer,
+  AtomSphere, 
+  jQuery_ui, 
+  jQuery, 
+  UnitCellAtom, 
+  UnitCellExplorer,
   csg,
-  ThreeCSG
+  ThreeCSG,
+  MotifExplorer
 ) {
   var events = {
     LOAD: 'motifeditor.load',
@@ -2741,7 +2753,37 @@ define([
         this.unitCellAtoms.splice(i,1);
       }
     }; 
- 
+    
+    /*
+    var aa=0;
+    var bb=0;
+    setTimeout(function() {
+      
+      var scene = UnitCellExplorer.getInstance().object3d;
+      scene.traverse (function (object)
+      {
+          if (object instanceof THREE.Mesh)
+          {
+              aa++;
+              console.log(object.name);
+          }
+      });
+
+      var scene2 = MotifExplorer.getInstance().object3d;
+      scene2.traverse (function (object)
+      {
+          if (object instanceof THREE.Mesh)
+          {
+            bb++;
+          }
+      });
+
+      console.log('unitcell '+aa);
+      console.log('motif '+bb);
+      // body...
+    },500);
+    console.log(this.unitCellAtoms.length);
+    */
   }; 
   Motifeditor.prototype.leastVolume = function(){ 
  

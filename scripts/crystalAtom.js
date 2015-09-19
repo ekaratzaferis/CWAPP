@@ -10,7 +10,9 @@ define([
   Explorer,
   _
 ) {
- 
+  
+  var globGeometry = new THREE.SphereGeometry(1,32, 32);
+
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, wireframe, latticeIndex) { 
      
     var _this = this; 
@@ -27,18 +29,17 @@ define([
     this.helperPos = {"x":0, "y":0, "z":0};
     this.elementName = elementName; 
     this.latticeIndex = latticeIndex; 
-    this.subtractedForGear = { 'object3d': undefined} ; 
-    var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
+    this.subtractedForGear = { 'object3d': undefined} ;  
     
     var textureLoader = new THREE.TextureLoader();
     textureLoader.load(texture,
       function(tex){
         tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, geometry, color, position, opacity, wireframe,id) ;
+        _this.addMaterial(tex, color, position, opacity, wireframe,id) ;
       }
     );  
   }
-  CrystalAtom.prototype.addMaterial = function(letterText, geometry, color, position, opacity, wireframe, identity) {
+  CrystalAtom.prototype.addMaterial = function(letterText, color, position, opacity, wireframe, identity) {
     var _this = this ;
     _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
     _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
@@ -51,8 +52,9 @@ define([
       wireMat
     ];
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , _this.materials);
     sphere.name = 'atom';
+    sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.identity = identity ;
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
@@ -68,7 +70,7 @@ define([
       Explorer.remove({'object3d':_this.object3d});
     }
       
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box); 
@@ -79,8 +81,6 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
-    //sphere.children[0].receiveShadow = true; 
-    //sphere.children[0].castShadow = true; 
     
     if(gear !== undefined){
       this.subtractedForGear.object3d  = sphereCut ;
@@ -109,10 +109,10 @@ define([
     var _this = this;
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
-
-    var geometry = new THREE.SphereGeometry(_this.radius,32, 32);  
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, [_this.materialLetter, _this.colorMaterial ]);
    
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [_this.materialLetter, _this.colorMaterial ]);
+   
+    sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     sphere.name = 'atom';
