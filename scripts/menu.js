@@ -237,15 +237,17 @@ define([
 
     // Motif
     var $atomPalette = jQuery('#atomPalette');
-    var $previewAtomChanges = jQuery('#previewAtomChanges');
-    var $saveAtomChanges = jQuery('#saveAtomChanges');
+    var $previewAtomChanges = jQuery('.previewAtomChanges');
+    var $saveAtomChanges = jQuery('.saveAtomChanges');
     var $deleteAtom = jQuery('#deleteAtom');
     var $atomTable = jQuery('#atomTable');
+    var $deleteAtom = jQuery('#deleteAtom');
 
     var $atomButtons = {
         'atomPalette': $atomPalette,
         'previewAtomChanges': $previewAtomChanges,
-        'saveAtomChanges': $saveAtomChanges
+        'saveAtomChanges': $saveAtomChanges,
+        'deleteAtom': $deleteAtom
     };
     
     var $latticePadlock = jQuery('#latticePadlock');
@@ -314,12 +316,22 @@ define([
 
     var $elementContainer = jQuery('.element-symbol-container');
     
+    var $tangentR = jQuery('#tangentR');
     var $rotAngleTheta = jQuery('#rotAngleTheta');
     var $rotAnglePhi = jQuery('#rotAnglePhi'); 
     var rotatingAngles = {
         'rotAngleTheta' : $rotAngleTheta,
         'rotAnglePhi' : $rotAnglePhi 
     };
+    
+    var $rotAngleX = jQuery('#rotAngleX');
+    var $rotAngleY = jQuery('#rotAngleY');
+    var $rotAngleZ = jQuery('#rotAngleZ');
+    var rotLables = {
+        'rotAngleX' : $rotAngleX,
+        'rotAngleY' : $rotAngleY,
+        'rotAngleZ' : $rotAngleZ
+    }
 
     var $notes = jQuery('#notes');
 
@@ -413,8 +425,6 @@ define([
         });
     };
     
-
-    
     function Menu() {
 
         var _this = this;
@@ -422,7 +432,6 @@ define([
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
-        
         
         $alt_atn_toggler.on('click', function(){
             if ($alt_atn_target.is(':visible'))
@@ -465,7 +474,7 @@ define([
                 {
                     $controls_toggler.find('.img-open').fadeIn('fast')
                 });
-                $("#screenWrapper").fadeOut(80);
+                $("#screenWrapper").fadeOut('slow');
                 $main_controls.animate({'right': '-417px'}, 500, function()
                 {
                     $main_controls.removeClass('controls-open');
@@ -479,7 +488,7 @@ define([
                 {
                     $controls_toggler.find('.img-close').fadeIn('fast')
                 });
-                $("#screenWrapper").fadeOut(80);
+                $("#screenWrapper").fadeOut('slow');
                 $main_controls.animate({'right': '0'}, 500, function()
                 {
                     $main_controls.removeClass('controls-close');
@@ -497,7 +506,7 @@ define([
                     $controls_toggler.find('.img-close').fadeIn('fast')
                 });
                 if (! ($main_controls.hasClass('controls-open')) ) {
-                    $("#screenWrapper").fadeOut(80);
+                    $("#screenWrapper").fadeOut('slow');
                     $main_controls.animate({'right': '0'}, 500, function()
                     {
                         $main_controls.removeClass('controls-close');
@@ -508,6 +517,7 @@ define([
                 
             }
         });
+        
         
         // Overwrite Events
         jQuery(window).resize(function() {
@@ -534,20 +544,22 @@ define([
             PubSub.publish(events.SET_PADLOCK, argument);          
         });
         $motifPadlock.on('click', function() {
-            var argument = {};
-            if ($motifPadlock.children().hasClass('active')) {
-                argument["padlock"] = true;
-                argument["manualSetCellDims"] = true;
-                argument["manualSetCellAngles"] = true;
+            if ( !($motifPadlock.hasClass('disabled')) ){
+                var argument = {};
+                if ($motifPadlock.children().hasClass('active')) {
+                    argument["padlock"] = true;
+                    argument["manualSetCellDims"] = true;
+                    argument["manualSetCellAngles"] = true;
+                }
+                else{ 
+                    argument["padlock"] = false;
+                    argument["manualSetCellDims"] = false;
+                    argument["manualSetCellAngles"] = false;
+                }
+                PubSub.publish(events.SET_PADLOCK, argument);
+                PubSub.publish(events.MANUAL_SET_DIMS, argument);
+                PubSub.publish(events.MANUAL_SET_ANGLES, argument);
             }
-            else{ 
-                argument["padlock"] = false;
-                argument["manualSetCellDims"] = false;
-                argument["manualSetCellAngles"] = false;
-            }
-            PubSub.publish(events.SET_PADLOCK, argument);
-            PubSub.publish(events.MANUAL_SET_DIMS, argument);
-            PubSub.publish(events.MANUAL_SET_ANGLES, argument); 
         });
         $motifPadlock.hover(
             function(){$motifPadlock.css('background','#08090b');},
@@ -1026,13 +1038,14 @@ define([
         });
         _this.setSlider('atomOpacity',10,1,10,0.1,events.ATOM_PARAMETER_CHANGE);
         $tangency.on('click',function(){
-            argument = {};
-            argument["button"]=this.id;
-            if (!($tangency.hasClass('buttonPressed'))) argument['tangency'] = true;
-            else argument['tangency'] = false;
-            $tangency.toggleClass('buttonPressed');
-            PubSub.publish(events.ATOM_TANGENCY_CHANGE, argument);
-            
+            if ( !($tangency.hasClass('disabled')) ){
+                argument = {};
+                argument["button"]=this.id;
+                if (!($tangency.hasClass('buttonPressed'))) argument['tangency'] = true;
+                else argument['tangency'] = false;
+                $tangency.toggleClass('buttonPressed');
+                PubSub.publish(events.ATOM_TANGENCY_CHANGE, argument);
+            }
         });
         $tangency.hover(
             function(){$tangency.parent().css('background','#08090b');},
@@ -1191,7 +1204,7 @@ define([
                 PubSub.publish(events.SET_ROTATING_ANGLE, argument);
             });
         });
-        
+        $tangentR.val(1);
         
         // Sounds and Lights 
         $sounds.on('click', function(){  
@@ -1259,7 +1272,7 @@ define([
             $progressBarWrapper.fadeOut('slow');
             jQuery('body').css('overflow','auto');
         };
-
+        
         
          
     /*$
@@ -1745,7 +1758,7 @@ define([
         if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
         else $atomTable.css('display','none');
     }*/
-    Menu.prototype.editAtomInputs = function(argument){
+    Menu.prototype.editMEInputs = function(argument){
         _.each(atomParameters, function($parameter, k) {
             if (argument[k] !== undefined){
                 switch(k){
@@ -1780,14 +1793,48 @@ define([
                 $parameter.val(argument[k]);
             }
         });
+        _.each(rotLables, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.text(argument[k]);
+            }
+        });
+        _.each(cellManDimensions, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.val(argument[k]);
+                $('#'+k+'Slider').slider('value',argument[k]);
+            }
+        });
+        _.each(cellManAngles, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.val(argument[k]);
+                $('#'+k+'Slider').slider('value',argument[k]);
+            }
+        });
         if (argument['atomPositioningXYZ'] !== undefined){
             if (argument['atomPositioningXYZ']) if (!($atomPositioningXYZ.hasClass('buttonPressed'))) $atomPositioningXYZ.trigger('click');
         }
         if (argument['atomPositioningABC'] !== undefined){
             if (argument['atomPositioningABC']) if (!($atomPositioningABC.hasClass('buttonPressed'))) $atomPositioningABC.trigger('click');
         }
+        if (argument['padlock'] !== undefined){
+            if (argument['padlock'] === true) $motifPadlock.find('a').removeClass('active');
+            else $motifPadlock.find('a').addClass('active');
+        }
+        if (argument['tangency'] !== undefined){
+            $tangency.trigger('click');
+        }
+        if (argument['atomName'] !== undefined){
+            var newAtom = 'ch-' + argument['atomName'];
+            var newAtomName = jQuery('.'+newAtom).html();
+            console.log(newAtomName);
+            $elementContainer.css('display','block');
+            $elementContainer.find('a').removeAttr('class');
+            $elementContainer.find('a').attr('class',newAtom+' ch');
+            $elementContainer.find('a').html(newAtomName);
+        }
+        $tangentR.val(argument['tangentR']);
     }
-    Menu.prototype.disableAtomInputs = function(argument){
+    Menu.prototype.disableMEInputs = function(argument){
         _.each(atomParameters, function($parameter, k) {
             if (argument[k] !== undefined){
                 switch(k){
@@ -1822,6 +1869,18 @@ define([
                 $parameter.prop('disabled', argument[k]);
             }
         });
+        _.each(cellManDimensions, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.prop('disabled', argument[k]);
+                $('#'+k+'Slider').slider('option','disabled',argument[k]);
+            }
+        });
+        _.each(cellManAngles, function($parameter, k) {
+            if (argument[k] !== undefined){
+                $parameter.prop('disabled', argument[k]);
+                $('#'+k+'Slider').slider('option','disabled',argument[k]);
+            }
+        });
         if (argument['atomPositioningXYZ'] !== undefined){
             if (argument['atomPositioningXYZ']) {
                 $atomPositioningXYZ.addClass('disabled');
@@ -1842,8 +1901,47 @@ define([
                 $atomPositioningABC.trigger('click');
             }
         }
+        if (argument['tangency'] !== undefined){
+            if (argument['tangency'] === true) {
+                $tangency.children().css('background','#2F3238');
+                $tangency.children().hover(
+                    function(){},
+                    function(){}
+                );
+                $tangency.addClass('disabled');
+            }
+            else {
+                $tangency.children().css('background','#15171b');
+                $tangency.children().hover(
+                    function(){$tangency.children().css('background','#08090b');},
+                    function(){$tangency.children().css('background','#15171b');}
+                );
+                $tangency.removeClass('disabled');
+            }
+        }
+        if (argument['padlock'] !== undefined){
+            if (argument['padlock'] === true) {
+                $motifPadlock.children().css('cursor','not-allowed');
+                $motifPadlock.children().hover(
+                    function(){},
+                    function(){}
+                );
+                $motifPadlock.addClass('disabled');
+                $motifPadlock.find('a').removeAttr('data-toggle');
+            }
+            else {
+                $motifPadlock.children().css('background','#15171b');
+                $motifPadlock.children().hover(
+                    function(){$motifPadlock.children().css('background','#08090b');},
+                    function(){$motifPadlock.children().css('background','#15171b');}
+                );
+                $motifPadlock.removeClass('disabled');
+                $motifPadlock.find('a').attr('data-toggle','button');
+            }
+        }
+        $tangentR.prop('disabled', argument['tangentR']);
     }
-    Menu.prototype.disableAtomButtons = function(argument){
+    Menu.prototype.disableMEButtons = function(argument){
        _.each($atomButtons, function($parameter, k) {
             if (argument[k] !== undefined){
                 if (argument[k] === true) {
