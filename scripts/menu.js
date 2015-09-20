@@ -1926,7 +1926,7 @@ define([
                     function(){$motifPadlock.children().css('background','#15171b');}
                 );
                 $motifPadlock.removeClass('disabled');
-                $motifPadlock.find('a').attr('data-toggle','button');
+                $motifPadlock.find('a').css('cursor','auto');
             }
         }
         $tangentR.prop('disabled', argument['tangentR']);
