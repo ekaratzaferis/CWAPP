@@ -376,6 +376,7 @@ define([
 
     var LastLatticeParameters = []; // Hold last value in case of none acceptable entered value
     
+    
     function app_container()
     {
         var screen_width = jQuery(window).width();
@@ -383,13 +384,10 @@ define([
 
         if ($main_controls.hasClass('controls-open')) y = (500)*($zoom);
         else y = (83)*($zoom);
-        jQuery('#app-container').width(screen_width-y);
-        jQuery('#crystalRenderer').width(screen_width-y);
-        jQuery('#unitCellRenderer').width(screen_width-y);
-        jQuery('#motifPosX').width(screen_width-y);
-        jQuery('#motifPosY').width(screen_width-y);
-        jQuery('#motifPosZ').width(screen_width-y);
-        jQuery('#crystalRenderer').children(2).width(screen_width-y);
+        
+        $("#screenWrapper").width(screen_width-y);
+        $("#screenWrapper").fadeIn(800);
+
         jQuery('#progressBarWrapper').width(screen_width);
     };
 
@@ -415,6 +413,8 @@ define([
         });
     };
     
+
+    
     function Menu() {
 
         var _this = this;
@@ -422,6 +422,8 @@ define([
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
+        
+        
         $alt_atn_toggler.on('click', function(){
             if ($alt_atn_target.is(':visible'))
             {
@@ -463,6 +465,7 @@ define([
                 {
                     $controls_toggler.find('.img-open').fadeIn('fast')
                 });
+                $("#screenWrapper").fadeOut(80);
                 $main_controls.animate({'right': '-417px'}, 500, function()
                 {
                     $main_controls.removeClass('controls-open');
@@ -476,7 +479,7 @@ define([
                 {
                     $controls_toggler.find('.img-close').fadeIn('fast')
                 });
-
+                $("#screenWrapper").fadeOut(80);
                 $main_controls.animate({'right': '0'}, 500, function()
                 {
                     $main_controls.removeClass('controls-close');
@@ -493,23 +496,25 @@ define([
                 {
                     $controls_toggler.find('.img-close').fadeIn('fast')
                 });
-                $main_controls.animate({'right': '0'}, 500, function()
-                {
-                    $main_controls.removeClass('controls-close');
-                    $main_controls.addClass('controls-open');
-                    window.dispatchEvent(new Event('resize'));
-                });
+                if (! ($main_controls.hasClass('controls-open')) ) {
+                    $("#screenWrapper").fadeOut(80);
+                    $main_controls.animate({'right': '0'}, 500, function()
+                    {
+                        $main_controls.removeClass('controls-close');
+                        $main_controls.addClass('controls-open');
+                        window.dispatchEvent(new Event('resize'));
+                    });
+                }
+                
             }
         });
         
-        
         // Overwrite Events
-        jQuery( window ).resize(function() {
+        jQuery(window).resize(function() {
           app_container();
         });
         jQuery(window).on('load change update', function(){
             init_dimensions();
-
             jQuery('#bravais_lattice_modal').on('shown.bs.modal', function()
             {
                 init_dimensions();
@@ -1234,10 +1239,10 @@ define([
         $notepad.find('img').on('click',function(){$notepad.css('display','none');});
         $notepadButton.on('click',function(){$notepad.css('display','block');});
 
-   
-        // Progress Bar
+        
+         // Progress Bar
         var screen_width = jQuery(window).width();
-        var screen_height = jQuery(window).height();
+        var screen_height = jQuery('body').height();
         $progressBarWrapper.width(screen_width);
         $progressBarWrapper.height(screen_height);
         $progressBar.progressbar({
@@ -1247,8 +1252,16 @@ define([
                 setTimeout(progressDelay, 500);
             }
         });
+ 
         function progressDelay(){$progressBarWrapper.fadeOut('slow');};
+ 
+        function progressDelay(){
+            $progressBarWrapper.fadeOut('slow');
+            jQuery('body').css('overflow','auto');
+        };
 
+        
+         
     /*$
     
     
@@ -1302,10 +1315,17 @@ define([
     
     
     Menu.prototype.resetProgressBar = function(taskNum,title) {
+ 
         $progressBar.progressbar('value', false);
         $progressBar.find('.progressLabel').html(title);
         $progressN = parseFloat(100) / (parseFloat(taskNum));
+ 
+        $progressBar.progressbar('value', 0);
+        $progressBar.siblings('.progressLabel').text(title);
+        $progressN = 100 / (parseFloat(taskNum));
+
         $progressBarWrapper.css('display','block');
+        jQuery('body').css('overflow','hidden');
     }
     Menu.prototype.progressBarIncrease = function(){
         var val;
@@ -1314,7 +1334,7 @@ define([
         $progressBar.progressbar("value", val);
     }
     Menu.prototype.editProgressTitle = function(title){
-        $progressBar.find('.progressLabel').html(title);
+        $progressBar.siblings('.progressLabel').text(title);
     }
     Menu.prototype.getLatticeParameters = function() {
         var parameters = {};

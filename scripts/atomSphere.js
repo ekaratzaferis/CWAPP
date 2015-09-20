@@ -27,7 +27,7 @@ define([
     this.texture = 'None';
     this.elementName = elementName;
     this.wireframe = wireframe ;
-    this.opacity = opacity ;
+    this.opacity = opacity ; 
   
     var textureLoader = new THREE.TextureLoader();
     //textureLoader.load("Images/atoms/"+elementName+".png",

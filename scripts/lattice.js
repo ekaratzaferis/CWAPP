@@ -1732,7 +1732,7 @@ define([
   };
 
   Lattice.prototype.selectDirection = function (which){ 
-    if(which === this.directionalState.editing && this.directionalState === 'editing'){
+    if(which === this.directionalState.editing && this.directionalState.state === 'editing'){
       return;
     }
     for (var i = 0; i < this.tempDirs.length; i++) {
@@ -1779,7 +1779,7 @@ define([
   };
   Lattice.prototype.selectPlane = function (which){ 
     
-    if(which === this.planeState.editing && this.planeState === 'editing'){
+    if(which === this.planeState.editing && this.planeState.state === 'editing'){
       return;
     } 
     for (var i = 0; i < this.tempPlanes.length; i++) {
