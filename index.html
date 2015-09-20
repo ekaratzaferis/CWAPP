@@ -84,7 +84,7 @@
 
             </main>
         </div>
-
+        
 		<section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
 			<div class="main-controls-inner">
 				<div class="main-controls-wrapper">
@@ -676,7 +676,7 @@
 																								<label for="txt_par_rad">r</label>
 																							</div>
 																							<div class="par-input form-group-input theme-light">
-																								<input type="text" name="txt_par_rad" id="txt_par_rad" class="form-control" value="50"/>
+																								<input type="text" name="txt_par_rad" id="tangentR" class="form-control"/>
 																							</div>
 																						</div>
 																					</div>
@@ -714,12 +714,12 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div id="previewAtomChanges" class="action action-toggle-visiblity">
+																				<div class="action action-toggle-visiblity previewAtomChanges">
 																					<a><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
-																				<div id="saveAtomChanges" class="action action-save">
+																				<div class="saveAtomChanges action action-save">
 																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
@@ -730,7 +730,7 @@
 															</div>
 															<div class="tab-box items-box" id="atomTable">
 																<div class="box-body">
-																	<div class="items-table-wrapper custom_scrollbar" id="">
+																	<div class="items-table-wrapper custom_scrollbar">
 																		<div class="items-table-container">
 																			<table class="table items-table" >
 																				<tbody></tbody>
@@ -740,8 +740,8 @@
 																</div>
 																<div class="box-footer">
 																	<div class="item-table-action">
-																		<div class="action action-delete">
-																			<a href="#"><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																		<div id="deleteAtom" class="action action-delete">
+																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -926,12 +926,12 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div id="previewCellChanges" class="action action-toggle-visiblity">
+																				<div class="action action-toggle-visiblity previewAtomChanges">
 																					<a><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
-																				<div id="saveCellChanges" class="action action-save">
+																				<div class="action action-save saveAtomChanges">
 																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
