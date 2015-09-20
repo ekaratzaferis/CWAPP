@@ -230,8 +230,8 @@ body {
   font-size: 16px;
   font-weight: 400;
   line-height: 19.2px;
-  color: #000; }
-
+  color: #000;
+}
 /*==========  Button  ==========*/
 .btn {
   border: 0;
@@ -816,6 +816,7 @@ label {
   -o-transition: all 0.3s linear;
   transition: all 0.3s linear; }
   .action a:hover, .action a:active, .action a:focus {
+    cursor:pointer;
     text-decoration: none;
     background: #08090b; }
 
@@ -1542,6 +1543,7 @@ label {
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility {
       padding: 0; }
       .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility a {
+        cursor: pointer;
         display: block;
         height: 50px;
         padding: 10px;
@@ -3014,16 +3016,19 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
 #progressBarWrapper{
     display: none;
     z-index: 1000;
-    position: fixed;
+    position: absolute;
+    text-align: center;
     background-color: #15171b;
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
-    filter: alpha(opacity=90);
-    opacity: 0.9;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    filter: alpha(opacity=95);
+    opacity: 0.95;
 }
-#progressBarWrapper img{
+.logo{
     margin-top: 10%;
-    margin-left: 31%;
-    
+}
+.loader{
+    margin-top: 1%;
+    width: 2%;
 }
 #progressBar{
     margin-top: -2%;
@@ -3035,5 +3040,7 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
    border-color: purple;
 }
 .progressLabel{
-    text-align: left;
+    text-align: center;
+    margin-top: 2%;
+    color: white;
 }
