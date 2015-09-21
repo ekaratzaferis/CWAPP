@@ -74,7 +74,7 @@ define([
   }; 
   Lattice.prototype.changeView = function(arg) {
     var _this = this, i =0;
-    _this.viewMode = arg ;
+    _this.viewMode = arg.mode ;
     if(this.actualAtoms.length!==0){
 
       var geometry = new THREE.Geometry();  
@@ -140,6 +140,9 @@ define([
     }
   };
   Lattice.prototype.toggleRadius = function(arg) {
+    
+    arg = arg.atomRadius;
+    console.log(arg);
     if(arg > 10) return ;
     var radius = arg/10;
     for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
@@ -606,7 +609,9 @@ define([
     this.menu.progressBarIncrease();
   };
   Lattice.prototype.getAnglesScales = function(){
-
+    if(!this.lattice) {
+      return;
+    }
     var anglesScales = {  
       "alpha" : this.lattice.defaults.alpha, 
       "beta" : this.lattice.defaults.beta, 
@@ -2248,16 +2253,25 @@ define([
     });
   };
   Lattice.prototype.getLatticeType = function(){
+    if(!this.lattice){
+      return;
+    }
     var lattice = this.lattice;
     var l = lattice.latticeType; 
     return l;
   };
   Lattice.prototype.getLatticeSystem = function(){
+    if(!this.lattice){
+      return;
+    }
     var lattice = this.lattice;
     var l = lattice.latticeSystem; 
     return l;
   };
   Lattice.prototype.getLatticeName = function(){ 
+    if(!this.lattice){
+      return;
+    }
     return this.latticeName;
   };
   Lattice.prototype.revertScalingMiller = function() {

@@ -2,10 +2,10 @@
  1. ola ta sphereGeometry na einai ena me scaling. 
  3. na dw ti paizei me grids faces.
  4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
-  5. fps drop in unit cell renderern motif renderer
+5. fps drop in unit cell renderern motif renderer
   
 TODO list 
-
+    33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
     6.  hex faces optimization 
  
     9.  change the recreate of hex and use transform function as others

@@ -111,8 +111,8 @@ define([
       
   };  
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem, restore) {
-    
-    if(this.editorState.updated === true) {
+     
+    if(this.editorState.updated === true || !anglesScales) {
       return;
     }
     this.editorState.updated = true ;
@@ -279,50 +279,52 @@ define([
     var _this = this ;
     var idIs = _this.newSphere.getID();
     var tempObj = _this.newSphere ;  
-    _this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
-    if(_.isUndefined(_this.newSphere) ) _this.newSphere = tempObj ; //in case he drags the _this.newSphere already
+    this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
+    if(_.isUndefined(_this.newSphere) ) {
+      this.newSphere = tempObj ; //in case he drags the _this.newSphere already
+    }
     var theID = _this.newSphere.getID(); 
  
     if(axis === 'x' ) {   
-      _this.newSphere.object3d.position.set(pos.x,pos.y,_this.newSphere.object3d.position.z);  
-      _this.translateCellAtoms("x",  pos.x , theID);  
-      _this.translateCellAtoms("y",  pos.y , theID);
+      this.newSphere.object3d.position.set(pos.x,pos.y,this.newSphere.object3d.position.z);  
+      this.translateCellAtoms("x",  pos.x , theID);  
+      this.translateCellAtoms("y",  pos.y , theID);
 
-      if(idIs == _this.newSphere.getID()){  
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosX").val(pos.x);
         $("#atomPosY").val(pos.y);  
-        _this.menu.setSliderValue("atomPosX", pos.x );
-        _this.menu.setSliderValue("atomPosY", pos.y ); 
+        this.menu.setSliderValue("atomPosX", pos.x );
+        this.menu.setSliderValue("atomPosY", pos.y ); 
       }
     }
     else if(axis === 'y' ) {   
-      _this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , theID);
-      _this.translateCellAtoms("y",  pos.y , theID);
-      if(idIs == _this.newSphere.getID()){  
+      this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
+      this.translateCellAtoms("z",  pos.z , theID);
+      this.translateCellAtoms("y",  pos.y , theID);
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosY").val(pos.y);
         $("#atomPosZ").val(pos.z);
-        _this.menu.setSliderValue("atomPosZ", pos.z );
-        _this.menu.setSliderValue("atomPosY", pos.y ); 
+        this.menu.setSliderValue("atomPosZ", pos.z );
+        this.menu.setSliderValue("atomPosY", pos.y ); 
       }
     }
     else if(axis === 'z' ) { 
-      _this.newSphere.object3d.position.set(pos.x, _this.newSphere.object3d.position.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , theID);
-      _this.translateCellAtoms("x",  pos.x , theID);
-      if(idIs == _this.newSphere.getID()){  
+      this.newSphere.object3d.position.set(pos.x, this.newSphere.object3d.position.y,pos.z);  
+      this.translateCellAtoms("z",  pos.z , theID);
+      this.translateCellAtoms("x",  pos.x , theID);
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosX").val(pos.x);
         $("#atomPosZ").val(pos.z);
-        _this.menu.setSliderValue("atomPosX", pos.x );
-        _this.menu.setSliderValue("atomPosZ", pos.z ); 
+        this.menu.setSliderValue("atomPosX", pos.x );
+        this.menu.setSliderValue("atomPosZ", pos.z ); 
       }
     } 
 
-    _this.newSphere = tempObj ;
+    this.newSphere = tempObj ;
 
-    _this.configureCellPoints();  
+    this.configureCellPoints();  
 
-    _this.rotAxis = axis;
+    this.rotAxis = axis;
      
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
@@ -420,8 +422,7 @@ define([
         }
       );  
     }
-        
-    console.log(arg);
+         
     this.menu.disableMEInputs(
       {
         'Aa' : arg,
@@ -1868,8 +1869,8 @@ define([
   };    
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
-     
-    if(!_this.dragMode && _this.globalTangency){
+    
+    if(!this.dragMode && this.globalTangency){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
         var calcDist = this.motifsAtoms[i].getRadius() + this.newSphere.getRadius();
@@ -1879,7 +1880,7 @@ define([
       };
     }
 
-    if(_this.dragMode || colAtom){ 
+    if(this.dragMode || colAtom){ 
 
       if(this.soundMachine.procced) this.soundMachine.play('popOutOfAtom');
 
@@ -1904,10 +1905,10 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
         var position = new THREE.Vector3(stillPoint.x + horizontalSide, stillPoint.y + verticalSide, movingPoint.z );
 
-        _this.newSphere.object3d.position.y = position.y ;  
-        _this.newSphere.object3d.position.x = position.x ;   
-        _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
-        _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
+        this.newSphere.object3d.position.y = position.y ;  
+        this.newSphere.object3d.position.x = position.x ;   
+        this.translateCellAtoms("y",  position.y , this.newSphere.getID());
+        this.translateCellAtoms("x",  position.x , this.newSphere.getID());
  
         this.menu.editMEInputs(
           {  
@@ -1918,8 +1919,8 @@ define([
         _this.configureCellPoints();
 
         if(_this.dragMode) {
-          _this.findAngles('y');
-          _this.findAngles('z');
+          this.findAngles('y');
+          this.findAngles('z');
         }
       }
       else if(axis === 'y'){
@@ -1935,10 +1936,10 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
         var position = new THREE.Vector3(movingPoint.x  , stillPoint.y + verticalSide,  (stillPoint.z - horizontalSide) );
 
-        _this.newSphere.object3d.position.y = position.y ;  
-        _this.newSphere.object3d.position.z = position.z ;  
-        _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
-        _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
+        this.newSphere.object3d.position.y = position.y ;  
+        this.newSphere.object3d.position.z = position.z ;  
+        this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
+        this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
         var a = parseFloat((180 -angle).toFixed(3)) ;
         if(a<0) a = 360 + a ;
           
@@ -1947,10 +1948,10 @@ define([
             'rotAngleY' : a 
           }
         );
-        _this.configureCellPoints();
-        if(_this.dragMode) {
-          _this.findAngles('x');
-          _this.findAngles('z');
+        this.configureCellPoints();
+        if(this.dragMode) {
+          this.findAngles('x');
+          this.findAngles('z');
         }
       }
       else if(axis === 'z'){
@@ -1965,10 +1966,10 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) ); 
         var position = new THREE.Vector3(stillPoint.x + horizontalSide  , movingPoint.y ,  (stillPoint.z - verticalSide) );
 
-        _this.newSphere.object3d.position.x = position.x ;  
-        _this.newSphere.object3d.position.z = position.z ;  
-        _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
-        _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
+        this.newSphere.object3d.position.x = position.x ;  
+        this.newSphere.object3d.position.z = position.z ;  
+        this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
+        this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
         var a = (360 - angle).toFixed(3) ;
         if(a==360) a=0.000;
           
@@ -1977,27 +1978,27 @@ define([
             'rotAngleX' : a
           }
         );
-        _this.configureCellPoints();
-        if(_this.dragMode) {
-          _this.findAngles('x');
-          _this.findAngles('y'); 
+        this.configureCellPoints();
+        if(this.dragMode) {
+          this.findAngles('x');
+          this.findAngles('y'); 
         }
       }
-      _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
-      _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
-      _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
+      this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
+      this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
+      this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
       if(this.dragMode) {
         var p = new THREE.Vector3(
-          _this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
-          _this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
-          _this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
+          this.newSphere.object3d.position.x-this.tangentToThis.object3d.position.x,
+          this.newSphere.object3d.position.y-this.tangentToThis.object3d.position.y,
+          this.newSphere.object3d.position.z-this.tangentToThis.object3d.position.z
           ); 
         var angles = _this.findPolarAngles(p);
 
         this.menu.editMEInputs(
           { 
             'rotAngleTheta' : (angles.theta).toFixed(4) , 
-            'rotAnglePhi' : (angles.phi).toFixed(4) 
+            'rotAnglePhi' : (angles.phi).toFixed(4)   
           }
         );
       }
@@ -2007,12 +2008,18 @@ define([
      
       var _dimensions = this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
 
-      var dimensions = _this.calcABCforParticularCases(_dimensions);
+      var dimensions = this.calcABCforParticularCases(_dimensions);
 
       // for volume reduce functionality 
       this.initVolumeState();
 
+    }
+
+    this.menu.editMEInputs(
+      { 
+        'tangentR' : tangentDistance  
       }
+    );
 
   };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
