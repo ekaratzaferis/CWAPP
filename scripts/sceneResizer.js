@@ -38,7 +38,7 @@ define([
 
       $('#crystalRenderer').width(width/2);
       $('#crystalRenderer').height(height/2);
-      $('#crystalRenderer').css( "left", width/2 );
+      //$('#crystalRenderer').css( "left", width/2 );
 
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
@@ -69,7 +69,7 @@ define([
 
       $('#crystalRenderer').width(width);
       $('#crystalRenderer').height(height);
-      $('#crystalRenderer').css( "left", 0 );
+      //$('#crystalRenderer').css("left", 'auto');
 
       $('#unitCellRenderer').width(0);
       $('#unitCellRenderer').height(0);

@@ -638,10 +638,9 @@ body {
 /*----- Screen Common -----*/
 /*==========  Controls  ==========*/
 .main-controls-container {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
   width: 500px;
+    float:right;
   background: #34373e; }
   .main-controls-container .main-controls-wrapper {
     position: relative; }
@@ -654,8 +653,8 @@ body {
     position: fixed;
     right: -100%;
     top: 0; }
-  .main-controls-container.controls-close {
-    right: -417px; }
+  .main-controls-container.controls-close { 
+    right:-417px;}
     .main-controls-container.controls-close .controls-toggler-container .btn .img-close {
       display: none; }
 
@@ -3012,6 +3011,7 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     float: right;
     height: 10px;}
 #screenWrapper{
+    float: left;
     position: relative;}
 #progressBarWrapper{
     display: none;
@@ -3043,4 +3043,13 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     text-align: center;
     margin-top: 2%;
     color: white;
+}
+html,body {
+    height: 100%;
+}
+#app-container{
+    float:left; 
+    width:100%;
+    height:100%; 
+    position:fixed;
 }
