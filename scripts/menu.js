@@ -369,7 +369,7 @@ define([
         'Classic': $Classic,
         'Subtracted': $Subtracted,
         'SolidVoid': $SolidVoid,
-        'GradeLimited': $GradeLimited
+        'gradeLimited': $GradeLimited
     }
     
     var colorPickers = {
@@ -391,15 +391,19 @@ define([
     
     function app_container()
     {
-        var screen_width = jQuery(window).width();
-        var y = 0;
-
-        if ($main_controls.hasClass('controls-open')) y = (500)*($zoom);
-        else y = (83)*($zoom);
         
-        $("#screenWrapper").width(screen_width-y);
+        var screen_width = jQuery(window).width();
+        var screen_height = jQuery(window).height();
+        var x = 0;
+        var y = -(screen_height);
+        
+        if ($main_controls.hasClass('controls-open')) x = (500)*($zoom);
+        else x = (83)*($zoom);
+        
+        $("#screenWrapper").width(screen_width-x);
         $("#screenWrapper").fadeIn(800);
 
+        $("#app-container").width(screen_width-x);
         jQuery('#progressBarWrapper').width(screen_width);
     };
 
@@ -429,6 +433,9 @@ define([
 
         var _this = this;
         var argument;
+        
+        //var shiftTop = -(jQuery(window).height());
+        //jQuery('.main-controls-container.controls-close').css('margin-top',shiftTop);
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
@@ -1048,7 +1055,7 @@ define([
             }
         });
         $tangency.hover(
-            function(){$tangency.parent().css('background','#08090b');},
+            function(){$tangency.parent().css('background','#74629c');},
             function(){if(!($tangency.hasClass('buttonPressed')))$tangency.parent().css('background','#15171b');}
         );
         $previewAtomChanges.on('click', function(){  
@@ -1145,7 +1152,7 @@ define([
                     $atomPositioningABC.removeClass('buttonPressed');
                     $atomPositioningABC.removeClass('btn-purple-light');
                     $atomPositioningABC.addClass('btn-light');
-                    argument['atomPositioning'] = true;
+                    argument['xyz'] = true;
                 }
                 else{
                     $atomPositioningXYZ.removeClass('buttonPressed');
@@ -1154,7 +1161,7 @@ define([
                     $atomPositioningABC.addClass('buttonPressed');
                     $atomPositioningABC.removeClass('btn-light');
                     $atomPositioningABC.addClass('btn-purple-light');
-                    argument['atomPositioning'] = false;
+                    argument['abc'] = true;
                 }
                 PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
             }
@@ -1169,7 +1176,7 @@ define([
                     $atomPositioningXYZ.removeClass('buttonPressed');
                     $atomPositioningXYZ.removeClass('btn-purple-light');
                     $atomPositioningXYZ.addClass('btn-light');
-                    argument['atomPositioning'] = true;
+                    argument['abc'] = true;
                 }
                 else{
                     $atomPositioningABC.removeClass('buttonPressed');
@@ -1178,7 +1185,7 @@ define([
                     $atomPositioningXYZ.addClass('buttonPressed');
                     $atomPositioningXYZ.removeClass('btn-light');
                     $atomPositioningXYZ.addClass('btn-purple-light');
-                    argument['atomPositioning'] = false;
+                    argument['xyz'] = true;
                 }
                 PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
             }
@@ -1232,7 +1239,9 @@ define([
             $parameter.on('click', function() {
                 if (!($parameter.hasClass('active'))) {
                     $parameter.addClass('active');
-                    PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, k);
+                    argument = {};
+                    argument['mode'] = k;
+                    PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
                     _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
                 }
             });
@@ -1321,8 +1330,6 @@ define([
     this.restrictionEvents = []; */
      
   };
-    
-    
     
     Menu.prototype.resetProgressBar = function(taskNum,title) {
         $progressBar.progressbar('value', 0);
@@ -1903,7 +1910,7 @@ define([
             else {
                 $tangency.children().css('background','#15171b');
                 $tangency.children().hover(
-                    function(){$tangency.children().css('background','#08090b');},
+                    function(){$tangency.children().css('background','#74629c');},
                     function(){$tangency.children().css('background','#15171b');}
                 );
                 $tangency.removeClass('disabled');

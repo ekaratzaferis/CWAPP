@@ -43,7 +43,7 @@
 		<![endif]-->
 		
 	</head>
-	<body class="">
+	<body class="custom_scrollbar">
         
         <div id="progressBarWrapper">
             <img class="logo" src="Images/cwlogo.png" />
@@ -69,23 +69,26 @@
                 <div id="app-container">
 
                     <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
+                    
                     <div id="crystalRenderer" class="canvasContainer" style="float: left;">
-                      <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: fixed; z-index:10; bottom:0px; left:0px;"></div> 
-                      <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: fixed; z-index:10; top:0px; left:0px;"></div>
+                        <div id="hudRenderer" class="canvasContainer" style = "opacity:1; position: fixed; z-index:10;"></div> 
+                        <div id="hudRendererCube" class="canvasContainer" style ="position: fixed; z-index:10;"></div>
                     </div>
-                    <div id="motifRenderer" class="canvasContainer" style="position:fixed;bottom:0;"> </div>              
+                    
+                    <div id="motifRenderer" class="canvasContainer" style="position:fixed;"> </div> 
+                    
                     <div style=" display: table; position:fixed;bottom:0; "> 
-                      <div id="motifPosX"  style="display: table-cell;"></div>
-                      <div id="motifPosY"  style="display: table-cell;"></div>
-                      <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
-                    </div>   
-
+                        <div id="motifPosX"  style="display: table-cell;"></div>
+                        <div id="motifPosY"  style="display: table-cell;"></div>
+                        <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
+                    </div> 
+                    
                 </div>
 
             </main>
         </div>
         
-		<section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
+        <section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
 			<div class="main-controls-inner">
 				<div class="main-controls-wrapper">
 					<div class="row row-nopad">
@@ -1747,9 +1750,9 @@
 			</div>
 		</section>
         
-		<section class="modals-container">
+        <section class="modals-container">
 			<article class="bravais-lattice-modal-container">
-				<div class="modal fade bravais-lattice-modal" id="bravais_lattice_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
+				<div class="modal fade bravais-lattice-modal custom_scrollbar" id="bravais_lattice_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header mega-header">
@@ -2031,7 +2034,7 @@
 			</article>
 
 			<article class="periodic-table-modal-container">
-				<div class="modal fade periodic-table-modal" id="periodic_table_modal" tabindex="-1" role="dialog" aria-labelledby="periodic_table_modalLabel">
+				<div class="modal fade periodic-table-modal custom_scrollbar" id="periodic_table_modal" tabindex="-1" role="dialog" aria-labelledby="periodic_table_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header mega-header">
@@ -2334,7 +2337,7 @@
 			</article>
 
 			<article class="qr-modal-container">
-				<div class="modal fade" id="qr_scan_modal" tabindex="-1" role="dialog" aria-labelledby="qr_scan_modalLabel">
+				<div class="modal fade custom_scrollbar" id="qr_scan_modal" tabindex="-1" role="dialog" aria-labelledby="qr_scan_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -2380,6 +2383,6 @@
 			</article>
             
 		</section>
-		
+        
 	</body>
 </html>
