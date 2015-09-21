@@ -51,6 +51,7 @@ define([
     var $planes = jQuery("#planes");
     var $directions = jQuery("#directions");
     var $atomRadius = jQuery("#atomRadius");
+    var $atomToggle = jQuery("#atomToggle");
     
     var toggles = {
         'xyzAxes': $xyzAxes,
@@ -59,11 +60,13 @@ define([
         'faces': $faces,
         'latticePoints': $latticePoints,
         'planes': $planes,
-        'directions': $directions
+        'directions': $directions,
+        'atomToggle': $atomToggle
     }
     
     var events = {
         PLANE_TOGGLE: 'menu.planes_toggle',
+        ATOM_TOGGLE: 'menu.atom_toggle',
         DIRECTION_TOGGLE: 'menu.directions_toggle',
         LATTICE_POINTS_TOGGLE: 'menu.lattice_points_change',
         LATTICE_CHANGE: 'menu.lattice_change',
@@ -352,6 +355,7 @@ define([
     var $sounds = jQuery('#sounds');
     var $lights = jQuery('#lights');
     var $fullScreen = jQuery('#fullScreen');
+    var $leapMotion = $('#leapMotion');
     
     var $Classic = jQuery('#Classic');
     var $Subtracted = jQuery('#Subtracted');
@@ -434,8 +438,11 @@ define([
         var _this = this;
         var argument;
         
-        //var shiftTop = -(jQuery(window).height());
-        //jQuery('.main-controls-container.controls-close').css('margin-top',shiftTop);
+        jQuery('#motifLI').tooltip({
+            container : 'body',
+            trigger: 'click', 
+            title: 'You have to choose a Lattice before opening the Motif Tab'
+        });
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
@@ -520,8 +527,7 @@ define([
                         $main_controls.addClass('controls-open');
                         window.dispatchEvent(new Event('resize'));
                     });
-                }
-                
+                } 
             }
         });
         
@@ -583,6 +589,7 @@ define([
             if (selected.length > 0) {
                 jQuery('#selected_lattice').text(latticeNames[selected.attr('id')]);
                 PubSub.publish(events.LATTICE_CHANGE,selected.attr('id'));
+                jQuery('#motifLI').find('a').attr('href','#scrn_motif');
             }
         });
         
@@ -798,15 +805,6 @@ define([
                 }
             });
         });        
-
-        $('#leap').change(function() {  
-          var argument = {};
-          argument["leap"]= ($('#leap').is(':checked')) ? true : false ;
-          PubSub.publish(events.LEAP_MOTION, argument);           
-        }); 
-        $('#leapOptions').on('change', function() {  
-          return PubSub.publish(events.LEAP_TRACKING_SYSTEM, jQuery(this).val());
-        });
         
         _.each(directionParameters, function($parameter, k) {
             
@@ -889,6 +887,9 @@ define([
                 case 'planes':
                     title = 'Planes';
                     break;
+                case 'atomToggle':
+                    title = 'Atoms';
+                    break;
             }
             $parameter.parent().tooltip({
                 container : 'body',
@@ -950,7 +951,13 @@ define([
             $directions.toggleClass('buttonPressed');
             PubSub.publish(events.DIRECTION_TOGGLE, argument);
         });
-        
+        $atomToggle.click(function() {
+            argument = {};
+            if (!($atomToggle.hasClass('buttonPressed'))) argument['atomToggle'] = true;
+            else argument['atomToggle'] = false;
+            $atomToggle.toggleClass('buttonPressed');
+            PubSub.publish(events.ATOM_TOGGLE, argument);
+        });
         
         $atomRadius.parent().tooltip({
             container : 'body',
@@ -965,7 +972,7 @@ define([
                 jQuery('#customSlider').parent().css('background', '#2c2e33');
                 jQuery('#customSlider').parent().css('color', '#fff');
                 jQuery('#customSlider').parent().siblings().css('border-left-color', '#2c2e33');
-                _this.setSlider('atomRadius',tempVal,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+                _this.setSlider('atomRadius',tempVal,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
                 jQuery('#customSlider').parent().hover(
                     function(){},
                     function(){
@@ -1230,9 +1237,14 @@ define([
         
         // Full Screen
         $fullScreen.click(function(){
+            var argument = {};
             PubSub.publish(events.FULL_SCREEN_APP, argument);
         }); 
-        
+        $leapMotion.change(function() {  
+            var argument = {};
+            argument["leap"]= ($leapMotion.hasClass('active')) ? true : false ;
+            PubSub.publish(events.LEAP_MOTION, argument);           
+        });
         
         // Renderization Mode
         _.each(renderizationMode, function($parameter, k) {
@@ -1967,6 +1979,9 @@ define([
     };
     Menu.prototype.onDirectionToggle = function(callback){
         PubSub.subscribe(events.DIRECTION_TOGGLE, callback);  
+    };
+    Menu.prototype.onAtomToggle = function(callback){
+        PubSub.subscribe(events.ATOM_TOGGLE, callback);  
     };
     Menu.prototype.onLatticePointsToggle = function(callback) {
         PubSub.subscribe(events.LATTICE_POINTS_TOGGLE, callback);  

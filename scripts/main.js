@@ -387,7 +387,7 @@ require([
         $(".hexagonalMiller").css('display','none'); 
       } 
     } 
-    if($(this).attr('id') === "motifLI" ){     
+    if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
       
       sceneResizer.resize('motifScreen');
         

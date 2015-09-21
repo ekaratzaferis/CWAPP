@@ -45,6 +45,8 @@
 	</head>
 	<body class="custom_scrollbar">
         
+        <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"></div>
+        
         <div id="progressBarWrapper">
             <img class="logo" src="Images/cwlogo.png" />
             <div id="progressBar"></div>
@@ -117,7 +119,7 @@
 												</a>
 											</li>
 											<li role="presentation" class="" id="motifLI">
-												<a href="#scrn_motif" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
+												<a href="" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
 													<img src="Images/motif-icon.png" class="img-responsive" alt=""/>
 													<img src="Images/motif-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
@@ -182,9 +184,9 @@
 												</a>
 											</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip"  data-placement="left">
-                                                    <img src="Images/toggle-icon-09.png" class="img-responsive" alt=""/>
-                                                </a>
+												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+													<button id="atomToggle" class="toggleButton" type="button"><img src="Images/toggle-icon-09.png" class="img-responsive" alt=""/></button>
+												</a>
 											</li>
 										</ul>
 									</nav>
@@ -1569,7 +1571,7 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-hit">
-																<a href="#" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off">
+																<a id="leapMotion" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
 																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
 																</a>
