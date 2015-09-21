@@ -2097,6 +2097,9 @@ define([
     Menu.prototype.onRadiusToggle = function(callback) { 
         PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);
     };
+    Menu.prototype.padlockSet = function(callback) { 
+        PubSub.subscribe(events.SET_PADLOCK, callback);
+    };
     Menu.prototype.onAtomPosModeChange = function(callback) { 
         PubSub.subscribe(events.CHANGE_ATOM_POSITIONING_MODE, callback);
     };

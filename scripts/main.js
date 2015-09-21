@@ -470,6 +470,9 @@ require([
   });
   menu.onFixedLengthChange(function(message, param) {  
     motifEditor.padlockMode(param); 
+  }); 
+  menu.padlockSet(function(message, param) {  
+    motifEditor.padlockMode(param); 
   });  
   menu.fullScreenApp(function(message, param) {  
     fullScreen.fs();
