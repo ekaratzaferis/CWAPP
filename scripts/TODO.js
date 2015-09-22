@@ -4,8 +4,14 @@
  4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
 5. fps drop in unit cell renderern motif renderer
   
+
+  ui TODOs
+  33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
+  34. renderization mode - deacctivate menu
+  35 gear bar tour to idio provlima me renderization mode
+  
 TODO list 
-    33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
+    
     6.  hex faces optimization 
  
     9.  change the recreate of hex and use transform function as others

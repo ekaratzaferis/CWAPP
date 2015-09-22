@@ -44,7 +44,9 @@ define([
     _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
     _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
     var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
-    if(wireframe) wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
+    if(wireframe) {
+      wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
+    }
   
     _this.materials =  [  
       _this.colorMaterial,
@@ -70,12 +72,12 @@ define([
       Explorer.remove({'object3d':_this.object3d});
     }
       
-    var atomMesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box); 
-     cube = cube.inverse();
-    var sphere = THREE.CSG.toCSG(atomMesh);
+    cube = cube.inverse();
+    var sphere = THREE.CSG.toCSG(atomMesh); 
     var geometry = sphere.intersect(cube); 
     var geom = THREE.CSG.fromCSG(geometry);
     var finalGeom = assignUVs(geom);
@@ -91,9 +93,9 @@ define([
       Explorer.add(_this); 
     }
      
-    _this.helperPos.x = pos.x ;
-    _this.helperPos.y = pos.y ;
-    _this.helperPos.z = pos.z ;
+    this.helperPos.x = pos.x ;
+    this.helperPos.y = pos.y ;
+    this.helperPos.z = pos.z ;
   };
   CrystalAtom.prototype.removeSubtractedForGear = function() {
     Explorer.remove(this.subtractedForGear);  
@@ -117,10 +119,10 @@ define([
     sphere.children[0].castShadow = true; 
     sphere.name = 'atom';
     sphere.identity = _this.identity ;
-    _this.object3d = sphere;
-    _this.object3d.position.x = _this.helperPos.x ;
-    _this.object3d.position.y = _this.helperPos.y ;
-    _this.object3d.position.z = _this.helperPos.z ;
+    this.object3d = sphere;
+    this.object3d.position.x = _this.helperPos.x ;
+    this.object3d.position.y = _this.helperPos.y ;
+    this.object3d.position.z = _this.helperPos.z ;
 
     Explorer.add(_this); 
     Explorer.remove({'object3d':toDestroy}); 

@@ -1641,7 +1641,7 @@ define([
             'atomPosX' : 0,
             'atomPosY' : 0,
             'atomPosZ' : 0,  
-            'atomColor' : '#6F7175', 
+            'atomColor' : '#1F2227', 
             'atomPositioningXYZ' : true,
             'atomPositioningABC' : false, 
             'atomOpacity' : 10, 

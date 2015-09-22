@@ -212,7 +212,7 @@ require([
   var gearTour = new GearTour(crystalScene, motifEditor, lattice);
  
   // handel keyboard keys
-  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor);
+  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor, crystalRenderer);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
@@ -323,10 +323,8 @@ require([
 
       unitCellScene.AmbLight.color.setHex( 0xffffff ); 
       unitCellScene.light.intensity = 0.0;
-      unitCellScene.light.castShadow = false;  
-
-    } 
-
+      unitCellScene.light.castShadow = false;   
+    }  
   });
   menu.onLeapMotionSet(function(message, arg) { 
     leapM.toggle(arg.leap);
@@ -387,8 +385,9 @@ require([
         $(".hexagonalMiller").css('display','none'); 
       } 
     } 
+ 
     if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
-      
+  
       sceneResizer.resize('motifScreen');
         
       unitCellRenderer.startAnimation();                                                                    
@@ -596,6 +595,18 @@ require([
   });
   menu.onCrystalViewChange(function(message, which) { 
     lattice.changeView(which);
+  }); 
+  menu.onPlaneToggle(function(message, arg) { 
+    lattice.planeToggle(arg);
+  }); 
+  menu.onDirectionToggle(function(message, arg) { 
+    lattice.directionToggle(arg);
+  }); 
+  menu.onAtomToggle(function(message, arg) { 
+    lattice.atomToggle(arg);
+  }); 
+  menu.onLatticePointsToggle(function(message, arg) { 
+    lattice.togglePoints(arg);
   }); 
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);

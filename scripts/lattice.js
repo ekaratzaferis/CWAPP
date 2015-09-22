@@ -73,42 +73,46 @@ define([
     this.viewMode = 'Classic';
   }; 
   Lattice.prototype.changeView = function(arg) {
+
     var _this = this, i =0;
-    _this.viewMode = arg.mode ;
+    this.viewMode = arg.mode ;
+  
     if(this.actualAtoms.length!==0){
 
       var geometry = new THREE.Geometry();  
       var scene = Explorer.getInstance().object3d;
 
-      while(i < _this.viewBox.length ) {  
-        _this.viewBox[i].object3d.updateMatrix();  
-        geometry.merge( _this.viewBox[i].object3d.geometry, _this.viewBox[i].object3d.matrix ); 
+      while(i < this.viewBox.length ) {  
+        this.viewBox[i].object3d.updateMatrix();  
+        geometry.merge( this.viewBox[i].object3d.geometry, this.viewBox[i].object3d.matrix ); 
         i++; 
       }  
-      var box = new THREE.Mesh(_this.customBox(_this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
+      var box = new THREE.Mesh(this.customBox(this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
       
-      if(_this.viewMode === 'Subtracted'){
+      if(this.viewMode === 'Subtracted'){
         i = 0 ;
-        while(i < _this.actualAtoms.length ) {
-          _this.actualAtoms[i].object3d.visible = true; 
-          _this.actualAtoms[i].subtractedSolidView(box, _this.actualAtoms[i].object3d.position); 
+        while(i < this.actualAtoms.length ) {
+          this.actualAtoms[i].object3d.visible = true; 
+          this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position); 
           i++;
         } 
         var object = scene.getObjectByName('solidvoid');
-        if(!_.isUndefined(object)) scene.remove(object);
+        if(!_.isUndefined(object)) {
+          scene.remove(object);
+        }
        
       }
-      else if(_this.viewMode === 'SolidVoid'){   
+      else if(this.viewMode === 'SolidVoid'){   
 
         var geometry = new THREE.Geometry();  
          
-        while(i < _this.actualAtoms.length ) {  
-          _this.actualAtoms[i].SolidVoid(_this.actualAtoms[i].object3d.position);  
-          var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshLambertMaterial() );
-          mesh.position.set( _this.actualAtoms[i].object3d.position.x, _this.actualAtoms[i].object3d.position.y, _this.actualAtoms[i].object3d.position.z);
+        while(i < this.actualAtoms.length ) {  
+          this.actualAtoms[i].SolidVoid(this.actualAtoms[i].object3d.position);  
+          var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshLambertMaterial() );
+          mesh.position.set( this.actualAtoms[i].object3d.position.x, this.actualAtoms[i].object3d.position.y, this.actualAtoms[i].object3d.position.z);
           mesh.updateMatrix();  
           geometry.merge( mesh.geometry, mesh.matrix );
-          _this.actualAtoms[i].object3d.visible = false;   
+          this.actualAtoms[i].object3d.visible = false;   
 
           i++; 
         } 
@@ -124,25 +128,26 @@ define([
         solidBox.name = 'solidvoid';
         Explorer.add({'object3d' : solidBox}); 
       }
-      else if(_this.viewMode === 'gradeLimited'){   
+      else if(this.viewMode === 'gradeLimited'){   
 
       }
-      else if(_this.viewMode === 'Classic'){ 
-        while(i < _this.actualAtoms.length ) { 
-          _this.actualAtoms[i].object3d.visible = true;
-          _this.actualAtoms[i].classicView(); 
+      else if(this.viewMode === 'Classic'){ 
+        while(i < this.actualAtoms.length ) { 
+          this.actualAtoms[i].object3d.visible = true;
+          this.actualAtoms[i].classicView(); 
           i++;
         }  
         var object = scene.getObjectByName('solidvoid');
-        if(!_.isUndefined(object)) scene.remove(object);
-      }
-
-    }
+        if(!_.isUndefined(object)) {
+          scene.remove(object);
+        }
+      } 
+    }   
   };
   Lattice.prototype.toggleRadius = function(arg) {
     
     arg = arg.atomRadius;
-    console.log(arg);
+    
     if(arg > 10) return ;
     var radius = arg/10;
     for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
@@ -1866,7 +1871,7 @@ define([
               'millerV' : 1,
               'millerW' : 1,
               'millerT' : -1,
-              'directionColor' : '#FFFFFF',
+              'directionColor' : '#1F2227',
               'dirRadius' : 1,
               'directionName' : ""
             }
@@ -1943,7 +1948,7 @@ define([
               'millerK' : 1,
               'millerL' : 1,
               'millerI' : -1,
-              'planeColor' : "#FFFFFF",
+              'planeColor' : "#1F2227",
               'planeOpacity' : 10,
               'planeName' : ""
             } 
@@ -2267,6 +2272,36 @@ define([
     var lattice = this.lattice;
     var l = lattice.latticeSystem; 
     return l;
+  };
+  Lattice.prototype.atomToggle = function(arg){ 
+    var visible = arg.atomToggle ;
+    this.actualAtoms.forEach(function(atom, i) {  
+      atom.object3d.visible = visible ;
+    });
+  };
+  Lattice.prototype.planeToggle = function(arg){ 
+    var _this = this;
+    _.each(this.millerPlanes, function(p, reference) {
+      p.plane.setVisible(arg.planeToggle); 
+    });
+    _.each(this.tempPlanes, function(p, reference) {
+      p.plane.setVisible(arg.planeToggle);  
+    }); 
+  };
+  Lattice.prototype.directionToggle = function(arg){
+  var _this = this;
+    _.each(this.millerDirections, function(d, reference) {
+      d.direction.setVisible(arg.directionToggle); 
+    }); 
+    _.each(this.tempDirs, function(d, reference) {
+      d.direction.setVisible(arg.directionToggle); 
+    }); 
+  };
+  Lattice.prototype.togglePoints = function(arg){  
+    var _this = this;
+    _.each(this.points, function(point, reference) {
+      point.object3d.visible = arg.latticePoints; 
+    }); 
   };
   Lattice.prototype.getLatticeName = function(){ 
     if(!this.lattice){

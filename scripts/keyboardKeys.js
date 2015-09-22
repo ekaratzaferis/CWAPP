@@ -12,7 +12,7 @@ define([
   
   var clock = new THREE.Clock();
 
-  function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal) { 
+  function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal, crystalRendererTemporal) { 
 
     this.keyboard = keyboard;  
     this.crystalScene = crystalScene;  
@@ -20,7 +20,8 @@ define([
     this.dollmode = false;  
     this.mutex = false;
     this.hidden = true;
-    this.meTemporal = meTemporal; 
+    this.meTemporal = meTemporal;
+    this.crystalRendererTemporal = crystalRendererTemporal; 
   };
 
   KeyboardKeys.prototype.handleKeys = function(leapArg, speed){  
@@ -131,10 +132,12 @@ define([
         if( this.hidden === true){
           $('#grainStats').show(); 
           this.hidden = false;
+          this.crystalRendererTemporal.rstatsON = true;
         }
         else{  
           $('#grainStats').hide();
           this.hidden = true;
+          this.crystalRendererTemporal.rstatsON = false;
         }
         setTimeout(function(){ _this.mutex = false;}, 200 );
       } 

@@ -72,7 +72,7 @@ define([
 
     this.gearBar = createGearBar(); 
     this.gearBarSlider = createGearBarSlider(); 
-    this.gearBarSlider.position.y = -5.7;
+    this.gearBarSlider.position.y = -0.3;
     
     DollExplorer.add( { object3d :this.gearBar });
     this.objsToIntersect.push(this.gearBar);
