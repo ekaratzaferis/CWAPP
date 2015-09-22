@@ -65,6 +65,7 @@ define([
     }
     
     var events = {
+        STEREOSCOPIC: 'menu.stereoscopic',
         PLANE_TOGGLE: 'menu.planes_toggle',
         ATOM_TOGGLE: 'menu.atom_toggle',
         DIRECTION_TOGGLE: 'menu.directions_toggle',
@@ -255,7 +256,6 @@ define([
     
     var $latticePadlock = jQuery('#latticePadlock');
     var $motifPadlock = jQuery('#motifPadlock');
-    var $distortion = jQuery('#distortion');
     var $syncCameras = jQuery('#syncCameras');
 
     var $fixedX = jQuery('#fixedX');
@@ -338,12 +338,13 @@ define([
 
     var $notes = jQuery('#notes');
 
-    var $crystalCamTarget = jQuery('#crystalCamTarget');
-
     var $storeState = jQuery('#storeState');
 
     var $fogColor = jQuery('#fogColor');
     var $fogDensity = jQuery('#fogDensity');
+    
+    var $distortionOn = jQuery('#distortionOn');
+    var $distortionOff = jQuery('#distortionOff');
 
     var $crystalScreenColor = jQuery('#crystalScreenColor');
     var $cellScreenColor = jQuery('#cellScreenColor');
@@ -364,10 +365,15 @@ define([
     
     var $notepad = jQuery('#noteWrapper');
     var $progressBarWrapper = jQuery('#progressBarWrapper');
-    var $progressBar = jQuery('#progressBar');
-    var $progressN;
+    //var $progressBar = jQuery('#progressBar');
+    //var $progressN;
 
     var $notepadButton = jQuery('#notesButton');
+    var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
+    var $crystalCamTargetOff = jQuery("#crystalCamTargetOff");
+    var $stereoscopic = false;
+    var $anaglyph = jQuery('#anaglyph');
+    var $oculus = jQuery('#oculus');
     
     var renderizationMode = {
         'Classic': $Classic,
@@ -657,10 +663,12 @@ define([
                     PubSub.publish(events.FOG_CHANGE, argument);
                     break;
                     
-                case 'anaglyph':
+                case 'stereoscopic':
+                    $stereoscopic = true;
                     argument ={};
-                    argument[name] = true;
-                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                    argument['anaglyph'] = $anaglyph.hasClass('active');
+                    argument['oculus'] = false;
+                    PubSub.publish(events.STEREOSCOPIC, argument);
                     break;
             }
         });
@@ -689,10 +697,12 @@ define([
                     PubSub.publish(events.FOG_CHANGE, argument);
                     break;
                     
-                case 'anaglyph':
+                case 'stereoscopic':
+                    $stereoscopic = false;
                     argument ={};
-                    argument[name] = false;
-                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                    argument['anaglyph'] = $anaglyph.hasClass('active');
+                    argument['oculus'] = false;
+                    PubSub.publish(events.STEREOSCOPIC, argument);
                     break;
             }
         });
@@ -861,12 +871,12 @@ define([
     
         
         //Toggle Buttons
-        $xyzAxes.parent().css('background','#2F3238');
-        $xyzAxes.addClass('buttonPressed');
         _.each(toggles, function($parameter, k){
             var title;
             switch(k){
                 case 'xyzAxes':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'xyz Axes';
                     break;
                  case 'abcAxes':
@@ -879,15 +889,23 @@ define([
                     title = 'Cell Faces';
                     break;
                 case 'latticePoints':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Lattice Points';
                     break;
                 case 'directions':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Directions';
                     break;
                 case 'planes':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Planes';
                     break;
                 case 'atomToggle':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Atoms';
                     break;
             }
@@ -898,10 +916,10 @@ define([
             });
             $parameter.hover(
                 function(){
-                    $parameter.parent().css('background','#2F3238');
+                    $parameter.parent().css('background','#43464b');
                 },
                 function(){
-                    if ($parameter.hasClass('buttonPressed')) $parameter.parent().css('background','#2F3238');
+                    if ($parameter.hasClass('buttonPressed')) $parameter.parent().css('background','#43464b');
                     else $parameter.parent().css('background','transparent');
                 }
             );
@@ -1051,6 +1069,8 @@ define([
             }); 
         });
         _this.setSlider('atomOpacity',10,1,10,0.1,events.ATOM_PARAMETER_CHANGE);
+        $tangency.addClass('buttonPressed');
+        $tangency.parent().css('background','#74629c');
         $tangency.on('click',function(){
             if ( !($tangency.hasClass('disabled')) ){
                 argument = {};
@@ -1249,12 +1269,14 @@ define([
         // Renderization Mode
         _.each(renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
-                if (!($parameter.hasClass('active'))) {
-                    $parameter.addClass('active');
-                    argument = {};
-                    argument['mode'] = k;
-                    PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
-                    _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                if (!($parameter.hasClass('disabled'))) {
+                    if (!($parameter.hasClass('active'))) {
+                        $parameter.addClass('active');
+                        argument = {};
+                        argument['mode'] = k;
+                        PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
+                        _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                    }
                 }
             });
         });
@@ -1276,10 +1298,10 @@ define([
         
          // Progress Bar
         var screen_width = jQuery(window).width();
-        var screen_height = jQuery('body').height();
+        var screen_height = jQuery('.main-controls-container').height();
         $progressBarWrapper.width(screen_width);
         $progressBarWrapper.height(screen_height);
-        $progressBar.progressbar({
+        /*$progressBar.progressbar({
             max: 100,
             value: false,
             complete: function() {
@@ -1289,9 +1311,89 @@ define([
         function progressDelay(){
             $progressBarWrapper.fadeOut('slow');
             jQuery('body').css('overflow','auto');
-        };
+        };*/
         
         
+        $crystalCamTargetOn.click(function(){
+            if( !($crystalCamTargetOn.hasClass('active')) ){ 
+                $crystalCamTargetOn.addClass('active');
+                $crystalCamTargetOff.removeClass('active');
+                argument = {}; 
+                argument["center"]= true;
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
+            }
+        });
+        $crystalCamTargetOff.click(function(){
+            if( !($crystalCamTargetOff.hasClass('active')) ){
+                $crystalCamTargetOff.addClass('active');
+                $crystalCamTargetOn.removeClass('active');
+                argument = {}; 
+                argument["center"]= false;
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
+            }
+        });
+        
+        $distortionOn.click(function() {
+            if( !($distortionOn.hasClass('active')) ){ 
+                $distortionOn.addClass('active');
+                $distortionOff.removeClass('active');
+                argument = {}; 
+                argument["distortion"]= true;
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);
+            }         
+        });
+        $distortionOff.click(function() {  
+            if( !($distortionOff.hasClass('active')) ){ 
+                $distortionOff.addClass('active');
+                $distortionOn.removeClass('active');
+                argument = {}; 
+                argument["distortion"]= false;
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);
+            }            
+        });
+        
+        $anaglyph.click(function() {
+            if ($stereoscopic){
+                $anaglyph.removeClass('disabled');
+                if (!($anaglyph.hasClass('active'))){
+                    $oculus.removeClass('active');
+                    $anaglyph.addClass('active');
+                    argument ={};
+                    argument['anaglyph'] = true;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                }
+                else{
+                    $anaglyph.removeClass('active');
+                    argument ={};
+                    argument['anaglyph'] = false;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                }
+            }
+            else{
+                $anaglyph.addClass('disabled');
+            }
+        });
+        $oculus.click(function() {
+            if ($stereoscopic){
+                $oculus.removeClass('disabled');
+                if (!($oculus.hasClass('active'))){
+                    $anaglyph.removeClass('active');
+                    $oculus.addClass('active');
+                    argument ={};
+                    argument['oculus'] = true;
+                    PubSub.publish(events.OCULUS, argument);
+                }
+                else{
+                    $oculus.removeClass('active');
+                    argument ={};
+                    argument['v'] = false;
+                    PubSub.publish(events.OCULUS, argument);
+                }
+            }
+            else{
+                $oculus.addClass('disabled');
+            }
+        });
         
     /*$
     
@@ -1304,11 +1406,7 @@ define([
     });
     
     
-    $('#distortion').change(function() {  
-      var argument = {};
-      argument["distortion"]= ($('#distortion').is(':checked')) ? true : false ;
-      PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);           
-    });
+    
     $('#syncCameras').change(function() {  
       var argument = {};
       argument["syncCameras"]= ($('#syncCameras').is(':checked')) ? true : false ;
@@ -1326,12 +1424,6 @@ define([
       argument["dragMode"]= ($('#dragMode').is(':checked')) ? true : false ;
       PubSub.publish(events.DRAG_ATOM, argument);           
     });
-  
-    $("#crystalCamTarget").click(function(){
-      argument = {}; 
-      argument["center"]= ($('#crystalCamTarget').is(':checked')) ? true : false ;
-      PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
-    });
     
     $storeState.on('click', function() {
       PubSub.publish(events.STORE_PROJECT, argument);   
@@ -1343,17 +1435,17 @@ define([
      
   };
     
-    Menu.prototype.resetProgressBar = function(taskNum,title) {
-        $progressBar.progressbar('value', 0);
-        $progressBar.siblings('.progressLabel').text(title);
-        $progressN = 100 / (parseFloat(taskNum));
+    Menu.prototype.resetProgressBar = function(title) {
+        //$progressBar.progressbar('value', 0);
+        $progressBarWrapper.find('.progressLabel').text(title);
+        //$progressN = 100 / (parseFloat(taskNum));
         $progressBarWrapper.css('display','block');
-        jQuery('body').css('overflow','hidden');
     }
-    Menu.prototype.progressBarIncrease = function(){
-        var val;
+    Menu.prototype.progressBarFinish = function(){
+        /*var val;
         val = parseFloat($progressBar.progressbar('value')) + $progressN;
-        $progressBar.progressbar("value", val);
+        $progressBar.progressbar("value", val);*/
+        $progressBarWrapper.fadeOut('slow');
     }
     Menu.prototype.editProgressTitle = function(title){
         $progressBar.siblings('.progressLabel').text(title);
@@ -1974,6 +2066,17 @@ define([
             }
         });
     }
+    Menu.prototype.disableRenderizationButtons = function(argument){
+        _.each(renderizationMode, function($parameter, k) {
+            if (argument[k] !== undefined){
+                if (argument[k]){
+                    $parameter.css('background','white');
+                    $parameter.removeClass('active');
+                    $parameter.addClass('disabled');
+                }
+            }
+        });
+    }
     Menu.prototype.onPlaneToggle = function(callback){
         PubSub.subscribe(events.PLANE_TOGGLE, callback);  
     };
@@ -2090,6 +2193,9 @@ define([
     };
     Menu.prototype.setAnaglyph = function(callback) { 
         PubSub.subscribe(events.ANAGLYPH_EFFECT, callback);
+    };
+    Menu.prototype.setOculus = function(callback) { 
+        PubSub.subscribe(events.OCULUS, callback);
     }; 
     Menu.prototype.onFogParameterChange = function(callback) { 
         PubSub.subscribe(events.FOG_PARAMETER_CHANGE, callback);
