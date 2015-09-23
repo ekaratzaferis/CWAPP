@@ -235,7 +235,7 @@ define([
     });  
 
     _this.updateLatticeTypeRL();
- 
+    this.menu.progressBarFinish();
   }; 
   Lattice.prototype.createGrid = function() {
 
@@ -369,7 +369,7 @@ define([
         });
       });
     }); 
-    this.menu.progressBarIncrease();
+     
   }; 
   var _times = {'a':0,'b':0,'c':0};
    
@@ -611,7 +611,7 @@ define([
         );
       });
     });   
-    this.menu.progressBarIncrease();
+    this.menu.progressBarFinish();
   };
   Lattice.prototype.getAnglesScales = function(){
     if(!this.lattice) {
@@ -869,7 +869,7 @@ define([
         _this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
       }; 
     }  
-    this.menu.progressBarIncrease();
+     
   };
   Lattice.prototype.createHexFace = function(hexagon, faceOpacity, faceColor, visible){
 
@@ -1186,23 +1186,23 @@ define([
     this.transform(0,_.union(scaling, shearing), function(value) {
       return value;
     });
-    this.menu.progressBarIncrease();
+     
   };
 
   Lattice.prototype.update = function() {  
     
-    this.menu.resetProgressBar(3, 'Constructing lattice...');
+    this.menu.resetProgressBar('Constructing lattice...');
 
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations();  
       this.updatePoints([this.createGrid,this.createFaces,this.forwardTransformations]);   
     }
     else{
-      this.menu.progressBarIncrease(); 
+        
       this.updatePoints([]);
-      this.menu.progressBarIncrease(); 
-      this.menu.progressBarIncrease();
-    }    
+         
+    }  
+    
   };
 
   Lattice.prototype.setGrade = function(gradeParameters) { 
@@ -1267,7 +1267,7 @@ define([
       face.setColor( _this.gradeParameters.faceColor);
     });
 
-    this.menu.progressBarIncrease();
+     
 
   }
   Lattice.prototype.updateLatticeTypeRL = function(){ return 0;
@@ -1296,8 +1296,8 @@ define([
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
     
-    
-
+    this.menu.resetProgressBar('Constructing lattice...');
+ 
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
       var _this = this;
@@ -1308,13 +1308,9 @@ define([
       _.extend(this.parameters, delta);  
 
       if (_.indexOf(deltaKeys, 'repeatX') !== -1 || _.indexOf(deltaKeys, 'repeatY') !== -1 || _.indexOf(deltaKeys, 'repeatZ') !== -1) {  
-        
-        this.menu.resetProgressBar(8, 'Constructing lattice...');
-
+         
         _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
-        
-        this.menu.progressBarIncrease();
-
+         
         this.actualAtoms.splice(0); 
         
         this.updatePoints(
@@ -1326,9 +1322,7 @@ define([
             this.reCreateMillers, 
             this.recreateMotif
           ]
-        );
-        
-        this.menu.progressBarIncrease();
+        ); 
 
       }
       else{
@@ -1351,8 +1345,8 @@ define([
 
     }   
     _this.updateLatticeTypeRL(); 
-     
-    this.menu.progressBarIncrease();
+    
+    this.menu.progressBarFinish();
 
   };
   Lattice.prototype.getParameters = function() {
@@ -1406,7 +1400,7 @@ define([
       };   
       this.createMillerDirection(params, false, true); 
     } 
-    this.menu.progressBarIncrease();  
+       
   }
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform) {
     var _this = this ;

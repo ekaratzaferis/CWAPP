@@ -182,9 +182,15 @@ define([
         _this.plane.object3d.position.copy( _this.INTERSECTED.position );    
         document.getElementById(_this.container).style.cursor = 'auto';
       }
-      if(this.container === 'motifPosX' ) _this.motifEditor.dragAtom('x', pos, _this.SELECTED.id) ;
-      else if(this.container === 'motifPosY' ) _this.motifEditor.dragAtom('y', pos, _this.SELECTED.id) ;
-      else if(this.container === 'motifPosZ' ) _this.motifEditor.dragAtom('z', pos, _this.SELECTED.id) ;
+      if(this.container === 'motifPosX' ) {
+        _this.motifEditor.dragAtom('x', pos, _this.SELECTED.id) ;
+      }
+      else if(this.container === 'motifPosY' ) {
+        _this.motifEditor.dragAtom('y', pos, _this.SELECTED.id) ;
+      }
+      else if(this.container === 'motifPosZ' ) {
+        _this.motifEditor.dragAtom('z', pos, _this.SELECTED.id) ;
+      }
        
       return;
 
@@ -220,7 +226,7 @@ define([
     event.preventDefault();
     _this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
-      if( !(_this.motifEditor.editorState.state === 'initial') && (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)) {
+      if( !(_this.motifEditor.editorState.state === 'initial') /*&& (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)*/) {
         raycaster.setFromCamera( mouse, _this.camera );
         
         var intersects = raycaster.intersectObjects( _this.getAtoms() );

@@ -420,6 +420,9 @@ require([
     motifEditor.viewState_(state);
   });
   menu.onAtomSubmit(function(message, atomParam) {
+
+    menu.resetProgressBar('Processing...');
+
     if(atomParam.button === 'saveChanges'){
       var parameters = motifEditor.getDimensions() ;
       lattice.setMotif(motifEditor.getMotif(), parameters)  ;
@@ -568,6 +571,7 @@ require([
     motifEditor.updateCellDimens(param) ;
   });
   menu.motifToLattice(function(message, param){
+    menu.resetProgressBar('Processing...');
     lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions()) ; 
     var parameters = motifEditor.getDimensions() ;
     var params = {
