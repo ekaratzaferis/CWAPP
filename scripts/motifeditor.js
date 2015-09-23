@@ -4329,6 +4329,7 @@ define([
       );
 
       this.globalTangency = true ;
+      
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;

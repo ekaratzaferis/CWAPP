@@ -1432,6 +1432,8 @@ define([
         });
         
         
+        
+        
     /*$
     
     
@@ -2188,6 +2190,9 @@ define([
     Menu.prototype.onDirectionalSubmit = function(callback) { 
         PubSub.subscribe(events.MILLER_DIRECTIONAL_SUBMIT, callback);
     };
+    Menu.prototype.padlockSet = function(callback) {
+        PubSub.subscribe(events.SET_PADLOCK, callback);                             
+    }
     Menu.prototype.onPlaneSubmit = function(callback) {
         PubSub.subscribe(events.MILLER_PLANE_SUBMIT, callback);
     };
