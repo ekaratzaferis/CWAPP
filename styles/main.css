@@ -1,0 +1,146 @@
+.dark {
+  background-color: #000000;
+  color: #fff;
+}
+
+.right-panel {
+  
+}
+
+.head {
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.breaking {
+  position: relative;
+  padding: 10px 10px 10px 10px;
+  border: 1px solid #fff;
+  display: inline-block;
+  background: linear-gradient(-45deg, rgba(92, 190, 115, 1) 1%, rgba(24, 43, 4, 1) 100%);
+}
+
+.menu {
+  color: #000000;
+}
+ 
+.notVisible {
+    visibility:hidden;
+    display:none;
+}
+.vcenter {
+    margin-top:10px;
+}
+.periodic{
+  color:black;
+}
+.periodic:hover{
+  cursor: pointer;
+  color: #85E0FF ;
+  background-color: #000000 ;
+}
+.canvasContainer{
+  border: 2px solid #001F00;
+  position: fixed; 
+  background-color: #000000; 
+}
+.motifPosScreen{
+  position: fixed; 
+  z-index: 100;
+  
+  width:0px;
+  height:0px;
+  border: 1px solid #FF0000;
+  background-color: #001F00; 
+
+}
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:80%;padding:2px 1px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg th{font-family:Arial, sans-serif;font-size:80;font-weight:normal;padding:2px 1px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;}
+.tg .tg-wy1i{font-weight:bold;background-color:#34ff34;color:#000000}
+.tg .tg-rq93{font-weight:bold;background-color:#ffcb2f;color:#000000}
+.tg .tg-ls4l{font-weight:bold;background-color:#a651ff;color:#000000}
+.tg .tg-37zc{font-weight:bold;background-color:#a753ff;color:#000000}
+.tg .tg-kaxg{font-weight:bold;background-color:#3531ff;color:#000000}
+.tg .tg-92ag{font-weight:bold;background-color:#fd2525;color:#000000}
+.tg .tg-2ro4{font-weight:bold;background-color:#ffffff;color:#000000}
+.tg .tg-hvxd{font-weight:bold;color:#000000}
+.tg .tg-miwh{font-weight:bold;background-color:#f56b00;color:#000000}
+.tg .tg-3lhg{font-weight:bold;background-color:#9aff99;color:#000000}
+.tg .tg-kh33{font-weight:bold;background-color:#68cbd0;color:#000000}
+.tg .tg-g39z{font-weight:bold;background-color:#34cdf9;color:#000000}
+.tg .tg-p397{font-weight:bold;background-color:#fcff2f;color:#000000}
+
+.atomInput{visibility: hidden;}
+
+#crystalRenderer{ 
+} 
+#logo{
+  background: url('../Images/cwlogo.png')  no-repeat center center;
+  background-size:90% auto; 
+  height:60px;
+}
+#infoBox{ 
+  position: fixed; 
+  bottom: 0px; 
+  right:25%; 
+  z-index: 100;    
+  background-color: #26201A ;
+  border-radius: 5px;
+  color: white; 
+  font-family:Arial, sans-serif;
+  padding: 5px 20px; 
+  margin-bottom: 1px; 
+  display: none;
+}
+.manualDims{
+  display: none;
+}
+.manualAngles{
+  display: none;
+} 
+textarea {  
+  resize: none;
+}
+.overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 1000000;
+  background-color: #26201A;
+  opacity: 0.4;
+}
+#UIBlocker 
+{ 
+  display: none;
+  position: fixed; /* or absolute, for IE6 */
+  height: 100%;
+  width: 100%; 
+  background-color: #26201A;
+  z-index: 1000000;
+  opacity: 0;
+}
+.noteTransparent{
+  z-index: 100; 
+  position: fixed;  
+  background-color: rgba(68,52,75,0.3);
+  padding: 5px 5px 5px 5px;
+  border-radius: 5px;    
+}
+
+#close {
+  float:right;
+  display:inline-block;
+  padding:2px 5px;
+  background-color:rgba(68,52,75,0.0);
+  border-radius: 5px;
+}
+
+#close:hover {
+  float:right;
+  display:inline-block;
+  padding:2px 5px;
+  background:#ccc;
+  color:#fff;
+  cursor: pointer;
+}

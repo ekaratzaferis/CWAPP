@@ -44,15 +44,13 @@
 		
 	</head>
 	<body class="custom_scrollbar">
- 
         
-        <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"></div>
-          
         <div id="progressBarWrapper">
             <img class="logo" src="Images/cwlogo.png" />
-            <div id="progressBar"></div>
-            <div class="progressLabel">Loading...</div>
+            <!--<div id="progressBar"></div> -->
+            <div></div>
             <img class="loader" src="Images/loader.gif" />
+            <div class="progressLabel">Loading...</div>
         </div>
     
         <div id="screenWrapper">
@@ -71,6 +69,9 @@
 
                 <div id="app-container">
 
+                    <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"></div>
+                    <div id="leapIcon" style = "background-image: url('Images/leapicon.png'); position: fixed;  z-index:11; "></div>
+                    
                     <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
                     
                     <div id="crystalRenderer" class="canvasContainer" style="float: left;">
@@ -1498,11 +1499,11 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label class="btn btn-light active">
+																<label id="distortionOn" class="btn btn-light">
 																	<img src="Images/visual-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/visual-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label class="btn btn-light">
+																<label id="distortionOff" class="btn btn-light active">
 																	<img src="Images/visual-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/visual-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -1512,19 +1513,17 @@
 													<div class="tab-block theme-light stereoscopic-block">
 														<div class="block-title">
 															<label for="chkbx_stereoscope">
-																<input type="checkbox" class="icheckbox" name="anaglyph" id="chkbx_stereoscope" name="chkbx_stereoscope"/>
+																<input type="checkbox" class="icheckbox" name="stereoscopic" id="chkbx_stereoscope" name="chkbx_stereoscope"/>
 																<h3>Stereoscopic Effect</h3>
 															</label>
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label class="btn btn-light active">
-																	<input type="radio" name="opt_stereoscopic" id="opt_stereoscopic_01" autocomplete="off" checked/>
+																<label id="anaglyph" class="btn btn-light">
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label class="btn btn-light">
-																	<input type="radio" name="opt_stereoscopic" id="opt_stereoscopic_02" autocomplete="off"/>
+																<label id="oculus" class="btn btn-light">
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -1540,13 +1539,13 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-group" data-toggle="buttons">
-																		<label class="btn btn-light active">
-																			<input type="radio" name="opt_focal_point" id="opt_focal_point_01" autocomplete="off" checked/>
+																		<label id="crystalCamTargetOn" class="btn btn-light active">
+																			
 																			<img src="Images/focal-point-switch-icon-01.png" class="img-responsive" alt=""/>
 																			<img src="Images/focal-point-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																		</label>
-																		<label class="btn btn-light">
-																			<input type="radio" name="opt_focal_point" id="opt_focal_point_02" autocomplete="off"/>
+																		<label id="crystalCamTargetOff" class="btn btn-light">
+																			
 																			<img src="Images/focal-point-switch-icon-02.png" class="img-responsive" alt=""/>
 																			<img src="Images/focal-point-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																		</label>
@@ -1839,8 +1838,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Rhombohedral</span><br/>
-																<span>/ Trigonal</span>
+																<span>Rhombohedral / Trigonal</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1864,8 +1862,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Monoclinic</span><br/>
-																<span>Simple</span>
+																<span>Monoclinic Simple</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1882,8 +1879,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Cubic</span><br/>
-																<span>Body-centered</span>
+																<span>Cubic Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1895,8 +1891,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Tetragonal</span><br/>
-																<span>Body-centered</span>
+																<span>Tetragonal Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1908,8 +1903,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Body-centered</span>
+																<span>Othromobic Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1924,8 +1918,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Hexagonal</span><br/>
-																<span>Strange</span>
+																<span>Hexagonal Strange</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1945,8 +1938,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Cubic</span><br/>
-																<span>Face-centered</span>
+																<span>Cubic Face-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1961,8 +1953,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Face-centered</span>
+																<span>Othromobic Face-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1994,8 +1985,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Base-centered</span>
+																<span>Othromobic Base-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2013,8 +2003,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Monoclinic</span><br/>
-																<span>Base-centered</span>
+																<span>Monoclinic Base-centered</span><br/>
 															</h4>
 														</div>
 													</div>
