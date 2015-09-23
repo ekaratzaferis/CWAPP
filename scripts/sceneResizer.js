@@ -38,7 +38,6 @@ define([
 
       $('#crystalRenderer').width(width/2);
       $('#crystalRenderer').height(height/2);
-      //$('#crystalRenderer').css( "left", width/2 );
 
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
@@ -69,8 +68,7 @@ define([
 
       $('#crystalRenderer').width(width);
       $('#crystalRenderer').height(height);
-      //$('#crystalRenderer').css("left", 'auto');
-
+    
       $('#unitCellRenderer').width(0);
       $('#unitCellRenderer').height(0);
 
@@ -88,7 +86,7 @@ define([
       
       $('#hudRendererCube').width(width/this.hudDisplayFactor);
       $('#hudRendererCube').height(height/this.hudDisplayFactor);
-
+      $('#hudRendererCube').css( "left", 0 );
     }
     
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);

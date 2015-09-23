@@ -911,15 +911,16 @@ label {
     -moz-box-shadow: 0 0 0 0 #000;
     box-shadow: 0 0 0 0 #000; }
     .modal .modal-dialog .modal-content .modal-btn .btn {
-      height: 70px;
+      height: 50px;
       font-family: "Open Sans", sans-serif;
-      font-size: 25px;
+      font-size: 17px;
       font-weight: 400;
-      line-height: 24px;
+      line-height: 5px;
       color: #fff; }
     .modal .modal-dialog .modal-content .mega-header {
       border: 0;
       padding: 0;
+        max-height: 57px;
       background: #303640; }
       .modal .modal-dialog .modal-content .mega-header:before, .modal .modal-dialog .modal-content .mega-header:after {
         content: " ";
@@ -931,14 +932,14 @@ label {
         padding: 20px 35px; }
         .modal .modal-dialog .modal-content .mega-header .modal-title-container h2 {
           font-family: "Open Sans", sans-serif;
-          font-size: 34px;
+          font-size: 24px;
           font-weight: 600;
-          line-height: 36px;
+          line-height: 20px;
           color: #fff; }
       .modal .modal-dialog .modal-content .mega-header .btn-close {
         float: right; }
         .modal .modal-dialog .modal-content .mega-header .btn-close .btn {
-          padding: 20px; }
+          padding: 10px; }
     .modal .modal-dialog .modal-content .modal-body {
       padding: 0;
       border: 0;
@@ -963,9 +964,9 @@ label {
 
 /*==========  Bravais Lattice Header  ==========*/
 .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog {
-  max-width: 1280px;
+  max-width: 1000px;
   width: 100%;
-  margin: 30px auto;
+  margin: 10px auto;
   padding: 0; }
   .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
     padding: 30px 115px; }
@@ -976,13 +977,13 @@ label {
       text-align: center;
       background: #6f6299;
       font-family: "Open Sans", sans-serif;
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 600;
       line-height: 19.8px;
       color: #fff; }
     .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td {
       padding: 0;
-      width: 150px;
+      width: 155px;
       cursor: pointer;
       text-align: center;
       border-color: #ccd1de;
@@ -992,10 +993,13 @@ label {
       -o-transition: none 0s linear;
       transition: none 0s linear; }
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block {
+        max-height: 143px;
         padding: 10px;
         border: 3px solid transparent; }
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image {
           margin-bottom: 5px; }
+.bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image img{
+                 width:50%;}
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title {
           margin-bottom: 0; }
           .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title h4 {
@@ -1004,7 +1008,7 @@ label {
             border-radius: 4px;
             background-clip: padding-box;
             font-family: "Open Sans", sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 900;
             line-height: 14.4px;
             color: #25272b; }
@@ -3049,4 +3053,7 @@ html,body {
     width:100%;
     height:100%; 
     position:fixed;
+}
+.ui-slider-horizontal:hover{
+    cursor: pointer;
 }

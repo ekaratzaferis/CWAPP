@@ -367,6 +367,7 @@ define([
     var $progressBarWrapper = jQuery('#progressBarWrapper');
     //var $progressBar = jQuery('#progressBar');
     //var $progressN;
+    var $tempValRadius = 0;
 
     var $notepadButton = jQuery('#notesButton');
     var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
@@ -374,6 +375,8 @@ define([
     var $stereoscopic = false;
     var $anaglyph = jQuery('#anaglyph');
     var $oculus = jQuery('#oculus');
+    
+    var $motifMEButton = jQuery('#motifLI');
     
     var renderizationMode = {
         'Classic': $Classic,
@@ -444,11 +447,21 @@ define([
         var _this = this;
         var argument;
         
-        jQuery('#motifLI').tooltip({
+        $motifMEButton.tooltip({
             container : 'body',
-            trigger: 'click', 
+            trigger: 'manual',
+            placement: 'left',
             title: 'You have to choose a Lattice before opening the Motif Tab'
         });
+        $motifMEButton.on('click',function(){
+            if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
+                $motifMEButton.tooltip('show');
+                setTimeout(function(){
+                    $motifMEButton.tooltip('hide');
+                }, 2500);
+            }
+        });
+        
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
@@ -521,18 +534,20 @@ define([
         });
         jQuery('.control-open').on('click', function(){
             if( !( jQuery(this).hasClass('toggle_menu') ) ){
-                $controls_toggler.find('.img-open').fadeOut('fast', function()
-                {
-                    $controls_toggler.find('.img-close').fadeIn('fast')
-                });
-                if (! ($main_controls.hasClass('controls-open')) ) {
-                    $("#screenWrapper").fadeOut('slow');
-                    $main_controls.animate({'right': '0'}, 500, function()
+                if (!(( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) && (jQuery(this).attr('aria-controls') === 'scrn_motif'))) {
+                    $controls_toggler.find('.img-open').fadeOut('fast', function()
                     {
-                        $main_controls.removeClass('controls-close');
-                        $main_controls.addClass('controls-open');
-                        window.dispatchEvent(new Event('resize'));
+                        $controls_toggler.find('.img-close').fadeIn('fast')
                     });
+                    if (! ($main_controls.hasClass('controls-open')) ) {
+                        $("#screenWrapper").fadeOut('slow');
+                        $main_controls.animate({'right': '0'}, 500, function()
+                        {
+                            $main_controls.removeClass('controls-close');
+                            $main_controls.addClass('controls-open');
+                            window.dispatchEvent(new Event('resize'));
+                        });
+                    }
                 } 
             }
         });
@@ -980,26 +995,47 @@ define([
         $atomRadius.parent().tooltip({
             container : 'body',
             trigger: 'manual',
-            title: '<div id="customSlider">Atom Radius</div><br/><div class="slider-control slider-control-sm theme-dark"><div id="atomRadiusSlider"></div></div>',
-            html: 'true'
+            title: 'Atom Radius',
+            html: true
         });
-        var tempVal = 10;
-        $atomRadius.parent().hover(
+        $atomRadius.parent().click(function(){
+                if( $atomRadius.parent().hasClass('sliderOpen') ){
+                    $atomRadius.parent().removeClass('sliderOpen');
+                    $atomRadius.parent().css('background','transparent');
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
+                }
+                else{
+                    $atomRadius.parent().addClass('sliderOpen');
+                    $atomRadius.parent().css('background', '#43464b');
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', '<div id="customSlider">Atom Radius</div><br/><div class="slider-control slider-control-sm theme-dark"><div id="atomRadiusSlider"></div></div>').tooltip('fixTitle');
+                    setTimeout(function() {
+                        $atomRadius.parent().tooltip("show");
+                    }, 250);
+                    setTimeout(function() {
+                        jQuery('.tooltip-inner').css('background', '#2c2e33');
+                        jQuery('.tooltip-inner').css('color', '#fff');
+                        jQuery('.tooltip-inner').siblings().css('border-left-color', '#2c2e33');
+                        _this.setSlider('atomRadius',$tempValRadius,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+                    }, 250);
+                }
+        });
+        $atomRadius.hover(
             function(){
-                $atomRadius.parent().tooltip('show');
-                jQuery('#customSlider').parent().css('background', '#2c2e33');
-                jQuery('#customSlider').parent().css('color', '#fff');
-                jQuery('#customSlider').parent().siblings().css('border-left-color', '#2c2e33');
-                _this.setSlider('atomRadius',tempVal,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
-                jQuery('#customSlider').parent().hover(
-                    function(){},
-                    function(){
-                        tempVal = $atomRadius.val();
-                        $atomRadius.parent().tooltip('hide');
-                    }
-                );
+                if (! ($atomRadius.parent().hasClass('sliderOpen'))) {
+                    $atomRadius.parent().tooltip('show');
+                    jQuery('.tooltip-inner').css('background', '#fff');
+                    jQuery('.tooltip-inner').css('color', '#473473');
+                    jQuery('.tooltip-inner').siblings().css('border-left-color', '#fff');
+                }
+                $atomRadius.parent().css('background', '#43464b');
             },
-            function(){}
+            function(){
+                if (! ($atomRadius.parent().hasClass('sliderOpen'))) {
+                    $atomRadius.parent().tooltip('hide');
+                    $atomRadius.parent().css('background','transparent');
+                }
+                else $atomRadius.parent().css('background','#43464b');
+            }
         );
         
         
@@ -1395,6 +1431,7 @@ define([
             }
         });
         
+        
     /*$
     
     
@@ -1515,6 +1552,14 @@ define([
                 argument[inputName] = ui.value;
                 PubSub.publish(eventIn, argument);
                 jQuery('#'+inputName).val(ui.value);
+            },
+            stop: function(){
+                if (sliderName === '#atomRadiusSlider') {
+                    $atomRadius.parent().removeClass('sliderOpen');
+                    $atomRadius.parent().css('background','transparent');
+                    $tempValRadius = $atomRadius.val();
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
+                }
             }
         });
     };
@@ -1801,20 +1846,60 @@ define([
         if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
         else $directionTable.css('display','none');
     };
-    /*Menu.prototype.editSavedAtoms = function(argument){
+    Menu.prototype.editSavedAtom = function(argument){
         
+        //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
+        var backColor = 'bg-light-gray';
+        //visible hidden
+        var eyeButton = 'hidden';
+        //<td class="blank"></td>
+        var blankTD = '';
+        //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
+        var chainTD = '';
+        //Lowercase
+        var elementCode = '';
+        //Capitalized
+        var elementName;
+        //'', 2 , 3 [colspan="3"]
+        var colSpan = 'colspan="3"';
+        var atomPos = '';
+        // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>
+        var buttonTangent;
         
-        var backColor; //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
-        var buttonState; //visible hidden
-        var blankTD; //<td class="blank"></td>
-        var chainTD; //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
-        var elementCode; //lowercase
-        var elementName; //first cap
-        var colSpan; //no, 2 , 3 colspan="3"
-        var atomParameters;
-        var buttonTangent; // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td> or <td></td> an exei mono vis,ele,eleserial
+        _.each(argument, function($parameter, k){
+            switch(k){
+                case 'backColor':
+                    backColor = 'bg-' + $parameter;
+                    break;
+                case 'eyeButton':
+                    eyeButton = $parameter;
+                    break;
+                case 'blankTD':
+                    if ($parameter) blankTD = '<td class="blank"></td>';
+                    break;
+                case 'chainTD':
+                    if ($parameter) chainTD = '<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>';
+                    break;
+                case 'elementCode':
+                    elementCode = $parameter;
+                    break;
+                case 'elementName':
+                    elementName = $parameter;
+                    break;
+                case 'colSpan':
+                    if ($parameter !== '') colSpan = 'colspan="'+$parameter+'"';
+                    else colSpan = $parameter;
+                    break;
+                case 'atomPos':
+                    atomPos = $parameter;
+                    break;
+                case 'buttonTangent':
+                    if ($parameter) buttonTangent = '<td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>';
+                    break;
+            }
+        });
         
-        var HTMLQuery = '<tr class="'+backColor+'"><td class="visibility"><a><img src="Images/'+buttonState+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomParameters+'</a></td>'+buttonTangent+'</tr>';
+        var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
         
         switch(argument['action']){
             case 'save':
@@ -1822,19 +1907,18 @@ define([
                 break;  
 
             case 'edit':
-                $atomTable.find('#'+argument['oldId']).replaceWith(HTMLQuery);
+                $atomTable.find('#'+argument['id']).replaceWith(HTMLQuery);
                 break;
             
             case 'delete':
-                $atomTable.find('#'+argument['oldId']).remove();
+                $atomTable.find('#'+argument['id']).remove();
                 break;
             
         }
-        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+        if ( (argument['action']==='save') || (argument['action']==='edit') ){
             $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
                 PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
-                $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
-                $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
                 if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active')){
                     $atomTable.find('.atomButton').removeClass('active');
                 }
@@ -1845,20 +1929,18 @@ define([
             });
             $atomTable.find('#'+argument['id']).find('.atomButton').hover(
                 function(){
-                    $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
-                    $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
                 },
                 function(){
                     if (!($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active'))){
-                        $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#1f2227');
-                        $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#1f2227');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#1f2227');
                     }
                 }
             );
         }
         if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
         else $atomTable.css('display','none');
-    }*/
+    }
     Menu.prototype.editMEInputs = function(argument){
         _.each(atomParameters, function($parameter, k) {
             if (argument[k] !== undefined){
@@ -1927,7 +2009,6 @@ define([
         if (argument['atomName'] !== undefined){
             var newAtom = 'ch-' + argument['atomName'];
             var newAtomName = jQuery('.'+newAtom).html();
-            console.log(newAtomName);
             $elementContainer.css('display','block');
             $elementContainer.find('a').removeAttr('class');
             $elementContainer.find('a').attr('class',newAtom+' ch');
