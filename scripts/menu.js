@@ -65,6 +65,7 @@ define([
     }
     
     var events = {
+        STEREOSCOPIC: 'menu.stereoscopic',
         PLANE_TOGGLE: 'menu.planes_toggle',
         ATOM_TOGGLE: 'menu.atom_toggle',
         DIRECTION_TOGGLE: 'menu.directions_toggle',
@@ -255,7 +256,6 @@ define([
     
     var $latticePadlock = jQuery('#latticePadlock');
     var $motifPadlock = jQuery('#motifPadlock');
-    var $distortion = jQuery('#distortion');
     var $syncCameras = jQuery('#syncCameras');
 
     var $fixedX = jQuery('#fixedX');
@@ -338,12 +338,13 @@ define([
 
     var $notes = jQuery('#notes');
 
-    var $crystalCamTarget = jQuery('#crystalCamTarget');
-
     var $storeState = jQuery('#storeState');
 
     var $fogColor = jQuery('#fogColor');
     var $fogDensity = jQuery('#fogDensity');
+    
+    var $distortionOn = jQuery('#distortionOn');
+    var $distortionOff = jQuery('#distortionOff');
 
     var $crystalScreenColor = jQuery('#crystalScreenColor');
     var $cellScreenColor = jQuery('#cellScreenColor');
@@ -364,10 +365,18 @@ define([
     
     var $notepad = jQuery('#noteWrapper');
     var $progressBarWrapper = jQuery('#progressBarWrapper');
-    var $progressBar = jQuery('#progressBar');
-    var $progressN;
+    //var $progressBar = jQuery('#progressBar');
+    //var $progressN;
+    var $tempValRadius = 0;
 
     var $notepadButton = jQuery('#notesButton');
+    var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
+    var $crystalCamTargetOff = jQuery("#crystalCamTargetOff");
+    var $stereoscopic = false;
+    var $anaglyph = jQuery('#anaglyph');
+    var $oculus = jQuery('#oculus');
+    
+    var $motifMEButton = jQuery('#motifLI');
     
     var renderizationMode = {
         'Classic': $Classic,
@@ -438,11 +447,21 @@ define([
         var _this = this;
         var argument;
         
-        jQuery('#motifLI').tooltip({
+        $motifMEButton.tooltip({
             container : 'body',
-            trigger: 'click', 
+            trigger: 'manual',
+            placement: 'left',
             title: 'You have to choose a Lattice before opening the Motif Tab'
         });
+        $motifMEButton.on('click',function(){
+            if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
+                $motifMEButton.tooltip('show');
+                setTimeout(function(){
+                    $motifMEButton.tooltip('hide');
+                }, 2500);
+            }
+        });
+        
         
         // Initiate Menu Components - Without App Connection
         $scrollBars.mCustomScrollbar();
@@ -515,18 +534,20 @@ define([
         });
         jQuery('.control-open').on('click', function(){
             if( !( jQuery(this).hasClass('toggle_menu') ) ){
-                $controls_toggler.find('.img-open').fadeOut('fast', function()
-                {
-                    $controls_toggler.find('.img-close').fadeIn('fast')
-                });
-                if (! ($main_controls.hasClass('controls-open')) ) {
-                    $("#screenWrapper").fadeOut('slow');
-                    $main_controls.animate({'right': '0'}, 500, function()
+                if (!(( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) && (jQuery(this).attr('aria-controls') === 'scrn_motif'))) {
+                    $controls_toggler.find('.img-open').fadeOut('fast', function()
                     {
-                        $main_controls.removeClass('controls-close');
-                        $main_controls.addClass('controls-open');
-                        window.dispatchEvent(new Event('resize'));
+                        $controls_toggler.find('.img-close').fadeIn('fast')
                     });
+                    if (! ($main_controls.hasClass('controls-open')) ) {
+                        $("#screenWrapper").fadeOut('slow');
+                        $main_controls.animate({'right': '0'}, 500, function()
+                        {
+                            $main_controls.removeClass('controls-close');
+                            $main_controls.addClass('controls-open');
+                            window.dispatchEvent(new Event('resize'));
+                        });
+                    }
                 } 
             }
         });
@@ -657,10 +678,12 @@ define([
                     PubSub.publish(events.FOG_CHANGE, argument);
                     break;
                     
-                case 'anaglyph':
+                case 'stereoscopic':
+                    $stereoscopic = true;
                     argument ={};
-                    argument[name] = true;
-                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                    argument['anaglyph'] = $anaglyph.hasClass('active');
+                    argument['oculus'] = false;
+                    PubSub.publish(events.STEREOSCOPIC, argument);
                     break;
             }
         });
@@ -689,10 +712,12 @@ define([
                     PubSub.publish(events.FOG_CHANGE, argument);
                     break;
                     
-                case 'anaglyph':
+                case 'stereoscopic':
+                    $stereoscopic = false;
                     argument ={};
-                    argument[name] = false;
-                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                    argument['anaglyph'] = $anaglyph.hasClass('active');
+                    argument['oculus'] = false;
+                    PubSub.publish(events.STEREOSCOPIC, argument);
                     break;
             }
         });
@@ -861,12 +886,12 @@ define([
     
         
         //Toggle Buttons
-        $xyzAxes.parent().css('background','#2F3238');
-        $xyzAxes.addClass('buttonPressed');
         _.each(toggles, function($parameter, k){
             var title;
             switch(k){
                 case 'xyzAxes':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'xyz Axes';
                     break;
                  case 'abcAxes':
@@ -879,15 +904,23 @@ define([
                     title = 'Cell Faces';
                     break;
                 case 'latticePoints':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Lattice Points';
                     break;
                 case 'directions':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Directions';
                     break;
                 case 'planes':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Planes';
                     break;
                 case 'atomToggle':
+                    $parameter.parent().css('background','#43464b');
+                    $parameter.addClass('buttonPressed');
                     title = 'Atoms';
                     break;
             }
@@ -898,10 +931,10 @@ define([
             });
             $parameter.hover(
                 function(){
-                    $parameter.parent().css('background','#2F3238');
+                    $parameter.parent().css('background','#43464b');
                 },
                 function(){
-                    if ($parameter.hasClass('buttonPressed')) $parameter.parent().css('background','#2F3238');
+                    if ($parameter.hasClass('buttonPressed')) $parameter.parent().css('background','#43464b');
                     else $parameter.parent().css('background','transparent');
                 }
             );
@@ -962,26 +995,47 @@ define([
         $atomRadius.parent().tooltip({
             container : 'body',
             trigger: 'manual',
-            title: '<div id="customSlider">Atom Radius</div><br/><div class="slider-control slider-control-sm theme-dark"><div id="atomRadiusSlider"></div></div>',
-            html: 'true'
+            title: 'Atom Radius',
+            html: true
         });
-        var tempVal = 10;
-        $atomRadius.parent().hover(
+        $atomRadius.parent().click(function(){
+                if( $atomRadius.parent().hasClass('sliderOpen') ){
+                    $atomRadius.parent().removeClass('sliderOpen');
+                    $atomRadius.parent().css('background','transparent');
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
+                }
+                else{
+                    $atomRadius.parent().addClass('sliderOpen');
+                    $atomRadius.parent().css('background', '#43464b');
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', '<div id="customSlider">Atom Radius</div><br/><div class="slider-control slider-control-sm theme-dark"><div id="atomRadiusSlider"></div></div>').tooltip('fixTitle');
+                    setTimeout(function() {
+                        $atomRadius.parent().tooltip("show");
+                    }, 250);
+                    setTimeout(function() {
+                        jQuery('.tooltip-inner').css('background', '#2c2e33');
+                        jQuery('.tooltip-inner').css('color', '#fff');
+                        jQuery('.tooltip-inner').siblings().css('border-left-color', '#2c2e33');
+                        _this.setSlider('atomRadius',$tempValRadius,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+                    }, 250);
+                }
+        });
+        $atomRadius.hover(
             function(){
-                $atomRadius.parent().tooltip('show');
-                jQuery('#customSlider').parent().css('background', '#2c2e33');
-                jQuery('#customSlider').parent().css('color', '#fff');
-                jQuery('#customSlider').parent().siblings().css('border-left-color', '#2c2e33');
-                _this.setSlider('atomRadius',tempVal,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
-                jQuery('#customSlider').parent().hover(
-                    function(){},
-                    function(){
-                        tempVal = $atomRadius.val();
-                        $atomRadius.parent().tooltip('hide');
-                    }
-                );
+                if (! ($atomRadius.parent().hasClass('sliderOpen'))) {
+                    $atomRadius.parent().tooltip('show');
+                    jQuery('.tooltip-inner').css('background', '#fff');
+                    jQuery('.tooltip-inner').css('color', '#473473');
+                    jQuery('.tooltip-inner').siblings().css('border-left-color', '#fff');
+                }
+                $atomRadius.parent().css('background', '#43464b');
             },
-            function(){}
+            function(){
+                if (! ($atomRadius.parent().hasClass('sliderOpen'))) {
+                    $atomRadius.parent().tooltip('hide');
+                    $atomRadius.parent().css('background','transparent');
+                }
+                else $atomRadius.parent().css('background','#43464b');
+            }
         );
         
         
@@ -1051,6 +1105,8 @@ define([
             }); 
         });
         _this.setSlider('atomOpacity',10,1,10,0.1,events.ATOM_PARAMETER_CHANGE);
+        $tangency.addClass('buttonPressed');
+        $tangency.parent().css('background','#74629c');
         $tangency.on('click',function(){
             if ( !($tangency.hasClass('disabled')) ){
                 argument = {};
@@ -1249,12 +1305,14 @@ define([
         // Renderization Mode
         _.each(renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
-                if (!($parameter.hasClass('active'))) {
-                    $parameter.addClass('active');
-                    argument = {};
-                    argument['mode'] = k;
-                    PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
-                    _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                if (!($parameter.hasClass('disabled'))) {
+                    if (!($parameter.hasClass('active'))) {
+                        $parameter.addClass('active');
+                        argument = {};
+                        argument['mode'] = k;
+                        PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
+                        _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                    }
                 }
             });
         });
@@ -1276,26 +1334,104 @@ define([
         
          // Progress Bar
         var screen_width = jQuery(window).width();
-        var screen_height = jQuery('body').height();
+        var screen_height = jQuery('.main-controls-container').height();
         $progressBarWrapper.width(screen_width);
         $progressBarWrapper.height(screen_height);
-        $progressBar.progressbar({
+        /*$progressBar.progressbar({
             max: 100,
             value: false,
             complete: function() {
                 setTimeout(progressDelay, 500);
             }
         });
- 
-        function progressDelay(){$progressBarWrapper.fadeOut('slow');};
- 
         function progressDelay(){
             $progressBarWrapper.fadeOut('slow');
             jQuery('body').css('overflow','auto');
-        };
+        };*/
         
         
-         
+        $crystalCamTargetOn.click(function(){
+            if( !($crystalCamTargetOn.hasClass('active')) ){ 
+                $crystalCamTargetOn.addClass('active');
+                $crystalCamTargetOff.removeClass('active');
+                argument = {}; 
+                argument["center"]= true;
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
+            }
+        });
+        $crystalCamTargetOff.click(function(){
+            if( !($crystalCamTargetOff.hasClass('active')) ){
+                $crystalCamTargetOff.addClass('active');
+                $crystalCamTargetOn.removeClass('active');
+                argument = {}; 
+                argument["center"]= false;
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
+            }
+        });
+        
+        $distortionOn.click(function() {
+            if( !($distortionOn.hasClass('active')) ){ 
+                $distortionOn.addClass('active');
+                $distortionOff.removeClass('active');
+                argument = {}; 
+                argument["distortion"]= true;
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);
+            }         
+        });
+        $distortionOff.click(function() {  
+            if( !($distortionOff.hasClass('active')) ){ 
+                $distortionOff.addClass('active');
+                $distortionOn.removeClass('active');
+                argument = {}; 
+                argument["distortion"]= false;
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);
+            }            
+        });
+        
+        $anaglyph.click(function() {
+            if ($stereoscopic){
+                $anaglyph.removeClass('disabled');
+                if (!($anaglyph.hasClass('active'))){
+                    $oculus.removeClass('active');
+                    $anaglyph.addClass('active');
+                    argument ={};
+                    argument['anaglyph'] = true;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                }
+                else{
+                    $anaglyph.removeClass('active');
+                    argument ={};
+                    argument['anaglyph'] = false;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
+                }
+            }
+            else{
+                $anaglyph.addClass('disabled');
+            }
+        });
+        $oculus.click(function() {
+            if ($stereoscopic){
+                $oculus.removeClass('disabled');
+                if (!($oculus.hasClass('active'))){
+                    $anaglyph.removeClass('active');
+                    $oculus.addClass('active');
+                    argument ={};
+                    argument['oculus'] = true;
+                    PubSub.publish(events.OCULUS, argument);
+                }
+                else{
+                    $oculus.removeClass('active');
+                    argument ={};
+                    argument['v'] = false;
+                    PubSub.publish(events.OCULUS, argument);
+                }
+            }
+            else{
+                $oculus.addClass('disabled');
+            }
+        });
+        
+        
     /*$
     
     
@@ -1307,11 +1443,7 @@ define([
     });
     
     
-    $('#distortion').change(function() {  
-      var argument = {};
-      argument["distortion"]= ($('#distortion').is(':checked')) ? true : false ;
-      PubSub.publish(events.MOTIF_DISTORTION_CHANGE, argument);           
-    });
+    
     $('#syncCameras').change(function() {  
       var argument = {};
       argument["syncCameras"]= ($('#syncCameras').is(':checked')) ? true : false ;
@@ -1329,12 +1461,6 @@ define([
       argument["dragMode"]= ($('#dragMode').is(':checked')) ? true : false ;
       PubSub.publish(events.DRAG_ATOM, argument);           
     });
-  
-    $("#crystalCamTarget").click(function(){
-      argument = {}; 
-      argument["center"]= ($('#crystalCamTarget').is(':checked')) ? true : false ;
-      PubSub.publish(events.CRYSTAL_CAM_TARGET, argument);
-    });
     
     $storeState.on('click', function() {
       PubSub.publish(events.STORE_PROJECT, argument);   
@@ -1346,24 +1472,17 @@ define([
      
   };
     
-    Menu.prototype.resetProgressBar = function(taskNum,title) {
- 
-        $progressBar.progressbar('value', false);
-        $progressBar.find('.progressLabel').html(title);
-        $progressN = parseFloat(100) / (parseFloat(taskNum));
- 
-        $progressBar.progressbar('value', 0);
-        $progressBar.siblings('.progressLabel').text(title);
-        $progressN = 100 / (parseFloat(taskNum));
-
+    Menu.prototype.resetProgressBar = function(title) {
+        //$progressBar.progressbar('value', 0);
+        $progressBarWrapper.find('.progressLabel').text(title);
+        //$progressN = 100 / (parseFloat(taskNum));
         $progressBarWrapper.css('display','block');
-        jQuery('body').css('overflow','hidden');
     }
-    Menu.prototype.progressBarIncrease = function(){
-        var val;
-        if ($progressBar.progressbar('value') === false) val = $progressN;
-        else val = parseFloat($progressBar.progressbar('value')) + $progressN;
-        $progressBar.progressbar("value", val);
+    Menu.prototype.progressBarFinish = function(){
+        /*var val;
+        val = parseFloat($progressBar.progressbar('value')) + $progressN;
+        $progressBar.progressbar("value", val);*/
+        $progressBarWrapper.fadeOut('slow');
     }
     Menu.prototype.editProgressTitle = function(title){
         $progressBar.siblings('.progressLabel').text(title);
@@ -1433,6 +1552,14 @@ define([
                 argument[inputName] = ui.value;
                 PubSub.publish(eventIn, argument);
                 jQuery('#'+inputName).val(ui.value);
+            },
+            stop: function(){
+                if (sliderName === '#atomRadiusSlider') {
+                    $atomRadius.parent().removeClass('sliderOpen');
+                    $atomRadius.parent().css('background','transparent');
+                    $tempValRadius = $atomRadius.val();
+                    $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
+                }
             }
         });
     };
@@ -1719,20 +1846,60 @@ define([
         if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
         else $directionTable.css('display','none');
     };
-    /*Menu.prototype.editSavedAtoms = function(argument){
+    Menu.prototype.editSavedAtom = function(argument){
         
+        //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
+        var backColor = 'bg-light-gray';
+        //visible hidden
+        var eyeButton = 'hidden';
+        //<td class="blank"></td>
+        var blankTD = '';
+        //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
+        var chainTD = '';
+        //Lowercase
+        var elementCode = '';
+        //Capitalized
+        var elementName;
+        //'', 2 , 3 [colspan="3"]
+        var colSpan = 'colspan="3"';
+        var atomPos = '';
+        // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>
+        var buttonTangent;
         
-        var backColor; //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
-        var buttonState; //visible hidden
-        var blankTD; //<td class="blank"></td>
-        var chainTD; //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
-        var elementCode; //lowercase
-        var elementName; //first cap
-        var colSpan; //no, 2 , 3 colspan="3"
-        var atomParameters;
-        var buttonTangent; // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td> or <td></td> an exei mono vis,ele,eleserial
+        _.each(argument, function($parameter, k){
+            switch(k){
+                case 'backColor':
+                    backColor = 'bg-' + $parameter;
+                    break;
+                case 'eyeButton':
+                    eyeButton = $parameter;
+                    break;
+                case 'blankTD':
+                    if ($parameter) blankTD = '<td class="blank"></td>';
+                    break;
+                case 'chainTD':
+                    if ($parameter) chainTD = '<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>';
+                    break;
+                case 'elementCode':
+                    elementCode = $parameter;
+                    break;
+                case 'elementName':
+                    elementName = $parameter;
+                    break;
+                case 'colSpan':
+                    if ($parameter !== '') colSpan = 'colspan="'+$parameter+'"';
+                    else colSpan = $parameter;
+                    break;
+                case 'atomPos':
+                    atomPos = $parameter;
+                    break;
+                case 'buttonTangent':
+                    if ($parameter) buttonTangent = '<td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>';
+                    break;
+            }
+        });
         
-        var HTMLQuery = '<tr class="'+backColor+'"><td class="visibility"><a><img src="Images/'+buttonState+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomParameters+'</a></td>'+buttonTangent+'</tr>';
+        var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
         
         switch(argument['action']){
             case 'save':
@@ -1740,19 +1907,18 @@ define([
                 break;  
 
             case 'edit':
-                $atomTable.find('#'+argument['oldId']).replaceWith(HTMLQuery);
+                $atomTable.find('#'+argument['id']).replaceWith(HTMLQuery);
                 break;
             
             case 'delete':
-                $atomTable.find('#'+argument['oldId']).remove();
+                $atomTable.find('#'+argument['id']).remove();
                 break;
             
         }
-        if ( (argument['action']==='save') | (argument['action']==='edit') ){
+        if ( (argument['action']==='save') || (argument['action']==='edit') ){
             $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
                 PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
-                $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
-                $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
                 if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active')){
                     $atomTable.find('.atomButton').removeClass('active');
                 }
@@ -1763,20 +1929,18 @@ define([
             });
             $atomTable.find('#'+argument['id']).find('.atomButton').hover(
                 function(){
-                    $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#08090b');
-                    $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#08090b');
+                    $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
                 },
                 function(){
                     if (!($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active'))){
-                        $atomTable.find('#'+argument['id']).find('.atomButton').css('background','#1f2227');
-                        $atomTable.find('#'+argument['id']).find('.atomButton').css('border','#1f2227');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#1f2227');
                     }
                 }
             );
         }
         if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
         else $atomTable.css('display','none');
-    }*/
+    }
     Menu.prototype.editMEInputs = function(argument){
         _.each(atomParameters, function($parameter, k) {
             if (argument[k] !== undefined){
@@ -1845,7 +2009,6 @@ define([
         if (argument['atomName'] !== undefined){
             var newAtom = 'ch-' + argument['atomName'];
             var newAtomName = jQuery('.'+newAtom).html();
-            console.log(newAtomName);
             $elementContainer.css('display','block');
             $elementContainer.find('a').removeAttr('class');
             $elementContainer.find('a').attr('class',newAtom+' ch');
@@ -1984,6 +2147,17 @@ define([
             }
         });
     }
+    Menu.prototype.disableRenderizationButtons = function(argument){
+        _.each(renderizationMode, function($parameter, k) {
+            if (argument[k] !== undefined){
+                if (argument[k]){
+                    $parameter.css('background','white');
+                    $parameter.removeClass('active');
+                    $parameter.addClass('disabled');
+                }
+            }
+        });
+    }
     Menu.prototype.onPlaneToggle = function(callback){
         PubSub.subscribe(events.PLANE_TOGGLE, callback);  
     };
@@ -2100,6 +2274,9 @@ define([
     };
     Menu.prototype.setAnaglyph = function(callback) { 
         PubSub.subscribe(events.ANAGLYPH_EFFECT, callback);
+    };
+    Menu.prototype.setOculus = function(callback) { 
+        PubSub.subscribe(events.OCULUS, callback);
     }; 
     Menu.prototype.onFogParameterChange = function(callback) { 
         PubSub.subscribe(events.FOG_PARAMETER_CHANGE, callback);
@@ -2118,9 +2295,6 @@ define([
     };
     Menu.prototype.onRadiusToggle = function(callback) { 
         PubSub.subscribe(events.CHANGE_CRYSTAL_ATOM_RADIUS, callback);
-    };
-    Menu.prototype.padlockSet = function(callback) { 
-        PubSub.subscribe(events.SET_PADLOCK, callback);
     };
     Menu.prototype.onAtomPosModeChange = function(callback) { 
         PubSub.subscribe(events.CHANGE_ATOM_POSITIONING_MODE, callback);
