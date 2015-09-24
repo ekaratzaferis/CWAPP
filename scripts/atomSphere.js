@@ -9,12 +9,12 @@ define([
   MotifExplorer,
   _
 ) {
-  
+  var globGeometry = new THREE.SphereGeometry(1,32, 32);
   // tangency is not used anymore!
   function AtomSphere(visible,position, radius, color, tangency, elementName, id, opacity, wireframe ) {
      
     var _this = this; 
-    this.radius = (_.isUndefined(radius)) ? 0.04 : radius;  
+    this.radius = radius;  
     this.material;
     this.materialLetter;
     this.materials;
@@ -27,16 +27,14 @@ define([
     this.texture = 'None';
     this.elementName = elementName;
     this.wireframe = wireframe ;
-    this.opacity = opacity ;
-
-    var geometry = new THREE.SphereGeometry(this.radius,32, 32); 
-
+    this.opacity = opacity ; 
+  
     var textureLoader = new THREE.TextureLoader();
     //textureLoader.load("Images/atoms/"+elementName+".png",
     textureLoader.load("Images/atoms/None.png",
       function(tex){ 
       tex.mapping = THREE.SphericalReflectionMapping;
-      _this.addMaterial(tex, geometry, color, position) ;
+      _this.addMaterial(tex, color, position) ;
       }
     ); 
   }
@@ -49,7 +47,7 @@ define([
     this.object3d.children[0].material.needsUpdate = true;
     this.object3d.children[1].material.needsUpdate = true;
   };
-  AtomSphere.prototype.addMaterial = function(letterText, geometry, color, position) {
+  AtomSphere.prototype.addMaterial = function(letterText, color, position) {
     var _this = this ;
      this.color = color ; 
 
@@ -71,8 +69,10 @@ define([
       ]; 
     }
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( geometry, _this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, _this.materials);
     sphere.name = 'atom';
+    sphere.scale.set(this.radius, this.radius, this.radius);
+
     _this.object3d = sphere;
     _this.object3d.position.fromArray(position.toArray());
     MotifExplorer.add(_this); 

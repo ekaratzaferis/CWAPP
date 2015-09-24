@@ -212,7 +212,7 @@ require([
   var gearTour = new GearTour(crystalScene, motifEditor, lattice);
  
   // handel keyboard keys
-  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor);
+  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor, crystalRenderer);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
@@ -265,7 +265,7 @@ require([
   });
 
   // miller
-  menu.onDirectionalSubmit(function(message, millerParameters) {
+  menu.onDirectionalSubmit(function(message, millerParameters) {  
     lattice.millerParameters = millerParameters ;
     lattice.submitDirectional(millerParameters);
   });
@@ -302,7 +302,7 @@ require([
   menu.onRadiusToggle(function(message, arg) { 
     lattice.toggleRadius(arg); 
   });
-  menu.onAtomPosModeChange(function(message, arg) { 
+  menu.onAtomPosModeChange(function(message, arg) {   
     motifEditor.atomPosMode(arg); 
   });
   menu.onLightsSet(function(message, arg) { 
@@ -323,10 +323,8 @@ require([
 
       unitCellScene.AmbLight.color.setHex( 0xffffff ); 
       unitCellScene.light.intensity = 0.0;
-      unitCellScene.light.castShadow = false;  
-
-    } 
-
+      unitCellScene.light.castShadow = false;   
+    }  
   });
   menu.onLeapMotionSet(function(message, arg) { 
     leapM.toggle(arg.leap);
@@ -387,8 +385,9 @@ require([
         $(".hexagonalMiller").css('display','none'); 
       } 
     } 
-    if($(this).attr('id') === "motifLI" ){     
-      
+ 
+    if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
+  
       sceneResizer.resize('motifScreen');
         
       unitCellRenderer.startAnimation();                                                                    
@@ -421,6 +420,7 @@ require([
     motifEditor.viewState_(state);
   });
   menu.onAtomSubmit(function(message, atomParam) {
+ 
     if(atomParam.button === 'saveChanges'){
       var parameters = motifEditor.getDimensions() ;
       lattice.setMotif(motifEditor.getMotif(), parameters)  ;
@@ -469,6 +469,9 @@ require([
     motifEditor.setAnglesManually(param);
   });
   menu.onFixedLengthChange(function(message, param) {  
+    motifEditor.padlockMode(param); 
+  }); 
+  menu.padlockSet(function(message, param) {  
     motifEditor.padlockMode(param); 
   });  
   menu.fullScreenApp(function(message, param) {  
@@ -566,6 +569,7 @@ require([
     motifEditor.updateCellDimens(param) ;
   });
   menu.motifToLattice(function(message, param){
+     
     lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions()) ; 
     var parameters = motifEditor.getDimensions() ;
     var params = {
@@ -594,6 +598,18 @@ require([
   menu.onCrystalViewChange(function(message, which) { 
     lattice.changeView(which);
   }); 
+  menu.onPlaneToggle(function(message, arg) { 
+    lattice.planeToggle(arg);
+  }); 
+  menu.onDirectionToggle(function(message, arg) { 
+    lattice.directionToggle(arg);
+  }); 
+  menu.onAtomToggle(function(message, arg) { 
+    lattice.atomToggle(arg);
+  }); 
+  menu.onLatticePointsToggle(function(message, arg) { 
+    lattice.togglePoints(arg);
+  }); 
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);
   }); 
@@ -602,7 +618,7 @@ require([
   }); 
   menu.onLeapTrackingSystemChange(function(message, arg) { 
     leapM.selectTS(arg);
-  }); 
+  });  
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;

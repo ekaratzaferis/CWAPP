@@ -17,7 +17,7 @@ define([
 function NavCube( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.length =  (height + width)/240; 
+    this.length =  (height + width)/260; 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
      

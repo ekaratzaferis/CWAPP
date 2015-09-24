@@ -21,6 +21,7 @@ define([
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
+    var _this = this;
 
     $("#leapIcon").css({ 
       "width": width/15,
@@ -37,7 +38,7 @@ define([
 
       $('#crystalRenderer').width(width/2);
       $('#crystalRenderer').height(height/2);
-      $('#crystalRenderer').css( "left", width/2 );
+      //$('#crystalRenderer').css( "left", width/2 );
 
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
@@ -57,6 +58,8 @@ define([
  
       $('#hudRendererCube').width((0.5 * 1.5 * width) / this.hudDisplayFactor);
       $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor);
+      $('#hudRendererCube').css( "left", width/2 );
+        
       
     }
     else{
@@ -66,7 +69,7 @@ define([
 
       $('#crystalRenderer').width(width);
       $('#crystalRenderer').height(height);
-      $('#crystalRenderer').css( "left", 0 );
+      //$('#crystalRenderer').css("left", 'auto');
 
       $('#unitCellRenderer').width(0);
       $('#unitCellRenderer').height(0);
@@ -88,7 +91,7 @@ define([
 
     }
     
-    this.dollEditor.rePosition();
+    setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
  
   return SceneResizer;

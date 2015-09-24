@@ -24,6 +24,7 @@ define([
     if(this.lattice.actualAtoms.length === 0) {
       return;
     }
+    this.menu.resetProgressBar(1, 'Processing...');
 
     switch(state){ 
 
@@ -59,9 +60,10 @@ define([
         this.setActualAtoms(true, []);
         this.setMillers(true); 
         this.hideSubtractedCell();
-      break;
-
+      break; 
     }
+    this.menu.progressBarIncrease();    
+
   };
   
   GearTour.prototype.setActualAtoms = function(bool, state){

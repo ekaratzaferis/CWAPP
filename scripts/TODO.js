@@ -1,11 +1,17 @@
- 
-TODOs UI alexandros
-    1. delete setting values to inputs (automated process from slider)
-    2. alex has to add leap motion div
-    3. in addatom na erxontai ta parameters ola ap ti menu. na mh painrei to moitf editor amesa ap to ui menu tpt
+ performance TODOs
+ 1. ola ta sphereGeometry na einai ena me scaling. 
+ 3. na dw ti paizei me grids faces.
+ 4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
+5. fps drop in unit cell renderern motif renderer
+  
 
+  ui TODOs
+  33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
+  34. renderization mode - deacctivate menu
+  35 gear bar tour to idio provlima me renderization mode
+  
 TODO list 
-
+    
     6.  hex faces optimization 
  
     9.  change the recreate of hex and use transform function as others

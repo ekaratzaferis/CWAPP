@@ -223,7 +223,6 @@ header {
 
 footer {
   /*-----  Start Styling From Here  ------*/ }
-
 body {
   background: #000;
   overflow-x: hidden;
@@ -231,8 +230,8 @@ body {
   font-size: 16px;
   font-weight: 400;
   line-height: 19.2px;
-  color: #000; }
-
+  color: #000;
+}
 /*==========  Button  ==========*/
 .btn {
   border: 0;
@@ -639,10 +638,9 @@ body {
 /*----- Screen Common -----*/
 /*==========  Controls  ==========*/
 .main-controls-container {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
   width: 500px;
+    float:right;
   background: #34373e; }
   .main-controls-container .main-controls-wrapper {
     position: relative; }
@@ -655,8 +653,8 @@ body {
     position: fixed;
     right: -100%;
     top: 0; }
-  .main-controls-container.controls-close {
-    right: -417px; }
+  .main-controls-container.controls-close { 
+    right:-417px;}
     .main-controls-container.controls-close .controls-toggler-container .btn .img-close {
       display: none; }
 
@@ -817,6 +815,7 @@ label {
   -o-transition: all 0.3s linear;
   transition: all 0.3s linear; }
   .action a:hover, .action a:active, .action a:focus {
+    cursor:pointer;
     text-decoration: none;
     background: #08090b; }
 
@@ -912,15 +911,16 @@ label {
     -moz-box-shadow: 0 0 0 0 #000;
     box-shadow: 0 0 0 0 #000; }
     .modal .modal-dialog .modal-content .modal-btn .btn {
-      height: 70px;
+      height: 50px;
       font-family: "Open Sans", sans-serif;
-      font-size: 25px;
+      font-size: 17px;
       font-weight: 400;
-      line-height: 24px;
+      line-height: 5px;
       color: #fff; }
     .modal .modal-dialog .modal-content .mega-header {
       border: 0;
       padding: 0;
+        max-height: 57px;
       background: #303640; }
       .modal .modal-dialog .modal-content .mega-header:before, .modal .modal-dialog .modal-content .mega-header:after {
         content: " ";
@@ -932,14 +932,14 @@ label {
         padding: 20px 35px; }
         .modal .modal-dialog .modal-content .mega-header .modal-title-container h2 {
           font-family: "Open Sans", sans-serif;
-          font-size: 34px;
+          font-size: 24px;
           font-weight: 600;
-          line-height: 36px;
+          line-height: 20px;
           color: #fff; }
       .modal .modal-dialog .modal-content .mega-header .btn-close {
         float: right; }
         .modal .modal-dialog .modal-content .mega-header .btn-close .btn {
-          padding: 20px; }
+          padding: 10px; }
     .modal .modal-dialog .modal-content .modal-body {
       padding: 0;
       border: 0;
@@ -964,9 +964,9 @@ label {
 
 /*==========  Bravais Lattice Header  ==========*/
 .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog {
-  max-width: 1280px;
+  max-width: 1000px;
   width: 100%;
-  margin: 30px auto;
+  margin: 10px auto;
   padding: 0; }
   .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
     padding: 30px 115px; }
@@ -977,13 +977,13 @@ label {
       text-align: center;
       background: #6f6299;
       font-family: "Open Sans", sans-serif;
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 600;
       line-height: 19.8px;
       color: #fff; }
     .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td {
       padding: 0;
-      width: 150px;
+      width: 155px;
       cursor: pointer;
       text-align: center;
       border-color: #ccd1de;
@@ -993,10 +993,13 @@ label {
       -o-transition: none 0s linear;
       transition: none 0s linear; }
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block {
+        max-height: 143px;
         padding: 10px;
         border: 3px solid transparent; }
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image {
           margin-bottom: 5px; }
+.bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image img{
+                 width:50%;}
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title {
           margin-bottom: 0; }
           .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title h4 {
@@ -1005,7 +1008,7 @@ label {
             border-radius: 4px;
             background-clip: padding-box;
             font-family: "Open Sans", sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 900;
             line-height: 14.4px;
             color: #25272b; }
@@ -1543,6 +1546,7 @@ label {
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility {
       padding: 0; }
       .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility a {
+        cursor: pointer;
         display: block;
         height: 50px;
         padding: 10px;
@@ -2978,4 +2982,78 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     border: none;
     cursor:pointer;
     overflow: hidden;
+}
+#noteWrapper{
+    display: none;
+    z-index:9999;
+    color:white;
+    border:#43464b solid 2px;
+    position: fixed;
+    margin-top: 10%;
+    margin-left:18%;
+    min-height: 85px;
+    min-width: 250px;}
+#notes{
+    color:#43464b;
+    background-color: transparent;
+    border: none;
+    font-size: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;}
+#notesScroll{
+    border: none;
+    width:100%;
+    height: 75%;
+    overflow: auto;}
+#noteBar{
+    font-size: 12.68px;
+    color:#2F3238;
+    border-bottom: #43464b dotted 2px;
+    text-align: center;}
+#noteBar img{
+    margin-top: 4px;
+    margin-right: 4px;
+    float: right;
+    height: 10px;}
+#noteBar img:hover{cursor: pointer;}
+#screenWrapper{
+    float: left;
+    position: relative;}
+#progressBarWrapper{
+    display: none;
+    z-index: 1000;
+    position: fixed;
+    text-align: center;
+    background-color: #191F26;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    filter: alpha(opacity=95);
+    opacity: 0.95;
+}
+.loader{
+    margin-top: 5%;
+}
+.progressLabel{
+    font-size: 13px;
+    color: white;
+}
+/*#progressBar{
+    margin-top: -2%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+#progressBar > .ui-progressbar-value {
+   background: purple;
+   border-color: purple;
+}*/
+html,body {
+    height: 100%;
+}
+#app-container{
+    float:left; 
+    width:100%;
+    height:100%; 
+    position:fixed;
+}
+.ui-slider-horizontal:hover{
+    cursor: pointer;
 }

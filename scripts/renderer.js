@@ -23,6 +23,7 @@ define([
     var height = (type==='crystal') ? jQuery(window).height() : 0; 
 
     this.rType = type;
+    this.rstatsON = false;
     this.containerWidth = width ;
     this.containerHeight = height ;
     this.scene = scene.object3d;
@@ -123,7 +124,7 @@ define([
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
-    if(this.rS !== undefined){ 
+    if(this.rS !== undefined && this.rstatsON === true){  
       this.rS( 'frame' ).start();
       this.glS.start();
       
@@ -180,7 +181,7 @@ define([
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
         if(this.containerWidth < 800 ){  
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
+          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight );
           this.renderer.setViewport(
             0, 
             0,  
@@ -196,7 +197,7 @@ define([
           ); 
         }
         else{ 
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
+          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
           this.renderer.setViewport(
             0, 
             0,  
@@ -296,7 +297,7 @@ define([
       }
     }  
     
-    if(this.rS !== undefined){ 
+    if(this.rS !== undefined && this.rstatsON === true){ 
 
       this.rS( 'render' ).end();
 

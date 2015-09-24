@@ -46,7 +46,7 @@ define([
     this.active = bool ;
 
     // leap motion icon animation - might not used
-    (function pulse(){ 
+    (function pulse(){  
       if(_this.active){
         $('#leapIcon').delay(200).fadeOut('slow').delay(50).fadeIn('slow',pulse);
       } 

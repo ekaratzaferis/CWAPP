@@ -2,15 +2,27 @@
  
 
 define([
-  'pubsub', 'three', 'underscore', 
-  'atomSphere','jquery-ui', 'jquery', 'unitCellAtom', 'unitCellExplorer' ,
+  'pubsub', 
+  'three', 
+  'underscore', 
+  'atomSphere',
+  'jquery-ui', 
+  'jquery', 
+  'unitCellAtom',
+  'unitCellExplorer' ,
   'csg',
-  'threeCSG'
+  'threeCSG',
+  'motifExplorer'
 ], function(
   PubSub, THREE, _,
-  AtomSphere, jQuery_ui, jQuery, UnitCellAtom , UnitCellExplorer,
+  AtomSphere, 
+  jQuery_ui, 
+  jQuery, 
+  UnitCellAtom, 
+  UnitCellExplorer,
   csg,
-  ThreeCSG
+  ThreeCSG,
+  MotifExplorer
 ) {
   var events = {
     LOAD: 'motifeditor.load',
@@ -38,13 +50,11 @@ define([
     this.latticeName = 'none';
     this.latticeType = 'none';  
     this.latticeSystem = 'none';
-
-    this.manualAabc = false;
-    this.manualAlphBtGmm = false;
+ 
     this.manualSetCellAngles = false;
     this.leastCellLengths = {'x' : 0, 'y' : 0, 'z' : 0 };
     this.leastCellAngles = {'alpha' : 2, 'beta' : 2, 'gamma' : 2 };
-    this.cellVolume =  {col : false, xInitVal : 0, yInitVal : 0, zInitVal : 0, aCol : false, bCol : false, cCol : false};
+    this.cellVolume =  {col : false, xInitVal : 0.5, yInitVal : 0.5, zInitVal : 0.5, aCol : false, bCol : false, cCol : false};
 
     this.newSphere ; 
     this.lastSphereAdded ; 
@@ -99,8 +109,8 @@ define([
       
   };  
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem, restore) {
-    
-    if(this.editorState.updated === true) {
+     
+    if(this.editorState.updated === true || !anglesScales) {
       return;
     }
     this.editorState.updated = true ;
@@ -136,45 +146,59 @@ define([
   };
   Motifeditor.prototype.selectElem = function(params) {
 
-    var _this = this ;
 
-    // first time
-    if(_this.isEmpty) {  
-      var newId = "_"+Math.random() ;
-      var wireframe = ($('#wireframe').is(':checked')) ? true : false ; 
-      var a = new AtomSphere( true, (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId,10, wireframe);
-      _this.newSphere = a ;
-      _this.isEmpty = false;
-      $("#atomName").val(params.element+" ");
-      PubSub.publish(events.EDITOR_STATE,"creating"); 
-      _this.addAtomInCell( (new THREE.Vector3(0,0,0)) , _this.atomsData[params.element].radius/100 ,  _this.atomsData[params.element].color, params.tangency, params.element, newId,10,wireframe); 
-       
-      return;
+    var _this = this ;
+    var radius = this.atomsData[params.element].radius/100
+    var newId = "_"+produceUuid() ;
+    var p = new THREE.Vector3(0,0,0);
+
+    if(this.isEmpty) {  
+      // first time  
+      this.isEmpty = false; 
     }
-    else{ 
-      if(_this.viewState!='Classic') {
-        _this.setCSGmode('Classic');
-        $('option:selected', 'select[id="unitCellView"]').removeAttr('selected'); 
-        $('select[id="unitCellView"]').find('option[id="Classic"]').attr("selected",true);
+    else{
+      p = this.findNewAtomsPos(
+        this.lastSphereAdded, 
+        radius, 
+        false, 
+        params.element
+      ); 
+    } 
+    
+    var a = new AtomSphere( 
+      true, 
+      new THREE.Vector3(p.x,p.y,p.z), 
+      radius, 
+      this.atomsData[params.element].color,
+      params.tangency, 
+      params.element, 
+      newId, 
+      10
+    );
+
+    this.newSphere = a;
+
+    this.addAtomInCell( 
+      new THREE.Vector3(p.x,p.y,p.z), 
+      radius, 
+      this.atomsData[params.element].color, 
+      params.tangency, 
+      params.element, 
+      newId,
+      10,
+      false
+    );
+
+    PubSub.publish(
+      events.EDITOR_STATE,{
+        'state' : "creating", 
+        'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
+        'color' : this.atomsData[params.element].color 
       }
-      var state = _this.editorState.state ;
-      var p = _this.findNewAtomsPos(_this.lastSphereAdded, _this.atomsData[params.element].radius/100, false, params.element);
-      _this.menu.setSliderValue("atomPosX", p.x );
-      _this.menu.setSliderValue("atomPosY", p.y );
-      _this.menu.setSliderValue("atomPosZ", p.z );
-      $("#atomPosX").val( p.x);
-      $("#atomPosY").val( p.y);
-      $("#atomPosZ").val( p.z);
-      var newId = "_"+Math.random();
-      var wireframe = ($('#wireframe').is(':checked')) ? true : false ; 
-      var a = new AtomSphere( true,  (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color,params.tangency, params.element, newId, 10, wireframe);
-      _this.newSphere = a;
-      _this.addAtomInCell( (new THREE.Vector3(p.x,p.y,p.z)) , _this.atomsData[params.element].radius/100 , _this.atomsData[params.element].color, params.tangency, params.element, newId,10,wireframe);
-      PubSub.publish(events.EDITOR_STATE,"creating");
-      $("#atomName").val(params.element+" ");  
-    }
+    ); 
+     
   };
-  Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) { // todo if there is no free around the last atom, coll det >2
+  Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
 
     var _this = this , posFound = false, posFoundx, posFoundy, posFoundz, position; 
     var x = lastAtom.object3d.position.x + lastAtom.getRadius() + newAtomRadius;
@@ -199,16 +223,26 @@ define([
       if(_this.latticeType === 'primitive'){ 
         _this.tangentToThis = _this.motifsAtoms[0] ;
         _this.setTangentAngle(  45, 54.7354 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0]);
-        $("#rotAngleTheta").val((54.7354).toFixed(4));
-        $("#rotAnglePhi").val((45.0000).toFixed(4));
+    
+        this.menu.editMEInputs(
+          { 
+            'rotAngleTheta' :  54.7354 , 
+            'rotAnglePhi' :  45 
+          }
+        );
       } 
       
     }
     else if(_this.latticeSystem === 'hexagonal' && _this.motifsAtoms.length === 1  ){
-      _this.tangentToThis = _this.motifsAtoms[0] ;
-      _this.setTangentAngle(0.0000, 35.2644 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0] );
-      $("#rotAngleTheta").val((35.2644).toFixed(4));
-      $("#rotAnglePhi").val((0.0000).toFixed(4));
+      this.tangentToThis = _this.motifsAtoms[0] ;
+      this.setTangentAngle(0.0000, 35.2644 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0] );
+   
+      this.menu.editMEInputs(
+        { 
+          'rotAngleTheta' : 35.26442 , 
+          'rotAnglePhi' : 0 
+        }
+      );
     }
     else{  
       var posFound = _this.check("x");
@@ -245,70 +279,89 @@ define([
     var _this = this ;
     var idIs = _this.newSphere.getID();
     var tempObj = _this.newSphere ;  
-    _this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
-    if(_.isUndefined(_this.newSphere) ) _this.newSphere = tempObj ; //in case he drags the _this.newSphere already
+    this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
+    if(_.isUndefined(_this.newSphere) ) {
+      this.newSphere = tempObj ; //in case he drags the _this.newSphere already
+    }
     var theID = _this.newSphere.getID(); 
  
     if(axis === 'x' ) {   
-      _this.newSphere.object3d.position.set(pos.x,pos.y,_this.newSphere.object3d.position.z);  
-      _this.translateCellAtoms("x",  pos.x , theID);  
-      _this.translateCellAtoms("y",  pos.y , theID);
+      this.newSphere.object3d.position.set(pos.x,pos.y,this.newSphere.object3d.position.z);  
+      this.translateCellAtoms("x",  pos.x , theID);  
+      this.translateCellAtoms("y",  pos.y , theID);
 
-      if(idIs == _this.newSphere.getID()){  
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosX").val(pos.x);
         $("#atomPosY").val(pos.y);  
-        _this.menu.setSliderValue("atomPosX", pos.x );
-        _this.menu.setSliderValue("atomPosY", pos.y ); 
+        this.menu.setSliderValue("atomPosX", pos.x );
+        this.menu.setSliderValue("atomPosY", pos.y ); 
       }
     }
     else if(axis === 'y' ) {   
-      _this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , theID);
-      _this.translateCellAtoms("y",  pos.y , theID);
-      if(idIs == _this.newSphere.getID()){  
+      this.newSphere.object3d.position.set(_this.newSphere.object3d.position.x,pos.y,pos.z);  
+      this.translateCellAtoms("z",  pos.z , theID);
+      this.translateCellAtoms("y",  pos.y , theID);
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosY").val(pos.y);
         $("#atomPosZ").val(pos.z);
-        _this.menu.setSliderValue("atomPosZ", pos.z );
-        _this.menu.setSliderValue("atomPosY", pos.y ); 
+        this.menu.setSliderValue("atomPosZ", pos.z );
+        this.menu.setSliderValue("atomPosY", pos.y ); 
       }
     }
     else if(axis === 'z' ) { 
-      _this.newSphere.object3d.position.set(pos.x, _this.newSphere.object3d.position.y,pos.z);  
-      _this.translateCellAtoms("z",  pos.z , theID);
-      _this.translateCellAtoms("x",  pos.x , theID);
-      if(idIs == _this.newSphere.getID()){  
+      this.newSphere.object3d.position.set(pos.x, this.newSphere.object3d.position.y,pos.z);  
+      this.translateCellAtoms("z",  pos.z , theID);
+      this.translateCellAtoms("x",  pos.x , theID);
+      if(idIs == this.newSphere.getID()){  
         $("#atomPosX").val(pos.x);
         $("#atomPosZ").val(pos.z);
-        _this.menu.setSliderValue("atomPosX", pos.x );
-        _this.menu.setSliderValue("atomPosZ", pos.z ); 
+        this.menu.setSliderValue("atomPosX", pos.x );
+        this.menu.setSliderValue("atomPosZ", pos.z ); 
       }
     } 
 
-    _this.newSphere = tempObj ;
+    this.newSphere = tempObj ;
 
-    _this.configureCellPoints();  
+    this.configureCellPoints();  
 
-    _this.rotAxis = axis;
-     
+    this.rotAxis = axis;
+    
+    this.menu.editMEInputs(
+      {   
+        'Aa' : this.cellParameters.scaleZ,
+        'Ab' : this.cellParameters.scaleX,
+        'Ac' : this.cellParameters.scaleY,
+        'cellAlpha' : this.cellParameters.alpha,
+        'cellBeta' : this.cellParameters.beta,
+        'cellGamma' : this.cellParameters.gamma
+      }
+    ); 
+
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
-    if( _.isUndefined(arg.atomPositioning)){
-      return;
-    }
-    var x = $('#fixedX').val() ;
-    var y = $('#fixedY').val() ;
-    var z = $('#fixedZ').val() ;
+       
+    var x = $('#Ab').val() ;
+    var y = $('#Ac').val() ;
+    var z = $('#Aa').val() ;
 
-    this.editorState.atomPosMode = arg.atomPositioning ;
+    this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
+
     var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
- 
+
     this.padlockMode({padlock : bool, x:x, y:y, z:z}); 
-    $('#padlock').prop('checked', bool); 
-    $('#padlock').prop('disabled', (!bool)); 
+
+    this.menu.editMEInputs(
+      {
+        'padlock' : bool 
+      }
+    ); 
+ 
+    //$('#padlock').prop('disabled', (!bool)); 
 
     if(this.editorState.atomPosMode === 'relative'){ 
       this.menu.setSliderMin('atomPosX', 0);
       this.menu.setSliderMax('atomPosX', 1);
+
       this.menu.setSliderValue('atomPosX', 0);
 
       this.menu.setSliderMin('atomPosY', 0);
@@ -346,9 +399,9 @@ define([
         this.isEmpty = true ;  
       }
       this.dragMode = false;
-      this.setDimsManually( { 'manualSetCellDims' : false });
-      this.setAnglesManually( { 'manualSetCellAngles' : false });
-      PubSub.publish(events.EDITOR_STATE,"initial");
+      //this.setDimsManually( { 'manualSetCellDims' : false });
+      //this.setAnglesManually( { 'manualSetCellAngles' : false });
+      PubSub.publish(events.EDITOR_STATE,{ 'state' : "initial"});
     }
     
  
@@ -360,184 +413,190 @@ define([
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
-
-      this.menu.setSliderValue("cellAlpha", this.cellParameters.alpha);
-      this.menu.setSliderValue("cellBeta", this.cellParameters.beta);
-      this.menu.setSliderValue("cellGamma", this.cellParameters.gamma);
-
-      this.configureCellPoints();
-
-      this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
-      $("#Aa").val(this.cellParameters.scaleZ);
-      this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
-      $("#Ab").val(this.cellParameters.scaleX);
-      this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
-      $("#Ac").val(this.cellParameters.scaleY);
-    }
-       
-    this.menu.setOnOffSlider('Aa', arg);  
-    this.menu.setOnOffSlider('Ab', arg);  
-    this.menu.setOnOffSlider('Ac', arg); 
-
-    this.menu.setOnOffSlider('cellAlpha', arg);
-    this.menu.setOnOffSlider('cellBeta', arg);
-    this.menu.setOnOffSlider('cellGamma', arg);
-      
-    $("#Aa").prop("disabled",arg);
-    $("#Ab").prop("disabled",arg);
-    $("#Ac").prop("disabled",arg);
  
-    $("#cellAlpha").prop("disabled",arg);
-    $("#cellBeta").prop("disabled",arg);
-    $("#cellGamma").prop("disabled",arg);
+      this.menu.editMEInputs(
+        {
+          'cellAlpha' : this.cellParameters.alpha,
+          'cellBeta' : this.cellParameters.beta,
+          'cellGamma' : this.cellParameters.gamma 
+        }
+      );  
+      this.configureCellPoints();
+ 
+      this.menu.editMEInputs(
+        {
+          'Aa' : this.cellParameters.scaleZ,
+          'Ab' : this.cellParameters.scaleX,
+          'Ac' : this.cellParameters.scaleY 
+        }
+      );  
+    }
+         
+    this.menu.disableMEInputs(
+      {
+        'Aa' : arg,
+        'Ab' : arg,
+        'Ac' : arg,
+        'cellAlpha' : arg,
+        'cellBeta' : arg,
+        'cellGamma' : arg 
+      }
+    );
+
   };
   Motifeditor.prototype.setAtomsPosition = function(param){ 
+
     var _this = this;  
+    
     var oldX,oldY,oldZ;
-    var stillColliding = true, doNotOverlap = _this.globalTangency ;
+    var stillColliding = true, doNotOverlap = this.globalTangency ;
     var xFactor = 1;
     var yFactor = 1;
     var zFactor = 1;
 
     if(this.editorState.atomPosMode === 'relative'){  
-      xFactor = parseFloat($("#fixedX").val()) ;
-      yFactor = parseFloat($("#fixedY").val()) ;
-      zFactor = parseFloat($("#fixedZ").val()) ;
- 
+      xFactor = parseFloat($("#Ab").val()) ;
+      yFactor = parseFloat($("#Ac").val()) ;
+      zFactor = parseFloat($("#Aa").val()) ; 
     }
 
     var sliderXVal, sliderYVal, sliderZVal ;
+      
+    sliderXVal = (param.atomPosX === undefined) ? (xFactor * parseFloat($('#atomPosX').val())) : parseFloat(param.atomPosX) ; 
+    sliderYVal = (param.atomPosY === undefined) ? (yFactor * parseFloat($('#atomPosY').val())) : parseFloat(param.atomPosY) ; 
+    sliderZVal = (param.atomPosZ === undefined) ? (zFactor * parseFloat($('#atomPosZ').val())) : parseFloat(param.atomPosZ) ; 
      
-    if(param.trigger === 'slider'){  
-      sliderXVal = xFactor * parseFloat($('#atomPosXSlider').val() ); 
-      sliderYVal = yFactor * parseFloat($('#atomPosYSlider').val() ); 
-      sliderZVal = zFactor * parseFloat($('#atomPosZSlider').val() ); 
-    }
-    else{
-      sliderXVal = xFactor * parseFloat($('#atomPosX').val() ); 
-      sliderYVal = yFactor * parseFloat($('#atomPosY').val() );
-      sliderZVal = zFactor * parseFloat($('#atomPosZ').val() );
-    }  
     if(this.editorState.atomPosMode === 'relative'){ 
       var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
-      _this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
-      _this.translateCellAtoms("x", vecHelper.x ,_this.newSphere.getID());
-      _this.translateCellAtoms("y", vecHelper.y ,_this.newSphere.getID());
-      _this.translateCellAtoms("z", vecHelper.z ,_this.newSphere.getID());
+      this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
+      this.translateCellAtoms("x", vecHelper.x ,this.newSphere.getID());
+      this.translateCellAtoms("y", vecHelper.y ,this.newSphere.getID());
+      this.translateCellAtoms("z", vecHelper.z ,this.newSphere.getID());
     } 
-
+ 
     if(!_.isUndefined(param.atomPosX)){ 
-      if(_this.mutex){ 
+      if(this.mutex){ 
 
-        _this.mutex = false; 
+        this.mutex = false; 
         
-        _this.newSphere.object3d.position.x =   parseFloat(  param.atomPosX ) ;  
-        _this.translateCellAtoms("x",  sliderXVal , _this.newSphere.getID());
+        this.newSphere.object3d.position.x = parseFloat(  param.atomPosX ) ;  
+        
+        this.translateCellAtoms("x", sliderXVal, this.newSphere.getID());
 
-        if( _this.motifsAtoms.length===0 || doNotOverlap===false ){ 
+        if( this.motifsAtoms.length === 0 || doNotOverlap===false ){ 
           this.mutex = true;   
-          _this.configureCellPoints();
+          this.configureCellPoints();
           return ;
         }
 
-        var zOffset = _this.check("z");
-        var yOffset = _this.check("y");
+        var zOffset = this.check("z");
+        var yOffset = this.check("y");
         
         if(yOffset.offset>=zOffset.offset){
           if(yOffset.offset!=0 && zOffset.offset!=0){
-            _this.newSphere.object3d.position.z += zOffset.offset ;
+            this.newSphere.object3d.position.z += zOffset.offset ;
             var newSliderVal = sliderZVal + zOffset.offset ;
-            _this.menu.setSliderValue("atomPosZ", newSliderVal );
-            _this.translateCellAtoms("z",_this.newSphere.object3d.position.z + zOffset.offset,_this.newSphere.getID());
+            this.menu.setSliderValue("atomPosZ", newSliderVal );
+            this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
           }
         }
         else{ 
-          _this.newSphere.object3d.position.y += yOffset.offset ;
+          this.newSphere.object3d.position.y += yOffset.offset ;
           var newSliderVal = sliderYVal + yOffset.offset ;
-          _this.menu.setSliderValue("atomPosY", newSliderVal );
-          _this.translateCellAtoms("y",_this.newSphere.object3d.position.y + yOffset.offset,_this.newSphere.getID());
+          this.menu.setSliderValue("atomPosY", newSliderVal );
+          this.translateCellAtoms("y",this.newSphere.object3d.position.y + yOffset.offset,this.newSphere.getID());
         }
 
-        _this.mutex = true; 
+        this.mutex = true; 
         
       }
     }
     else if( !_.isUndefined(param.atomPosY) ) { 
-      if(_this.mutex){
+      if(this.mutex){
         
-        _this.mutex = false; 
+        this.mutex = false; 
 
-        _this.newSphere.object3d.position.y = parseFloat(  param.atomPosY );
-        _this.translateCellAtoms("y", sliderYVal ,_this.newSphere.getID());
+        this.newSphere.object3d.position.y = parseFloat(  param.atomPosY );
+        this.translateCellAtoms("y", sliderYVal ,this.newSphere.getID());
 
-        if(_this.motifsAtoms.length===0 || doNotOverlap===false ){
+        if(this.motifsAtoms.length===0 || doNotOverlap===false ){
           this.mutex = true; 
-          _this.configureCellPoints();
+          this.configureCellPoints();
           return ;
         }
 
-        var zOffset = _this.check("z");
-        var xOffset = _this.check("x"); 
+        var zOffset = this.check("z");
+        var xOffset = this.check("x"); 
 
         if(xOffset.offset>=zOffset.offset){
           if(xOffset.offset!=0 && zOffset.offset!=0){  
-            _this.newSphere.object3d.position.z += zOffset.offset ;
+            this.newSphere.object3d.position.z += zOffset.offset ;
             var newSliderVal = sliderZVal + zOffset.offset ;
-            _this.menu.setSliderValue("atomPosZ", newSliderVal );
-            _this.translateCellAtoms("z",_this.newSphere.object3d.position.z + zOffset.offset,_this.newSphere.getID());
+            this.menu.setSliderValue("atomPosZ", newSliderVal );
+            this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
           } 
         }
         else{ 
 
-          _this.newSphere.object3d.position.x += xOffset.offset ;
+          this.newSphere.object3d.position.x += xOffset.offset ;
            var newSliderVal = sliderXVal + xOffset.offset ;
-          _this.menu.setSliderValue("atomPosX", newSliderVal );
-          _this.translateCellAtoms("x",_this.newSphere.object3d.position.x + xOffset.offset,_this.newSphere.getID());
+          this.menu.setSliderValue("atomPosX", newSliderVal );
+          this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
         }
 
-        _this.mutex = true;
+        this.mutex = true;
 
       }       
     }
     else if(!_.isUndefined(param.atomPosZ)){ 
-      if(_this.mutex){
+      if(this.mutex){
         
-        _this.mutex = false; 
+        this.mutex = false; 
          
-        _this.newSphere.object3d.position.z = parseFloat(  param.atomPosZ ); 
-        _this.translateCellAtoms("z", sliderZVal ,_this.newSphere.getID());
+        this.newSphere.object3d.position.z = parseFloat(  param.atomPosZ ); 
+        this.translateCellAtoms("z", sliderZVal ,this.newSphere.getID());
 
-        if(_this.motifsAtoms.length===0 || doNotOverlap===false ){
+        if(this.motifsAtoms.length===0 || doNotOverlap===false ){
           this.mutex = true; 
-          _this.configureCellPoints();
+          this.configureCellPoints();
           return ;
         }
 
-        var xOffset = _this.check("x");
-        var yOffset = _this.check("y");
+        var xOffset = this.check("x");
+        var yOffset = this.check("y");
          
         if(xOffset.offset>=yOffset.offset){
           if(yOffset.offset!=0 && xOffset.offset!=0){ 
-            _this.newSphere.object3d.position.y += yOffset.offset ;
+            this.newSphere.object3d.position.y += yOffset.offset ;
              var newSliderVal = sliderYVal + yOffset.offset ;
-            _this.menu.setSliderValue("atomPosY", newSliderVal );
-            _this.translateCellAtoms("y",_this.newSphere.object3d.position.y + yOffset.offset,_this.newSphere.getID());
+            this.menu.setSliderValue("atomPosY", newSliderVal );
+            this.translateCellAtoms("y",this.newSphere.object3d.position.y + yOffset.offset,this.newSphere.getID());
           }
         }
         else{ 
-          _this.newSphere.object3d.position.x += xOffset.offset ;
+          this.newSphere.object3d.position.x += xOffset.offset ;
           var newSliderVal = sliderXVal + xOffset.offset ;
-          _this.menu.setSliderValue("atomPosX", newSliderVal );
-          _this.translateCellAtoms("x",_this.newSphere.object3d.position.x + xOffset.offset,_this.newSphere.getID());
+          this.menu.setSliderValue("atomPosX", newSliderVal );
+          this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
         }
 
-        _this.mutex = true; 
+        this.mutex = true; 
 
       }
     }  
 
-    _this.configureCellPoints();
- 
+    this.configureCellPoints();
+    
+    this.menu.editMEInputs(
+      {   
+        'Aa' : this.cellParameters.scaleZ,
+        'Ab' : this.cellParameters.scaleX,
+        'Ac' : this.cellParameters.scaleY,
+        'cellAlpha' : this.cellParameters.alpha,
+        'cellBeta' : this.cellParameters.beta,
+        'cellGamma' : this.cellParameters.gamma
+      }
+    );
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -575,6 +634,8 @@ define([
       for (var j = this.unitCellAtoms.length - 1; j >= 0; j--) { 
         if((this.unitCellAtoms[i].latticeIndex != this.unitCellAtoms[j].latticeIndex) && (this.unitCellAtoms[j].object3d !== undefined) && (this.unitCellAtoms[i].object3d !== undefined)){   
           if( ((this.unitCellAtoms[i].object3d.position.distanceTo(this.unitCellAtoms[j].object3d.position) + 0.0000001) < (this.unitCellAtoms[i].getRadius() + this.unitCellAtoms[j].getRadius())) && (this.unitCellAtoms[j].object3d.position.distanceTo(this.unitCellAtoms[i].object3d.position) != 0 )){  
+            console.log(this.unitCellAtoms[j]);
+            console.log(this.unitCellAtoms[i]);
             coll = true;
           }
         }
@@ -586,40 +647,44 @@ define([
   };
 
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
-     
-    this.manualAabc = true; // for cellPointsWithScaling
-
+      
     var val = parseFloat(par.cellVolume);
 
     var newVals = {x : 1, y : 1, z : 1};
- 
-    var scales = {x : this.cellParameters.scaleX, y : this.cellParameters.scaleY, z : this.cellParameters.scaleZ};
+    
+    var _perc ;
 
-    val /=100;
-
-    newVals.x = val*this.cellVolume.xInitVal; 
-    newVals.y = val*this.cellVolume.yInitVal;
-    newVals.z = val*this.cellVolume.zInitVal;
+    if((this.cellVolume.xInitVal >= this.cellVolume.yInitVal) && (this.cellVolume.xInitVal >= this.cellVolume.zInitVal)){
+      _perc = (this.cellVolume.xInitVal - 0.5) / this.cellVolume.xInitVal ;
+    }
+    else if((this.cellVolume.yInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.yInitVal >= this.cellVolume.zInitVal)){
+      _perc = (this.cellVolume.yInitVal - 0.5) / this.cellVolume.yInitVal ;
+    }
+    else if((this.cellVolume.zInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.zInitVal >= this.cellVolume.yInitVal)){
+      _perc = (this.cellVolume.zInitVal - 0.5) / this.cellVolume.zInitVal ;
+    }
+    console.log('perc :'+_perc);
+    newVals.x = _perc * this.cellVolume.xInitVal; 
+    newVals.y = _perc * this.cellVolume.yInitVal;
+    newVals.z = _perc * this.cellVolume.zInitVal;
 
     this.cellVolume.aCol = undefined;
     this.cellVolume.bCol = undefined;
     this.cellVolume.cCol = undefined;
- 
-    var newValA = newVals.z ;
+
+    var newValA = newVals.z ; 
+     
     this.setManuallyCellLengths({'Aa' : newValA }, 'volume');
-    this.menu.setSliderValue("Aa", newValA);
-    $("#Aa").val(newValA);
-  
+    this.menu.setSliderValue("Aa", newValA); 
+      
     var newValB = newVals.x ;
     this.setManuallyCellLengths({'Ab' : newValB }, 'volume');
     this.menu.setSliderValue("Ab", newValB);
-    $("#Ab").val(newValB);
-
+     
     var newValC = newVals.y ;
     this.setManuallyCellLengths({'Ac' : newValC }, 'volume');
-    this.menu.setSliderValue("Ac", newValC);
-    $("#Ac").val(newValC);
-
+    this.menu.setSliderValue("Ac", newValC); 
+     
     if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         
       if( this.cellVolume.aCol === undefined){
@@ -639,16 +704,13 @@ define([
         var newZsc = this.cellVolume.zInitVal*newPercX; 
         this.cellParameters.scaleZ = newZsc;
         this.menu.setSliderValue("Aa", newZsc);
-        $("#Aa").val(newZsc); 
-
+       
         var newYsc = this.cellVolume.yInitVal*newPercX; 
         this.cellParameters.scaleY = newYsc;
         this.menu.setSliderValue("Ac", newYsc);
-        $("#Ac").val(newYsc); 
-
+        
         this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
-        $("#Ab").val(this.cellParameters.scaleX); 
-
+        
       }
       else if(this.cellVolume.cCol >= this.cellVolume.aCol && this.cellVolume.cCol >= this.cellVolume.bCol){
       
@@ -657,16 +719,13 @@ define([
         var newZsc = this.cellVolume.zInitVal*newPercY; 
         this.cellParameters.scaleZ = newZsc;
         this.menu.setSliderValue("Aa", newZsc);
-        $("#Aa").val(newZsc); 
-
+        
         var newXsc = this.cellVolume.xInitVal*newPercY;
         this.cellParameters.scaleX = newXsc; 
         this.menu.setSliderValue("Ab", newXsc);
-        $("#Ab").val(newXsc); 
-  
+         
         this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
-        $("#Ac").val(this.cellParameters.scaleY); 
-
+        
       }
       else if(this.cellVolume.aCol >= this.cellVolume.bCol && this.cellVolume.aCol >= this.cellVolume.cCol ){
        
@@ -675,131 +734,133 @@ define([
         var newYsc = this.cellVolume.yInitVal*newPercZ; 
         this.cellParameters.scaleY = newYsc; 
         this.menu.setSliderValue("Ac", newYsc);
-        $("#Ac").val(newYsc); 
-
+         
         var newXsc = this.cellVolume.xInitVal*newPercZ; 
         this.cellParameters.scaleX = newXsc; 
         this.menu.setSliderValue("Ab", newXsc);
-        $("#Ab").val(newXsc); 
-
+         
         this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
-        $("#Aa").val(this.cellParameters.scaleZ); 
-
-      } 
+         
+      }  
 
       var newPerc = 100*this.cellParameters.scaleX/this.cellVolume.xInitVal ;
-      this.menu.setSliderValue("cellVolume", 100);
+      /*this.menu.setSliderValue("cellVolume", 100);
       this.menu.setSliderMin("cellVolume", 90 );
       $("#cellVolume").val(100); 
+      */
 
-    }
- 
+    } 
+
     this.configureCellPoints('manual'); // final fix
-
-    this.manualAabc = false;
-
+ 
     this.boxHelper(); // remove after testing 
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
      
-    /////////////////////////////////////////////////////////
-    if((!this.manualAabc || this.cellMutex === false) && volumeF === undefined) return ;
-    /////////////////////////////////////////////////////////
-      var moreCollisions = true;
+    if(this.cellMutex === false) {
+      return ;
+    }
+       console.log(par);
+    var moreCollisions = true;
 
-      this.cellMutex = false ;
-      var axis = 'none' ;
-      var counterHelper = 0; // help exit infinite loops in case of a bug
-     
-      while(moreCollisions === true && counterHelper < 100 ){
-
-        if(par.Aa != undefined){ 
-          this.cellParameters.scaleZ = parseFloat( par.Aa ); 
-          // tangency check
-          this.configureCellPoints('manual');  
-          if(this.globalTangency ||  true){ 
-            var offset = this.checkInterMotifCollision('z', parseFloat(par.Aa) );
-            this.cellParameters.scaleZ = offset ; 
-            if(par.Aa != offset ) {   
-            
-              this.menu.forceToLooseEvent('Aa');
-              this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
-              this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
-              this.menu.setSliderValue("Aa", offset);
-              $("#Aa").val(offset);
-            }
-
-            if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
-              this.cellParameters.scaleX = offset ;
-              if(par.Ab != offset ) {  
-                this.menu.setSliderValue("Ab", offset);
-                $("#Ab").val(offset);
-              } 
-            }
-          }
-          par.Aa = this.cellParameters.scaleZ ; // for recurrency of collision checks
+    this.cellMutex = false ;
+    var axis = 'none' ;
+    var counterHelper = 0; // help exit infinite loops in case of a bug
+   
+    while(moreCollisions === true && counterHelper < 10 ){
+      console.log('count : '+counterHelper);
+      console.log(this.cellParameters.scaleX);
+      if(par.Aa != undefined){ 
+        this.cellParameters.scaleZ = parseFloat( par.Aa ); 
+        // tangency check
           
-        }
-        else if(par.Ab != undefined){  
-          this.cellParameters.scaleX = parseFloat( par.Ab );
-          // tangency check
+        this.configureCellPoints('manual');
+        
+        if(this.globalTangency ||  true){ 
+          var offset = this.checkInterMotifCollision('z', parseFloat(par.Aa) );
+          this.cellParameters.scaleZ = offset ; 
 
-          this.configureCellPoints('manual');   
-          if(this.globalTangency){ 
-            var offset = this.checkInterMotifCollision('x', parseFloat(par.Ab) ); 
-            this.cellParameters.scaleX = offset ; 
-            if(par.Ab != offset ) {   
-              this.menu.forceToLooseEvent('Ab');
-              this.menu.forceToLooseEvent('cellVolume');
-              this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
-              this.menu.setSliderValue("Ab", offset);
-              $("#Ab").val(offset);
-            }
+          if(par.Aa != offset ) {   
+          
+            this.menu.forceToLooseEvent('Aa');
+            this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
+            this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
+            this.menu.setSliderValue("Aa", offset);
+            $("#Aa").val(offset);
           }
-          par.Ab = this.cellParameters.scaleX ; // for recurrency of collision checks
 
-        }
-        else if(par.Ac != undefined){ 
-          this.cellParameters.scaleY = parseFloat( par.Ac );
-          // tangency check
-          this.configureCellPoints('manual');
-          if(this.globalTangency){    
-            var offset = this.checkInterMotifCollision('y', parseFloat(par.Ac) ); 
-            this.cellParameters.scaleY = offset ;
-            if(par.Ac != offset ) {
-              this.menu.forceToLooseEvent('Ac');
-              this.menu.forceToLooseEvent('cellVolume');
-              this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
-              this.menu.setSliderValue("Ac", offset);
-              $("#Ac").val(offset);
-            }
+          if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
+            this.cellParameters.scaleX = offset ;
+            if(par.Ab != offset ) {  
+              this.menu.setSliderValue("Ab", offset); 
+            } 
           }
-          par.Ac = this.cellParameters.scaleY ; // for recurrency of collision checks
-        } 
-        this.configureCellPoints('manual'); //second time
-        this.updateLatticeTypeRL();
-  
-        moreCollisions = this.checkForMoreColls(); 
-        counterHelper++; 
-      } 
-
-      if(aAtomIndex && this.unitCellAtoms[aAtomIndex].object3d !== undefined){  
-        var s = new THREE.Vector3(
-          this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
-          this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
-          this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
-        ) ;
-       
-        this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , distance in CW : '+s.length());
+        }
+        par.Aa = this.cellParameters.scaleZ ; // for recurrency of collision checks
+        
       }
-       
+      else if(par.Ab != undefined){  
+        this.cellParameters.scaleX = parseFloat( par.Ab );
+        // tangency check
+
+        this.configureCellPoints('manual');   
+        if(this.globalTangency){ 
+          var offset = this.checkInterMotifCollision('x', parseFloat(par.Ab) ); 
+          
+          this.cellParameters.scaleX = offset ;
+            
+          if(par.Ab != offset ) {   
+            this.menu.forceToLooseEvent('Ab');
+            this.menu.forceToLooseEvent('cellVolume');
+            this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
+            this.menu.setSliderValue("Ab", offset); 
+          }
+           
+        }
+        par.Ab = this.cellParameters.scaleX ; // for recurrency of collision checks
+
+      }
+      else if(par.Ac != undefined){ 
+        this.cellParameters.scaleY = parseFloat( par.Ac );
+        // tangency check
+        this.configureCellPoints('manual');
+        if(this.globalTangency){    
+          var offset = this.checkInterMotifCollision('y', parseFloat(par.Ac) ); 
+          this.cellParameters.scaleY = offset ;
+          if(par.Ac != offset ) {
+            this.menu.forceToLooseEvent('Ac');
+            this.menu.forceToLooseEvent('cellVolume');
+            this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
+            this.menu.setSliderValue("Ac", offset);
+            $("#Ac").val(offset);
+          }
+        }
+        par.Ac = this.cellParameters.scaleY ; // for recurrency of collision checks
+      } 
+      this.configureCellPoints('manual'); //second time
+      this.updateLatticeTypeRL();
+
+      moreCollisions = this.checkForMoreColls(); 
+      counterHelper++; 
+    } 
+    
+    /*if(aAtomIndex && this.unitCellAtoms[aAtomIndex].object3d !== undefined){  
+      var s = new THREE.Vector3(
+        this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
+        this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
+        this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
+      ) ;
+     
+      this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , distance in CW : '+s.length());
+    }
+    */
       
     ///////////////////////
     this.cellMutex = true ;
-    ///////////////////////  
+    ///////////////////////   
   };
   Motifeditor.prototype.giveInfo = function(string) {
-     $('#infoBox').css('display', 'inline');
+    $('#infoBox').css('display', 'inline');
     $('#infoBox').text( string );
   };
   Motifeditor.prototype.checkInterMotifCollision = function(angleORaxis, val){
@@ -1198,84 +1259,85 @@ define([
  
   }; 
   Motifeditor.prototype.setManuallyCellAngles = function(par){
-    /////////////////////////////////////////////////////////
-    if(!this.manualAlphBtGmm || this.cellMutex === false) return ;
-    /////////////////////////////////////////////////////////
 
-      this.cellMutex = false;
-      var moreCollisions = true ;
-      var angle = 'none' ;
-      var counterHelper = 0 ; // to exit from infinite loops in case of bug
+    if( this.cellMutex === false) { 
+      return ;
+    }
 
-      while(moreCollisions === true && counterHelper < 100 ){
-        moreCollisions = false;
-        if(par.cellAlpha != undefined){ 
-          this.cellParameters.alpha = parseFloat( par.cellAlpha ); 
-          // tangency check
-          this.configureCellPoints('manual');  
-          if(this.globalTangency){ 
-            var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
-            this.cellParameters.alpha = offset.newVal ;
+    this.cellMutex = false;
+    var moreCollisions = true ;
+    var angle = 'none' ;
+    var counterHelper = 0 ; // to exit from infinite loops in case of bug
 
-            if(par.cellAlpha != offset.newVal ) { 
-              this.menu.forceToLooseEvent('cellAlpha');
-              this.menu.setSliderValue("cellAlpha", offset.newVal);
-              $('#cellAlpha').val(offset.newVal);
-            } 
-          } 
-        }
-        else if(par.cellBeta != undefined){ 
-          this.cellParameters.beta = parseFloat( par.cellBeta ); 
-          // tangency check
-           
-          this.configureCellPoints('manual');  
-          if(this.globalTangency ){ 
-            var offset = this.checkInterMotifCollision('beta', parseFloat(par.cellBeta) );
-            this.cellParameters.beta = offset.newVal ;
-             
-            if(par.cellBeta != offset.newVal ) { 
-              this.menu.forceToLooseEvent('cellBeta');
-              this.menu.setSliderValue("cellBeta", offset.newVal);
-              $('#cellBeta').val(offset.newVal);
-            } 
-          } 
-        }
-        else if(par.cellGamma != undefined){ 
-          this.cellParameters.gamma = parseFloat( par.cellGamma ); 
-          // tangency check
-          this.configureCellPoints('manual');  
-          if(this.globalTangency){ 
-            var offset = this.checkInterMotifCollision('gamma', parseFloat(par.cellGamma) );
-            this.cellParameters.gamma = offset.newVal ;
-
-            if(par.cellGamma != offset.newVal ) { 
-              this.menu.forceToLooseEvent('cellGamma');
-              this.menu.setSliderValue("cellGamma", offset.newVal);
-              $('#cellGamma').val(offset.newVal);
-            } 
-          } 
-        }
-        
-        this.configureCellPoints('manual');  
+    while(moreCollisions === true && counterHelper < 100 ){
+      moreCollisions = false;
+      if(par.cellAlpha != undefined){ 
+        this.cellParameters.alpha = parseFloat( par.cellAlpha ); 
+        // tangency check
          
-        this.updateLatticeTypeRL();
-        moreCollisions = false;  
-        counterHelper++;
+        this.configureCellPoints('manual');  
+       
+        if(this.globalTangency){ 
+          var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
+          this.cellParameters.alpha = offset.newVal ;
+
+          if(par.cellAlpha != offset.newVal ) { 
+            this.menu.forceToLooseEvent('cellAlpha');
+            this.menu.setSliderValue("cellAlpha", offset.newVal);
+            $('#cellAlpha').val(offset.newVal);
+          } 
+        } 
+      }
+      else if(par.cellBeta != undefined){ 
+        this.cellParameters.beta = parseFloat( par.cellBeta ); 
+        // tangency check
+         
+        this.configureCellPoints('manual');  
+        if(this.globalTangency ){ 
+          var offset = this.checkInterMotifCollision('beta', parseFloat(par.cellBeta) );
+          this.cellParameters.beta = offset.newVal ;
+           
+          if(par.cellBeta != offset.newVal ) { 
+            this.menu.forceToLooseEvent('cellBeta');
+            this.menu.setSliderValue("cellBeta", offset.newVal);
+            $('#cellBeta').val(offset.newVal);
+          } 
+        } 
+      }
+      else if(par.cellGamma != undefined){ 
+        this.cellParameters.gamma = parseFloat( par.cellGamma ); 
+        // tangency check
+        this.configureCellPoints('manual');  
+        if(this.globalTangency){ 
+          var offset = this.checkInterMotifCollision('gamma', parseFloat(par.cellGamma) );
+          this.cellParameters.gamma = offset.newVal ;
+
+          if(par.cellGamma != offset.newVal ) { 
+            this.menu.forceToLooseEvent('cellGamma');
+            this.menu.setSliderValue("cellGamma", offset.newVal);
+            $('#cellGamma').val(offset.newVal);
+          } 
+        } 
+      }
+      
+      this.configureCellPoints('manual');  
+       
+      this.updateLatticeTypeRL();
+      moreCollisions = false;  
+      counterHelper++;
+      
+    }
+    if(aAtomIndex){  
+      var s = new THREE.Vector3(
+        this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
+        this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
+        this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
+      ) ;
+     
+      this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , real distance : '+s.length());
+    }
         
-      }
-      if(aAtomIndex){  
-        var s = new THREE.Vector3(
-          this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
-          this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
-          this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
-        ) ;
-       
-        this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , real distance : '+s.length());
-      }
-       
-    ///////////////////////
-    this.cellMutex = true ;
-    ///////////////////////
+    this.cellMutex = true ; 
   };
  
   Motifeditor.prototype.setAnglesManually = function(par){
@@ -1293,21 +1355,7 @@ define([
       this.menu.setSliderValue("cellGamma", this.cellParameters.gamma);
 
       this.checkForAngleFix(); // calculate the least acceptable angle for the cell
-    }
-    else{
-      $(".manualAngles").css("display", "none");
-      $('input[name=manualSetCellAngles]').attr('checked', false); 
-    }
-      
-    if(par.manualSetCellAngles === true){
-      this.setAtomMovementUI(true);
-    }
-    else{
-      if(this.manualAabc === false){
-        this.setAtomMovementUI(false);
-      }
-    }
-    this.manualAlphBtGmm = par.manualSetCellAngles ;
+    } 
   };
 
   Motifeditor.prototype.setDimsManually = function(par){
@@ -1317,7 +1365,7 @@ define([
       $('input[name=manualSetCellDims]').attr('checked', true);
         
       $("#Aa").val(this.cellParameters.scaleZ);
-      $("#Ab").val(this.cellParameters.scaleX);
+      $("#Ab").val(this.cellParameters.scaleX); 
       $("#Ac").val(this.cellParameters.scaleY);
 
       this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
@@ -1325,22 +1373,10 @@ define([
       this.menu.setSliderValue("Ac", this.cellParameters.scaleY); 
       this.checkForLengthFix(); // calculate the least acceptable length for the cell
     }
-    else{
-      $(".manualDims").css("display", "none");
-      $('input[name=manualSetCellDims]').attr('checked', false); 
-    }
-    if(par.manualSetCellDims === true){
-      this.setAtomMovementUI(true);
-    }
-    else{
-      if(this.manualAlphBtGmm === false){
-        this.setAtomMovementUI(false);
-      }
-    }
-    this.manualAabc = par.manualSetCellDims ;
+     
   };
   Motifeditor.prototype.setAtomMovementUI = function (action){
-     
+    return; 
     this.menu.setOnOffSlider('atomPosX', action);
     this.menu.setOnOffSlider('atomPosY', action);
     this.menu.setOnOffSlider('atomPosZ', action);     
@@ -1467,21 +1503,23 @@ define([
     var _this = this;
     this.motifParameters = parameters ;
     var buttonClicked = parameters.button;
-
+   
     if(this.editorState.state === "creating"){ 
       switch(buttonClicked) { 
-        case "saveChanges":
-          var name =$("#atomName").val();
-          this.newSphere.setName(name);
+        case "saveChanges": 
           this.motifsAtoms.push(this.newSphere); 
-          this.updateAtomList(this.newSphere.getID(), this.newSphere.getRadius(), this.newSphere.getName(),true);
-          PubSub.publish(events.EDITOR_STATE,"initial");
+          this.updateAtomList(
+            this.newSphere.object3d.position.clone(), 
+            this.newSphere.getID(), 
+            this.newSphere.getRadius(), 
+            this.newSphere.elementName,
+            'save'
+          );
+          PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.lastSphereAdded = this.newSphere ;
           this.newSphere.blinkMode(false); 
           this.newSphere = undefined ;
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
+          this.dragMode = false; 
           break;
         case "deleteAtom": 
           this.removeFromUnitCell(this.newSphere.getID());
@@ -1496,50 +1534,38 @@ define([
             this.lastSphereAdded = undefined ;
             this.isEmpty = true ; 
           }
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
-          PubSub.publish(events.EDITOR_STATE,"initial");
+          this.dragMode = false; 
+          PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.initVolumeState(); 
-          break;
-        case "cancel": 
-          this.removeFromUnitCell(this.newSphere.getID());
-          this.newSphere.destroy();
-          if(!_.isUndefined( this.motifsAtoms[0])) {
-            this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
-            this.newSphere =  undefined; //this.motifsAtoms[this.motifsAtoms.length-1]; // pop 
-            this.configureCellPoints();
-          }
-          else{
-            this.newSphere = undefined ;
-            this.lastSphereAdded = undefined ;
-            this.isEmpty = true ;  
-          }
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
-          PubSub.publish(events.EDITOR_STATE,"initial");
-          break;
+          break; 
       }
     }
     else if(this.editorState.state === "editing"){
       switch(buttonClicked) { 
         case "saveChanges":
-          var name =$("#atomName").val();
-          this.newSphere.setName(name);
           this.motifsAtoms.push(this.newSphere); 
-          this.updateAtomList(this.newSphere.getID(), this.newSphere.getRadius(), this.newSphere.getName(),false);
-          PubSub.publish(events.EDITOR_STATE,"initial");
+          this.updateAtomList(
+            this.newSphere.object3d.position.clone(), 
+            this.newSphere.getID(), 
+            this.newSphere.getRadius(),  
+            this.newSphere.elementName,
+            'edit'
+          );
+          PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.newSphere.blinkMode(false);
           this.newSphere = undefined ;
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
+          this.dragMode = false; 
           break;
         case "deleteAtom":
           this.removeFromUnitCell(this.newSphere.getID());
           this.newSphere.destroy();
-          this.removeAtomFromList(this.newSphere.getID());
+          this.updateAtomList(
+            undefined, 
+            this.newSphere.getID(), 
+            undefined, 
+            undefined,
+            'delete'
+          );
           //_.find(this.motifsAtoms, function(atom,k){ if(atom.getID() === this.newSphere.getID() ) this.motifsAtoms.splice(k,1); }); 
           if(!_.isUndefined( this.motifsAtoms[0])) {
             this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
@@ -1551,60 +1577,174 @@ define([
             this.lastSphereAdded = undefined ;
             this.isEmpty = true ;  
           }
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
-          PubSub.publish(events.EDITOR_STATE,"initial");  
+          this.dragMode = false; 
+          PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});  
           this.initVolumeState(); 
-          break;
-        case "cancel":
-          this.removeFromUnitCell(this.newSphere.getID());
-          this.newSphere.destroy();
-          this.removeAtomFromList(this.newSphere.getID());
-          //_.find(this.motifsAtoms, function(atom,k){ if(atom.getID() === this.newSphere.getID() ) this.motifsAtoms.splice(k,1); });
-          if(!_.isUndefined( this.motifsAtoms[0])) {
-            this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
-            this.newSphere =  undefined; //this.motifsAtoms[this.motifsAtoms.length-1];  
-            this.configureCellPoints();
-          }
-          else{
-            this.newSphere = undefined ;
-            this.lastSphereAdded = undefined ;
-            this.isEmpty = true ;  
-          }
-          this.dragMode = false;
-          this.setDimsManually( { 'manualSetCellDims' : false });
-          this.setAnglesManually( { 'manualSetCellAngles' : false });
-          PubSub.publish(events.EDITOR_STATE,"initial");  
-          break;
+          break; 
       }
     } 
   };
-  Motifeditor.prototype.editorState_ = function (state){
+  Motifeditor.prototype.editorState_ = function (arg){
     var _this = this ;
-    _this.editorState.state = state;
-
-    switch(state) {
-      case "initial": 
-        $("#atomPalette").prop("disabled",false);
-        $(".atomInput").css("visibility", "hidden");
-        $('option:selected', 'select[id="savedAtoms"]').removeAttr('selected'); 
-        $('select[id="savedAtoms"]').find('option[id="---"]').attr("selected",true);
-        $("#savedAtomsCont").css("visibility", "visible");
-        $("#atomOpacity").val(10);
-        this.menu.setSliderValue('atomOpacity', 10);
-        $('input[name=dragMode]').attr('checked', false);
-
+    _this.editorState.state = arg.state;
+    var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
+    var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
+ 
+    switch(arg.state) {
+      case "initial":  
+        this.menu.disableMEButtons(
+          {
+            'atomPalette' : false,
+            'saveAtomChanges' : true,
+            'previewAtomChanges' : true, 
+            'deleteAtom' : true 
+          }
+        );
+        this.menu.editMEInputs(
+          {
+            'atomPosX' : 0,
+            'atomPosY' : 0,
+            'atomPosZ' : 0,  
+            'atomColor' : '#1F2227', 
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : false, 
+            'atomOpacity' : 10, 
+            'rotAngleTheta' : 0, 
+            'rotAnglePhi' : 0,
+            'tangentR' : 0,
+            'atomName' : '-',
+            'rotAngleX' : '-',
+            'rotAngleY' : '-',
+            'rotAngleZ' : '-',
+            'Aa' : this.cellParameters.scaleZ,
+            'Ab' : this.cellParameters.scaleX,
+            'Ac' : this.cellParameters.scaleY,
+            'cellAlpha' : this.cellParameters.alpha,
+            'cellBeta' : this.cellParameters.beta,
+            'cellGamma' : this.cellParameters.gamma
+          }
+        ); 
+        this.menu.disableMEInputs(
+          {
+            'atomPosX' : true,
+            'atomPosY' : true,
+            'atomPosZ' : true,  
+            'atomColor' : true, 
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : true, 
+            'atomOpacity' : true, 
+            'rotAngleTheta' : true, 
+            'rotAnglePhi' : true,
+            'tangentR' : true,
+            'Aa' : true,
+            'Ab' : true,
+            'Ac' : true,
+            'cellAlpha' : true,
+            'cellBeta' : true,
+            'cellGamma' : true 
+          }
+        ); 
         break;
       case "creating":
-        $("#atomPalette").prop("disabled",true);
-        $(".atomInput").css("visibility", "visible");
-        $("#savedAtomsCont").css("visibility", "hidden");
+        this.menu.disableMEButtons(
+          {
+            'atomPalette' : true,
+            'saveAtomChanges' : false,
+            'previewAtomChanges' : false, 
+            'deleteAtom' : false 
+          }
+        );  
+        this.menu.editMEInputs(
+          {
+            'atomPosX' : arg.atomPos.x,
+            'atomPosY' : arg.atomPos.y,
+            'atomPosZ' : arg.atomPos.z,  
+            'atomColor' : arg.color, 
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : false, 
+            'atomOpacity' : 10, 
+            'tangentR' : 0,
+            'atomName' : arg.atomName, 
+            'Aa' : this.cellParameters.scaleZ,
+            'Ab' : this.cellParameters.scaleX,
+            'Ac' : this.cellParameters.scaleY,
+            'cellAlpha' : this.cellParameters.alpha,
+            'cellBeta' : this.cellParameters.beta,
+            'cellGamma' : this.cellParameters.gamma
+          }
+        );   
+         var padD = false ;
+
+        if(this.padlock === true){
+          padD = true;
+        }
+        this.menu.disableMEInputs(
+          {
+            'atomPosX' : false,
+            'atomPosY' : false,
+            'atomPosZ' : false,  
+            'atomColor' : false, 
+            'atomPositioningXYZ' : false,
+            'atomPositioningABC' : false, 
+            'atomOpacity' : false, 
+            'tangentR' : false,  
+            'Aa' : padD,
+            'Ab' : padD,
+            'Ac' : padD,
+            'cellAlpha' : padD,
+            'cellBeta' : padD,
+            'cellGamma' : padD
+          }
+        );  
         break;
       case "editing":
-        $("#atomPalette").prop("disabled",true);
-        $(".atomInput").css("visibility", "visible");
-        $("#savedAtomsCont").css("visibility", "hidden");
+        this.menu.disableMEButtons(
+          {
+            'atomPalette' : true,
+            'saveAtomChanges' : false,
+            'previewAtomChanges' : false, 
+            'deleteAtom' : false 
+          }
+        );   
+        this.menu.editMEInputs(
+          {
+            'atomPosX' : arg.atomPos.x,
+            'atomPosY' : arg.atomPos.y,
+            'atomPosZ' : arg.atomPos.z,  
+            'atomColor' : arg.color, 
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : false,
+            'atomOpacity' : arg.opacity,
+            'tangentR' : 0,
+            'atomName' : arg.atomName
+          }
+        );   
+
+        var padD = false ;
+
+        if(this.padlock === true){
+          padD = true;
+        }
+        this.menu.disableMEInputs(
+          {
+            'atomPosX' : false,
+            'atomPosY' : false,
+            'atomPosZ' : false,  
+            'atomColor' : false, 
+            'atomPositioningXYZ' : false,
+            'atomPositioningABC' : false, 
+            'atomOpacity' : false, 
+            'rotAngleTheta' : true, 
+            'rotAnglePhi' : true,
+            'tangentR' : true,  
+            'Aa' : padD,
+            'Ab' : padD,
+            'Ac' : padD,
+            'cellAlpha' : padD,
+            'cellBeta' : padD,
+            'cellGamma' : padD
+          }
+        );  
         break;
     }
   };
@@ -1618,22 +1758,30 @@ define([
       $("disableME").prop("disabled",false); 
     }
   };
-  Motifeditor.prototype.updateAtomList = function(id, radius, name, create)  {
-    var _this = this ;
-    
-    var text =  name+" - radius : "+radius ; 
-    if(create){
-      var $savedAtoms = jQuery('#savedAtoms'); 
-      var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
-      $savedAtoms.append(option) ;
+  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action)  {
+    var _this = this ; 
+
+    if(action === 'delete'){
+       this.menu.editSavedAtom({
+        'action':action,
+        'id':id
+      });
     }
     else{
-      var str = "#savedAtoms option[id='"+id+"']";
-      $(str).text(text);
-    }  
-  };
-  Motifeditor.prototype.removeAtomFromList = function(id)  { 
-    $("#savedAtoms option[value='"+id+"']").remove();
+      this.menu.editSavedAtom({
+        'action':action,
+        'id':id,
+        'backColor':'light-purple',
+        'eyeButton':'visible',
+        'blankTD':false,
+        'chainTD':false,
+        'elementCode':name.toLowerCase(),
+        'elementName':name,
+        'colSpan':'',
+        'atomPos':'('+(pos.x.toFixed(0))+','+(pos.y.toFixed(0))+','+(pos.z.toFixed(0))+')',
+        'buttonTangent':true
+      });
+    } 
   }; 
   Motifeditor.prototype.setTangentAngle = function(azimuthal, polar, r, tangentToThis){
      
@@ -1696,14 +1844,11 @@ define([
     angles.theta = Math.acos(p.y/n) * (180/Math.PI);
     angles.phi = Math.atan(p.x/p.z) * (180/Math.PI);
     return angles;
-  };   
-
-
-
+  };    
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
-     
-    if(!_this.dragMode && _this.globalTangency){
+    
+    if(!this.dragMode && this.globalTangency){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
         var calcDist = this.motifsAtoms[i].getRadius() + this.newSphere.getRadius();
@@ -1713,7 +1858,7 @@ define([
       };
     }
 
-    if(_this.dragMode || colAtom){ 
+    if(this.dragMode || colAtom){ 
 
       if(this.soundMachine.procced) this.soundMachine.play('popOutOfAtom');
 
@@ -1738,18 +1883,22 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
         var position = new THREE.Vector3(stillPoint.x + horizontalSide, stillPoint.y + verticalSide, movingPoint.z );
 
-        _this.newSphere.object3d.position.y = position.y ;  
-        _this.newSphere.object3d.position.x = position.x ;   
-        _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
-        _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
-
-        $("#rotAngleX").text( angle.toFixed(3));
+        this.newSphere.object3d.position.y = position.y ;  
+        this.newSphere.object3d.position.x = position.x ;   
+        this.translateCellAtoms("y",  position.y , this.newSphere.getID());
+        this.translateCellAtoms("x",  position.x , this.newSphere.getID());
  
+        this.menu.editMEInputs(
+          {  
+            'rotAngleX' : angle.toFixed(3) 
+          }
+        );
+
         _this.configureCellPoints();
 
         if(_this.dragMode) {
-          _this.findAngles('y');
-          _this.findAngles('z');
+          this.findAngles('y');
+          this.findAngles('z');
         }
       }
       else if(axis === 'y'){
@@ -1765,18 +1914,22 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
         var position = new THREE.Vector3(movingPoint.x  , stillPoint.y + verticalSide,  (stillPoint.z - horizontalSide) );
 
-        _this.newSphere.object3d.position.y = position.y ;  
-        _this.newSphere.object3d.position.z = position.z ;  
-        _this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
-        _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
+        this.newSphere.object3d.position.y = position.y ;  
+        this.newSphere.object3d.position.z = position.z ;  
+        this.translateCellAtoms("y",  position.y , _this.newSphere.getID());
+        this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
         var a = parseFloat((180 -angle).toFixed(3)) ;
         if(a<0) a = 360 + a ;
-        $("#rotAngleY").text(a);  
- 
-        _this.configureCellPoints();
-        if(_this.dragMode) {
-          _this.findAngles('x');
-          _this.findAngles('z');
+          
+        this.menu.editMEInputs(
+          {  
+            'rotAngleY' : a 
+          }
+        );
+        this.configureCellPoints();
+        if(this.dragMode) {
+          this.findAngles('x');
+          this.findAngles('z');
         }
       }
       else if(axis === 'z'){
@@ -1791,47 +1944,60 @@ define([
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) ); 
         var position = new THREE.Vector3(stillPoint.x + horizontalSide  , movingPoint.y ,  (stillPoint.z - verticalSide) );
 
-        _this.newSphere.object3d.position.x = position.x ;  
-        _this.newSphere.object3d.position.z = position.z ;  
-        _this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
-        _this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
+        this.newSphere.object3d.position.x = position.x ;  
+        this.newSphere.object3d.position.z = position.z ;  
+        this.translateCellAtoms("x",  position.x , _this.newSphere.getID());
+        this.translateCellAtoms("z",  position.z , _this.newSphere.getID());
         var a = (360 - angle).toFixed(3) ;
         if(a==360) a=0.000;
-        $("#rotAngleZ").text(a); 
-
-        _this.configureCellPoints();
-        if(_this.dragMode) {
-          _this.findAngles('x');
-          _this.findAngles('y'); 
+          
+        this.menu.editMEInputs(
+          {  
+            'rotAngleX' : a
+          }
+        );
+        this.configureCellPoints();
+        if(this.dragMode) {
+          this.findAngles('x');
+          this.findAngles('y'); 
         }
       }
-      _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
-      _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
-      _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
+      this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
+      this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
+      this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
       if(this.dragMode) {
         var p = new THREE.Vector3(
-          _this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
-          _this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
-          _this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
+          this.newSphere.object3d.position.x-this.tangentToThis.object3d.position.x,
+          this.newSphere.object3d.position.y-this.tangentToThis.object3d.position.y,
+          this.newSphere.object3d.position.z-this.tangentToThis.object3d.position.z
           ); 
         var angles = _this.findPolarAngles(p);
-        $("#rotAngleTheta").val((angles.theta).toFixed(4));
-        $("#rotAnglePhi").val((angles.phi).toFixed(4));
+
+        this.menu.editMEInputs(
+          { 
+            'rotAngleTheta' : (angles.theta).toFixed(4) , 
+            'rotAnglePhi' : (angles.phi).toFixed(4)   
+          }
+        );
       }
     } 
 
     if(this.padlock === true && this.globalTangency === true){
-    
-        
-
+     
       var _dimensions = this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
 
-      var dimensions = _this.calcABCforParticularCases(_dimensions);
+      var dimensions = this.calcABCforParticularCases(_dimensions);
 
       // for volume reduce functionality 
       this.initVolumeState();
 
+    }
+
+    this.menu.editMEInputs(
+      { 
+        'tangentR' : tangentDistance  
       }
+    );
 
   };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
@@ -1855,7 +2021,11 @@ define([
       var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
       var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
       var position = new THREE.Vector3(stillPoint.x + horizontalSide, stillPoint.y + verticalSide, movingPoint.z );
-      $("#rotAngleX").text( angle.toFixed(3));
+      this.menu.editMEInputs(
+        {  
+          'rotAngleX' : angle.toFixed(3) 
+        }
+      );
 
     }
     else if(axis === 'y'){
@@ -1871,7 +2041,11 @@ define([
       var position = new THREE.Vector3(movingPoint.x  , stillPoint.y + verticalSide,  (stillPoint.z - horizontalSide) );
       var a = parseFloat((180 -angle).toFixed(3)) ;
       if(a<0) a = 360 + a ;
-      $("#rotAngleY").text(a); 
+      this.menu.editMEInputs(
+        {  
+          'rotAngleX' : a 
+        }
+      ); 
     }
     else if(axis === 'z'){
       var thirdPoint = new THREE.Vector3(stillPoint.x, movingPoint.y, movingPoint.z); 
@@ -1886,7 +2060,11 @@ define([
       var position = new THREE.Vector3(stillPoint.x + horizontalSide  , movingPoint.y ,  (stillPoint.z - verticalSide) );
       var a = (360 - angle).toFixed(3) ;
       if(a==360) a=0.000;
-      $("#rotAngleZ").text(a); 
+      this.menu.editMEInputs(
+        {  
+          'rotAngleZ' : a
+        }
+      ); 
     } 
      
   };
@@ -1900,97 +2078,101 @@ define([
     return f;  
   }
   Motifeditor.prototype.selectAtom = function (which){ 
-    if(which==="---") {
-      PubSub.publish(events.EDITOR_STATE,"initial");
-    }
-    else{ 
-      var _this = this; 
-       
-      if(_this.dragMode) { 
-          
-        _this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });  
-        var newPos = _this.findNewAtomsPos(_this.tangentToThis, _this.newSphere.getRadius(), true);  
-         
-        _this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
-        _this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
-        _this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
-        _this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
-        _this.configureCellPoints(); 
-
-        _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
-        _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
-        _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
-
-        _this.findAngles('x');
-        _this.findAngles('y');
-        _this.findAngles('z');
-        var p = new THREE.Vector3(
-          _this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
-          _this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
-          _this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
-        );
-        var angles = _this.findPolarAngles(p);
-        $("#rotAngleTheta").val((angles.theta).toFixed(4));
-        $("#rotAnglePhi").val((angles.phi).toFixed(4));
-
-      }
-      else if(!_this.dragMode){ 
-         
-        var name,color, opacity;
-        PubSub.publish(events.EDITOR_STATE,"editing");
-         
-        if(!_.isUndefined(_this.newSphere)) _this.newSphere.destroy() ; 
-        _this.newSphere = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });
+     
+    var _this = this; 
+     
+    if(this.dragMode) { 
         
-        $("#atomName").val(_this.newSphere.getName());
-        _.each(_this.motifsAtoms, function(atom, r) { 
-          if(atom.getID() == which) { 
-            _this.motifsAtoms.splice(r,1);
-          }
-        });  
-        _this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
-        _this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
-        _this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
-      }
+      this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });  
+      var newPos = this.findNewAtomsPos(this.tangentToThis, this.newSphere.getRadius(), true);  
+       
+      this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
+      this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
+      this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
+      this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
+      this.configureCellPoints(); 
+
+      this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
+      this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
+      this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
+
+      this.findAngles('x');
+      this.findAngles('y');
+      this.findAngles('z');
+      var p = new THREE.Vector3(
+        this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
+        this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
+        this.newSphere.object3d.position.z-_this.tangentToThis.object3d.position.z
+      );
+      var angles = _this.findPolarAngles(p);
+
+      this.menu.editMEInputs(
+        { 
+          'rotAngleTheta' : (angles.theta).toFixed(4) , 
+          'rotAnglePhi' : (angles.phi).toFixed(4)  
+        }
+      );
+
     }
-    
+    else if(!this.dragMode){ 
+       
+      var name,color, opacity;
+ 
+      if(!_.isUndefined(_this.newSphere)) _this.newSphere.destroy() ; 
+       
+      this.newSphere = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });
+       
+      _.each(_this.motifsAtoms, function(atom, r) { 
+        if(atom.getID() == which) { 
+          _this.motifsAtoms.splice(r,1);
+        }
+      });   
+
+      PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : '#'+this.newSphere.color });
+    } 
   };
   Motifeditor.prototype.configureCellPoints = function(manual){  
-    
+
     var _this = this;  
-    if(_this.isEmpty) return; 
-    var dimensions;
+    if(this.isEmpty) {
+      return; 
+    }
+
+    var dimensions; 
 
     if( (!this.padlock && this.globalTangency === false) || (manual != undefined)){ 
-      dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
+      dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
     } 
     else{ 
-      if(_this.newSphere === undefined){
-        dimensions = _this.findMotifsDimensions(undefined, undefined);  
+      if(this.newSphere === undefined || this.newSphere.object3d === undefined){
+        dimensions = this.findMotifsDimensions(undefined, undefined);  
       }
       else{
-        dimensions = _this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
+        dimensions = this.findMotifsDimensions(this.newSphere.object3d.position, this.newSphere.getRadius());   
       }
-    }   
+    } 
+      
     this.revertShearing();
-     
-    if(_this.latticeName !== 'hexagonal') this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false); // revert scaling
+      
+    if(_this.latticeName !== 'hexagonal') {
+      this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false, manual); 
+    } //edw paizei kapoio provlima me to oti vriskei collisions sunexeia me to obj
+
+    this.cellPointsWithScaling(dimensions, true, manual); // todo fix that true  
  
-    this.cellPointsWithScaling(dimensions, true); // todo fix that true  
-     
     if(_this.latticeName !== 'hexagonal'){
 
       this.cellPointsWithAngles();
-
+     
       // reposition cell atoms after changing unitCellPositions
       switch(_this.latticeType) {
         case "primitive":  // primitive  
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
-              _.times(2 , function(_z) { 
-                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
-                    var offset = _this.unitCellAtoms[i].getUserOffset();
+              _.times(2 , function(_z) {  
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) { 
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
+                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                       _this.unitCellAtoms[i].object3d.position.set( 
                         _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
@@ -2009,7 +2191,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset();
                     if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                       _this.unitCellAtoms[i].object3d.position.set( 
@@ -2065,7 +2247,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) { 
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset();
                     if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                       _this.unitCellAtoms[i].object3d.position.set( 
@@ -2080,7 +2262,7 @@ define([
             });
           }); 
           for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-            if(_this.unitCellAtoms[i].latticeIndex === ("_c")  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+            if(_this.unitCellAtoms[i].latticeIndex === ("_c")  && _this.unitCellAtoms[i].temp === undefined ){  
               var offset = _this.unitCellAtoms[i].getUserOffset();
               if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                 _this.unitCellAtoms[i].object3d.position.set( 
@@ -2097,7 +2279,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset();
                     if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                       _this.unitCellAtoms[i].object3d.position.set( 
@@ -2112,7 +2294,7 @@ define([
             });
           });   
           for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-            if(_this.unitCellAtoms[j].latticeIndex === ("_up")  && _this.unitCellAtoms[j].wireframe !== undefined ){  
+            if(_this.unitCellAtoms[j].latticeIndex === ("_up")  && _this.unitCellAtoms[j].temp === undefined){  
               var offset = _this.unitCellAtoms[j].getUserOffset(); 
               if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
                 _this.unitCellAtoms[j].object3d.position.set( 
@@ -2122,7 +2304,7 @@ define([
                 );
               }  
             } 
-            if(_this.unitCellAtoms[j].latticeIndex === ("_down")  && _this.unitCellAtoms[j].wireframe !== undefined ){  
+            if(_this.unitCellAtoms[j].latticeIndex === ("_down") && _this.unitCellAtoms[j].temp === undefined ){  
               var offset = _this.unitCellAtoms[j].getUserOffset(); 
               if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
                 _this.unitCellAtoms[j].object3d.position.set( 
@@ -2166,7 +2348,7 @@ define([
                 var reference = 'h_'+_x+_y+_z+_r ;
                 var referenceC = 'hc_'+_x+_y+_z ;
 
-                if(_this.unitCellAtoms[i].latticeIndex === (reference)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                if(_this.unitCellAtoms[i].latticeIndex === (reference) && _this.unitCellAtoms[i].temp === undefined  ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset();
                   if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                     _this.unitCellAtoms[i].object3d.position.set( 
@@ -2176,7 +2358,7 @@ define([
                     );
                   } 
                 } 
-                if(_this.unitCellAtoms[i].latticeIndex === (referenceC)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                if(_this.unitCellAtoms[i].latticeIndex === (referenceC) && _this.unitCellAtoms[i].temp === undefined  ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset();
                   if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
                     _this.unitCellAtoms[i].object3d.position.set( 
@@ -2191,23 +2373,26 @@ define([
           });
         });
       });
-    } 
-     
+    }  
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
     var dimensions, identity ;
-    
+ 
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
-      dimensions = {"xDim" : _this.cellParameters.scaleX, "yDim" : _this.cellParameters.scaleY, "zDim" : _this.cellParameters.scaleZ };
+      dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
     } 
     else if(_.isUndefined(restore)){ 
-      dimensions = _this.findMotifsDimensions(pos, radius); // calculate dimensions of cell 
+      dimensions = this.findMotifsDimensions(pos, radius); // calculate dimensions of cell 
     }
       
-    if(_.isUndefined(restore)) _this.cellPointsWithScaling(dimensions, true); // todo fix that true 
+    if(_.isUndefined(restore)) {
+      this.cellPointsWithScaling(dimensions, true); // todo fix that true 
+    }
     
-    if(_.isUndefined(restore)) _this.cellPointsWithAngles();
+    if(_.isUndefined(restore)) {
+      this.cellPointsWithAngles();
+    } 
 
     this.box3.pos = pos;
 
@@ -2217,6 +2402,7 @@ define([
         "object3d" : {
           "position" : new THREE.Vector3(x,y,z)
         }, 
+        'temp' : true,
         getRadius: function() { return radius; },
         'latticeIndex': latticeIndex, 
         "userOffset" : { 
@@ -2227,7 +2413,7 @@ define([
       }; 
       return o; 
     }
-
+ 
     if(_this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
@@ -2253,7 +2439,7 @@ define([
         case "face":   
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
+              _.times(2 , function(_z) { 
                 identity = "_"+_x+_y+_z; 
                 _this.unitCellAtoms.push(
                   createHelperObj(
@@ -2448,10 +2634,11 @@ define([
         });
       });   
     }
-    _this.reconstructCellPoints(restore);  
-       
-    this.leastVolume(); 
     
+    this.reconstructCellPoints(restore);  
+    
+    this.leastVolume();  
+
     this.cellVolume.xInitVal = this.cellParameters.scaleX;
     this.cellVolume.yInitVal = this.cellParameters.scaleY;
     this.cellVolume.zInitVal = this.cellParameters.scaleZ;
@@ -2468,8 +2655,15 @@ define([
                     pos.x + _this.unitCellPositions[identity].position.x, 
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z
-                  ), 
-                  radius, color, tang, name, id, identity ,opacity, wireframe) 
+                    ), 
+                    radius, 
+                    color, 
+                    tang, 
+                    name, 
+                    id, 
+                    identity,
+                    opacity
+                  ) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2490,7 +2684,13 @@ define([
                     pos.x + _this.unitCellPositions[identity].position.x, 
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z), 
-                    radius, color, tang, name, id,  (identity), opacity, wireframe
+                    radius, 
+                    color, 
+                    tang, 
+                    name, 
+                    id,  
+                    identity, 
+                    opacity
                   ) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -2506,7 +2706,7 @@ define([
                 pos.x + _this.unitCellPositions[identity].position.x, 
                 pos.y + _this.unitCellPositions[identity].position.y, 
                 pos.z + _this.unitCellPositions[identity].position.z), 
-                radius, color, tang, name, id,  (identity), opacity, wireframe) 
+                radius, color, tang, name, id,  (identity), opacity) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2518,7 +2718,7 @@ define([
               pos.x + _this.unitCellPositions["__"+i].position.x, 
               pos.y + _this.unitCellPositions["__"+i].position.y, 
               pos.z + _this.unitCellPositions["__"+i].position.z), 
-              radius, color, tang, name, id,  ("__"+i), opacity, wireframe) 
+              radius, color, tang, name, id,  ("__"+i), opacity) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2531,7 +2731,7 @@ define([
               pos.x + _this.unitCellPositions["___"+i].position.x, 
               pos.y + _this.unitCellPositions["___"+i].position.y, 
               pos.z + _this.unitCellPositions["___"+i].position.z), 
-              radius, color, tang, name, id,  ("___"+i), opacity, wireframe) 
+              radius, color, tang, name, id,  ("___"+i), opacity) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2549,7 +2749,7 @@ define([
                   pos.x + _this.unitCellPositions[identity].position.x, 
                   pos.y + _this.unitCellPositions[identity].position.y, 
                   pos.z + _this.unitCellPositions[identity].position.z), 
-                  radius, color, tang, name, id,  (identity), opacity, wireframe) 
+                  radius, color, tang, name, id,  (identity), opacity) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2564,7 +2764,7 @@ define([
             pos.x + _this.unitCellPositions[identity].position.x, 
             pos.y + _this.unitCellPositions[identity].position.y, 
             pos.z + _this.unitCellPositions[identity].position.z), 
-            radius, color, tang, name, id,  (identity), opacity, wireframe) 
+            radius, color, tang, name, id,  (identity), opacity) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2581,7 +2781,7 @@ define([
                   pos.x + _this.unitCellPositions[identity].position.x, 
                   pos.y + _this.unitCellPositions[identity].position.y, 
                   pos.z + _this.unitCellPositions[identity].position.z), 
-                  radius, color, tang, name, id,  (identity), opacity, wireframe) 
+                  radius, color, tang, name, id,  (identity), opacity) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2596,7 +2796,7 @@ define([
               pos.x + _this.unitCellPositions[identity].position.x, 
               pos.y + _this.unitCellPositions[identity].position.y, 
               pos.z + _this.unitCellPositions[identity].position.z), 
-              radius, color, tang, name, id,  (identity), opacity, wireframe) 
+              radius, color, tang, name, id,  (identity), opacity) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2609,7 +2809,7 @@ define([
             pos.x + _this.unitCellPositions[identity].position.x, 
             pos.y + _this.unitCellPositions[identity].position.y, 
             pos.z + _this.unitCellPositions[identity].position.z), 
-            radius, color, tang, name, id,  (identity), opacity, wireframe) 
+            radius, color, tang, name, id,  (identity), opacity) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
@@ -2633,7 +2833,7 @@ define([
                 pos.x , 
                 pos.y + y, 
                 pos.z), 
-                radius, color, tang, name, id, 'hc_'+_x+_y+_z, opacity, wireframe
+                radius, color, tang, name, id, 'hc_'+_x+_y+_z, opacity
               ) 
             );  
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -2662,7 +2862,7 @@ define([
                   pos.x + position.x, 
                   pos.y + position.y, 
                   pos.z + position.z), 
-                  radius, color, tang, name, id, reference, opacity, wireframe
+                  radius, color, tang, name, id, reference, opacity
                 ) 
               );  
 
@@ -2678,30 +2878,65 @@ define([
      
     // delete helpers
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) {
-      if(this.unitCellAtoms[i].wireframe === undefined){ 
+      if(this.unitCellAtoms[i].temp !== undefined){  
         this.unitCellAtoms.splice(i,1);
       }
     }; 
- 
+     
+    /*
+    { 
+      var aa=0;
+      var bb=0;
+      setTimeout(function() {
+        
+        var scene = UnitCellExplorer.getInstance().object3d;
+        scene.traverse (function (object)
+        {
+            if (object instanceof THREE.Mesh)
+            {
+                aa++;
+                console.log(object.name);
+            }
+        });
+
+        var scene2 = MotifExplorer.getInstance().object3d;
+        scene2.traverse (function (object)
+        {
+            if (object instanceof THREE.Mesh)
+            {
+              bb++;
+            }
+        });
+
+        console.log('unitcell '+aa);
+        console.log('motif '+bb);
+        // body...
+      },500);
+      console.log(this.unitCellAtoms.length);
+    }
+    */ 
   }; 
   Motifeditor.prototype.leastVolume = function(){ 
- 
+    
     var coll = false;
-    var percentage = 100;  
-
-    while(coll === false && this.unitCellAtoms.length !== 0){
-  
-      percentage -= 1; 
+    var percentage = 100;   
+    
+    while(coll === false && this.unitCellAtoms.length !== 0){ 
+    
+      percentage -= 5; 
       this.setManuallyCellVolume({ 'cellVolume' : percentage, 'trigger' : 'reducer'});
       if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){ 
         coll = true;
       }
     }   
 
+ 
+
+    /*
     $("#cellVolume").val(100);  
     this.menu.setSliderValue("cellVolume", 100 );
     this.menu.setSliderMin("cellVolume", 90 );
-
+    */
   };
   Motifeditor.prototype.reconstructCellPoints = function(restore){
     var _this = this; 
@@ -2713,7 +2948,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) { 
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     _this.unitCellAtoms[i].object3d.position.set( 
                       _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
@@ -2732,7 +2967,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     _this.unitCellAtoms[i].object3d.position.set( 
                       _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
@@ -2781,7 +3016,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) { 
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z) && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     _this.unitCellAtoms[i].object3d.position.set( 
                       _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
@@ -2794,7 +3029,7 @@ define([
             });
           });
           for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-            if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_c")  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+            if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_c")  && _this.unitCellAtoms[i].temp === undefined ){  
               var offset = _this.unitCellAtoms[i].getUserOffset(); 
               _this.unitCellAtoms[i].object3d.position.set( 
                 _this.unitCellPositions["_c"].position.x + offset.x , 
@@ -2809,7 +3044,7 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
-                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                  if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     _this.unitCellAtoms[i].object3d.position.set( 
                       _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
@@ -2876,7 +3111,7 @@ define([
 
               for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
                
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && ( _this.unitCellAtoms[i].latticeIndex === reference)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && ( _this.unitCellAtoms[i].latticeIndex === reference)  && _this.unitCellAtoms[i].temp === undefined ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset(); 
                   _this.unitCellAtoms[i].object3d.position.set( 
                     position.x + offset.x ,  
@@ -2884,7 +3119,7 @@ define([
                     position.z + offset.z 
                   ); 
                 }
-                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && (_this.unitCellAtoms[i].latticeIndex === referenceC)  && _this.unitCellAtoms[i].wireframe !== undefined ){  
+                if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && (_this.unitCellAtoms[i].latticeIndex === referenceC)  && _this.unitCellAtoms[i].temp === undefined ){  
                   var offset = _this.unitCellAtoms[i].getUserOffset(); 
                   _this.unitCellAtoms[i].object3d.position.set( 
                     positionC.x + offset.x ,  
@@ -2901,8 +3136,10 @@ define([
   }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
-    for (var i = 0; i<_this.unitCellAtoms.length; i++) {
-      if(_this.unitCellAtoms[i].myID === id ){
+      
+    for (var i = 0; i<this.unitCellAtoms.length; i++) {
+       
+      if(this.unitCellAtoms[i].myID === id ){ 
         switch(axes) {
           case "x":  
             this.unitCellAtoms[i].object3d.position.x = parseFloat(val) ;
@@ -3794,6 +4031,8 @@ define([
 
     _this.viewState = mode;
 
+    // todo progressbar
+
     var g = this.customBox(_this.unitCellPositions, _this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
@@ -3812,7 +4051,7 @@ define([
       PubSub.publish(events.VIEW_STATE,"Subtracted"); 
        
     }
-    else if(_this.viewState === 'SolidVoid'){   
+    else if(_this.viewState === 'SolidVoid'){    /**/
 
       var geometry = new THREE.Geometry();  
   
@@ -3820,7 +4059,7 @@ define([
         _this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
         mesh.position.set( _this.unitCellAtoms[i].object3d.position.x, _this.unitCellAtoms[i].object3d.position.y, _this.unitCellAtoms[i].object3d.position.z);
-        mesh.updateMatrix();  
+        mesh.updateMatrix();   
         geometry.merge( mesh.geometry, mesh.matrix );
         _this.unitCellAtoms[i].object3d.visible = false;   
 
@@ -4052,25 +4291,32 @@ define([
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i=0;   
+    
     this.padlock = arg.padlock;
     this.setUIPadlock(arg.padlock);
      
-    if(arg.padlock === false) {
-           
+    if(arg.padlock === false) { 
       if(restore === true){
         this.cellParameters.alpha = parseInt($("#alpha").val());
         this.cellParameters.beta  = parseInt($("#beta").val());
         this.cellParameters.gamma = parseInt($("#gamma").val());
-      }
-       
-      $('#fixedX').val(this.cellParameters.scaleX) ;
-      $('#fixedY').val(this.cellParameters.scaleY) ;
-      $('#fixedZ').val(this.cellParameters.scaleZ) ;
+      } 
     }
-    else { 
-      $('#tangency').prop('disabled', false);
-      $('#tangency').prop('checked', true);
-      _this.globalTangency = true ;
+    else {  
+
+      this.menu.disableMEInputs(
+        {
+          'tangency' : false
+        }
+      );
+
+      this.menu.editMEInputs(
+        {
+          'tangency' : true
+        }
+      );
+
+      this.globalTangency = true ;
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -4083,26 +4329,38 @@ define([
       this.initVolumeState(); 
     }
 
-    // volume reducing functionality
-    this.menu.setOnOffSlider('cellVolume', !arg.padlock);
-    $("#cellVolume").prop("disabled", !arg.padlock);
+    // volume reducing functionality 
 
     this.editorState.fixed = arg.padlock; // keep .fixed var for future uses
-
-    $('#scaleX').val(this.cellParameters.scaleX);
-    $('#scaleY').val(this.cellParameters.scaleY);
-
+ 
+    var sz ;
     if(_this.latticeName === 'hexagonal'){ 
-      $('#scaleZ').val(this.cellParameters.scaleX);
+      sz = this.cellParameters.scaleX;
+
     }
     else{ 
-      $('#scaleZ').val(this.cellParameters.scaleZ); 
+      sz = this.cellParameters.scaleZ; 
     }  
+
+    this.menu.disableMEInputs(
+      {
+        'cellVolume' : !arg.padlock
+      }
+    );
+
+    this.menu.editMEInputs(
+      {
+        'scaleX' : this.cellParameters.scaleX,
+        'scaleY' : this.cellParameters.scaleY, 
+        'scaleZ' : sz 
+      }
+    );
+
   }; 
 
   Motifeditor.prototype.initVolumeState = function(){   
     this.leastVolume();
-    
+       
     $("#cellVolume").val(100);   
     this.menu.setSliderValue("cellVolume", 100 ); 
     this.menu.setSliderMin("cellVolume", 90 );
@@ -4175,7 +4433,10 @@ define([
   };
   Motifeditor.prototype.calcABCforParticularCases = function(dimensions){   
     
-    if(_.isUndefined(dimensions)) return ;
+    if(_.isUndefined(dimensions)) {
+      return ;
+    }
+
     var _this = this, dims = { xDim : dimensions.xDim, yDim : dimensions.yDim, zDim : dimensions.zDim } ;
        
     //    c = y,    b = x,    a = z
@@ -4332,20 +4593,23 @@ define([
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Angle Handling - lattice.js code
-  Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate){ 
+  Motifeditor.prototype.cellPointsWithScaling = function(_dimensions, recreate, _manual){ 
     var _this = this; 
 
     var dimensions;
-    if((( !this.padlock  && (this.globalTangency === false)) || this.manualAabc || this.manualAlphBtGmm) ){
-      dimensions = _dimensions ;  
+    if( (!this.padlock && !this.globalTangency ) || _manual !== undefined){
+      dimensions = _dimensions ;   
     }
     else{  
-      dimensions = _this.calcABCforParticularCases(_dimensions);
-
+      dimensions = this.calcABCforParticularCases(_dimensions); 
+ 
       // store initial values for reduce volume feature
-      this.cellVolume.xInitVal = dimensions.xDim;
-      this.cellVolume.yInitVal = dimensions.yDim;
-      this.cellVolume.zInitVal = dimensions.zDim; 
+      if(!(_dimensions.xDim === 1 && _dimensions.xDim && _dimensions.xDim) ){  
+        this.cellVolume.xInitVal = dimensions.xDim;
+        this.cellVolume.yInitVal = dimensions.yDim;
+        this.cellVolume.zInitVal = dimensions.zDim; 
+        
+      }
     } 
 
     this.cellParameters.scaleX = dimensions.xDim;
@@ -4488,7 +4752,7 @@ define([
           break; 
       } 
     }
-  }; 
+  };  
   Motifeditor.prototype.initialCellPositions = function(latticeIndex){ 
     var _this = this; 
     var unitCellPositions = {};
@@ -4622,6 +4886,13 @@ define([
     
     return m;
   };
+
+  var uuid = -1;
+
+  function produceUuid () {
+    uuid++
+    return uuid;
+  }
 
   return Motifeditor;
 });

@@ -43,31 +43,56 @@
 		<![endif]-->
 		
 	</head>
-	<body class="dark">
+	<body class="custom_scrollbar">
         
-		<main id="cnt_main_screen" class="main-screen-container">
-        	 
-            <div id="app-container">
-            
-                <div id="crystalRenderer" class="canvasContainer" style="float: left;">
-                  <div id="hudRenderer" class="canvasContainer" style = "opacity:1;background-color:#FF0000;position: absolute; z-index:10; bottom:0px; left:0px;"></div> 
-                  <div id="hudRendererCube" class="canvasContainer" style = "border: 2px solid #ffffff;opacity:0; position: absolute; z-index:10; top:0px; left:0px;"></div>
+        <div id="progressBarWrapper">
+            <img class="logo" src="Images/cwlogo.png" />
+            <!--<div id="progressBar"></div> -->
+            <div></div>
+            <img class="loader" src="Images/loader.gif" />
+            <div class="progressLabel">Loading...</div>
+        </div>
+    
+        <div id="screenWrapper">
+            <div id="noteWrapper">
+                <div id="noteBar">
+                    Notes
+                    <img src="Images/close.png" />
                 </div>
-                <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
-                <div id="motifRenderer" class="canvasContainer" > </div>              
-                <div style=" display: table; position:fixed;bottom:0; "> 
-                  <div id="motifPosX"  style="display: table-cell;"></div>
-                  <div id="motifPosY"  style="display: table-cell;"></div>
-                  <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
-                </div>   
-                
-                
+                <div id="notesScroll" class="custom_scrollbar">
+                    <div id="notes" contenteditable="true">
+                        Start Typing...
+                    </div>
+                </div>
             </div>
+            <main id="cnt_main_screen" class="main-screen-container">
 
-            
-        </main>
-		
-		<section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
+                <div id="app-container">
+
+                    <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"></div>
+                    <div id="leapIcon" style = "background-image: url('Images/leapicon.png'); position: fixed;  z-index:11; "></div>
+                    
+                    <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
+                    
+                    <div id="crystalRenderer" class="canvasContainer" style="float: left;">
+                        <div id="hudRenderer" class="canvasContainer" style = "opacity:1; position: fixed; z-index:10;"></div> 
+                        <div id="hudRendererCube" class="canvasContainer" style ="position: fixed; z-index:10;"></div>
+                    </div>
+                    
+                    <div id="motifRenderer" class="canvasContainer" style="position:fixed;"> </div> 
+                    
+                    <div style=" display: table; position:fixed;bottom:0; "> 
+                        <div id="motifPosX"  style="display: table-cell;"></div>
+                        <div id="motifPosY"  style="display: table-cell;"></div>
+                        <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
+                    </div> 
+                    
+                </div>
+
+            </main>
+        </div>
+        
+        <section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
 			<div class="main-controls-inner">
 				<div class="main-controls-wrapper">
 					<div class="row row-nopad">
@@ -96,7 +121,7 @@
 												</a>
 											</li>
 											<li role="presentation" class="" id="motifLI">
-												<a href="#scrn_motif" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
+												<a href="" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
 													<img src="Images/motif-icon.png" class="img-responsive" alt=""/>
 													<img src="Images/motif-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
@@ -161,9 +186,9 @@
 												</a>
 											</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip"  data-placement="left">
-                                                    <img src="Images/toggle-icon-09.png" class="img-responsive" alt=""/>
-                                                </a>
+												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+													<button id="atomToggle" class="toggleButton" type="button"><img src="Images/toggle-icon-09.png" class="img-responsive" alt=""/></button>
+												</a>
 											</li>
 										</ul>
 									</nav>
@@ -211,7 +236,7 @@
 																				<label for="txt_lattice_repetition_x">x</label>
 																			</div>
 																			<div class="spinner-input form-group-input">
-																				<input type="text" name="txt_lattice_repetition_x" id="repeatZ" class="spinner form-control"/>
+																				<input type="text" id="repeatZ" class="spinner form-control"/>
 																			</div>
 																		</div>
 																	</div>
@@ -221,7 +246,7 @@
 																				<label for="txt_lattice_repetition_y">y</label>
 																			</div>
 																			<div class="spinner-input form-group-input">
-																				<input type="text" name="txt_lattice_repetition_y" id="repeatX" class="spinner form-control"/>
+																				<input type="text" id="repeatX" class="spinner form-control"/>
 																			</div>
 																		</div>
 																	</div>
@@ -231,7 +256,7 @@
 																				<label for="txt_lattice_repetition_z">z</label>
 																			</div>
 																			<div class="spinner-input form-group-input">
-																				<input type="text" name="txt_lattice_repetition_z" id="repeatY" class="spinner form-control"/>
+																				<input type="text" id="repeatY" class="spinner form-control"/>
 																			</div>
 																		</div>
 																	</div>
@@ -658,7 +683,7 @@
 																								<label for="txt_par_rad">r</label>
 																							</div>
 																							<div class="par-input form-group-input theme-light">
-																								<input type="text" name="txt_par_rad" id="txt_par_rad" class="form-control" value="50"/>
+																								<input type="text" name="txt_par_rad" id="tangentR" class="form-control"/>
 																							</div>
 																						</div>
 																					</div>
@@ -696,12 +721,12 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div id="previewAtomChanges" class="action action-toggle-visiblity">
+																				<div class="action action-toggle-visiblity previewAtomChanges">
 																					<a><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
-																				<div id="saveAtomChanges" class="action action-save">
+																				<div class="saveAtomChanges action action-save">
 																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
@@ -710,127 +735,20 @@
 																	</div>
 																</div>
 															</div>
-															<div class="tab-box items-box" style="display:none;">
+															<div class="tab-box items-box" id="atomTable">
 																<div class="box-body">
-																	<div class="items-table-wrapper custom_scrollbar" id="">
+																	<div class="items-table-wrapper custom_scrollbar">
 																		<div class="items-table-container">
-																			<table class="table items-table">
-																				<tbody>
-																					<tr class="bg-dark-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="element ch-na">Na</td>
-																						<td class="element-serial" colspan="3">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td></td>
-																					</tr>
-																					<tr class="bg-light-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="chain">
-																							<img src="Images/chain-icon.png" class="img-responsive" alt=""/>
-																						</td>
-																						<td class="element ch-mg">Mg</td>
-																						<td class="element-serial" colspan="2">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																					<tr class="bg-lighter-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="blank"></td>
-																						<td class="chain">
-																							<img src="Images/chain-icon.png" class="img-responsive" alt=""/>
-																						</td>
-																						<td class="element ch-zn">Zn</td>
-																						<td class="element-serial">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																					<tr class="bg-light-purple">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="element ch-ci">Ci</td>
-																						<td class="element-serial" colspan="3">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																					<tr class="bg-dark-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="element ch-na">Na</td>
-																						<td class="element-serial" colspan="3">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td></td>
-																					</tr>
-																					<tr class="bg-light-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="chain">
-																							<img src="Images/chain-icon.png" class="img-responsive" alt=""/>
-																						</td>
-																						<td class="element ch-mg">Mg</td>
-																						<td class="element-serial" colspan="2">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																					<tr class="bg-lighter-gray">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="blank"></td>
-																						<td class="chain">
-																							<img src="Images/chain-icon.png" class="img-responsive" alt=""/>
-																						</td>
-																						<td class="element ch-zn">Zn</td>
-																						<td class="element-serial">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																					<tr class="bg-light-purple">
-																						<td class="visibility">
-																							<a href="#"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a>
-																						</td>
-																						<td class="element ch-ci">Ci</td>
-																						<td class="element-serial" colspan="3">
-																							<a href="#">(4,8,0)</a>
-																						</td>
-																						<td class="btn-tangent">
-																							<a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a>
-																						</td>
-																					</tr>
-																				</tbody>
+																			<table class="table items-table" >
+																				<tbody></tbody>
 																			</table>
 																		</div>
 																	</div>
 																</div>
 																<div class="box-footer">
 																	<div class="item-table-action">
-																		<div class="action action-delete">
-																			<a href="#"><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																		<div id="deleteAtom" class="action action-delete">
+																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1015,12 +933,12 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div id="previewCellChanges" class="action action-toggle-visiblity">
+																				<div class="action action-toggle-visiblity previewAtomChanges">
 																					<a><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
-																				<div id="saveCellChanges" class="action action-save">
+																				<div class="action action-save saveAtomChanges">
 																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
@@ -1581,11 +1499,11 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label class="btn btn-light active">
+																<label id="distortionOn" class="btn btn-light">
 																	<img src="Images/visual-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/visual-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label class="btn btn-light">
+																<label id="distortionOff" class="btn btn-light active">
 																	<img src="Images/visual-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/visual-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -1595,19 +1513,17 @@
 													<div class="tab-block theme-light stereoscopic-block">
 														<div class="block-title">
 															<label for="chkbx_stereoscope">
-																<input type="checkbox" class="icheckbox" name="anaglyph" id="chkbx_stereoscope" name="chkbx_stereoscope"/>
+																<input type="checkbox" class="icheckbox" name="stereoscopic" id="chkbx_stereoscope" name="chkbx_stereoscope"/>
 																<h3>Stereoscopic Effect</h3>
 															</label>
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label class="btn btn-light active">
-																	<input type="radio" name="opt_stereoscopic" id="opt_stereoscopic_01" autocomplete="off" checked/>
+																<label id="anaglyph" class="btn btn-light">
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label class="btn btn-light">
-																	<input type="radio" name="opt_stereoscopic" id="opt_stereoscopic_02" autocomplete="off"/>
+																<label id="oculus" class="btn btn-light">
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -1623,13 +1539,13 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-group" data-toggle="buttons">
-																		<label class="btn btn-light active">
-																			<input type="radio" name="opt_focal_point" id="opt_focal_point_01" autocomplete="off" checked/>
+																		<label id="crystalCamTargetOn" class="btn btn-light active">
+																			
 																			<img src="Images/focal-point-switch-icon-01.png" class="img-responsive" alt=""/>
 																			<img src="Images/focal-point-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																		</label>
-																		<label class="btn btn-light">
-																			<input type="radio" name="opt_focal_point" id="opt_focal_point_02" autocomplete="off"/>
+																		<label id="crystalCamTargetOff" class="btn btn-light">
+																			
 																			<img src="Images/focal-point-switch-icon-02.png" class="img-responsive" alt=""/>
 																			<img src="Images/focal-point-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																		</label>
@@ -1642,7 +1558,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-fullscreen">
-																		<a href="#" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
+																		<a id="fullScreen" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -1655,7 +1571,7 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-hit">
-																<a href="#" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off">
+																<a id="leapMotion" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
 																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
 																</a>
@@ -1805,7 +1721,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-notes">
-																		<a href="#" class="btn btn-light"><img src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
+																		<a href="#" class="btn btn-light"><img id="notesButton" src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -1835,10 +1751,10 @@
 				</div>
 			</div>
 		</section>
-
-		<section class="modals-container">
+        
+        <section class="modals-container">
 			<article class="bravais-lattice-modal-container">
-				<div class="modal fade bravais-lattice-modal" id="bravais_lattice_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
+				<div class="modal fade bravais-lattice-modal custom_scrollbar" id="bravais_lattice_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header mega-header">
@@ -1870,7 +1786,7 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="triclinic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-01.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-05.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
@@ -1882,7 +1798,7 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-02.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-07.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
@@ -1894,7 +1810,7 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-03.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-02.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
@@ -1906,7 +1822,7 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-04.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-01.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
@@ -1918,12 +1834,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="rhombohedral_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-05.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-04.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Rhombohedral</span><br/>
-																<span>/ Trigonal</span>
+																<span>Rhombohedral / Trigonal</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1943,12 +1858,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-07.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-03.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Monoclinic</span><br/>
-																<span>Simple</span>
+																<span>Monoclinic Simple</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1961,12 +1875,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-08.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-10.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Cubic</span><br/>
-																<span>Body-centered</span>
+																<span>Cubic Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1974,12 +1887,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-09.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-08.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Tetragonal</span><br/>
-																<span>Body-centered</span>
+																<span>Tetragonal Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -1987,12 +1899,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-10.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-09.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Body-centered</span>
+																<span>Othromobic Body-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2007,8 +1918,7 @@
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Hexagonal</span><br/>
-																<span>Strange</span>
+																<span>Hexagonal Strange</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2024,12 +1934,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_face_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-11.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-12.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Cubic</span><br/>
-																<span>Face-centered</span>
+																<span>Cubic Face-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2040,12 +1949,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_face_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-12.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-11.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Face-centered</span>
+																<span>Othromobic Face-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2073,12 +1981,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_base_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-13.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-14.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Othromobic</span><br/>
-																<span>Base-centered</span>
+																<span>Othromobic Base-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2092,12 +1999,11 @@
 												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_base_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
-															<img src="Images/bravais-lattice-img-14.png" class="img-responsive" alt=""/>
+															<img src="Images/bravais-lattice-img-13.png" class="img-responsive" alt=""/>
 														</div>
 														<div class="block-title">
 															<h4>
-																<span>Monoclinic</span><br/>
-																<span>Base-centered</span>
+																<span>Monoclinic Base-centered</span><br/>
 															</h4>
 														</div>
 													</div>
@@ -2120,7 +2026,7 @@
 			</article>
 
 			<article class="periodic-table-modal-container">
-				<div class="modal fade periodic-table-modal" id="periodic_table_modal" tabindex="-1" role="dialog" aria-labelledby="periodic_table_modalLabel">
+				<div class="modal fade periodic-table-modal custom_scrollbar" id="periodic_table_modal" tabindex="-1" role="dialog" aria-labelledby="periodic_table_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header mega-header">
@@ -2423,7 +2329,7 @@
 			</article>
 
 			<article class="qr-modal-container">
-				<div class="modal fade" id="qr_scan_modal" tabindex="-1" role="dialog" aria-labelledby="qr_scan_modalLabel">
+				<div class="modal fade custom_scrollbar" id="qr_scan_modal" tabindex="-1" role="dialog" aria-labelledby="qr_scan_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -2467,7 +2373,8 @@
 					</div>
 				</div>
 			</article>
+            
 		</section>
-		
+        
 	</body>
 </html>
