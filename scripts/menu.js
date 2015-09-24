@@ -1202,7 +1202,7 @@ define([
             });
         });
         _.each(motifSliders, function(name) {
-            _this.setSlider(name,0,-20.0000000000,20.0000000000,0.0000000001, events.ATOM_POSITION_CHANGE); 
+            _this.setSlider(name,0,-20.0000000000,20.0000000000,0.01, events.ATOM_POSITION_CHANGE); 
         });
         
         $atomPositioningXYZ.on('click', function() {
