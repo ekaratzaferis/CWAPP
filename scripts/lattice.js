@@ -235,7 +235,7 @@ define([
     });  
 
     _this.updateLatticeTypeRL();
-    this.menu.progressBarFinish();
+     
   }; 
   Lattice.prototype.createGrid = function() {
 
@@ -610,8 +610,7 @@ define([
           )  
         );
       });
-    });   
-    this.menu.progressBarFinish();
+    });    
   };
   Lattice.prototype.getAnglesScales = function(){
     if(!this.lattice) {

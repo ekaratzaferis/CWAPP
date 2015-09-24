@@ -244,8 +244,7 @@ define([
     var $previewAtomChanges = jQuery('.previewAtomChanges');
     var $saveAtomChanges = jQuery('.saveAtomChanges');
     var $deleteAtom = jQuery('#deleteAtom');
-    var $atomTable = jQuery('#atomTable');
-    var $deleteAtom = jQuery('#deleteAtom');
+    var $atomTable = jQuery('#atomTable'); 
 
     var $atomButtons = {
         'atomPalette': $atomPalette,
@@ -1153,7 +1152,16 @@ define([
             }
         });
         
-        
+        $deleteAtom.on('click', function(){
+            if (!($deleteAtom.hasClass('disabled'))){
+
+                argument = {};
+                argument["button"] = 'deleteAtom';
+
+            }
+            PubSub.publish(events.ATOM_SUBMIT, argument);
+        });
+             
         // Periodic Table
         $periodicModal.on('click',function(){
             $periodicModal.removeClass('selected');
@@ -1206,8 +1214,8 @@ define([
         });
         
         $atomPositioningXYZ.on('click', function() {
-            argument = {};
-            if (!($atomPositioningXYZ.hasClass('disabled'))){
+            argument = {};  
+            if (!($atomPositioningXYZ.hasClass('disabled'))){ 
                 if (!($atomPositioningXYZ.hasClass('buttonPressed'))){
                     $atomPositioningXYZ.addClass('buttonPressed');
                     $atomPositioningXYZ.removeClass('btn-light');
@@ -1217,7 +1225,7 @@ define([
                     $atomPositioningABC.addClass('btn-light');
                     argument['xyz'] = true;
                 }
-                else{
+                else{  
                     $atomPositioningXYZ.removeClass('buttonPressed');
                     $atomPositioningXYZ.removeClass('btn-purple-light');
                     $atomPositioningXYZ.addClass('btn-light');
@@ -1225,7 +1233,7 @@ define([
                     $atomPositioningABC.removeClass('btn-light');
                     $atomPositioningABC.addClass('btn-purple-light');
                     argument['abc'] = true;
-                }
+                } 
                 PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
             }
         });
@@ -1995,12 +2003,14 @@ define([
                 $('#'+k+'Slider').slider('value',argument[k]);
             }
         });
+        /*
+
         if (argument['atomPositioningXYZ'] !== undefined){
             if (argument['atomPositioningXYZ']) if (!($atomPositioningXYZ.hasClass('buttonPressed'))) $atomPositioningXYZ.trigger('click');
         }
         if (argument['atomPositioningABC'] !== undefined){
             if (argument['atomPositioningABC']) if (!($atomPositioningABC.hasClass('buttonPressed'))) $atomPositioningABC.trigger('click');
-        }
+        }*/
         if (argument['padlock'] !== undefined){
             if (argument['padlock'] === true) $motifPadlock.find('a').removeClass('active');
             else $motifPadlock.find('a').addClass('active');
@@ -2068,21 +2078,21 @@ define([
         if (argument['atomPositioningXYZ'] !== undefined){
             if (argument['atomPositioningXYZ']) {
                 $atomPositioningXYZ.addClass('disabled');
-                $atomPositioningXYZ.trigger('click');
+               // $atomPositioningXYZ.trigger('click');
             }
             else {
                 $atomPositioningXYZ.removeClass('disabled');
-                $atomPositioningXYZ.trigger('click');
+              //  $atomPositioningXYZ.trigger('click');
             }
         }
         if (argument['atomPositioningABC'] !== undefined){
             if (argument['atomPositioningABC']) {
                 $atomPositioningABC.addClass('disabled');
-                $atomPositioningABC.trigger('click');
+                //$atomPositioningABC.trigger('click');
             }
             else {
                 $atomPositioningABC.removeClass('disabled');
-                $atomPositioningABC.trigger('click');
+                //$atomPositioningABC.trigger('click');
             }
         }
         if (argument['tangency'] !== undefined){

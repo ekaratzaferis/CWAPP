@@ -302,7 +302,7 @@ require([
   menu.onRadiusToggle(function(message, arg) { 
     lattice.toggleRadius(arg); 
   });
-  menu.onAtomPosModeChange(function(message, arg) { 
+  menu.onAtomPosModeChange(function(message, arg) {   
     motifEditor.atomPosMode(arg); 
   });
   menu.onLightsSet(function(message, arg) { 
@@ -420,9 +420,7 @@ require([
     motifEditor.viewState_(state);
   });
   menu.onAtomSubmit(function(message, atomParam) {
-
-    menu.resetProgressBar('Processing...');
-
+ 
     if(atomParam.button === 'saveChanges'){
       var parameters = motifEditor.getDimensions() ;
       lattice.setMotif(motifEditor.getMotif(), parameters)  ;
@@ -571,7 +569,7 @@ require([
     motifEditor.updateCellDimens(param) ;
   });
   menu.motifToLattice(function(message, param){
-    menu.resetProgressBar('Processing...');
+     
     lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions()) ; 
     var parameters = motifEditor.getDimensions() ;
     var params = {
