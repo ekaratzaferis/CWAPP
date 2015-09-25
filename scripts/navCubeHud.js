@@ -19,7 +19,7 @@ define([
     options = options || {};
 
     this.object3d = new THREE.Scene();
-
+ 
     var _this = this;
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
