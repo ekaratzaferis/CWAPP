@@ -40,9 +40,10 @@ define([
     this.crystalOrbit = crystalOrbit;
     this.atomUnderDoll ; 
     this.objsToIntersect = [];
-    this.gearState = 1;
+    this.gearState = 5;
     this.levels = [];
     this.levelLabels = [];
+    this.enablemouseEvents = true;
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -346,6 +347,14 @@ define([
     return obj;
   };
  
+  Doll.prototype.setVisibility = function(bool) {
+    
+    this.gearBar.visible = bool;
+    this.gearBarSlider.visible = bool; 
+    this.dollHolder.visible = bool;
+
+    this.enablemouseEvents = bool;
+  }; 
   Doll.prototype.rePosition = function(){  
      
     var frustum = new THREE.Frustum(); 
@@ -378,7 +387,10 @@ define([
   };
   Doll.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
-     
+    
+    if(this.enablemouseEvents !== true){
+      return;
+    }
     event.preventDefault();
  
     var contWidth = $('#'+this.container).width() ;
@@ -479,6 +491,9 @@ define([
   Doll.prototype.onDocumentMouseDown = function(event){  
     var _this = this;
 
+    if(this.enablemouseEvents !== true){
+      return;
+    }
     event.preventDefault();
  
     this.SELECTED = undefined;

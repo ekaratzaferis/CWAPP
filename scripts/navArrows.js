@@ -46,8 +46,8 @@ define([
     scene.add( this.arrowB ); 
     scene.add( this.arrowA );  
     
-    var startOfAxis = new THREE.Mesh( new THREE.SphereGeometry( 0.15, 8,8), new THREE.MeshBasicMaterial({color: 0xFFFFBE}));
-    scene.add(startOfAxis);
+    this.startOfAxis = new THREE.Mesh( new THREE.SphereGeometry( 0.15, 8,8), new THREE.MeshBasicMaterial({color: 0xFFFFBE}));
+    scene.add(this.startOfAxis);
 
     // a,b,c lengths
      
@@ -112,6 +112,26 @@ define([
       { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
     this.gamma.position.set(medianGamma.x + 2.5, medianGamma.y - 3, medianGamma.z + 2);
     scene.add( this.gamma );
+
+};
+NavArrows.prototype.setVisibility = function(bool) {
+    this.aScale.visible = bool;
+    this.bScale.visible = bool;
+    this.cScale.visible = bool;
+
+    this.alpha.visible = bool;
+    this.beta.visible = bool;
+    this.gamma.visible = bool;
+
+    this.arrowA.visible = bool;
+    this.arrowB.visible = bool;
+    this.arrowC.visible = bool;
+
+    this.alphaCurve.visible = bool;
+    this.betaCurve.visible = bool;
+    this.gammaCurve.visible = bool;
+
+    this.startOfAxis.visible = bool; 
 
 };
 NavArrows.prototype.updateLengths = function(params) {

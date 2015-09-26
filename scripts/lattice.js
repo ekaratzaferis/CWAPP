@@ -392,9 +392,7 @@ define([
     var parameters = this.parameters;
     var origin = lattice.originArray[0];
     var vector = lattice.vector;
-
-    //progress bar
-    
+  
     var limit = new THREE.Vector3(
       parameters.repeatX * vector.x + origin.x,
       parameters.repeatY * vector.y + origin.y,
@@ -1189,17 +1187,13 @@ define([
   };
 
   Lattice.prototype.update = function() {  
-    
-    this.menu.resetProgressBar('Constructing lattice...');
-
+     
     if(this.latticeName !== 'hexagonal'){
       this.backwardTransformations();  
       this.updatePoints([this.createGrid,this.createFaces,this.forwardTransformations]);   
     }
-    else{
-        
-      this.updatePoints([]);
-         
+    else{ 
+      this.updatePoints([]); 
     }  
     
   };
@@ -1295,7 +1289,11 @@ define([
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
     
-    this.menu.resetProgressBar('Constructing lattice...');
+    var lparams = this.menu.getLatticeParameters();
+
+    if(lparams.repeatX >= 3 || lparams.repeatY >= 3 || lparams.repeatZ >= 3 ) { 
+      this.menu.resetProgressBar('Constructing lattice...');
+    }
  
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
@@ -1652,7 +1650,7 @@ define([
       var aLength = parseInt(this.parameters.scaleZ) ;
       var cLength = parseInt(this.parameters.scaleY) ;
 
-      var axis = new THREE.Vector3( 0, 1, 0 );
+      var axis = new THREE.Vector3(0, 1, 0);
 
       var a3 = new THREE.Vector3( aLength, 0, 0 ); 
       var rotA3 = (t>0) ? ((Math.PI*2) / 3) : ((Math.PI*5) / 3) ;
@@ -1814,8 +1812,7 @@ define([
 
     _this.planeState.editing = which;
     _this.planeState.dname = name;
-      
-    //TODO UI (update also color opacity)
+       
     this.menu.editPlaneInputs(
       {
         'millerH' : h,
@@ -1873,7 +1870,7 @@ define([
         case "creating": 
           this.menu.disableDirectionButtons(
             {
-              'saveDirection' : false,
+              'saveDirection' : true,
               'deleteDirection' : false,
               'newDirection' : true 
             }
@@ -1962,8 +1959,8 @@ define([
           this.menu.disablePlaneButtons(
             {
               'newPlane' : true,
-              'deletePlane' : true,
-              'savePlane' : false
+              'deletePlane' : false,
+              'savePlane' : true
             }
           );
           this.menu.disablePlaneInputs(
@@ -1992,7 +1989,7 @@ define([
         case "editing": 
           this.menu.disablePlaneButtons(
             {
-              'newPlane' : false,
+              'newPlane' : true,
               'deletePlane' : false,
               'savePlane' : false
             }
@@ -2092,17 +2089,31 @@ define([
  
     if (_this.planeState.state === "initial"){
       if( buttonClicked === "newPlane"){  
-        for (var i = 0; i < this.tempPlanes.length; i++) {
-          this.tempPlanes[i].plane.destroy(); 
-        };  
-        this.tempPlanes.splice(0);
-        this.createMillerPlane(millerParameters, true, false);
-        PubSub.publish(events.PLANE_STATE,"creating");
+        this.menu.editSavedPlane(
+          { 
+            'action' : 'save', 
+            'id' : 'current', 
+            'h' : ' ',
+            'k' : ' ',
+            'l' : ' ',
+            'i' : ' ',
+            'name' : ' ', 
+            'color' : '#'+millerParameters.planeColor
+          } 
+        ); 
       }
     }
     else if (_this.planeState.state === "creating"){
       switch(buttonClicked) {  
         case "savePlane":
+         /*
+        for (var i = 0; i < this.tempPlanes.length; i++) {
+          this.tempPlanes[i].plane.destroy(); 
+        };
+        this.tempPlanes.splice(0);
+        this.createMillerPlane(millerParameters, true, false);
+        PubSub.publish(events.PLANE_STATE,"creating");
+        
           PubSub.publish(events.PLANE_STATE,"initial");
           for (var i = 0; i < this.tempPlanes.length; i++) {
             this.tempPlanes[i].plane.destroy(); 
@@ -2114,6 +2125,7 @@ define([
             this.updatePlaneList(millerParameters, undefined, 'save'); 
           }
           break; 
+          */
       }
     }
     else if (_this.planeState.state === "editing"){

@@ -387,7 +387,13 @@ require([
     } 
  
     if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
-  
+       
+      // invisible Navigators
+      dollEditor.setVisibility(false); 
+      hudCube.setVisibility(false);
+      hudArrows.setVisibility(false);
+      CubeEvent.enableCubeEvents = false ;
+
       sceneResizer.resize('motifScreen');
         
       unitCellRenderer.startAnimation();                                                                    
@@ -396,7 +402,13 @@ require([
 
       crystalScreenEvents.state = 'motifScreen';
     }
-    else{  
+    else if($(this).attr('id') !== "motifLI" ){  
+      
+      // visible Navigators
+      dollEditor.setVisibility(true);
+      hudCube.setVisibility(true);
+      hudArrows.setVisibility(true);
+      CubeEvent.enableCubeEvents = true ;
 
       sceneResizer.resize('crystal');
        
@@ -447,7 +459,7 @@ require([
   menu.onAtomParameterChange(function(message, param) { 
     motifEditor.setAtomsParameter(param);
   });
-  menu.onAtomPositionChange(function(message, param) { 
+  menu.onAtomPositionChange(function(message, param) {  
     motifEditor.setAtomsPosition(param);
   });
   menu.onManuallyCellDimsChange(function(message, param) { 
@@ -682,6 +694,6 @@ require([
 
   $("#noteTransparent").draggable();
  
-
+  
 });
  

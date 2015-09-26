@@ -35,7 +35,8 @@ define([
     this.navCube = navCube;
     this.INTERSECTED;
     this.SELECTED;
-  
+    this.enableCubeEvents = true;
+
     if(this.func === 'dragNdrop' ){
       
       this.plane.object3d = new THREE.Mesh(
@@ -74,7 +75,11 @@ define([
 
   MouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
-     
+    
+    if(this.container === 'hudRendererCube' && this.enableCubeEvents === false){
+      return;
+    }
+
     event.preventDefault();
 
     if(this.container === 'motifPosX' ){
@@ -135,7 +140,7 @@ define([
           }
            
           intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.jpg' ) });
-          console.log(3);
+          
           for (var i = 0; i<6; i++) {
             if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.jpg' ) });
           };
@@ -149,7 +154,7 @@ define([
           this.dirty = false;
         }
       }
-      else if(this.dirty === true){ console.log(1);
+      else if(this.dirty === true){  
         this.navCube.resetMat();
         document.getElementById(_this.container).style.cursor = 'auto';
         
@@ -224,8 +229,13 @@ define([
   }
   MouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this =this;
+   
+    if(this.func === 'navCubeDetect' && this.enableCubeEvents === false){
+      return;
+    }
 
     event.preventDefault();
+
     this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
       if( !(_this.motifEditor.editorState.state === 'initial') /*&& (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)*/) {
@@ -243,7 +253,7 @@ define([
         } 
       }
      }
-     else if(this.func === 'navCubeDetect'){
+     else if(this.func === 'navCubeDetect' ){
  
       var contWidth = $('#hudRendererCube').width() ;
       var contHeight = $('#hudRendererCube').height() ;

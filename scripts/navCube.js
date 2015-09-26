@@ -74,8 +74,8 @@ function NavCube( scene, latticeParams) {
      
     geom.computeFaceNormals();
 
-    var arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
-    arHead.name = 'arrowHead';
+    this.arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
+    this.arHead.name = 'arrowHead';
       
     var CustomSinCurve = THREE.Curve.create(
       function ( scale ) {  
@@ -98,12 +98,17 @@ function NavCube( scene, latticeParams) {
         8,     //radiusSegments
         false  //closed
     );
-    var arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
-    arLine.name = 'arrowLine' ;
-    scene.add(arHead);
-    scene.add(arLine);
+    this.arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
+    this.arLine.name = 'arrowLine' ;
+    scene.add(this.arHead);
+    scene.add(this.arLine);
 
 };
+NavCube.prototype.setVisibility = function(bool){
+  this.cube.visible = bool;
+  this.arHead.visible = bool;
+  this.arLine.visible = bool; 
+};  
 NavCube.prototype.addMaterial = function(text, index) {
   var _this = this ; 
   this.texts[index] = text;
