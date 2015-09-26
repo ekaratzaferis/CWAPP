@@ -45,15 +45,17 @@
 	</head>
 	<body class="custom_scrollbar">
         
+        <!-- Progress Bar Element -->
         <div id="progressBarWrapper">
             <img class="logo" src="Images/cwlogo.png" />
-            <!--<div id="progressBar"></div> -->
             <div></div>
             <img class="loader" src="Images/loader.gif" />
             <div class="progressLabel">Loading...</div>
         </div>
     
+        <!-- Main Screen -->
         <div id="screenWrapper">
+            <!-- Notes -->
             <div id="noteWrapper">
                 <div id="noteBar">
                     Notes
@@ -65,34 +67,30 @@
                     </div>
                 </div>
             </div>
+            <!-- Canvasses -->
             <main id="cnt_main_screen" class="main-screen-container">
-
                 <div id="app-container">
-
-                    <div id="leap_id" style=" top:0px; position: fixed; z-Index: 10000; background-color:##585858; opacity:0.7"></div>
-                    <div id="leapIcon" style = "background-image: url('Images/leapicon.png'); position: fixed;  z-index:11; "></div>
-                    
-                    <div id="unitCellRenderer" class="canvasContainer" style="float: left;"></div>
-                    
-                    <div id="crystalRenderer" class="canvasContainer" style="float: left;">
-                        <div id="hudRenderer" class="canvasContainer" style = "opacity:1; position: fixed; z-index:10;"></div> 
-                        <div id="hudRendererCube" class="canvasContainer" style ="position: fixed; z-index:10;"></div>
+                    <!-- Leap Motion -->
+                    <div id="leap_id"></div>
+                    <div id="leapIcon"></div>
+                    <!-- Canvasses -->
+                    <div id="unitCellRenderer" class="canvasContainer"></div>
+                    <div id="crystalRenderer" class="canvasContainer">
+                        <div id="hudRenderer" class="canvasContainer"></div> 
+                        <div id="hudRendererCube" class="canvasContainer"></div>
                     </div>
-                    
-                    <div id="motifRenderer" class="canvasContainer" style="position:fixed;"> </div> 
-                    
-                    <div style=" display: table; position:fixed;bottom:0; "> 
-                        <div id="motifPosX"  style="display: table-cell;"></div>
-                        <div id="motifPosY"  style="display: table-cell;"></div>
-                        <div id="motifPosZ"  style="display: table-cell;"></div> <!-- class="motifPosScreen" -->
+                    <div id="motifRenderer" class="canvasContainer" ></div> 
+                    <div id="motifScreenTable"> 
+                        <div id="motifPosX"></div>
+                        <div id="motifPosY"></div>
+                        <div id="motifPosZ"></div> <!-- class="motifPosScreen" -->
                     </div> 
-                    
                 </div>
-
             </main>
         </div>
         
-        <section style="zoom: 100%;" class="main-controls-container controls-close" id="main_controls_container">
+        <!-- Menu -->
+        <section class="main-controls-container controls-close" id="main_controls_container">
 			<div class="main-controls-inner">
 				<div class="main-controls-wrapper">
 					<div class="row row-nopad">
@@ -100,7 +98,7 @@
 						<div class="col col-sm-2">
 							<article class="controls-controller">
 								<div class="controls-toggler-container">
-									<a href="#" id="controls_toggler" class="btn btn-block btn-primary">
+									<a id="controls_toggler" class="btn btn-block btn-primary">
 										<span class="img-open"><img src="Images/open-icon.png" class="img-responsive" alt=""/></span>
 										<span class="img-close"><img src="Images/close-icon.png" class="img-responsive" alt=""/></span>
 									</a>
@@ -146,47 +144,47 @@
 										<ul class="list-unstyled">
 											<li class="list-title">Toggle</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip" data-placement="left">
-                                                    <button id="latticePoints" class="toggleButton" type="button"><img src="Images/toggle-icon-01.png" class="img-responsive" alt=""/></button>
+												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
+                                                    <button id="latticePoints" class="toggleButton" type="button"></button>
 												</a>
 											</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip" data-placement="left">
-                                                    <button id="edges" class="toggleButton" type="button"><img src="Images/toggle-icon-02.png" class="img-responsive" alt=""/></button>
+												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
+                                                    <button id="edges" class="toggleButton" type="button"></button>
 												</a>
 											</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip" data-placement="left">
-                                                    <button id="faces" class="toggleButton" type="button"><img src="Images/toggle-icon-03.png" class="img-responsive" alt=""/></button>
+												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
+                                                    <button id="faces" class="toggleButton" type="button"></button>
 												</a>
 											</li>
 											<li>
-												<a class="control-open toggle_menu" data-toggle="tooltip" data-placement="left">
-                                                    <button id="xyzAxes" class="toggleButton" type="button"><img src="Images/toggle-icon-04.png" class="img-responsive" alt=""/></button>
+												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
+                                                    <button id="xyzAxes" class="toggleButton" type="button"></button>
 												</a>
 											</li>
 											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="abcAxes" class="toggleButton" type="button"><img src="Images/toggle-icon-05.png" class="img-responsive" alt=""/></button>
 												</a>
 											</li>
 											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="planes" class="toggleButton" type="button"><img src="Images/toggle-icon-06.png" class="img-responsive" alt=""/></button>
 												</a>
 											</li>
 											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="directions" class="toggleButton" type="button"><img src="Images/toggle-icon-07.png" class="img-responsive" alt=""/></button>
 												</a>
 											</li>
 											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="atomRadius" class="toggleButton" type="button"><img src="Images/toggle-icon-08.png" class="img-responsive" alt=""/></button>
 												</a>
 											</li>
 											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu" data-placement="left">
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="atomToggle" class="toggleButton" type="button"><img src="Images/toggle-icon-09.png" class="img-responsive" alt=""/></button>
 												</a>
 											</li>
@@ -215,7 +213,7 @@
 														</div>
 														<div class="block-content">
 															<div class="block-btn">
-																<a href="#" id="selected_lattice" class="btn btn-purple" data-toggle="modal" data-target="#bravais_lattice_modal">Choose a Lattice</a>
+																<a id="selected_lattice" class="btn btn-purple" data-toggle="modal" data-target="#bravais_lattice_modal">Choose a Lattice</a>
 															</div>
 															<div id="latticePadlock" class="block-icon">
 																<a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
@@ -515,8 +513,8 @@
 																		<div class="action action-add-new" id="atomPalette">
 																			<a data-toggle="modal" data-target="#periodic_table_modal"><img src="Images/add-new-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
-																		<div class="action action-donot-overlap">
-																			<a><img id="tangency" src="Images/do-not-overlap-icon.png" class="img-responsive" alt=""/></a>
+																		<div class="purpleTheme purpleThemeActive action action-donot-overlap">
+																			<a id="tangency"><img src="Images/do-not-overlap-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -606,9 +604,9 @@
 																				</div>
 																			</div>
 																			<div class="col col-sm-3">
-																				<div class="element-symbol-container" style="display:none;">
+																				<div class="element-symbol-container" id="elementSymbolContainer">
 																					<div class="element-box">
-																						<a href="#" class="ch ch-ci">ci</a>
+																						<a class="ch ch-ci">ci</a>
 																					</div>
 																				</div>
 																			</div>
@@ -1085,7 +1083,7 @@
 																			</div>
 																		</div>
 																		<div class="col col-sm-2">
-																			<div id="savePlane" class="action action-save">
+																			<div id="savePlane" class="disabled action action-save">
 																				<a class="mh_pnd_para_box" data-mh="mh_pnd_para_box"><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																			</div>
 																		</div>
@@ -1108,7 +1106,7 @@
 																</div>
 																<div class="box-footer">
 																	<div class="item-table-action">
-																		<div id="deletePlane" class="action action-delete">
+																		<div id="deletePlane" class="disabled action action-delete">
 																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
@@ -1245,7 +1243,7 @@
 																			</div>
 																		</div>
 																		<div class="col col-sm-2">
-																			<div id="saveDirection" class="action action-save">
+																			<div id="saveDirection" class="disabled action action-save">
 																				<a class="mh_pnd_para_box" data-mh="mh_pnd_para_box"><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																			</div>
 																		</div>
@@ -1268,8 +1266,8 @@
 																</div>
 																<div class="box-footer">
 																	<div class="item-table-action">
-																		<div class="action action-delete">
-																			<a><img src="Images/delete-icon.png" id="deleteDirection" class="img-responsive" alt=""/></a>
+																		<div id="deleteDirection" class="disabled action action-delete">
+																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1303,13 +1301,13 @@
 																	</div>
 																	<div class="project-actions-container">
 																		<div class="btn-action">
-																			<a href="#" class="btn btn-dark">
+																			<a class="btn btn-dark">
 																				<span class="btn-image"><img src="Images/download-icon.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Download to your PC</span>
 																			</a>
 																		</div>
 																		<div class="btn-action">
-																			<a href="#" class="btn btn-dark btn_alternate_action_toggler">
+																			<a class="btn btn-dark btn_alternate_action_toggler">
 																				<span class="btn-image"><img src="Images/save-icon.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Save Online</span>
 																			</a>
@@ -1318,7 +1316,7 @@
 																	<div class="actions-alternative-container" id="cnt_alternate_actions">
 																		<div class="actions-alternative-inner">
 																			<div class="btn-qr action-alt">
-																				<a href="#" class="btn btn-purple-dark" data-toggle="modal" data-target="#qr_scan_modal"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
+																				<a class="btn btn-purple-dark" data-toggle="modal" data-target="#qr_scan_modal"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
 																			</div>
 																			<div class="btn-link action-alt">
 																				<label for="txt_link" class="btn btn-purple-dark"><img src="Images/attachment-icon.png" class="img-responsive" alt=""/></label>
@@ -1333,7 +1331,7 @@
 															</div>
 															<div class="tab-box save-public-library-box">
 																<div class="box-head">
-																	<a href="#" class="btn_form_toggler"><span>Save to the Public Library</span></a>
+																	<a class="btn_form_toggler"><span>Save to the Public Library</span></a>
 																</div>
 																<div class="box-body">
 																	<div class="project-save-form-container">
@@ -1345,9 +1343,9 @@
 																			<div class="form-group">
 																				<label for="tags">Tags</label>
 																				<div class="tag-container">
-																					<a href="#" class="tag tag-dark">NaCl</a>
-																					<a href="#" class="tag tag-dark">Tag 1</a>
-																					<a href="#" class="tag tag-dark">Dark Crystal</a>
+																					<a class="tag tag-dark">NaCl</a>
+																					<a class="tag tag-dark">Tag 1</a>
+																					<a class="tag tag-dark">Dark Crystal</a>
 																				</div>
 																			</div>
 																			<div class="form-group">
@@ -1426,17 +1424,17 @@
 																							
 																							<div class="col col-sm-7">
 																								<div class="block-tags">
-																									<a href="#" class="tag tag-purple">NaCl</a>
-																									<a href="#" class="tag tag-purple">Tag 1</a>
-																									<a href="#" class="tag tag-purple">Dark Crystal</a>
-																									<a href="#" class="tag tag-purple">Tag</a>
-																									<a href="#" class="tag tag-purple">Large Tag</a>
+																									<a class="tag tag-purple">NaCl</a>
+																									<a class="tag tag-purple">Tag 1</a>
+																									<a class="tag tag-purple">Dark Crystal</a>
+																									<a class="tag tag-purple">Tag</a>
+																									<a class="tag tag-purple">Large Tag</a>
 																								</div>
 																							</div>
 																							<div class="col col-sm-5">
 																								<div class="block-actions">
-																									<a href="#" class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
-																									<a href="#" class="btn btn-primary btn-open">Open</a>
+																									<a class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
+																									<a class="btn btn-primary btn-open">Open</a>
 																								</div>
 																							</div>
 
@@ -1519,11 +1517,11 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label id="anaglyph" class="btn btn-light">
+																<label id="anaglyph" class="btn btn-light disabled">
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label id="oculus" class="btn btn-light">
+																<label id="oculus" class="btn btn-light disabled">
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -1558,7 +1556,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-fullscreen">
-																		<a id="fullScreen" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
+																		<a id="fullScreen" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -1571,7 +1569,7 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-hit">
-																<a id="leapMotion" class="btn btn-primary-dark" data-toggle="button" aria-pressed="false" autocomplete="off">
+																<a id="leapMotion" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
 																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
 																</a>
@@ -1630,10 +1628,10 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label id="sounds" class="btn btn-primary-dark">
+																<label id="sounds" class="btn btn-light">
 																	<img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/>
 																</label>
-																<label id="lights" class="btn btn-primary-dark active">
+																<label id="lights" class="btn btn-light active">
 																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
 																</label>
 															</div>
@@ -1721,7 +1719,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-notes">
-																		<a href="#" class="btn btn-light"><img id="notesButton" src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
+																		<a class="btn btn-light"><img id="notesButton" src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -1731,7 +1729,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-reset">
-																		<a href="#" class="btn btn-primary-dark"><img src="Images/reset-icon.png" class="img-responsive" alt=""/></a>
+																		<a class="btn btn-primary-dark"><img src="Images/reset-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -1752,6 +1750,7 @@
 			</div>
 		</section>
         
+        <!-- Modals -->
         <section class="modals-container">
 			<article class="bravais-lattice-modal-container">
 				<div class="modal fade bravais-lattice-modal custom_scrollbar" id="bravais_lattice_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
@@ -2016,7 +2015,7 @@
 							<div class="modal-footer">
 								<div class="btn-add modal-btn">
 									<div class="btn-wrapper" id="add_lattice_btn" data-dismiss="modal">
-										<a href="#" class="btn btn-purple-light btn-block">Add</a>
+										<a class="btn btn-purple-light btn-block">Add</a>
 									</div>
 								</div>
 							</div>
@@ -2208,17 +2207,17 @@
 													
 													<div class="col col-sm-4">
 														<div class="btn-table-type modal-btn">
-															<a href="#" class="btn btn-primary btn-block">Atomic</a>
+															<a class="btn btn-primary btn-block">Atomic</a>
 														</div>
 													</div>
 													<div class="col col-sm-4">
 														<div class="btn-table-type modal-btn">
-															<a href="#" class="btn btn-primary btn-block">Ionic</a>
+															<a class="btn btn-primary btn-block">Ionic</a>
 														</div>
 													</div>
 													<div class="col col-sm-4">
 														<div class="btn-table-type modal-btn">
-															<a href="#" class="btn btn-primary btn-block">3rd Option</a>
+															<a class="btn btn-primary btn-block">3rd Option</a>
 														</div>
 													</div>
 
@@ -2233,7 +2232,7 @@
 										</div>
 										<div class="element-properties-blocks">
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>0</p>
 													</div>
@@ -2243,7 +2242,7 @@
 												</a>
 											</div>
 											<div class="property-block selected">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+1</p>
 													</div>
@@ -2253,7 +2252,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+2</p>
 													</div>
@@ -2263,7 +2262,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+3</p>
 													</div>
@@ -2273,7 +2272,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+4</p>
 													</div>
@@ -2283,7 +2282,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+5</p>
 													</div>
@@ -2293,7 +2292,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+6</p>
 													</div>
@@ -2303,7 +2302,7 @@
 												</a>
 											</div>
 											<div class="property-block">
-												<a href="#">
+												<a>
 													<div class="serial">
 														<p>+7</p>
 													</div>
@@ -2319,7 +2318,7 @@
 							<div class="modal-footer">
 								<div class="btn-add modal-btn">
 									<div class="btn-wrapper" id="add_atom_btn" data-dismiss="modal">
-										<a href="#" class="btn btn-purple-light btn-block">Add</a>
+										<a class="btn btn-purple-light btn-block">Add</a>
 									</div>
 								</div>
 							</div>
@@ -2351,7 +2350,7 @@
 									<div class="col col-sm-6">
 										<div class="qr-actions-container">
 											<div class="btn-save">
-												<a href="#" class="btn btn-dark-02">Save Image</a>
+												<a class="btn btn-dark-02">Save Image</a>
 											</div>
 											<div class="alternate-actions">
 												<div class="btn-link action-alt">
