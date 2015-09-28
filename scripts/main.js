@@ -209,7 +209,7 @@ require([
   var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
   // Gear Bar Tour
-  var gearTour = new GearTour(crystalScene, motifEditor, lattice);
+  var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
  
   // handel keyboard keys
   var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor, crystalRenderer);
@@ -401,6 +401,11 @@ require([
       motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName(), lattice.getLatticeSystem());
 
       crystalScreenEvents.state = 'motifScreen';
+
+      // reset view mode
+      if(lattice.viewMode !== 'Classic'){
+        lattice.changeView({'mode': 'Classic', 'reset': true});
+      }
     }
     else if($(this).attr('id') !== "motifLI" ){  
       
@@ -419,6 +424,11 @@ require([
       unitCellRenderer.stopAtomAnimation();
       motifRenderer.stopAtomAnimation(); 
       crystalScreenEvents.state = 'default';
+
+      // reset view mode
+      if(lattice.viewMode !== 'Classic'){
+        lattice.changeView({'mode': 'Classic', 'reset': true});
+      }
     }
   });
 

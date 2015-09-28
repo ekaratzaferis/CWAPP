@@ -71,12 +71,15 @@ define([
     //view
     this.viewBox = [];
     this.viewMode = 'Classic';
+    this.solidVoidObject ;
   }; 
   Lattice.prototype.changeView = function(arg) {
 
     var _this = this, i =0;
     this.viewMode = arg.mode ;
-  
+    
+    this.menu.resetProgressBar( 'Processing...');
+
     if(this.actualAtoms.length!==0){
 
       var geometry = new THREE.Geometry();  
@@ -87,36 +90,61 @@ define([
         geometry.merge( this.viewBox[i].object3d.geometry, this.viewBox[i].object3d.matrix ); 
         i++; 
       }  
-      var box = new THREE.Mesh(this.customBox(this.viewBox), new THREE.MeshLambertMaterial({color:"#FF0000" }) );
-      
+      var g = this.customBox(this.viewBox);
+      var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, color:"#FF0000" }) );
+       
       if(this.viewMode === 'Subtracted'){
         i = 0 ;
+        var enterViewmode = true; 
+        if(this.actualAtoms[0].viewModeBeen.SubtractedSolid === true ){
+          enterViewmode = false;
+        }
         while(i < this.actualAtoms.length ) {
-          this.actualAtoms[i].object3d.visible = true; 
-          this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position); 
+          this.actualAtoms[i].object3d.visible = false; 
+          
+          if(enterViewmode === true){
+            this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);
+          } 
+          else{
+            this.actualAtoms[i].subtractedForGear.object3d.visible = true; 
+          }
           i++;
         } 
-        var object = scene.getObjectByName('solidvoid');
-        if(!_.isUndefined(object)) {
-          scene.remove(object);
+        if(this.solidVoidObject !== undefined){ 
+          this.solidVoidObject.visible = false; 
         }
-       
       }
       else if(this.viewMode === 'SolidVoid'){   
 
+        var found = false;
+  
+        if(this.solidVoidObject !== undefined){
+          this.solidVoidObject.visible = true; 
+          found = true;
+          this.objectSolidVoid.visible = true;
+          while(i < this.actualAtoms.length ) {  
+            this.actualAtoms[i].object3d.visible = false;  
+            if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
+              this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
+            }
+            i++; 
+          } 
+          return;
+        }
+         
         var geometry = new THREE.Geometry();  
          
         while(i < this.actualAtoms.length ) {  
           this.actualAtoms[i].SolidVoid(this.actualAtoms[i].object3d.position);  
-          var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.actualAtoms[i].getRadius(), 32, 32), new THREE.MeshLambertMaterial() );
-          mesh.position.set( this.actualAtoms[i].object3d.position.x, this.actualAtoms[i].object3d.position.y, this.actualAtoms[i].object3d.position.z);
+          var mesh = this.actualAtoms[i].object3d.children[0].clone();
+          mesh.position.set( this.actualAtoms[i].object3d.position.x, this.actualAtoms[i].object3d.position.y, this.actualAtoms[i].object3d.position.z); 
           mesh.updateMatrix();  
-          geometry.merge( mesh.geometry, mesh.matrix );
-          this.actualAtoms[i].object3d.visible = false;   
+         
+          geometry.merge( mesh.geometry, mesh.matrix );  
 
           i++; 
         } 
-
+      
         var cube = THREE.CSG.toCSG(box); 
         cube = cube.inverse();
         var spheres = THREE.CSG.toCSG(geometry);
@@ -124,25 +152,124 @@ define([
         var geom = THREE.CSG.fromCSG(geometryCSG);
         var finalGeom = assignUVs(geom);
    
-        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  })  );
+        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: '#ffffff' }) );
         solidBox.name = 'solidvoid';
+        this.solidVoidObject = solidBox;
         Explorer.add({'object3d' : solidBox}); 
-      }
-      else if(this.viewMode === 'gradeLimited'){   
+
+        i = 0;
+
+        while(i < this.actualAtoms.length ) {   
+          this.actualAtoms[i].object3d.visible = false;   
+          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
+            this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
+          }
+          i++; 
+        } 
 
       }
+      else if(this.viewMode === 'gradeLimited'){ 
+
+        var found = false, objectSolidVoid;
+    
+        if(this.solidVoidObject !== undefined){ 
+          this.solidVoidObject.visible = false; 
+        } 
+
+        while(i < this.actualAtoms.length ) {   
+          this.actualAtoms[i].object3d.visible = true;  
+          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
+            this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
+          }
+          i++; 
+        } 
+
+        var g2 = g.clone() ; 
+        box.scale.set(1.1,1.1,1.1); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
+        box.visible = false;
+        var FNHbox = new THREE.FaceNormalsHelper( box ) ; // not sure why it is needed, maybe for calculating the normals 
+
+        scene.add(  box  ); 
+
+        var collidableMeshList = [] ;
+        collidableMeshList.push(box); 
+
+        var i=0;
+   
+        while(i < _this.actualAtoms.length ) {    
+
+          var originPointF = _this.actualAtoms[i].object3d.position.clone();
+          var dir = new THREE.Vector3(1,10,1);  
+          var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
+          var collisionResultsF = rayF.intersectObjects( collidableMeshList );
+
+          var touches = true ;
+          var radius = _this.actualAtoms[i].getRadius() ;
+       
+          if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
+
+            var box2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
+            box2.visible = false; // i have to delete the helper boxes
+            collidableMeshList.pop();
+            collidableMeshList.push(box2);
+
+            var vertexIndex = _this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
+            
+            while( vertexIndex >= 0 )
+            {     
+              var localVertex = _this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(_this.actualAtoms[i].object3d.matrixWorld);
+              var directionVector = globalVertex.sub( originPointF );     
+              
+              var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
+    
+              var collisionResults = ray.intersectObjects( collidableMeshList );
+                 
+              if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
+                vertexIndex = -2;  
+                
+              }
+              vertexIndex--;
+              if(vertexIndex === -1) touches = false;
+            }  
+            if(!touches) _this.actualAtoms[i].object3d.visible = false ;
+          } 
+          _this.actualAtoms[i].GradeLimited();
+          i++;   
+        }  
+      }
       else if(this.viewMode === 'Classic'){ 
+        var found = false, objectSolidVoid;
+    
+        var objectSolidVoid = scene.getObjectByName('solidvoid');
+        if(!_.isUndefined(objectSolidVoid)) {
+          found = true;
+          objectSolidVoid.visible = false;
+          if(arg.reset !== undefined){
+            if(this.solidVoidObject !== undefined){ 
+              this.solidVoidObject = undefined;
+            }
+            scene.remove(objectSolidVoid);
+          }
+        } 
+
         while(i < this.actualAtoms.length ) { 
           this.actualAtoms[i].object3d.visible = true;
-          this.actualAtoms[i].classicView(); 
+          if(arg.reset === true){
+            this.actualAtoms[i].viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false};
+          }
+          //this.actualAtoms[i].classicView(); 
+          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
+            this.actualAtoms[i].subtractedForGear.object3d.visible = false; 
+            if(arg.reset === true){ 
+              this.actualAtoms[i].removeSubtractedForGear();
+            } 
+          }
           i++;
-        }  
-        var object = scene.getObjectByName('solidvoid');
-        if(!_.isUndefined(object)) {
-          scene.remove(object);
-        }
+        }   
       } 
-    }   
+    } 
+    this.menu.progressBarFinish();   
   };
   Lattice.prototype.toggleRadius = function(arg) {
     
@@ -977,13 +1104,15 @@ define([
             });
           });
         } 
-      }   
-       
+      }    
     //});  
-
-
+ 
   };
   Lattice.prototype.planeParameterChange = function(arg) {
+
+    if(arg.h === undefined || arg.k === undefined || arg.l === undefined){
+      return;
+    }
     var _this = this, parameters = this.parameters ;
      
     if( !_.isUndefined(arg.planeColor)) {
@@ -1778,148 +1907,89 @@ define([
     );
 
   };
-  Lattice.prototype.selectPlane = function (which){ 
-    
-    if(which === this.planeState.editing && this.planeState.state === 'editing'){
+  Lattice.prototype.submitPlane = function(millerParameters) { console.log(millerParameters);
+    if(
+      ( millerParameters.millerH === "" || 
+        millerParameters.millerK === "" || 
+        millerParameters.millerL === ""
+      )
+      && ( millerParameters.button==="savePlane")) {
       return;
-    } 
-    for (var i = 0; i < this.tempPlanes.length; i++) {
-      this.tempPlanes[i].plane.destroy(); 
-      if( i === 0){
-        this.menu.editSavedPlane({ action : 'delete', oldId : this.tempPlanes[0].id});
-      }
-    };  
-    this.tempPlanes.splice(0); 
-
-    var _this = this;
-    var h,k,l,name,color, opacity;
-    PubSub.publish(events.PLANE_STATE,"editing");
- 
-    var index ;
-    for (var i = 0; i < this.millerPlanes.length; i++) { 
-      if(this.millerPlanes[i].id === which) {
-        this.tempPlanes.push(this.millerPlanes[i]);
-        h = this.millerPlanes[i].h; 
-        k = this.millerPlanes[i].k;
-        l = this.millerPlanes[i].l;
-        name = this.millerPlanes[i].planeName;
-        color =  this.millerPlanes[i].planeColor;
-        opacity =  this.millerPlanes[i].planeOpacity;  
-        index=i;
-      }
-    }   
-    this.millerPlanes.splice(index,1);
-
-    _this.planeState.editing = which;
-    _this.planeState.dname = name;
-       
-    this.menu.editPlaneInputs(
-      {
-        'millerH' : h,
-        'millerK' : k,
-        'millerL' : l,
-        'millerI' : -1,
-        'planeColor' : '#'+color,
-        'planeOpacity' : opacity,
-        'planeName' : name
-      } 
-    );
-
-  };
-  Lattice.prototype.onDirectionStateChange = function(callback) {
-    PubSub.subscribe(events.DIRECTION_STATE, callback);
-  };
-  Lattice.prototype.onPlaneStateChange = function(callback) { 
-    PubSub.subscribe(events.PLANE_STATE, callback);
-  };
-  Lattice.prototype.directionState = function (state){
+    }
     var _this = this ;
-    _this.directionalState.state = state;
-    switch(state) {
-        case "initial": 
-          this.menu.disableDirectionButtons(
-            {
-              'saveDirection' : true,
-              'deleteDirection' : true,
-              'newDirection' : false
-            }
-          );
-          this.menu.disableDirectionInputs(
-            {
-              'millerU' : true,
-              'millerV' : true,
-              'millerW' : true,
-              'millerT' : true,
-              'directionColor' : true,
-              'dirRadius' : true,
-              'directionName' : true
-            }
-          );
-          this.menu.editDirectionInputs(
-            {
-              'millerU' : 1,
-              'millerV' : 1,
-              'millerW' : 1,
-              'millerT' : -1,
-              'directionColor' : '#1F2227',
-              'dirRadius' : 1,
-              'directionName' : ""
-            }
-          );  
-          break;
-        case "creating": 
-          this.menu.disableDirectionButtons(
-            {
-              'saveDirection' : true,
-              'deleteDirection' : false,
-              'newDirection' : true 
-            }
-          );
-          this.menu.disableDirectionInputs(
-            {
-              'millerU' : false,
-              'millerV' : false,
-              'millerW' : false,
-              'millerT' : false,
-              'directionColor' : false,
-              'dirRadius' : false,
-              'directionName' : false
-            }
-          );
-          this.menu.editDirectionInputs(
-            {
-              'millerU' : 1,
-              'millerV' : 1,
-              'millerW' : 1,
-              'millerT' : -1,
-              'directionColor' : '#FFFFFF',
-              'dirRadius' : 1,
-              'directionName' : ""
-            }
-          );
-          break;
-        case "editing":  
-          this.menu.disableDirectionButtons( 
-            {
-              'saveDirection' : false,
-              'deleteDirection' : false,
-              'newDirection' : true
-            }
-          );
-          this.menu.disableDirectionInputs(
-            {
-              'millerU' : false,
-              'millerV' : false,
-              'millerW' : false,
-              'millerT' : false,
-              'directionColor' : false,
-              'dirRadius' : false,
-              'directionName' : false
-            }
-          );
-          break;
+    var buttonClicked = millerParameters.button ;
+    var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+ 
+    if (_this.planeState.state === "initial"){
+      if( buttonClicked === "newPlane"){  
+        this.menu.editSavedPlane(
+          { 
+            'action' : 'save', 
+            'id' : 'current', 
+            'h' : ' ',
+            'k' : ' ',
+            'l' : ' ',
+            'i' : ' ',
+            'name' : ' ', 
+            'color' : '#'+millerParameters.planeColor
+          } 
+        ); 
+        PubSub.publish(events.PLANE_STATE,"creating");
       }
-  }
+    }
+    else if (_this.planeState.state === "creating"){
+      switch(buttonClicked) {  
+        case "savePlane":
+         /*
+        for (var i = 0; i < this.tempPlanes.length; i++) {
+          this.tempPlanes[i].plane.destroy(); 
+        };
+        this.tempPlanes.splice(0);
+        this.createMillerPlane(millerParameters, true, false);
+        PubSub.publish(events.PLANE_STATE,"creating");
+        
+          PubSub.publish(events.PLANE_STATE,"initial");
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
+          var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
+          if(_.isUndefined(found)){
+            this.createMillerPlane(millerParameters, false, false);
+            this.updatePlaneList(millerParameters, undefined, 'save'); 
+          }
+          break; 
+          */
+      }
+    }
+    else if (_this.planeState.state === "editing"){
+
+      switch(buttonClicked) {  
+        case "savePlane": 
+          PubSub.publish(events.PLANE_STATE,"initial");
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
+           
+          var suc = this.updatePlaneList(millerParameters, this.planeState.editing, 'edit'); 
+          if( suc === undefined){
+            this.createMillerPlane(millerParameters, false, false); 
+          }
+          
+          break;
+
+        case "deletePlane": 
+          PubSub.publish(events.PLANE_STATE,"initial"); 
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
+          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
+          break;
+      } 
+    }  
+  };
   Lattice.prototype._planeState = function (state){ 
     var _this = this ;
     _this.planeState.state = state;
@@ -1934,10 +2004,10 @@ define([
           );
           this.menu.editPlaneInputs(
             {
-              'millerH' : 1,
-              'millerK' : 1,
-              'millerL' : 1,
-              'millerI' : -1,
+              'millerH' : '',
+              'millerK' : '',
+              'millerL' : '',
+              'millerI' : '',
               'planeColor' : "#1F2227",
               'planeOpacity' : 10,
               'planeName' : ""
@@ -2007,7 +2077,172 @@ define([
           ); 
           break;
       }
+  };
+  Lattice.prototype.selectPlane = function (which){ 
+
   }
+  Lattice.prototype.selectPlane = function (which){ 
+      
+    if(which === 'current' ){
+      var params = this.menu.getPlaneInputs();
+      if
+      ( isNaN(params.millerH) || isNaN(params.millerK) || isNaN(params.millerL) ) {
+        return;
+      }
+        
+      for (var i = 0; i < this.tempPlanes.length; i++) {
+        this.tempPlanes[i].plane.destroy(); 
+      };
+      this.tempPlanes.splice(0);
+    
+      var suc = this.updatePlaneList(params, 'current', 'edit'); 
+      if( suc === undefined){
+        this.createMillerPlane(params, true, false);
+        PubSub.publish(events.PLANE_STATE,"editing"); 
+      }
+      else{
+        // this.menu.tooltip('This plane already exists!');
+      } 
+      return;
+    }
+ 
+    for (var i = 0; i < this.tempPlanes.length; i++) {
+      this.tempPlanes[i].plane.destroy(); 
+      if( i === 0){
+        this.menu.editSavedPlane({ action : 'delete', oldId : this.tempPlanes[0].id});
+      }
+    };  
+    this.tempPlanes.splice(0); 
+
+    var _this = this;
+    var h,k,l,name,color, opacity;
+    PubSub.publish(events.PLANE_STATE,"editing");
+ 
+    var index ;
+    for (var i = 0; i < this.millerPlanes.length; i++) { 
+      if(this.millerPlanes[i].id === which) {
+        this.tempPlanes.push(this.millerPlanes[i]);
+        h = this.millerPlanes[i].h; 
+        k = this.millerPlanes[i].k;
+        l = this.millerPlanes[i].l;
+        name = this.millerPlanes[i].planeName;
+        color =  this.millerPlanes[i].planeColor;
+        opacity =  this.millerPlanes[i].planeOpacity;  
+        index=i;
+      }
+    }   
+    this.millerPlanes.splice(index,1);
+
+    this.planeState.editing = which;
+    this.planeState.dname = name;
+       
+    this.menu.editPlaneInputs(
+      {
+        'millerH' : h,
+        'millerK' : k,
+        'millerL' : l,
+        'millerI' : -1,
+        'planeColor' : '#'+color,
+        'planeOpacity' : opacity,
+        'planeName' : name
+      } 
+    );
+ 
+  };
+  Lattice.prototype.onDirectionStateChange = function(callback) {
+    PubSub.subscribe(events.DIRECTION_STATE, callback);
+  };
+  Lattice.prototype.onPlaneStateChange = function(callback) { 
+    PubSub.subscribe(events.PLANE_STATE, callback);
+  };
+  Lattice.prototype.directionState = function (state){
+    var _this = this ;
+    _this.directionalState.state = state;
+    switch(state) {
+        case "initial": 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : true,
+              'newDirection' : false
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : true,
+              'millerV' : true,
+              'millerW' : true,
+              'millerT' : true,
+              'directionColor' : true,
+              'dirRadius' : true,
+              'directionName' : true
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : '',
+              'millerV' : '',
+              'millerW' : '',
+              'millerT' : '',
+              'directionColor' : '#1F2227',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );  
+          break;
+        case "creating": 
+          this.menu.disableDirectionButtons(
+            {
+              'saveDirection' : true,
+              'deleteDirection' : false,
+              'newDirection' : true 
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
+          this.menu.editDirectionInputs(
+            {
+              'millerU' : 1,
+              'millerV' : 1,
+              'millerW' : 1,
+              'millerT' : -1,
+              'directionColor' : '#FFFFFF',
+              'dirRadius' : 1,
+              'directionName' : ""
+            }
+          );
+          break;
+        case "editing":  
+          this.menu.disableDirectionButtons( 
+            {
+              'saveDirection' : false,
+              'deleteDirection' : false,
+              'newDirection' : true
+            }
+          );
+          this.menu.disableDirectionInputs(
+            {
+              'millerU' : false,
+              'millerV' : false,
+              'millerW' : false,
+              'millerT' : false,
+              'directionColor' : false,
+              'dirRadius' : false,
+              'directionName' : false
+            }
+          );
+          break;
+      }
+  } 
   Lattice.prototype.submitDirectional = function(millerParameters) {   
     if( (millerParameters.millerU === "" || millerParameters.millerV === "" || millerParameters.millerW==="")
       && ( millerParameters.button === "saveDirection")) { 
@@ -2072,97 +2307,15 @@ define([
           break;
       } 
     }  
-  };
-
-  Lattice.prototype.submitPlane = function(millerParameters) { 
-    if(
-      ( millerParameters.millerH === "" || 
-        millerParameters.millerK === "" || 
-        millerParameters.millerL === ""
-      )
-      && ( millerParameters.button==="savePlane")) {
-      return;
-    }
-    var _this = this ;
-    var buttonClicked = millerParameters.button ;
-    var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
- 
-    if (_this.planeState.state === "initial"){
-      if( buttonClicked === "newPlane"){  
-        this.menu.editSavedPlane(
-          { 
-            'action' : 'save', 
-            'id' : 'current', 
-            'h' : ' ',
-            'k' : ' ',
-            'l' : ' ',
-            'i' : ' ',
-            'name' : ' ', 
-            'color' : '#'+millerParameters.planeColor
-          } 
-        ); 
-      }
-    }
-    else if (_this.planeState.state === "creating"){
-      switch(buttonClicked) {  
-        case "savePlane":
-         /*
-        for (var i = 0; i < this.tempPlanes.length; i++) {
-          this.tempPlanes[i].plane.destroy(); 
-        };
-        this.tempPlanes.splice(0);
-        this.createMillerPlane(millerParameters, true, false);
-        PubSub.publish(events.PLANE_STATE,"creating");
-        
-          PubSub.publish(events.PLANE_STATE,"initial");
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
-          if(_.isUndefined(found)){
-            this.createMillerPlane(millerParameters, false, false);
-            this.updatePlaneList(millerParameters, undefined, 'save'); 
-          }
-          break; 
-          */
-      }
-    }
-    else if (_this.planeState.state === "editing"){
-
-      switch(buttonClicked) { 
-
-        case "savePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial");
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          var suc = this.updatePlaneList(millerParameters, this.planeState.editing, 'edit'); 
-          if( suc === undefined){
-            this.createMillerPlane(millerParameters, false, false); 
-          }
-          
-          break;
-
-        case "deletePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial"); 
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
-          break;
-      } 
-    }  
-  };
-    
+  }; 
   Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
     var _this = this ; 
 
     if( oldId !== undefined){ 
       _.each(_this.planeList, function(x, reference) {
-        if(x.id === oldId) delete _this.planeList[reference];
+        if(x.id === oldId) {
+          delete _this.planeList[reference];
+        }
       }); 
     } 
     var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";  

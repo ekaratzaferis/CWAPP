@@ -76,12 +76,12 @@ define([
   MouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
     
+    event.preventDefault();
+
     if(this.container === 'hudRendererCube' && this.enableCubeEvents === false){
       return;
     }
-
-    event.preventDefault();
-
+ 
     if(this.container === 'motifPosX' ){
       mouse.x = ( -1 + 2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
       mouse.y = (  3 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
@@ -139,10 +139,10 @@ define([
             index = 2 ;
           }
            
-          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.jpg' ) });
+          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.png' ) });
           
           for (var i = 0; i<6; i++) {
-            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.jpg' ) });
+            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.png' ) });
           };
         }
         else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name == 'arrowLine'){
@@ -229,12 +229,12 @@ define([
   }
   MouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this =this;
-   
+    
+    event.preventDefault();
+
     if(this.func === 'navCubeDetect' && this.enableCubeEvents === false){
       return;
     }
-
-    event.preventDefault();
 
     this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  

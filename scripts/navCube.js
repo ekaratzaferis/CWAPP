@@ -30,32 +30,32 @@ function NavCube( scene, latticeParams) {
     this.materialArray = [];
 
     var textureLoader = new THREE.TextureLoader(); 
-    textureLoader.load("Images/0.jpg",
+    textureLoader.load("Images/0.png",
       function(tex){  
         _this.addMaterial(tex,0) ;
       }
     );
-    textureLoader.load("Images/1.jpg",
+    textureLoader.load("Images/1.png",
       function(tex){  
         _this.addMaterial(tex,1) ;
       }
     );
-    textureLoader.load("Images/2.jpg",
+    textureLoader.load("Images/2.png",
       function(tex){  
         _this.addMaterial(tex,2) ;
       }
     );
-    textureLoader.load("Images/3.jpg",
+    textureLoader.load("Images/3.png",
       function(tex){  
         _this.addMaterial(tex,3) ;
       }
     );
-    textureLoader.load("Images/4.jpg",
+    textureLoader.load("Images/4.png",
       function(tex){  
         _this.addMaterial(tex,4) ;
       }
     );
-    textureLoader.load("Images/5.jpg",
+    textureLoader.load("Images/5.png",
       function(tex){  
         _this.addMaterial(tex,5) ;
       }

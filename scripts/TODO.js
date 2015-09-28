@@ -1,12 +1,4 @@
- 
-Picture B: 
-3. Constructing lattice loader should only show up after 3 (if possible)
-4. Sliders are too sensitive – needs adjustments on max/min ranges
-
-Picture C:  
-3. Can we remove all extra options when in motif editor mode?
- 
-
+  
 ADDING
 a. User starts with everything emptied / grayed out (hkl/name..)
 b. Leads to user clicking on new plane, which adds an empty item on list

@@ -145,8 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-
-
+ 
     var _this = this ;
     var radius = this.atomsData[params.element].radius/100
     var newId = "_"+produceUuid() ;
@@ -339,7 +338,7 @@ define([
 
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
-       
+       console.log(98444);
     var x = $('#Ab').val() ;
     var y = $('#Ac').val() ;
     var z = $('#Aa').val() ;
@@ -1597,9 +1596,10 @@ define([
     _this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
     var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
-  
+    console.log(arg.state);
     switch(arg.state) {
       case "initial":  
+        
         this.menu.disableMEButtons(
           {
             'atomPalette' : false,
@@ -1654,11 +1654,12 @@ define([
         ); 
         break;
       case "creating":
+       
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
-            'saveAtomChanges' : false,
-            'previewAtomChanges' : false, 
+            //'saveAtomChanges' : false,
+            //'previewAtomChanges' : false, 
             'deleteAtom' : false 
           }
         );  
@@ -1705,7 +1706,7 @@ define([
           }
         );  
         break;
-      case "editing":
+      case "editing":console.log(7);
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -4152,7 +4153,7 @@ define([
             var collisionResults = ray.intersectObjects( collidableMeshList );
                
             if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
-              vertexIndex = -2;  
+              vertexIndex = -2; 
               
             }
             vertexIndex--;

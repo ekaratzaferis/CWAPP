@@ -250,7 +250,11 @@ body {
     color: #fff;
     background: #6f6299; }
     .btn.btn-purple:hover, .btn.btn-purple:active, .btn.btn-purple:focus {
-      background: #645889; }
+      background: #6f6299; }
+    .btn.btn-purple.disabled {
+        color: #fff;
+        background: #6f6299; 
+        cursor: not-allowed;}
   .btn.btn-purple-light {
     background: #74629c; }
     .btn.btn-purple-light:hover, .btn.btn-purple-light:active, .btn.btn-purple-light:focus {
@@ -260,9 +264,13 @@ body {
     .btn.btn-purple-dark:hover, .btn.btn-purple-dark:active, .btn.btn-purple-dark:focus {
       background: #3a2f60; }
   .btn.btn-light {
-    background: #3c4147; }
+    background: #36383d; }
     .btn.btn-light:hover, .btn.btn-light:active, .btn.btn-light:focus {
-      background: #303439; }
+      background: #524D6C; }
+    .btn.btn-light.disabled {
+        color: #fff;
+        background: #36383d; 
+        cursor: not-allowed;}
   .btn.btn-dark {
     color: #3f4247;
     background: #353942; }
@@ -641,6 +649,7 @@ body {
   position: relative;
   width: 500px;
     float:right;
+    zoom: 100%;
   background: #34373e; }
   .main-controls-container .main-controls-wrapper {
     position: relative; }
@@ -808,16 +817,26 @@ label {
 
 /*==========  Actions  ==========*/
 .action a {
-  background: #15171b;
-  -webkit-transition: all 0.3s linear;
-  -moz-transition: all 0.3s linear;
-  -ms-transition: all 0.3s linear;
-  -o-transition: all 0.3s linear;
-  transition: all 0.3s linear; }
-  .action a:hover, .action a:active, .action a:focus {
+  background: #15171b;}
+  .action a:hover {
     cursor:pointer;
     text-decoration: none;
-    background: #08090b; }
+    background: #36383d; }
+  .action a:active, .action a:focus{
+    cursor:pointer;
+    text-decoration: none;
+    background: #15171b; }
+  .action.disabled a{
+      background: #36383d;
+      cursor: not-allowed; 
+  }
+
+.action.purpleTheme a{background: #34373e; color: #43464b;}
+.action.purpleTheme a:hover{background: #524D6C; color: #fff;}
+.action.purpleTheme.purpleThemeActive a{background: #6F6299; color: #fff;}
+.action.purpleTheme.purpleThemeActive a:hover{background: #6F6299; color: #fff;}
+.action.purpleTheme.disabled a{background: #34373e; cursor: not-allowed; }
+.action.purpleTheme.disabled a:hover{background: #34373e; cursor: not-allowed; }
 
 .bottom-action-bar-container .action {
   text-align: center; }
@@ -1346,7 +1365,7 @@ label {
       -webkit-border-radius: 0;
       border-radius: 0;
       background-clip: padding-box; }
-      .controller-tab-controls .main-tab-nav-container .nav li a .hover {
+      .controller-tab-controls .main-tab-nav-container .nav li a .hover { 
         position: absolute;
         top: 50%;
         left: 50%;
@@ -1367,7 +1386,7 @@ label {
         -ms-transform: translateY(-50%);
         -o-transform: translateY(-50%);
         transform: translateY(-50%); }
-    .controller-tab-controls .main-tab-nav-container .nav li.active a {
+    .controller-tab-controls .main-tab-nav-container .nav li.active a { 
       background: #fff;
       border-color: transparent; }
       .controller-tab-controls .main-tab-nav-container .nav li.active a .hover {
@@ -1401,8 +1420,6 @@ label {
         .controller-toggle-controls .main-toggle-nav-container ul li a {
           display: block;
           padding: 5px; }
-          .controller-toggle-controls .main-toggle-nav-container ul li a:hover, .controller-toggle-controls .main-toggle-nav-container ul li a:active, .controller-toggle-controls .main-toggle-nav-container ul li a:focus {
-            background: #2f3238; }
 
 /*==========  Tooltip  ==========*/
 .tooltip {
@@ -2481,7 +2498,7 @@ label {
     -o-opacity: 1;
     opacity: 1; }
   .visualization-tab-pane .tab-blocks-container .sound-light-block .block-content .btn-group .btn.active {
-    background: #0a0b0d; }
+    background: #6f6299; }
     .visualization-tab-pane .tab-blocks-container .sound-light-block .block-content .btn-group .btn.active .img-responsive {
       -webkit-opacity: 1;
       -khtml-opacity: 1;
@@ -3036,15 +3053,6 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     font-size: 13px;
     color: white;
 }
-/*#progressBar{
-    margin-top: -2%;
-    margin-left: 20%;
-    margin-right: 20%;
-}
-#progressBar > .ui-progressbar-value {
-   background: purple;
-   border-color: purple;
-}*/
 html,body {
     height: 100%;
 }
@@ -3057,3 +3065,93 @@ html,body {
 .ui-slider-horizontal:hover{
     cursor: pointer;
 }
+#leap_id{
+    top:0px; 
+    position: fixed; 
+    z-Index: 10000; 
+    background-color:#585858; 
+    opacity:0.7;
+}
+#leapIcon{
+    background-image: url('../Images/leapicon.png'); 
+    position: fixed;  
+    z-index:11;   
+}
+#unitCellRenderer{
+    float: left;
+}
+#crystalRenderer{
+    float: left;
+}
+#hudRenderer{
+    opacity:1; 
+    position: fixed; 
+    z-index:10;   
+}
+#hudRendererCube{
+    position: fixed; 
+    z-index:10;
+}
+#motifRenderer{
+    position:fixed;
+}
+#motifPosX,#motifPosY,#motifPosZ{
+    display: table-cell;
+}
+#motifScreenTable{
+    display: table; 
+    position:fixed;
+    bottom:0;
+}
+#elementSymbolContainer{
+    display: none;
+}
+#motifPadlock{
+    background: #15171b;
+}
+#motifPadlock:hover{
+    background: #08090b;
+}
+.list-title{padding-bottom:5px;}
+
+
+.lightTheme{background: #34373e;}
+.lightTheme:hover{background: #3C3D4A;cursor: pointer;}
+.lightTheme.lightThemeActive{background: #434255;}
+.lightTheme.lightThemeActive:hover{background: #434255;}
+
+.toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
+.toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
+.toggle_menu.lightThemeActive #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
+
+.toggle_menu #edges{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-02.png');}
+.toggle_menu:hover #edges{background-image: url('../Images/toggle-icon-active-02.png');}
+.toggle_menu.lightThemeActive #edges{background-image: url('../Images/toggle-icon-active-02.png');}
+
+.toggle_menu #faces{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-03.png');}
+.toggle_menu:hover #faces{background-image: url('../Images/toggle-icon-active-03.png');}
+.toggle_menu.lightThemeActive #faces{background-image: url('../Images/toggle-icon-active-03.png');}
+
+.toggle_menu #xyzAxes{ height: 40px; width: 53px; background-image: url('../Images/toggle-icon-04.png');}
+.toggle_menu:hover #xyzAxes{background-image: url('../Images/toggle-icon-active-04.png');}
+.toggle_menu.lightThemeActive #xyzAxes{background-image: url('../Images/toggle-icon-active-04.png');}
+
+.toggle_menu #abcAxes{ height: 40px; width: 53px; background-image: url('../Images/toggle-icon-05.png');}
+.toggle_menu:hover #abcAxes{background-image: url('../Images/toggle-icon-active-05.png');}
+.toggle_menu.lightThemeActive #abcAxes{background-image: url('../Images/toggle-icon-active-05.png');}
+
+.toggle_menu #planes{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-06.png');}
+.toggle_menu:hover #planes{background-image: url('../Images/toggle-icon-active-06.png');}
+.toggle_menu.lightThemeActive #planes{background-image: url('../Images/toggle-icon-active-06.png');}
+
+.toggle_menu #directions{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-07.png');}
+.toggle_menu:hover #directions{background-image: url('../Images/toggle-icon-active-07.png');}
+.toggle_menu.lightThemeActive #directions{background-image: url('../Images/toggle-icon-active-07.png');}
+
+.toggle_menu #atomRadius{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-08.png');}
+.toggle_menu:hover #atomRadius{background-image: url('../Images/toggle-icon-active-08.png');}
+.toggle_menu.lightThemeActive #atomRadius{background-image: url('../Images/toggle-icon-active-08.png');}
+
+.toggle_menu #atomToggle{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-09.png');}
+.toggle_menu:hover #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
+.toggle_menu.lightThemeActive #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
