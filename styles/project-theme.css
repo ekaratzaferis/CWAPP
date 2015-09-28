@@ -3114,6 +3114,7 @@ html,body {
 }
 .list-title{padding-bottom:5px;}
 
+
 .lightTheme{background: #34373e;}
 .lightTheme:hover{background: #3C3D4A;cursor: pointer;}
 .lightTheme.lightThemeActive{background: #434255;}
@@ -3123,14 +3124,34 @@ html,body {
 .toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 .toggle_menu.lightThemeActive #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 
-.toggle_menu #edges{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-02.png');}
+.toggle_menu #edges{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-02.png');}
 .toggle_menu:hover #edges{background-image: url('../Images/toggle-icon-active-02.png');}
 .toggle_menu.lightThemeActive #edges{background-image: url('../Images/toggle-icon-active-02.png');}
 
-.toggle_menu #faces{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-03.png');}
+.toggle_menu #faces{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-03.png');}
 .toggle_menu:hover #faces{background-image: url('../Images/toggle-icon-active-03.png');}
 .toggle_menu.lightThemeActive #faces{background-image: url('../Images/toggle-icon-active-03.png');}
 
 .toggle_menu #xyzAxes{ height: 40px; width: 53px; background-image: url('../Images/toggle-icon-04.png');}
 .toggle_menu:hover #xyzAxes{background-image: url('../Images/toggle-icon-active-04.png');}
 .toggle_menu.lightThemeActive #xyzAxes{background-image: url('../Images/toggle-icon-active-04.png');}
+
+.toggle_menu #abcAxes{ height: 40px; width: 53px; background-image: url('../Images/toggle-icon-05.png');}
+.toggle_menu:hover #abcAxes{background-image: url('../Images/toggle-icon-active-05.png');}
+.toggle_menu.lightThemeActive #abcAxes{background-image: url('../Images/toggle-icon-active-05.png');}
+
+.toggle_menu #planes{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-06.png');}
+.toggle_menu:hover #planes{background-image: url('../Images/toggle-icon-active-06.png');}
+.toggle_menu.lightThemeActive #planes{background-image: url('../Images/toggle-icon-active-06.png');}
+
+.toggle_menu #directions{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-07.png');}
+.toggle_menu:hover #directions{background-image: url('../Images/toggle-icon-active-07.png');}
+.toggle_menu.lightThemeActive #directions{background-image: url('../Images/toggle-icon-active-07.png');}
+
+.toggle_menu #atomRadius{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-08.png');}
+.toggle_menu:hover #atomRadius{background-image: url('../Images/toggle-icon-active-08.png');}
+.toggle_menu.lightThemeActive #atomRadius{background-image: url('../Images/toggle-icon-active-08.png');}
+
+.toggle_menu #atomToggle{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-09.png');}
+.toggle_menu:hover #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
+.toggle_menu.lightThemeActive #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}

@@ -1428,7 +1428,10 @@ define([
                 }
             });
         
-        
+            
+            console.log(_this.getDirectionInputs());
+            console.log(_this.getPlaneInputs());
+            
         
     /*$
     
@@ -1598,6 +1601,29 @@ define([
                 }
             });
         };
+        Menu.prototype.getPlaneInputs = function(){
+            var argument = {};
+            _.each(planeParameters, function($parameter, k) {
+                switch(k){
+                    case 'millerI':
+                        if($parameter !== undefined) argument[k] = $parameter.val();
+                        break;
+
+                    case 'planeColor':
+                        argument['planeColor'] = $parameter.spectrum('get').toHexString();
+                        break;
+
+                    case 'planeOpacity':
+                        argument['planeOpacity'] = $parameter.selectpicker('val');
+                        break;
+                        
+                    default: 
+                        argument[k] = $parameter.val();
+                        break;
+                }
+            });
+            return argument;
+        };
         Menu.prototype.disablePlaneInputs = function(argument){
             _.each(planeParameters, function($parameter, k) {
                 if (argument[k] !== undefined){
@@ -1735,6 +1761,30 @@ define([
                     default: break;
                 }
             });
+        };
+        Menu.prototype.getDirectionInputs = function(argument){
+            var argument = {};
+            _.each(directionParameters, function($parameter, k) {
+                switch(k){
+                        
+                    case 'millerT':
+                        if($parameter !== undefined) argument[k] = $parameter.val();
+                        break;
+
+                    case 'directionColor':
+                        argument['directionColor'] = $parameter.spectrum('get').toHexString();
+                        break;
+
+                    case 'dirRadius':
+                        argument['dirRadius'] = $parameter.selectpicker('val');
+                        break;
+                        
+                    default: 
+                        argument[k] = $parameter.val();
+                        break;
+                }
+            });
+            return argument;
         };
         Menu.prototype.disableDirectionInputs = function(argument){
             _.each(directionParameters, function($parameter, k) {
