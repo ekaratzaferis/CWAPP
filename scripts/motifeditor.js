@@ -586,7 +586,19 @@ define([
     }  
 
     this.configureCellPoints();
-    
+    /*
+    if(this.padlock === true && this.globalTangency === true){
+     
+      var _dimensions = this.findMotifsDimensions(_this.newSphere.object3d.position, _this.newSphere.getRadius());   
+
+      var dimensions = this.calcABCforParticularCases(_dimensions);
+
+      // for volume reduce functionality 
+      this.initVolumeState();
+
+    }
+      */
+
     this.menu.editMEInputs(
       {   
         'Aa' : this.cellParameters.scaleZ,
@@ -633,9 +645,7 @@ define([
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) {
       for (var j = this.unitCellAtoms.length - 1; j >= 0; j--) { 
         if((this.unitCellAtoms[i].latticeIndex != this.unitCellAtoms[j].latticeIndex) && (this.unitCellAtoms[j].object3d !== undefined) && (this.unitCellAtoms[i].object3d !== undefined)){   
-          if( ((this.unitCellAtoms[i].object3d.position.distanceTo(this.unitCellAtoms[j].object3d.position) + 0.0000001) < (this.unitCellAtoms[i].getRadius() + this.unitCellAtoms[j].getRadius())) && (this.unitCellAtoms[j].object3d.position.distanceTo(this.unitCellAtoms[i].object3d.position) != 0 )){  
-            console.log(this.unitCellAtoms[j]);
-            console.log(this.unitCellAtoms[i]);
+          if( ((this.unitCellAtoms[i].object3d.position.distanceTo(this.unitCellAtoms[j].object3d.position) + 0.0000001) < (this.unitCellAtoms[i].getRadius() + this.unitCellAtoms[j].getRadius())) && (this.unitCellAtoms[j].object3d.position.distanceTo(this.unitCellAtoms[i].object3d.position) != 0 )){   
             coll = true;
           }
         }
@@ -655,15 +665,14 @@ define([
     var _perc ;
 
     if((this.cellVolume.xInitVal >= this.cellVolume.yInitVal) && (this.cellVolume.xInitVal >= this.cellVolume.zInitVal)){
-      _perc = (this.cellVolume.xInitVal - 0.5) / this.cellVolume.xInitVal ;
+      _perc = (this.cellVolume.xInitVal - (par.step * 0.5)) / this.cellVolume.xInitVal ;
     }
     else if((this.cellVolume.yInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.yInitVal >= this.cellVolume.zInitVal)){
-      _perc = (this.cellVolume.yInitVal - 0.5) / this.cellVolume.yInitVal ;
+      _perc = (this.cellVolume.yInitVal - (par.step * 0.5)) / this.cellVolume.yInitVal ;
     }
     else if((this.cellVolume.zInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.zInitVal >= this.cellVolume.yInitVal)){
-      _perc = (this.cellVolume.zInitVal - 0.5) / this.cellVolume.zInitVal ;
-    }
-    console.log('perc :'+_perc);
+      _perc = (this.cellVolume.zInitVal - (par.step * 0.5)) / this.cellVolume.zInitVal ;
+    } 
     newVals.x = _perc * this.cellVolume.xInitVal; 
     newVals.y = _perc * this.cellVolume.yInitVal;
     newVals.z = _perc * this.cellVolume.zInitVal;
@@ -672,8 +681,8 @@ define([
     this.cellVolume.bCol = undefined;
     this.cellVolume.cCol = undefined;
 
-    var newValA = newVals.z ; 
-     
+    var newValA = newVals.z ;  
+
     this.setManuallyCellLengths({'Aa' : newValA }, 'volume');
     this.menu.setSliderValue("Aa", newValA); 
       
@@ -743,7 +752,7 @@ define([
          
       }  
 
-      var newPerc = 100*this.cellParameters.scaleX/this.cellVolume.xInitVal ;
+      var newPerc = 100 * this.cellParameters.scaleX/this.cellVolume.xInitVal ;
       /*this.menu.setSliderValue("cellVolume", 100);
       this.menu.setSliderMin("cellVolume", 90 );
       $("#cellVolume").val(100); 
@@ -760,7 +769,7 @@ define([
     if(this.cellMutex === false) {
       return ;
     }
-       console.log(par);
+       
     var moreCollisions = true;
 
     this.cellMutex = false ;
@@ -768,8 +777,7 @@ define([
     var counterHelper = 0; // help exit infinite loops in case of a bug
    
     while(moreCollisions === true && counterHelper < 10 ){
-      console.log('count : '+counterHelper);
-      console.log(this.cellParameters.scaleX);
+       
       if(par.Aa != undefined){ 
         this.cellParameters.scaleZ = parseFloat( par.Aa ); 
         // tangency check
@@ -841,7 +849,7 @@ define([
       this.updateLatticeTypeRL();
 
       moreCollisions = this.checkForMoreColls(); 
-      counterHelper++; 
+      counterHelper++;  
     } 
     
     /*if(aAtomIndex && this.unitCellAtoms[aAtomIndex].object3d !== undefined){  
@@ -2140,23 +2148,25 @@ define([
 
     var dimensions; 
 
-    if( (!this.padlock && this.globalTangency === false) || (manual != undefined)){ 
+    if( (!this.padlock && this.globalTangency === false) || (manual !== undefined)){   
       dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
     } 
     else{ 
-      if(this.newSphere === undefined || this.newSphere.object3d === undefined){
+      if(this.newSphere === undefined || this.newSphere.object3d === undefined){ 
         dimensions = this.findMotifsDimensions(undefined, undefined);  
       }
-      else{
+      else{ 
         dimensions = this.findMotifsDimensions(this.newSphere.object3d.position, this.newSphere.getRadius());   
       }
     } 
-      
+
     this.revertShearing();
       
     if(_this.latticeName !== 'hexagonal') {
       this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false, manual); 
-    } //edw paizei kapoio provlima me to oti vriskei collisions sunexeia me to obj
+    } 
+
+    //edw paizei kapoio provlima me to oti vriskei collisions sunexeia me
 
     this.cellPointsWithScaling(dimensions, true, manual); // todo fix that true  
  
@@ -2170,7 +2180,7 @@ define([
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {  
-                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) { 
+                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
                   if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
                     var offset = _this.unitCellAtoms[i].getUserOffset(); 
                     if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
@@ -2189,25 +2199,28 @@ define([
         case "face":   
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                  if(_this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
-                    var offset = _this.unitCellAtoms[i].getUserOffset();
-                    if(!_.isUndefined(_this.unitCellAtoms[i].object3d)){ 
-                      _this.unitCellAtoms[i].object3d.position.set( 
+              _.times(2 , function(_z) { 
+                _.each(_this.unitCellAtoms, function(a, i) { 
+                  if(a.latticeIndex === ("_"+_x+_y+_z)  && a.temp === undefined ){ 
+ 
+                    var offset = a.getUserOffset();
+                    
+                    if(!_.isUndefined(a.object3d)){ 
+
+                      a.object3d.position.set( 
                         _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
                         _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
                         _this.unitCellPositions["_"+_x+_y+_z].position.z + offset.z 
                       );
                     } 
                   } 
-                } 
+                });
               });
             });
           }); 
           for (var i = 0; i <= 1; i ++) {  
             for (var j = _this.unitCellAtoms.length - 1; j >= 0; j--) {
-              if(  _this.unitCellAtoms[j].wireframe !== undefined ){ 
+              if(  _this.unitCellAtoms[j].temp === undefined ){ 
                 if(_this.unitCellAtoms[j].latticeIndex === ("_"+i) ){  
                   var offset = _this.unitCellAtoms[j].getUserOffset(); 
                   if(!_.isUndefined(_this.unitCellAtoms[j].object3d)){ 
@@ -2373,7 +2386,9 @@ define([
           });
         });
       });
-    }  
+    } 
+
+   
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
@@ -2919,18 +2934,20 @@ define([
   Motifeditor.prototype.leastVolume = function(){ 
     
     var coll = false;
-    var percentage = 100;   
+    var step = 0;   
     
+    this.menu.resetProgressBar('Constructing cell...');
+
     while(coll === false && this.unitCellAtoms.length !== 0){ 
     
-      percentage -= 5; 
-      this.setManuallyCellVolume({ 'cellVolume' : percentage, 'trigger' : 'reducer'});
-      if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){ 
+      step += 1; 
+      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'});
+      if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         coll = true;
       }
     }   
-
- 
+    
+    this.menu.progressBarFinish();
 
     /*
     $("#cellVolume").val(100);  
@@ -3136,10 +3153,11 @@ define([
   }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
-      
+     
     for (var i = 0; i<this.unitCellAtoms.length; i++) {
        
       if(this.unitCellAtoms[i].myID === id ){ 
+      
         switch(axes) {
           case "x":  
             this.unitCellAtoms[i].object3d.position.x = parseFloat(val) ;
@@ -3163,7 +3181,7 @@ define([
        
     if(!_.isUndefined(_this.newSphere)){  
       if(_.isUndefined(_this.newSphere.object3d)){
-        if(!_.isUndefined(pos) ){ 
+        if(!_.isUndefined(pos) ){
           var helperObj = {
             "object3d" : {
               "position" : { 
@@ -3177,7 +3195,7 @@ define([
           myf=true;
         }
       }
-      else{  
+      else{
         var helperObj = {"object3d" : {"position" : { "x": _this.newSphere.object3d.position.x, "y":_this.newSphere.object3d.position.y, "z": _this.newSphere.object3d.position.z}}, getRadius: function() { return _this.newSphere.getRadius(); } } ; 
         this.motifsAtoms.push(helperObj); 
         myf=true;
@@ -3214,7 +3232,9 @@ define([
       }
     } 
  
-    if(myf) this.motifsAtoms.pop();
+    if(myf) {
+      this.motifsAtoms.pop();
+    }
      
     return cell; // remember these dimensions are in 2l (e.g for cubic primitive)
   };
@@ -4285,8 +4305,7 @@ define([
     }
   };
   Motifeditor.prototype.findShortestRadius = function(){
-    var r = _.min(this.motifsAtoms, function(atom){ return (atom.getRadius()); }); 
-
+    var r = _.min(this.motifsAtoms, function(atom){ return (atom.getRadius()); });  
     return r.getRadius() ;
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
@@ -4597,21 +4616,21 @@ define([
     var _this = this; 
 
     var dimensions;
+
     if( (!this.padlock && !this.globalTangency ) || _manual !== undefined){
-      dimensions = _dimensions ;   
+      dimensions = _dimensions ;  
     }
     else{  
       dimensions = this.calcABCforParticularCases(_dimensions); 
- 
+   
       // store initial values for reduce volume feature
       if(!(_dimensions.xDim === 1 && _dimensions.xDim && _dimensions.xDim) ){  
         this.cellVolume.xInitVal = dimensions.xDim;
         this.cellVolume.yInitVal = dimensions.yDim;
-        this.cellVolume.zInitVal = dimensions.zDim; 
-        
+        this.cellVolume.zInitVal = dimensions.zDim;  
       }
     } 
-
+     
     this.cellParameters.scaleX = dimensions.xDim;
     this.cellParameters.scaleY = dimensions.yDim;
     this.cellParameters.scaleZ = dimensions.zDim;
@@ -4762,8 +4781,7 @@ define([
       case "primitive":    
         _.times(2 , function(_x) {
           _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-               
+            _.times(2 , function(_z) { 
               unitCellPositions["_"+_x+_y+_z] = {
                 "position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), 
                 "latticeIndex" : "_"+_x+_y+_z 
@@ -4776,42 +4794,33 @@ define([
       case "face":   
         _.times(2 , function(_x) {
           _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-               
+            _.times(2 , function(_z) { 
               unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-               
             });
           });
         }); 
-        for (var i = 0; i <= 1; i ++) {
-          
+        for (var i = 0; i <= 1; i ++) { 
           unitCellPositions["_"+i] = {"position" : new THREE.Vector3( dimensions.xDim *i, dimensions.yDim *0.5, dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
           unitCellPositions["__"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *i, dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
-          unitCellPositions["___"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *0.5, dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
-          
+          unitCellPositions["___"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *0.5, dimensions.zDim *i), "latticeIndex" : "___"+i } ;   
         };
         break;
       case "body":   
         _.times(2 , function(_x) {
           _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-              
-              unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3(  dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-               
+            _.times(2 , function(_z) { 
+              unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3(  dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;   
             });
           });
         }); 
         
         unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/2) * dimensions.xDim , (1/2) * dimensions.yDim , (1/2) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
-        
         break;
       case "base":   
         _.times(2 , function(_x) {
           _.times(2 , function(_y) {
-            _.times(2 , function(_z) {
-             
+            _.times(2 , function(_z) { 
               unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-               
             });
           });
         });   

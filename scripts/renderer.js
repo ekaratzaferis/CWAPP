@@ -180,37 +180,43 @@ define([
       // hud arrows
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
-        if(this.containerWidth < 800 ){  
-          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight );
+        if(this.containerWidth < 1000 || this.containerHeight < 500 ){  
+
+          var tempW8 = 1.5 * 1.5 * this.containerWidth/this.displayFactor ;
+          var tempH8 = 1.5 * 1.5 * this.containerHeight/this.displayFactor ;
+          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight);
           this.renderer.setViewport(
+            this.containerWidth-tempW8, 
             0, 
-            0,  
-            1.2 * 1.5 * this.containerWidth/this.displayFactor, 
-            1.2 * 1.5 * this.containerHeight/this.displayFactor  
+            tempW8, 
+            tempH8  
           );
 
           this.renderer.setScissor( 
+            this.containerWidth-tempW8, 
             0, 
-            0,  
-            (1.2 * 1.5 * this.containerWidth)/this.displayFactor, 
-            (1.2 * 1.5 * this.containerHeight)/this.displayFactor  
-          ); 
+            tempW8, 
+            tempH8  
+          );
         }
         else{ 
+          var tempW8 = 1.5 * this.containerWidth/this.displayFactor ;
+          var tempH8 = 1.5 * this.containerHeight/this.displayFactor ;
+
           this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
           this.renderer.setViewport(
+            this.containerWidth-tempW8, 
             0, 
-            0,  
-            1.2 * this.containerWidth/this.displayFactor, 
-            1.2 * this.containerHeight/this.displayFactor  
+            tempW8, 
+            tempH8  
           );
 
-          this.renderer.setScissor( 
+          this.renderer.setScissor(  
+            this.containerWidth-tempW8, 
             0, 
-            0,  
-            1.2 * this.containerWidth/this.displayFactor, 
-            1.2 * this.containerHeight/this.displayFactor  
-          ); 
+            tempW8, 
+            tempH8  
+          );
  
         }
         
@@ -225,7 +231,7 @@ define([
       // hud cube
       if(this.hudCameraCube !== undefined ){  
           
-        if(this.containerWidth < 800 ){  
+        if(this.containerWidth < 1000 || this.containerHeight < 500 ){   
           this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
           this.renderer.setViewport(
             0, 
@@ -258,12 +264,13 @@ define([
           ); 
  
         }
-        
+         
+        this.hudCameraCube.updateProjectionMatrix();
+
         this.renderer.enableScissorTest ( true ); 
 
         this.renderer.setClearColor( this.backgroundColor ); 
-        this.hudCameraCube.updateProjectionMatrix();
-        
+         
         this.renderer.render( this.hudSceneCube, this.hudCameraCube);
         
         var arrowL = this.hudSceneCube.getObjectByName( "arrowLine" );

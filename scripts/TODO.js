@@ -1,15 +1,42 @@
+ 
+Picture B: 
+3. Constructing lattice loader should only show up after 3 (if possible)
+4. Sliders are too sensitive – needs adjustments on max/min ranges
+
+Picture C:  
+3. Can we remove all extra options when in motif editor mode?
+ 
+
+ADDING
+a. User starts with everything emptied / grayed out (hkl/name..)
+b. Leads to user clicking on new plane, which adds an empty item on list
+c. User changes value, previews… clicks on save. bvgt5
+d. On save click, item parameters are updated on the list (hkl, name…)
+
+CHANGING DATA
+a. User clicks on item list to select it
+b. Item is highlighted on the list and parameters are loaded to the
+menu (hkl, name…)
+c. User changes value, previews… clicks on save.
+d. On save click, item parameters are updated on the list (hkl, name…)
+
+Suggestion 2 (check in save stage) : the system lets the user enters
+whatever input he wants but it when he clicks the save button ifthere is already a
+saved plane/dir. It aborts the action informing him which plane/dir. of the saved
+ones is the same as the one he is currently trying to create.
+
  performance TODOs
  1. ola ta sphereGeometry na einai ena me scaling. 
  3. na dw ti paizei me grids faces.
  4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
 5. fps drop in unit cell renderern motif renderer
-  
+  6. suggest merge in crystal because atoms do not move.
 
   ui TODOs
   33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
   34. renderization mode - deacctivate menu
   35 gear bar tour to idio provlima me renderization mode
-  
+
 TODO list 
     
     6.  hex faces optimization 
@@ -42,47 +69,7 @@ TODO list
     32. When applying new motif to crystal auto position camera far from crystal.
     33. speed of WASD to be analogous to crystal size or analogous to the distance of the center
     -- when moving atom with sliders and collides unit cell atoms do not get tangent
-    
-VISUALIZATION TODOs
-
-    2- View modes
-    10- Stereoscopic Effect
-    4- panoramic or ortogonal view (it s called  enable distortion  today)
-    RENDERIZATION
-    1- Texture
-    14- *Wireframe
-    9- Atom radius
-    EVIRONMENT OPTIONS
-    14- Fog on/off - color and density
-    3- x, y, z and a, b, c axes (the same we have on the toggle bar)
-    7- lights on/off
-    12- Sounds on/off
-    5- Full screen option
-    TOOLS
-    6- text notes (button and tranparent box)
-    SCREEN CUSTOMIZATION
-    8- background s color change (all of them)
-    EXTERNAL GADGETS
-    13- Leap Motion
-    11- Rift Oculus
-
-
-TODO 2
-
-    1- change the URL project save/share to be cw.gl/### 
-    2- On the Motif Editor( ME), update the lenght and angles sliders in real time
-    3- On the ME - If the user clicks on fixed length, don t change it to be (1,1,1), let it on hte actual length
-    4-  on the Miller directions, add a line radius editor
-    5- Add a option to change the background color
-    6- Gearbox (tour)
-    7- 3D sound (sonar) on the crystal centar
-    8- Crystal doll
-    9- add the length values on the a, b and c axis
-    10- add fog
-    11- make a change on the unit cell visualization (to consider the neighbourhood atoms) - I ll explain when you choose to do this
-    12- add a lattice padlock
-    13- leap motion and rift oculus
-
+      
 
 List with Ideas
 
@@ -91,14 +78,6 @@ List with Ideas
     3. Miller object use sliders for indexes
     4. all screens resizable 
     5. parameters for lighting (maybe this is too much)
-       
-    8- Crystal doll  
-    11- make a change on the unit cell visualization (to consider the neighbourhood atoms) 
-    13- leap motion and rift oculus
- 
-
- New TODO
-
- 1. Fix Menu Position when Full Screen ( do this after new UI menu is applied)
+        
 
 

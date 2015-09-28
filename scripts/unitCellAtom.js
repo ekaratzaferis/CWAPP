@@ -170,7 +170,7 @@ define([
   };
   UnitCellAtom.prototype.setUserOffset = function(axes, val) {
     var _this = this ;
-    _this.userOffset[axes] = val ;
+    this.userOffset[axes] = val ;
   }; 
  
   UnitCellAtom.prototype.getID = function() {
