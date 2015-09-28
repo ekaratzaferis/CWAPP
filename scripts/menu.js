@@ -1427,14 +1427,6 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-<<<<<<< HEAD
-         
-=======
-        
-            
-            console.log(_this.getDirectionInputs());
-            console.log(_this.getPlaneInputs());
->>>>>>> 0fa709938f0638153a84466d5d65ec2d9a299371
             
         
     /*$
@@ -1702,6 +1694,7 @@ define([
 
             }
             if ( (argument['action']==='save') | (argument['action']==='edit') ){
+                $planesTable.find('#'+argument['id']).on('click',function(){console.log('asd');});
                 $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
                     PubSub.publish(events.PLANE_SELECTION, argument['id']);
                     $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
@@ -2158,11 +2151,11 @@ define([
            _.each($atomButtons, function($parameter, k) {
                 if (argument[k] !== undefined){
                     if (argument[k] === true) {
-                        $parameter.toggleClass('disabled');
+                        $parameter.addClass('disabled');
                         if (k === 'atomPalette') $parameter.children().removeAttr('data-toggle');
                     }
                     else {
-                        $parameter.toggleClass('disabled');
+                        $parameter.removeClass('disabled');
                         if (k === 'atomPalette') $parameter.children().attr('data-toggle','modal');
                     }
                 }
