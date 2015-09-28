@@ -38,7 +38,7 @@ define([
 
     geom.mergeVertices();
 
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
+    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: color,opacity:opacity/10,  transparent: true } ) );
     mesh.renderOrder = 1 ;
     this.object3d = mesh;
     Explorer.add(this);
@@ -73,7 +73,7 @@ define([
     if(_.isUndefined(color)) return;
     this.color = color;
     this.object3d.material.needsUpdate = true;
-    this.object3d.material.color.setHex( "0x"+color );
+    this.object3d.material.color.setHex( color );
   };
 
   MillerPlane.prototype.destroy = function() {

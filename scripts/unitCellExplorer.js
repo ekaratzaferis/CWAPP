@@ -64,9 +64,9 @@ define([
       new THREE.Vector3( 0,0,-1000 )
     );
      
-    var mesh1 = new THREE.Line( geometry1, new THREE.LineBasicMaterial({ color: '#99FF33' }) );
-    var mesh2 = new THREE.Line( geometry2, new THREE.LineBasicMaterial({ color: '#0099FF' }) );
-    var mesh3 = new THREE.Line( geometry3, new THREE.LineBasicMaterial({ color: '#FF7519' }) ); 
+    var mesh1 = new THREE.Line( geometry1, new THREE.LineBasicMaterial({ color: '#6F6299' }) );
+    var mesh2 = new THREE.Line( geometry2, new THREE.LineBasicMaterial({ color: '#6F6299' }) );
+    var mesh3 = new THREE.Line( geometry3, new THREE.LineBasicMaterial({ color: '#6F6299' }) ); 
 
     this.object3d.add(mesh1);
     this.object3d.add(mesh2);

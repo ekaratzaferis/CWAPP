@@ -138,7 +138,7 @@ define([
 
     sliderG.computeFaceNormals(); 
     
-    var slider = new THREE.Mesh( sliderG, new THREE.MeshBasicMaterial({ color: 0x830EFF}));
+    var slider = new THREE.Mesh( sliderG, new THREE.MeshBasicMaterial({ color: 0x6F6299})); 
     
     var geometryL = new THREE.Geometry();
     geometryL.vertices.push(
@@ -179,7 +179,7 @@ define([
 
     lineG.computeFaceNormals(); 
     
-    var line = new THREE.Mesh( lineG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var line = new THREE.Mesh( lineG, new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     line.name = 'line'; 
  
     obj.add(line);
@@ -201,7 +201,7 @@ define([
 
     plusSquareG.computeFaceNormals(); 
     
-    var plusSquare = new THREE.Mesh( plusSquareG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var plusSquare = new THREE.Mesh( plusSquareG, new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     plusSquare.name = 'plus'; 
     plusSquare.position.y = 0.6 ; 
 
@@ -245,7 +245,7 @@ define([
     // minus plane 
     var minusSquareG = plusSquareG.clone();
 
-    var minusSquare = new THREE.Mesh( minusSquareG, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var minusSquare = new THREE.Mesh( minusSquareG, new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     minusSquare.name = 'minus'; 
     minusSquare.position.y = -6.6 ;  
 
@@ -293,7 +293,7 @@ define([
  
     levelsGeom.computeFaceNormals(); 
     
-    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     levels.name = 'levels';  
     levels.position.y = -5.8 ;    
    
@@ -319,7 +319,7 @@ define([
 
     geom.computeFaceNormals();
     
-    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color: 0x830EFF }) );
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({ color: 0x6F6299 }) );
   
     return mesh;
   };
@@ -327,7 +327,7 @@ define([
 
     var obj = new THREE.Object3D();
 
-    var obj1 = new THREE.Mesh( new THREE.CircleGeometry( 1, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var obj1 = new THREE.Mesh( new THREE.CircleGeometry( 1, 32 ), new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     obj1.name = 'dollHolder'; 
     obj.add(obj1);
 
@@ -335,11 +335,11 @@ define([
     obj2.name = 'dollHolder';   
     obj.add(obj2);
 
-    var obj3 = new THREE.Mesh( new THREE.CircleGeometry( 0.45, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var obj3 = new THREE.Mesh( new THREE.CircleGeometry( 0.45, 32 ), new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     obj3.name = 'dollHolder';   
     obj.add(obj3);
 
-    var obj4 = new THREE.Mesh( new THREE.CircleGeometry( 0.32, 32 ), new THREE.MeshBasicMaterial({ color: 0x717071 }) );
+    var obj4 = new THREE.Mesh( new THREE.CircleGeometry( 0.32, 32 ), new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
     obj4.name = 'dollHolder';
     obj4.position.y = 0.9;  
     obj.add(obj4);
@@ -439,9 +439,9 @@ define([
       }  
       if(intersects2[i].object.name === 'dollHolder' ){
         entered = true;
-        this.dollHolder.children[0].material.color.setHex(0x830EFF); // 0xCA_6A04 D537FF
-        this.dollHolder.children[2].material.color.setHex(0x830EFF);
-        this.dollHolder.children[3].material.color.setHex(0x830EFF);
+        this.dollHolder.children[0].material.color.setHex(0x6F6299); // 0xCA_6A04 D537FF
+        this.dollHolder.children[2].material.color.setHex(0x6F6299);
+        this.dollHolder.children[3].material.color.setHex(0x6F6299);
         document.getElementById(this.container).style.cursor = 'pointer';
       }
       if((intersects2[i].object.name === 'doll' && this.dollOn === true)){
@@ -468,18 +468,18 @@ define([
         }  
          
         document.getElementById(this.container).style.cursor = 'pointer';
-        intersects2[i].object.material.color.setHex(0x830EFF); 
+        intersects2[i].object.material.color.setHex(0x6F6299); 
       }   
     };
     if(entered === false ){
 
       this.INTERSECTED = null; 
       document.getElementById(this.container).style.cursor = 'auto';  
-      this.gearBar.children[1].material.color.setHex(0x717071);
-      this.gearBar.children[3].material.color.setHex(0x717071);   
-      this.dollHolder.children[0].material.color.setHex(0x717071);
-      this.dollHolder.children[2].material.color.setHex(0x717071);
-      this.dollHolder.children[3].material.color.setHex(0x717071);
+      this.gearBar.children[1].material.color.setHex(0xA19EA1);
+      this.gearBar.children[3].material.color.setHex(0xA19EA1);   
+      this.dollHolder.children[0].material.color.setHex(0xA19EA1);
+      this.dollHolder.children[2].material.color.setHex(0xA19EA1);
+      this.dollHolder.children[3].material.color.setHex(0xA19EA1);
 
       for (var f = this.levels.length - 1; f >= 0; f--) { 
         this.levels[f].visible = false;
@@ -520,9 +520,9 @@ define([
           this.soundMachine.play('dollHolder');
         }
         if(this.dollOn){
-          intersects[i].object.parent.children[0].material.color.setHex(0x717071);
-          intersects[i].object.parent.children[2].material.color.setHex(0x717071);
-          intersects[i].object.parent.children[3].material.color.setHex(0x717071); 
+          intersects[i].object.parent.children[0].material.color.setHex(0xA19EA1);
+          intersects[i].object.parent.children[2].material.color.setHex(0xA19EA1);
+          intersects[i].object.parent.children[3].material.color.setHex(0xA19EA1); 
           this.rePosition();
           this.dollOn = false;
           this.doll.visible = false; 
