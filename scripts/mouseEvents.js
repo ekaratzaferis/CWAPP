@@ -35,7 +35,8 @@ define([
     this.navCube = navCube;
     this.INTERSECTED;
     this.SELECTED;
-  
+    this.enableCubeEvents = true;
+
     if(this.func === 'dragNdrop' ){
       
       this.plane.object3d = new THREE.Mesh(
@@ -74,9 +75,13 @@ define([
 
   MouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
-     
+    
     event.preventDefault();
 
+    if(this.container === 'hudRendererCube' && this.enableCubeEvents === false){
+      return;
+    }
+ 
     if(this.container === 'motifPosX' ){
       mouse.x = ( -1 + 2 * ( event.clientX / ( $('#'+_this.container).width() ) ) );
       mouse.y = (  3 - 2 * ( event.clientY / ( $('#'+_this.container).height() ) ) ); 
@@ -134,10 +139,10 @@ define([
             index = 2 ;
           }
            
-          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.jpg' ) });
-          console.log(3);
+          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.png' ) });
+          
           for (var i = 0; i<6; i++) {
-            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.jpg' ) });
+            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.png' ) });
           };
         }
         else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name == 'arrowLine'){
@@ -149,7 +154,7 @@ define([
           this.dirty = false;
         }
       }
-      else if(this.dirty === true){ console.log(1);
+      else if(this.dirty === true){  
         this.navCube.resetMat();
         document.getElementById(_this.container).style.cursor = 'auto';
         
@@ -224,8 +229,13 @@ define([
   }
   MouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this =this;
-
+    
     event.preventDefault();
+
+    if(this.func === 'navCubeDetect' && this.enableCubeEvents === false){
+      return;
+    }
+
     this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
       if( !(_this.motifEditor.editorState.state === 'initial') /*&& (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)*/) {
@@ -243,7 +253,7 @@ define([
         } 
       }
      }
-     else if(this.func === 'navCubeDetect'){
+     else if(this.func === 'navCubeDetect' ){
  
       var contWidth = $('#hudRendererCube').width() ;
       var contHeight = $('#hudRendererCube').height() ;

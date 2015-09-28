@@ -30,7 +30,8 @@ define([
     this.elementName = elementName; 
     this.latticeIndex = latticeIndex; 
     this.subtractedForGear = { 'object3d': undefined} ;  
-    
+    this.viewMode = 'Classic';
+    this.viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false};
     var textureLoader = new THREE.TextureLoader();
     textureLoader.load(texture,
       function(tex){
@@ -65,9 +66,13 @@ define([
     Explorer.add(_this); 
 
   };  
+  CrystalAtom.prototype.GradeLimited = function() {
+    this.viewMode = 'GradeLimited' ; 
+    this.viewModeBeen.GradeLimited = true;
+  };
   CrystalAtom.prototype.subtractedSolidView = function(box, pos, gear) {
-    var _this = this; 
- 
+    var _this = this;  
+    this.viewModeBeen.SubtractedSolid = true;
     if(gear === undefined){
       Explorer.remove({'object3d':_this.object3d});
     }
@@ -96,19 +101,31 @@ define([
     this.helperPos.x = pos.x ;
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
+
+    this.viewMode = 'SubtractedSolid';
   };
   CrystalAtom.prototype.removeSubtractedForGear = function() {
-    Explorer.remove(this.subtractedForGear);  
+    Explorer.remove({'object3d' : this.subtractedForGear.object3d});  
+    this.subtractedForGear.object3d = undefined;
   };
   CrystalAtom.prototype.SolidVoid = function( pos) {
     var _this = this;   
     _this.helperPos.x = pos.x ;
     _this.helperPos.y = pos.y ;
     _this.helperPos.z = pos.z ;
- 
+    
+    this.viewMode = 'SolidVoid'; 
+    this.viewModeBeen.SolidVoid = true; 
   };
+  CrystalAtom.prototype.hideSubtracted = function(bool) {
+    this.subtractedForGear.object3d.visible = bool;
+  }; 
   CrystalAtom.prototype.classicView = function() {
     var _this = this;
+    if(_this.viewMode === 'GradeLimited'){
+      this.viewMode = 'Classic'; 
+      return;
+    }
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    

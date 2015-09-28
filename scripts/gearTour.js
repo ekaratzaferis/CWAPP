@@ -10,13 +10,13 @@ define([
   _
 ) { 
   var stateNames = [ 'Lattice Points', 'The motif', 'The cropped unit cell', 'Whole unit cell', 'the crystal' ];
-  function GearTour(crystalScene, motifEditor, lattice) { 
+  function GearTour(crystalScene, motifEditor, lattice, menu) { 
     
     this.crystalScene = crystalScene ;
     this.motifEditor = motifEditor ; 
     this.lattice = lattice ;
     this.crystalHasChanged = true ;
-     
+    this.menu = menu;
   };
  
   GearTour.prototype.setState = function(state){
@@ -24,7 +24,7 @@ define([
     if(this.lattice.actualAtoms.length === 0) {
       return;
     }
-    this.menu.resetProgressBar(1, 'Processing...');
+    this.menu.resetProgressBar( 'Processing...');
 
     switch(state){ 
 
@@ -62,7 +62,7 @@ define([
         this.hideSubtractedCell();
       break; 
     }
-    this.menu.progressBarIncrease();    
+    this.menu.progressBarFinish();    
 
   };
   

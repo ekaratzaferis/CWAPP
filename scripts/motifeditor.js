@@ -145,8 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-
-
+ 
     var _this = this ;
     var radius = this.atomsData[params.element].radius/100
     var newId = "_"+produceUuid() ;
@@ -339,7 +338,7 @@ define([
 
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
-       
+       console.log(98444);
     var x = $('#Ab').val() ;
     var y = $('#Ac').val() ;
     var z = $('#Aa').val() ;
@@ -445,9 +444,9 @@ define([
 
   };
   Motifeditor.prototype.setAtomsPosition = function(param){ 
-
-    var _this = this;  
     
+    var _this = this;  
+
     var oldX,oldY,oldZ;
     var stillColliding = true, doNotOverlap = this.globalTangency ;
     var xFactor = 1;
@@ -556,9 +555,9 @@ define([
         this.newSphere.object3d.position.z = parseFloat(  param.atomPosZ ); 
         this.translateCellAtoms("z", sliderZVal ,this.newSphere.getID());
 
-        if(this.motifsAtoms.length===0 || doNotOverlap===false ){
+        if(this.motifsAtoms.length === 0 || doNotOverlap===false ){
           this.mutex = true; 
-          this.configureCellPoints();
+          this.configureCellPoints(); 
           return ;
         }
 
@@ -608,7 +607,7 @@ define([
         'cellBeta' : this.cellParameters.beta,
         'cellGamma' : this.cellParameters.gamma
       }
-    );
+    ); 
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -1597,9 +1596,10 @@ define([
     _this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
     var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
- 
+    console.log(arg.state);
     switch(arg.state) {
       case "initial":  
+        
         this.menu.disableMEButtons(
           {
             'atomPalette' : false,
@@ -1654,11 +1654,12 @@ define([
         ); 
         break;
       case "creating":
+       
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
-            'saveAtomChanges' : false,
-            'previewAtomChanges' : false, 
+            //'saveAtomChanges' : false,
+            //'previewAtomChanges' : false, 
             'deleteAtom' : false 
           }
         );  
@@ -1705,7 +1706,7 @@ define([
           }
         );  
         break;
-      case "editing":
+      case "editing":console.log(7);
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -2140,7 +2141,7 @@ define([
     } 
   };
   Motifeditor.prototype.configureCellPoints = function(manual){  
-
+    
     var _this = this;  
     if(this.isEmpty) {
       return; 
@@ -2387,8 +2388,7 @@ define([
         });
       });
     } 
-
-   
+ 
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
@@ -3153,27 +3153,24 @@ define([
   }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
-     
-    for (var i = 0; i<this.unitCellAtoms.length; i++) {
-       
-      if(this.unitCellAtoms[i].myID === id ){ 
-      
+    _.each(_this.unitCellAtoms, function(a, k) {  
+      if(a.myID === id ){
         switch(axes) {
           case "x":  
-            this.unitCellAtoms[i].object3d.position.x = parseFloat(val) ;
-            this.unitCellAtoms[i].setUserOffset("x",parseFloat(val)); 
+            a.object3d.position.x = parseFloat(val) ;
+            a.setUserOffset("x",parseFloat(val)); 
             break;
           case "y": 
-            this.unitCellAtoms[i].object3d.position.y = parseFloat(val)  ;
-            this.unitCellAtoms[i].setUserOffset("y",parseFloat(val)); 
+            a.object3d.position.y = parseFloat(val)  ;
+            a.setUserOffset("y",parseFloat(val)); 
             break;
           case "z": 
-            this.unitCellAtoms[i].object3d.position.z = parseFloat(val)  ;
-            this.unitCellAtoms[i].setUserOffset("z",parseFloat(val)); 
+            a.object3d.position.z = parseFloat(val)  ;
+            a.setUserOffset("z",parseFloat(val)); 
             break;
         } 
       }
-    }
+    });
   };
   Motifeditor.prototype.findMotifsDimensions = function(pos, radius){
 
@@ -3235,7 +3232,19 @@ define([
     if(myf) {
       this.motifsAtoms.pop();
     }
-     
+    
+    this.menu.setSliderMin('atomPosX',-1*cell.xDim);
+    this.menu.setSliderMin('atomPosY',-1*cell.yDim);
+    this.menu.setSliderMin('atomPosZ',-1*cell.zDim);
+
+    this.menu.setSliderMax('atomPosX',cell.xDim);
+    this.menu.setSliderMax('atomPosY',cell.yDim);
+    this.menu.setSliderMax('atomPosZ',cell.zDim); 
+
+    this.menu.setSliderMax('Aa',cell.xDim*10);
+    this.menu.setSliderMax('Ab',cell.yDim*10);
+    this.menu.setSliderMax('Ac',cell.zDim*10); 
+
     return cell; // remember these dimensions are in 2l (e.g for cubic primitive)
   };
   Motifeditor.prototype.findHexTangentLengths = function(dimensions){
@@ -4144,7 +4153,7 @@ define([
             var collisionResults = ray.intersectObjects( collidableMeshList );
                
             if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
-              vertexIndex = -2;  
+              vertexIndex = -2; 
               
             }
             vertexIndex--;

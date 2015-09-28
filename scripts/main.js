@@ -209,7 +209,7 @@ require([
   var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
 
   // Gear Bar Tour
-  var gearTour = new GearTour(crystalScene, motifEditor, lattice);
+  var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
  
   // handel keyboard keys
   var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor, crystalRenderer);
@@ -387,7 +387,13 @@ require([
     } 
  
     if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
-  
+       
+      // invisible Navigators
+      dollEditor.setVisibility(false); 
+      hudCube.setVisibility(false);
+      hudArrows.setVisibility(false);
+      CubeEvent.enableCubeEvents = false ;
+
       sceneResizer.resize('motifScreen');
         
       unitCellRenderer.startAnimation();                                                                    
@@ -395,8 +401,19 @@ require([
       motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName(), lattice.getLatticeSystem());
 
       crystalScreenEvents.state = 'motifScreen';
+
+      // reset view mode
+      if(lattice.viewMode !== 'Classic'){
+        lattice.changeView({'mode': 'Classic', 'reset': true});
+      }
     }
-    else{  
+    else if($(this).attr('id') !== "motifLI" ){  
+      
+      // visible Navigators
+      dollEditor.setVisibility(true);
+      hudCube.setVisibility(true);
+      hudArrows.setVisibility(true);
+      CubeEvent.enableCubeEvents = true ;
 
       sceneResizer.resize('crystal');
        
@@ -407,6 +424,11 @@ require([
       unitCellRenderer.stopAtomAnimation();
       motifRenderer.stopAtomAnimation(); 
       crystalScreenEvents.state = 'default';
+
+      // reset view mode
+      if(lattice.viewMode !== 'Classic'){
+        lattice.changeView({'mode': 'Classic', 'reset': true});
+      }
     }
   });
 
@@ -447,7 +469,7 @@ require([
   menu.onAtomParameterChange(function(message, param) { 
     motifEditor.setAtomsParameter(param);
   });
-  menu.onAtomPositionChange(function(message, param) { 
+  menu.onAtomPositionChange(function(message, param) {  
     motifEditor.setAtomsPosition(param);
   });
   menu.onManuallyCellDimsChange(function(message, param) { 
@@ -682,6 +704,6 @@ require([
 
   $("#noteTransparent").draggable();
  
-
+  
 });
  
