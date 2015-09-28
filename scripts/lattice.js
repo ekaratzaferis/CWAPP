@@ -2080,8 +2080,54 @@ define([
   };
   Lattice.prototype.selectPlane = function (which){ 
 
+    if(which === this.directionalState.editing && this.directionalState.state === 'editing'){
+      return;
+    }
+    this.menu.highlightDirectionEntry({id : which, color : 'bg-light-purple'});
+
+ 
+    for (var i = 0; i < this.tempDirs.length; i++) {
+      this.tempDirs[i].direction.destroy(); 
+      if( i === 0){
+        this.menu.editSavedDirection({ action : 'delete', oldId : this.tempDirs[0].id});
+      }
+    };  
+    this.tempDirs.splice(0); 
+
+    var _this = this;
+    var u,v,w,name,color, dirRadius;
+    PubSub.publish(events.DIRECTION_STATE,"editing"); 
+   
+    var index ;
+    for (var i = 0; i < this.millerDirections.length; i++) { 
+      if(this.millerDirections[i].id === which) {
+        this.tempDirs.push(this.millerDirections[i]);
+        u = this.millerDirections[i].u;
+        v = this.millerDirections[i].v;
+        w = this.millerDirections[i].w;
+        name = this.millerDirections[i].directionName;
+        color = this.millerDirections[i].directionColor; 
+        dirRadius = this.millerDirections[i].direction.radius ;
+        index = i; 
+      }
+    };
+    this.millerDirections.splice(index,1);
+    _this.directionalState.editing = which;
+    _this.directionalState.dname = name;
+  
+    this.menu.editPlaneInputs(
+      {
+        'millerU' : u,
+        'millerV' : v,
+        'millerW' : w,
+        'millerT' : -1,
+        'directionColor' : '#'+color,
+        'dirRadius' : dirRadius,
+        'directionName' : name
+      } 
+    );
   }
-  Lattice.prototype.selectPlane = function (which){ 
+  Lattice.prototype.previewPlane = function (which){ 
       
     if(which === 'current' ){
       var params = this.menu.getPlaneInputs();

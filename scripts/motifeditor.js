@@ -1658,8 +1658,8 @@ define([
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
-            //'saveAtomChanges' : false,
-            //'previewAtomChanges' : false, 
+            'saveAtomChanges' : false,
+            'previewAtomChanges' : false, 
             'deleteAtom' : false 
           }
         );  
