@@ -1427,7 +1427,14 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
+<<<<<<< HEAD
          
+=======
+        
+            
+            console.log(_this.getDirectionInputs());
+            console.log(_this.getPlaneInputs());
+>>>>>>> 0fa709938f0638153a84466d5d65ec2d9a299371
             
         
     /*$
