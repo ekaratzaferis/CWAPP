@@ -1435,7 +1435,9 @@ label {
     margin: 0;
     margin-left: 5px; }
     .tooltip.left .tooltip-arrow {
-      border-left-color: #fff; }
+      border-left-color: #fff;}
+.tooltip.top .tooltip-arrow {
+      border-top-color: #fff;}
   .tooltip .tooltip-inner {
     padding: 10px 15px;
     text-transform: uppercase;
@@ -1561,6 +1563,7 @@ label {
         .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:hover, .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:active, .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:focus {
           text-decoration: none; }
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility {
+        width: 70px;
       padding: 0; }
       .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility a {
         cursor: pointer;
@@ -3113,8 +3116,14 @@ html,body {
     background: #08090b;
 }
 .list-title{padding-bottom:5px;}
-
-
+#appLogo{
+    display: none;
+    position:absolute;
+    width:100%;
+    height:100%;
+    text-align: center;
+    z-index: 1000;
+};
 .lightTheme{background: #34373e;}
 .lightTheme:hover{background: #3C3D4A;cursor: pointer;}
 .lightTheme.lightThemeActive{background: #434255;}

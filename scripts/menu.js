@@ -530,6 +530,17 @@ define([
             var screen_height = jQuery('.main-controls-container').height();
             $progressBarWrapper.width(screen_width);
             $progressBarWrapper.height(screen_height);
+            
+            // Help (Tooltips)
+            jQuery('.coordinates-pnd-blocks-container').tooltip({
+                container : 'body',
+                trigger: 'manual',
+                title: 'Help'
+            });
+            
+            
+            
+            
 
         
         /* ------
@@ -1470,6 +1481,13 @@ define([
        Prototypes - Editors
        -------------------- */
     
+        Menu.prototype.showTooltip = function(argument){
+            jQuery('#'+argument['id']).attr('data-original-title', argument['title']).tooltip('fixTitle');
+            jQuery('#'+argument['id']).tooltip('show');
+            setTimeout(function() {
+                jQuery('#'+argument['id']).tooltip('hide');
+            }, 2500);
+        }
         Menu.prototype.resetProgressBar = function(title) {
             $progressBarWrapper.find('.progressLabel').text(title);
             $progressBarWrapper.css('display','block');
@@ -1678,12 +1696,12 @@ define([
             else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
             switch(argument['action']){
                 case 'save':
-                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1698,7 +1716,7 @@ define([
                 });
                 $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
                     PubSub.publish(events.PREVIEW_PLANE, argument['id']);
-                    $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
+                    /*$planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
                     $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
                     if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active')){
                         $planesTable.find('.planeButton').removeClass('active');
@@ -1706,7 +1724,7 @@ define([
                     else {
                         $planesTable.find('.planeButton').removeClass('active');
                         $planesTable.find('#'+argument['id']).find('.planeButton').addClass('active');
-                    }
+                    }*/
                 });
                 $planesTable.find('#'+argument['id']).find('.planeButton').hover(
                     function(){
@@ -1714,10 +1732,10 @@ define([
                         $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
                     },
                     function(){
-                        if (!($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active'))){
+                        //if (!($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active'))){
                             $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#1f2227');
                             $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#1f2227');
-                        }
+                        //}
                     }
                 );
             }
@@ -1831,12 +1849,12 @@ define([
             else parameters = '['+argument['u']+','+argument['v']+','+argument['w']+','+argument['t']+']';
             switch(argument['action']){
                 case 'save':
-                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1851,7 +1869,7 @@ define([
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
                     PubSub.publish(events.PREVIEW_DIRECTION, argument['id']);
-                    $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
+                    /*$directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
                     $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
                     if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active')){
                         $directionTable.find('.directionButton').removeClass('active');
@@ -1859,7 +1877,7 @@ define([
                     else {
                         $directionTable.find('.directionButton').removeClass('active');
                         $directionTable.find('#'+argument['id']).find('.directionButton').addClass('active');
-                    }
+                    }*/
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').hover(
                     function(){
@@ -1867,10 +1885,10 @@ define([
                         $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
                     },
                     function(){
-                        if (!($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active'))){
+                        //if (!($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active'))){
                             $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#1f2227');
                             $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#1f2227');
-                        }
+                        //}
                     }
                 );
             }
@@ -2181,7 +2199,6 @@ define([
             });
         }
    
-    
     /* ------------------------
        Prototypes - Subscribers
        ------------------------ */
