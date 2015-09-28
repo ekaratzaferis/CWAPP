@@ -387,6 +387,8 @@ define([
        List of Published Events
        ------------------------ */
         var events = {
+            PREVIEW_PLANE: 'menu.preview_plane',
+            PREVIEW_DIRECTION: 'menu.preview_direction',
             STEREOSCOPIC: 'menu.stereoscopic',
             PLANE_TOGGLE: 'menu.planes_toggle',
             ATOM_TOGGLE: 'menu.atom_toggle',
@@ -690,19 +692,16 @@ define([
                 switch(k)
                 {
                     case 'planeName':
-                        $parameter.attr('placeholder','Enter a name ...');
                         $parameter.prop('disabled',true);
                         break;
 
                     case 'planeOpacity':
                         $parameter.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
                         $parameter.selectpicker();
-                        $parameter.selectpicker('val',10);
                         $parameter.prop('disabled',true);
                         break;
 
                     case 'millerI':
-                        $parameter.val(1);
                         $parameter.parent().parent().parent().css('display','none');
                         break;
 
@@ -711,7 +710,6 @@ define([
                         break;
 
                     default:
-                        $parameter.val(1);
                         $parameter.prop('disabled',true);
                         break;
                 }
@@ -731,7 +729,6 @@ define([
                 switch(k)
                 {
                     case 'directionName':
-                        $parameter.attr('placeholder','Enter a name ...');
                         $parameter.prop('disabled',true);
                         break;
 
@@ -742,7 +739,6 @@ define([
                         break;
 
                     case 'millerT':
-                        $parameter.val(1);
                         $parameter.parent().parent().parent().css('display','none');
                         break;
 
@@ -751,7 +747,6 @@ define([
                         break;
 
                     default:
-                        $parameter.val(1);
                         $parameter.prop('disabled',true);
                         break;
                 }
@@ -1673,18 +1668,22 @@ define([
                 }
             });
         }
+        Menu.prototype.highlightPlaneEntry = function(argument){
+             $planesTable.find('#'+argument['id']).removeAttr('class');
+             $planesTable.find('#'+argument['id']).attr('class',argument['color']);
+        };
         Menu.prototype.editSavedPlane = function(argument){
             var parameters;
             if ( argument['i'] === undefined ) parameters = '['+argument['h']+','+argument['k']+','+argument['l']+']';
             else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
             switch(argument['action']){
                 case 'save':
-                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1694,9 +1693,11 @@ define([
 
             }
             if ( (argument['action']==='save') | (argument['action']==='edit') ){
-                $planesTable.find('#'+argument['id']).on('click',function(){console.log('asd');});
-                $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
+                $planesTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.PLANE_SELECTION, argument['id']);
+                });
+                $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
+                    PubSub.publish(events.PREVIEW_PLANE, argument['id']);
                     $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
                     $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
                     if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active')){
@@ -1820,18 +1821,22 @@ define([
                 }
             });   
         }
+        Menu.prototype.highlightDirectionEntry = function(argument){
+             $directionTable.find('#'+argument['id']).removeAttr('class');
+             $directionTable.find('#'+argument['id']).attr('class',argument['color']);
+        };
         Menu.prototype.editSavedDirection = function(argument){
             var parameters;
             if ( argument['t'] === undefined ) parameters = '['+argument['u']+','+argument['v']+','+argument['w']+']';
             else parameters = '['+argument['u']+','+argument['v']+','+argument['w']+','+argument['t']+']';
             switch(argument['action']){
                 case 'save':
-                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="pnd-serial">'+parameters+'</td><td class="pnd-name">'+argument['name']+'</td><td class="pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1841,8 +1846,11 @@ define([
 
             }
             if ( (argument['action']==='save') | (argument['action']==='edit') ){
-                $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
+                $directionTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.DIRECTION_SELECTION, argument['id']);
+                });
+                $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
+                    PubSub.publish(events.PREVIEW_DIRECTION, argument['id']);
                     $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
                     $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
                     if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active')){
@@ -2336,6 +2344,12 @@ define([
         };
         Menu.prototype.onLeapTrackingSystemChange = function(callback) { 
             PubSub.subscribe(events.LEAP_TRACKING_SYSTEM, callback);
+        };
+        Menu.prototype.onPlanePreview = function(callback) { 
+            PubSub.subscribe(events.PREVIEW_PLANE, callback);
+        };
+        Menu.prototype.onDirectionPreview = function(callback) { 
+            PubSub.subscribe(events.PREVIEW_DIRECTION, callback);
         };
     
   /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
