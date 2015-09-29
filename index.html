@@ -55,11 +55,6 @@
     
         <!-- Main Screen -->
         <div id="screenWrapper">
-            <!-- Logo -->
-            <div id="appLogo">
-                <span class="Centerer"></span>
-                <img class="Centered" src="Images/cwlogo.png" />
-            </div>
             <!-- Notes -->
             <div id="noteWrapper">
                 <div id="noteBar">
@@ -80,16 +75,23 @@
                     <div id="leapIcon"></div>
                     <!-- Canvasses -->
                     <div id="unitCellRenderer" class="canvasContainer"></div>
+                    <div id="unitCellRendererCaption" class="motifBorderTop motifBorderLeft"><h1>UNIT CELL&nbsp;</h1></div>
                     <div id="crystalRenderer" class="canvasContainer">
                         <div id="hudRenderer" class="canvasContainer"></div> 
                         <div id="hudRendererCube" class="canvasContainer"></div>
                     </div>
+                    <div id="crystalRendererCaption" class="motifBorderTop motifBorderLeft motifBorderRight"><h1>CRYSTAL&nbsp;</h1></div>
                     <div id="motifRenderer" class="canvasContainer" ></div> 
-                    <div id="motifScreenTable"> 
+                    <div id="motifScreenTable">
                         <div id="motifPosX"></div>
                         <div id="motifPosY"></div>
                         <div id="motifPosZ"></div> <!-- class="motifPosScreen" -->
                     </div> 
+                    <div id="motifScreenTableCaption">
+                        <div id="motifPosXCaption" class="motifBorderTop motifBorderBottom motifBorderLeft"><h1>MOTIF Y AXIS&nbsp;</h1></div>
+                        <div id="motifPosYCaption" class="motifBorderTop motifBorderBottom motifBorderLeft"><h1>MOTIF X AXIS&nbsp;</h1></div>
+                        <div id="motifPosZCaption" class="motifBorderTop motifBorderBottom motifBorderLeft motifBorderRight"><h1>MOTIF Z AXIS&nbsp;</h1></div>
+                    </div>
                 </div>
             </main>
         </div>
