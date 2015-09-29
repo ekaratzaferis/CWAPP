@@ -202,8 +202,7 @@ define([
     
         /* Sync Cameras */
         var $syncCameras = jQuery('#syncCameras');
-    
-    
+     
     
     /* ---------------
        Other Selectors

@@ -37,8 +37,7 @@ define([
       this.motifRenderer.changeContainerDimensions(width, height/2);    
 
       $('#crystalRenderer').width(width/2);
-      $('#crystalRenderer').height(height/2);
-      //$('#crystalRenderer').css( "left", width/2 );
+      $('#crystalRenderer').height(height/2); 
 
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
@@ -88,8 +87,7 @@ define([
       $('#hudRendererCube').width(width/this.hudDisplayFactor);
       $('#hudRendererCube').height(height/this.hudDisplayFactor);
 
-    }
-    
+    } 
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
  
