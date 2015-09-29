@@ -1127,7 +1127,7 @@ define([
      
     var _this = this, parameters = this.parameters ;
      
-    if( !_.isUndefined(arg.planeColor)) {console.log(arg.planeColor);
+    if( !_.isUndefined(arg.planeColor)) { 
       _.each(_this.tempPlanes, function(plane, ref) { 
         plane.plane.setColor('0x'+arg.planeColor);  
       }); 
@@ -1935,8 +1935,7 @@ define([
         name = this.millerPlanes[i].planeName;
         color =  this.millerPlanes[i].planeColor;
         opacity =  this.millerPlanes[i].planeOpacity;  
-        index=i;
-        this.millerPlanes[i].plane.destroy();
+        index=i; console.log(9);
       }
     }   
     this.millerPlanes.splice(index,1);
@@ -1970,7 +1969,7 @@ define([
     if((which !== this.planeState.editing || this.planeState.state === 'initial') && which !=='current' ){
       return;
     }
-  console.log(1);
+   
     var params = this.menu.getPlaneInputs();
 
     if ( isNaN(params.millerH) || isNaN(params.millerK) || isNaN(params.millerL) ) {
