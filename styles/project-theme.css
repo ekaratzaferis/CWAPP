@@ -1563,7 +1563,6 @@ label {
         .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:hover, .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:active, .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr td a:focus {
           text-decoration: none; }
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility {
-        width: 70px;
       padding: 0; }
       .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .visibility a {
         cursor: pointer;
@@ -2994,7 +2993,8 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
 
 /*# sourceMappingURL=project-theme.css.map */
 .box-image img{
-    border-radius: 50%;   
+    display: inline-block;
+    cursor: pointer;
 }
 .toggleButton{
     background-color: Transparent;
@@ -3082,6 +3082,21 @@ html,body {
 }
 #unitCellRenderer{
     float: left;
+    z-index: 15;
+}
+#unitCellRendererCaption{
+    display: none;
+    position: fixed;
+    top: 0;
+    float: left;
+    z-index: 14;
+}
+#crystalRendererCaption{
+    display: none;
+    position: fixed;
+    top: 0;
+    float: left;
+    z-index: 14;
 }
 #crystalRenderer{
     float: left;
@@ -3098,13 +3113,20 @@ html,body {
 #motifRenderer{
     position:fixed;
 }
-#motifPosX,#motifPosY,#motifPosZ{
+#motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{
     display: table-cell;
 }
 #motifScreenTable{
     display: table; 
     position:fixed;
     bottom:0;
+    z-index: 15;
+}
+#motifScreenTableCaption{
+    display: none; 
+    position:fixed;
+    bottom:0;
+    z-index: 14;
 }
 #elementSymbolContainer{
     display: none;
@@ -3116,14 +3138,7 @@ html,body {
     background: #08090b;
 }
 .list-title{padding-bottom:5px;}
-#appLogo{
-    display: none;
-    position:absolute;
-    width:100%;
-    height:100%;
-    text-align: center;
-    z-index: 1000;
-};
+
 .lightTheme{background: #34373e;}
 .lightTheme:hover{background: #3C3D4A;cursor: pointer;}
 .lightTheme.lightThemeActive{background: #434255;}
@@ -3164,3 +3179,18 @@ html,body {
 .toggle_menu #atomToggle{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-09.png');}
 .toggle_menu:hover #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
 .toggle_menu.lightThemeActive #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
+
+.motifBorderTop{ border-top: 10px solid #7F8289;}
+.motifBorderBottom{ border-bottom: 10px solid #7F8289; }
+.motifBorderLeft{ border-left: 10px solid #7F8289; }
+.motifBorderRight{ border-right: 10px solid #7F8289; }
+
+.motifBorderTop h1{
+    color: white;
+    font-family: "Open Sans", sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 19.2px;
+    display: inline;
+    background-color: #7F8289;
+}

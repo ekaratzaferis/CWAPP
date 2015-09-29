@@ -46,8 +46,8 @@ define([
         var LastLatticeParameters = []; 
 
         // Menu Size
-        var $menuWidthOpen = 500;
-        var $menuWidthClose = 83;
+        var $menuWidthOpen = 520;
+        var $menuWidthClose = 103;
     
     
     
@@ -242,6 +242,9 @@ define([
         var $screenWrapper = jQuery('#screenWrapper');
         var $appContainer = jQuery("#app-container");
     
+        //Logo
+        var $appLogo = jQuery('#appLogoWrapper');
+    
     
     
     /* ----------------------
@@ -387,8 +390,8 @@ define([
        List of Published Events
        ------------------------ */
         var events = {
-            PREVIEW_PLANE: 'menu.preview_plane',
-            PREVIEW_DIRECTION: 'menu.preview_direction',
+            PLANE_VISIBILITY: 'menu.plane_visibility',
+            DIRECTION_VISIBILITY: 'menu.direction_visibility',
             STEREOSCOPIC: 'menu.stereoscopic',
             PLANE_TOGGLE: 'menu.planes_toggle',
             ATOM_TOGGLE: 'menu.atom_toggle',
@@ -538,10 +541,6 @@ define([
                 title: 'Help'
             });
             
-            
-            
-            
-
         
         /* ------
            Inputs
@@ -944,15 +943,27 @@ define([
             });
             $planes.click(function() {
                 argument = {};
-                if (!($planes.parent().hasClass('lightThemeActive'))) argument['planeToggle'] = true;
-                else argument['planeToggle'] = false;
+                if (!($planes.parent().hasClass('lightThemeActive'))) {
+                    $planesTable.find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    argument['planeToggle'] = true;
+                }
+                else {
+                    $planesTable.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    argument['planeToggle'] = false;
+                }
                 $planes.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.PLANE_TOGGLE, argument);
             });  
             $directions.click(function() {
                 argument = {};
-                if (!($directions.parent().hasClass('lightThemeActive'))) argument['directionToggle'] = true;
-                else argument['directionToggle'] = false;
+                if (!($directions.parent().hasClass('lightThemeActive'))) {
+                    $directionTable.find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    argument['directionToggle'] = true;
+                }
+                else {
+                    $directionTable.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    argument['directionToggle'] = false;
+                }
                 $directions.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.DIRECTION_TOGGLE, argument);
             });
@@ -1696,12 +1707,12 @@ define([
             else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
             switch(argument['action']){
                 case 'save':
-                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1715,16 +1726,16 @@ define([
                     PubSub.publish(events.PLANE_SELECTION, argument['id']);
                 });
                 $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
-                    PubSub.publish(events.PREVIEW_PLANE, argument['id']);
-                    /*$planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
-                    $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
-                    if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active')){
-                        $planesTable.find('.planeButton').removeClass('active');
+                    PubSub.publish(events.PLANE_VISIBILITY, argument['id']);
+                    if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('visible')) {
+                        $planesTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
+                        argument['visible'] = false;
                     }
                     else {
-                        $planesTable.find('.planeButton').removeClass('active');
-                        $planesTable.find('#'+argument['id']).find('.planeButton').addClass('active');
-                    }*/
+                        argument['visible'] = true;
+                        $planesTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
+                    }
+                    $planesTable.find('#'+argument['id']).find('.planeButton').toggleClass('visible');
                 });
                 $planesTable.find('#'+argument['id']).find('.planeButton').hover(
                     function(){
@@ -1849,12 +1860,12 @@ define([
             else parameters = '['+argument['u']+','+argument['v']+','+argument['w']+','+argument['t']+']';
             switch(argument['action']){
                 case 'save':
-                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/refresh.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1868,16 +1879,16 @@ define([
                     PubSub.publish(events.DIRECTION_SELECTION, argument['id']);
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
-                    PubSub.publish(events.PREVIEW_DIRECTION, argument['id']);
-                    /*$directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
-                    $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
-                    if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active')){
-                        $directionTable.find('.directionButton').removeClass('active');
+                    PubSub.publish(events.DIRECTION_VISIBILITY, argument['id']);
+                    if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('visible')) {
+                        $directionTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
+                        argument['visible'] = false;
                     }
                     else {
-                        $directionTable.find('.directionButton').removeClass('active');
-                        $directionTable.find('#'+argument['id']).find('.directionButton').addClass('active');
-                    }*/
+                        argument['visible'] = true;
+                        $directionTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
+                    }
+                    $directionTable.find('#'+argument['id']).find('.directionButton').toggleClass('visible'); 
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').hover(
                     function(){
@@ -2362,11 +2373,11 @@ define([
         Menu.prototype.onLeapTrackingSystemChange = function(callback) { 
             PubSub.subscribe(events.LEAP_TRACKING_SYSTEM, callback);
         };
-        Menu.prototype.onPlanePreview = function(callback) { 
-            PubSub.subscribe(events.PREVIEW_PLANE, callback);
+        Menu.prototype.onPlaneVisibility = function(callback) { 
+            PubSub.subscribe(events.PLANE_VISIBILITY, callback);
         };
-        Menu.prototype.onDirectionPreview = function(callback) { 
-            PubSub.subscribe(events.PREVIEW_DIRECTION, callback);
+        Menu.prototype.onDirectionVisibility = function(callback) { 
+            PubSub.subscribe(events.DIRECTION_VISIBILITY, callback);
         };
     
   /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
