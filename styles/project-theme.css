@@ -646,6 +646,8 @@ body {
 /*----- Screen Common -----*/
 /*==========  Controls  ==========*/
 .main-controls-container {
+  top:0;
+  bottom:0;
   position: relative;
   width: 500px;
     float:right;
@@ -3080,42 +3082,26 @@ html,body {
     position: fixed;  
     z-index:11;   
 }
-#unitCellRenderer{
-    float: left;
-    z-index: 100;
+#unitCellRenderer{ float: left; }
+#topRowTable{
+    display: table; 
+    position:fixed;
+    top:0;
+    z-index: 15;
 }
-#unitCellRendererCaption{
-    display: none;
-    position: fixed;
-    top: 0;
-    float: left;
-    z-index: 1;
-}
-#crystalRendererCaption{
-    display: none;
-    position: fixed;
-    top: 0;
-    float: left;
+#topRowTableCaption{
+    display: none; 
+    position:fixed;
+    top:0;
     z-index: 14;
 }
-#crystalRenderer{
-    float: left;
-}
-#hudRenderer{
-    opacity:1; 
-    position: fixed; 
-    z-index:10;   
-}
-#hudRendererCube{
-    position: fixed; 
-    z-index:10;
-}
-#motifRenderer{
-    position:fixed;
-}
-#motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{
-    display: table-cell;
-}
+#unitCellRendererCaption{ float: left; }
+#crystalRendererCaption{ float: left; }
+#crystalRenderer{ float: left; }
+#hudRenderer{ opacity:1; position: fixed; z-index:10; }
+#hudRendererCube{ position: fixed; z-index:10; }
+#motifRenderer{ position:fixed; }
+#motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
 #motifScreenTable{
     display: table; 
     position:fixed;
@@ -3193,4 +3179,13 @@ html,body {
     line-height: 19.2px;
     display: inline;
     background-color: #7F8289;
+}
+
+.selectable{ cursor: pointer; }
+
+input.disabled[type="text"]{
+    background-color: black;
+}
+.block-btn.disabled{
+    cursor: not-allowed;
 }

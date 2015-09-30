@@ -36,20 +36,26 @@ define([
       this.unitCellRenderer.changeContainerDimensions(width/2, height/2);
       this.motifRenderer.changeContainerDimensions(width, height/2);    
 
+      $('#topRowTableCaption').css('display','table');
+        
       $('#crystalRenderer').width(width/2);
       $('#crystalRenderer').height(height/2);
-    
+        
+      $('#crystalRendererMouse').width(width/2);
+      $('#crystalRendererMouse').height(height/2); 
+      
       $('#crystalRendererCaption').width((width/2)-20);
       $('#crystalRendererCaption').height((height/2)-10);
-      $('#crystalRendererCaption').css('display','block');
       $('#crystalRendererCaption').css('left',width/2);
 
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
         
+      $('#unitCellRendererMouse').width(width/2);
+      $('#unitCellRendererMouse').height(height/2);
+        
       $('#unitCellRendererCaption').width((width/2)-10);
       $('#unitCellRendererCaption').height((height/2)-10);
-      $('#unitCellRendererCaption').css('display','block');
 
       $('#motifRenderer').width(width);
       $('#motifRenderer').height(height/2);
@@ -84,20 +90,26 @@ define([
       this.crystalRenderer.changeContainerDimensions(width, height);
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0); 
-
+        
+      $('#topRowTableCaption').css('display','none');
+        
       $('#crystalRenderer').width(width);
       $('#crystalRenderer').height(height);
         
+      $('#crystalRendererMouse').width(width);
+      $('#crystalRendererMouse').height(height);
+        
       $('#crystalRendererCaption').width(0);
       $('#crystalRendererCaption').height(0);
-      $('#crystalRendererCaption').css('display','none');
 
       $('#unitCellRenderer').width(0);
       $('#unitCellRenderer').height(0);
         
+      $('#unitCellRendererMouse').width(0);
+      $('#unitCellRendererMouse').height(0);
+        
       $('#unitCellRendererCaption').width(0);
       $('#unitCellRendererCaption').height(0);
-      $('#unitCellRendererCaption').css('display','none');
 
       $('#motifRenderer').width(0); 
       $('#motifRenderer').height(0);
