@@ -3082,14 +3082,14 @@ html,body {
 }
 #unitCellRenderer{
     float: left;
-    z-index: 15;
+    z-index: 100;
 }
 #unitCellRendererCaption{
     display: none;
     position: fixed;
     top: 0;
     float: left;
-    z-index: 14;
+    z-index: 1;
 }
 #crystalRendererCaption{
     display: none;

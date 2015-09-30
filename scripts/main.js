@@ -285,11 +285,11 @@ require([
   menu.planeSelection(function(message, which) {
     lattice.selectPlane(which);
   });
-  menu.onPlanePreview(function(message, which) {
-    lattice.planePreview(which);
+  menu.onPlaneVisibility(function(message, arg) {
+    lattice.planeVisibility(arg);
   });
-  menu.onDirectionPreview(function(message, which) {
-    lattice.directionPreview(which);
+  menu.onDirectionVisibility(function(message, arg) {
+    lattice.directionVisibility(arg);
   });
   lattice.onPlaneStateChange(function(message, state) {
     lattice._planeState(state);

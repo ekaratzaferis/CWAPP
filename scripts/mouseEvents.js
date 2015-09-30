@@ -312,14 +312,14 @@ define([
               var arrowL = NavCubeHud.getInstance().object3d.getObjectByName( "arrowLine" );
               var arrowH = NavCubeHud.getInstance().object3d.getObjectByName( "arrowHead" );
               if(isRotating){
-                this.orbitControls[i].autoRotate(false)  ;
-                arrowH.material.color.setHex(0x8904B1);   
-                arrowL.material.color.setHex(0x8904B1);   
-              }
-              else{ 
-                this.orbitControls[i].autoRotate(true)  ;
+                this.orbitControls[i].autoRotate(false);
                 arrowH.material.color.setHex(0xBDBDBD);   
                 arrowL.material.color.setHex(0xBDBDBD);   
+              }
+              else{ 
+                this.orbitControls[i].autoRotate(true);
+                arrowH.material.color.setHex(0x8904B1);   
+                arrowL.material.color.setHex(0x8904B1);   
               } 
             } 
           };  
