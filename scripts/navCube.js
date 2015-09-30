@@ -62,9 +62,9 @@ function NavCube( scene, latticeParams) {
     );
  
     var geom =  new THREE.Geometry();
-    var v1   =  new THREE.Vector3(3, -9.5,   0);
-    var v2   =  new THREE.Vector3(5.2, -7.4,   0);
-    var v3   =  new THREE.Vector3(2,   -7.7,   0);
+    var v1   =  new THREE.Vector3(3,-9.5,0);
+    var v2   =  new THREE.Vector3(5.2,-7.4,0);
+    var v3   =  new THREE.Vector3(2,-7.7, 0);
  
     geom.vertices.push(v1);
     geom.vertices.push(v2);
@@ -83,13 +83,13 @@ function NavCube( scene, latticeParams) {
       },
       
       function ( t ) {  
-        var tx = 2*(t-2/3) * 2, ty = -3.5 + Math.sin( -1*Math.PI/1.3 + Math.PI * t/2 )  ; 
+        var tx = 2*(t-2/3) * 2, ty = -5.5 + Math.sin( -1*Math.PI/1.3 + Math.PI * t/2 )  ; 
           
         return new THREE.Vector3(tx, ty, 0).multiplyScalar(this.scale);
       }
     );
 
-    var path = new CustomSinCurve( 2 );
+    var path = new CustomSinCurve( 1 );
 
     var geometry = new THREE.TubeGeometry(
         path,  //path

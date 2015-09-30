@@ -1249,7 +1249,7 @@ define([
                 var argument = {};
                 PubSub.publish(events.FULL_SCREEN_APP, argument);
             }); 
-            $leapMotion.change(function() {  
+            $leapMotion.click(function() {  
                 var argument = {};
                 argument["leap"]= ($leapMotion.hasClass('active')) ? true : false ;
                 PubSub.publish(events.LEAP_MOTION, argument);           
@@ -2367,7 +2367,7 @@ define([
         Menu.prototype.updateNotes = function(callback) { 
             PubSub.subscribe(events.UPDATE_NOTES, callback);
         }; 
-        Menu.prototype.onLeapMotionSet = function(callback) { 
+        Menu.prototype.onLeapMotionSet = function(callback) {
             PubSub.subscribe(events.LEAP_MOTION, callback);
         };
         Menu.prototype.onLeapTrackingSystemChange = function(callback) { 

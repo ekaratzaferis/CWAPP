@@ -41,8 +41,9 @@ define([
     this.trackingSystem = arg ;
   };
   LeapMotionHandler.prototype.toggle = function(bool) {
-    
+     
     var _this = this;
+   
     this.active = bool ;
 
     // leap motion icon animation - might not used
@@ -73,7 +74,7 @@ define([
 
           var leftHand, rightHand; 
           var numOfHands = frame.hands.length ;
-
+          console.log(numOfHands);
           if(_this.dollEditor.dollOn === true){  
             if(_this.trackingSystem === 'palm'){ 
               if(numOfHands === 2){

@@ -332,7 +332,7 @@ require([
       unitCellScene.light.castShadow = false;   
     }  
   });
-  menu.onLeapMotionSet(function(message, arg) { 
+  menu.onLeapMotionSet(function(message, arg) { console.log(9);
     leapM.toggle(arg.leap);
   });
   menu.onFogParameterChange(function(message, arg) { 
