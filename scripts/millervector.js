@@ -108,9 +108,10 @@ define([
     this.tubeMesh.object3d.visible = bool ;
   };
  
-  MillerVector.prototype.setColor = function(color) { 
+  MillerVector.prototype.setColor = function(color) {  
     this.color = color;     
-    this.object3d.material.color.setHex( color ); 
+    this.object3d.children[0].material.color.setHex( color ); 
+    this.object3d.children[1].material.color.setHex( color );  
     this.tubeMesh.object3d.material.color.setHex( color );
   };
  

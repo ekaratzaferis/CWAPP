@@ -910,8 +910,7 @@ define([
       var endTime5 = new Date(); 
       times_['directions'] +=(endTime5 - startTime5);
 
-    }); 
-
+    });  
   };
  
   Lattice.prototype.createFaces = function(){ 
@@ -992,8 +991,7 @@ define([
         var oneHex = _this.hexagonalShapes[i]; 
         _this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
       }; 
-    }  
-     
+    }   
   };
   Lattice.prototype.createHexFace = function(hexagon, faceOpacity, faceColor, visible){
 
@@ -1046,71 +1044,76 @@ define([
   };
   Lattice.prototype.directionParameterChange = function(arg) {
 
-    if(arg.u === undefined || arg.v === undefined || arg.w === undefined){
+    var checkParams = this.menu.getDirectionInputs();
+        
+    if(checkParams.millerU.length === 0 || checkParams.millerV.length === 0 || checkParams.millerW.length === 0){ 
       return;
+    }
+    else if(this.directionalState.state === 'creating'){
+      this.directionPreview('current');
+      PubSub.publish(events.DIRECTION_STATE,"editing");
+      return; 
     }
 
     var _this = this, parameters = this.parameters ;
-    
-   // _.each(_this.tempDirs, function(directional, ref) {
-      if( !_.isUndefined(arg.dirRadius)) { 
-        _.each(_this.tempDirs, function(directional, ref) {
-          directional.direction.updateTubeRadius(arg.dirRadius);   
-        });
-      }   
-      else if( !_.isUndefined(arg.directionColor)) { 
-        _.each(_this.tempDirs, function(directional, ref) {
-          directional.direction.setColor(arg.directionColor);
-        });   
-      } 
-      else if( !_.isUndefined(arg.millerU) || !_.isUndefined(arg.millerV) || !_.isUndefined(arg.millerW) || !_.isUndefined(arg.millerT) ) { 
+     
+    if( !_.isUndefined(arg.dirRadius)) { 
+      _.each(_this.tempDirs, function(directional, ref) { 
+        directional.direction.updateTubeRadius(arg.dirRadius);   
+      });
+    }   
+    else if( !_.isUndefined(arg.directionColor)) { 
+      _.each(_this.tempDirs, function(directional, ref) { 
+        directional.direction.setColor('0x'+arg.directionColor);
+      });   
+    } 
+    else if( !_.isUndefined(arg.millerU) || !_.isUndefined(arg.millerV) || !_.isUndefined(arg.millerW) || !_.isUndefined(arg.millerT) ) { 
+       
+      var u = (_.isUndefined(arg.millerU)) ? _this.tempDirs[0].u : parseInt(arg.millerU); 
+      var v = (_.isUndefined(arg.millerV)) ? _this.tempDirs[0].v : parseInt(arg.millerV); 
+      var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseInt(arg.millerW); 
+      var t = (_.isUndefined(arg.millerT)) ? _this.tempDirs[0].t : parseInt(arg.millerT); 
+       
+      if((this.latticeName === 'hexagonal')){
          
-        var u = (_.isUndefined(arg.millerU)) ? _this.tempDirs[0].u : parseInt(arg.millerU); 
-        var v = (_.isUndefined(arg.millerV)) ? _this.tempDirs[0].v : parseInt(arg.millerV); 
-        var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseInt(arg.millerW); 
-        var t = (_.isUndefined(arg.millerT)) ? _this.tempDirs[0].t : parseInt(arg.millerT); 
-         
-        if((this.latticeName === 'hexagonal')){
-           
-        }
-        else{ 
-          var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w)), counter = 0;
-          u/=devider;
-          v/=devider;
-          w/=devider;  
+      }
+      else{ 
+        var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w)), counter = 0;
+        u/=devider;
+        v/=devider;
+        w/=devider;  
 
-          _.times(parameters.repeatX , function(_x) {
-            _.times(parameters.repeatY , function(_y) {
-              _.times(parameters.repeatZ , function(_z) { 
+        _.times(parameters.repeatX , function(_x) {
+          _.times(parameters.repeatY , function(_y) {
+            _.times(parameters.repeatZ , function(_z) { 
 
-                var directional = _this.tempDirs[counter];
-                var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
-                var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
-                startPoint.x += _x ; 
-                startPoint.y += _y ; 
-                startPoint.z += _z ; 
-                endpointPoint.x += _x ; 
-                endpointPoint.y += _y ; 
-                endpointPoint.z += _z ;  
-                 
-                directional.u = parseInt($('#millerU').val()) ; 
-                directional.v = parseInt($('#millerV').val()) ; 
-                directional.w = parseInt($('#millerW').val()) ; 
-                directional.t = parseInt($('#millerT').val()) ; 
-                directional.startPoint = startPoint; 
-                directional.endpointPoint = endpointPoint; 
-                directional.id = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"") ;
-                
-                _this.forwardTransformationsMiller(_this.tempDirs[counter]);   
-                directional.direction.updateDirectionPos(startPoint, endpointPoint); 
+              var directional = _this.tempDirs[counter];
+              var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
+              var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
+              startPoint.x += _x ; 
+              startPoint.y += _y ; 
+              startPoint.z += _z ; 
+              endpointPoint.x += _x ; 
+              endpointPoint.y += _y ; 
+              endpointPoint.z += _z ;  
+               
+              directional.u = parseInt($('#millerU').val()) ; 
+              directional.v = parseInt($('#millerV').val()) ; 
+              directional.w = parseInt($('#millerW').val()) ; 
+              directional.t = parseInt($('#millerT').val()) ; 
+              directional.startPoint = startPoint; 
+              directional.endpointPoint = endpointPoint; 
+              directional.id = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"") ;
               
-                counter++;
-              });
+              _this.forwardTransformationsMiller(_this.tempDirs[counter]);   
+              directional.direction.updateDirectionPos(startPoint, endpointPoint); 
+            
+              counter++;
             });
           });
-        } 
-      }    
-    //});   
+        });
+      } 
+    }     
   };
   Lattice.prototype.planeParameterChange = function(arg) {
 
@@ -1148,7 +1151,6 @@ define([
       k = (k!=0) ? 1/k : 0 ;
       l = (l!=0) ? 1/l : 0 ;
         
-
       if(_this.latticeName !== 'hexagonal'){
         if( h!=0 && k!=0 && l!=0) { 
           _.times(parameters.repeatX , function(_x) {
@@ -1286,8 +1288,7 @@ define([
             });
           });
         }
-      } 
-       
+      }   
     }   
         
   };
@@ -1295,14 +1296,12 @@ define([
     this.transform(1,reverseShearing, function(value) {  
       return -value;
     });
-  };
-
+  }; 
   Lattice.prototype.revertScaling = function() {
     this.transform(1, reverseScaling, function(value) { 
       return (value === 0 ? 0 : 1 / value);
     }); 
-  };
-
+  }; 
   var calculateDelta = function(original, update) {
     var delta = {};
     if (_.isObject(update)) {
@@ -1313,20 +1312,16 @@ define([
         });
     }
     return delta;
-  };
-
+  }; 
   Lattice.prototype.backwardTransformations = function() {   
     this.revertShearing();
     this.revertScaling();
-  };
-
+  }; 
   Lattice.prototype.forwardTransformations = function() {  
     this.transform(0,_.union(scaling, shearing), function(value) {
       return value;
-    });
-     
-  };
-
+    }); 
+  }; 
   Lattice.prototype.update = function() {  
      
     if(this.latticeName !== 'hexagonal'){
@@ -1335,10 +1330,8 @@ define([
     }
     else{ 
       this.updatePoints([]); 
-    }  
-    
-  };
-
+    }   
+  }; 
   Lattice.prototype.setGrade = function(gradeParameters) { 
     
     var _this = this; 
@@ -1346,8 +1339,7 @@ define([
       _this.gradeParameters[k] = param ; 
     }); 
     this.setGradeParameters(); 
-  };
-  
+  }; 
   Lattice.prototype.setGradeChoices = function(gradeChoices) { 
      
     if(!_.isUndefined(gradeChoices["faceCheckButton"])) {
@@ -1379,8 +1371,7 @@ define([
           grid.grid.setVisible(true);
         });
       } 
-    };
-
+    }; 
   };
 
   Lattice.prototype.setGradeParameters = function() { 
@@ -1400,9 +1391,7 @@ define([
       face.setOpacity(_this.gradeParameters.faceOpacity);
       face.setColor( _this.gradeParameters.faceColor);
     });
-
-     
-
+ 
   }
   Lattice.prototype.updateLatticeTypeRL = function(){ return 0;
     var params = this.parameters ;
@@ -1923,23 +1912,32 @@ define([
      
     PubSub.publish(events.PLANE_STATE,"editing"); 
 
-    var h,k,l,name,color, opacity; 
- 
-    var index ;
-    for (var i = 0; i < this.millerPlanes.length; i++) { 
-      if(this.millerPlanes[i].id === which) {
-        this.tempPlanes.push(this.millerPlanes[i]);
-        h = this.millerPlanes[i].h; 
-        k = this.millerPlanes[i].k;
-        l = this.millerPlanes[i].l;
-        name = this.millerPlanes[i].planeName;
-        color =  this.millerPlanes[i].planeColor;
-        opacity =  this.millerPlanes[i].planeOpacity;  
-        index=i; console.log(9);
+    if(this.planeState.editing !== '-'){
+      this.menu.editSavedPlane(
+        { 
+          'action' : 'delete', 
+          'id' : this.planeState.editing,
+          'oldId' : this.planeState.editing, 
+        } 
+      );
+    }
+    var h,k,l,name,color, opacity, index, cnt = 0; 
+  
+    for (var j = 0; j < this.millerPlanes.length; j++) {  
+      if(this.millerPlanes[j].id === which) { 
+        h = this.millerPlanes[j].h; 
+        k = this.millerPlanes[j].k;
+        l = this.millerPlanes[j].l;
+        name = this.millerPlanes[j].planeName;
+        color =  this.millerPlanes[j].planeColor;
+        opacity =  this.millerPlanes[j].planeOpacity;   
+        this.millerPlanes[j].plane.destroy(); 
+        cnt++;
+        index = j;
       }
     }   
-    this.millerPlanes.splice(index,1);
-
+    this.millerPlanes.splice(index-cnt+1,cnt);
+     
     this.createMillerPlane({
       'millerH' : h,
       'millerK' : k,
@@ -1960,7 +1958,7 @@ define([
         'planeOpacity' : opacity,
         'planeName' : name
       } 
-    );
+    ); 
   }
   Lattice.prototype.planePreview = function (which){ 
      
@@ -2078,7 +2076,8 @@ define([
           this.planeState.editing = '-';
           break;
       } 
-    }  
+    }
+    console.log(this.millerPlanes.length); 
   };
   Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
     var _this = this ; 
@@ -2115,6 +2114,20 @@ define([
       }    
     }
     return found;
+  };
+  Lattice.prototype.planeVisibility = function (arg){  
+    if(this.planeState.editing === 'current'){
+      for (var i = 0; i < this.tempPlanes.length; i++) {    
+        this.tempPlanes[i].plane.setVisible(arg.visible); 
+      }
+    }
+    else{  
+      for (var i = 0; i < this.millerPlanes.length; i++) {  
+        if(this.millerPlanes[i].id === arg.id) { 
+          this.millerPlanes[i].plane.setVisible(arg.visible);
+        }
+      }
+    }
   };
 
   // directions 
@@ -2318,26 +2331,37 @@ define([
       this.tempDirs[i].direction.destroy();  
     };  
     this.tempDirs.splice(0); 
-       
+    
+    if(this.directionalState.editing !== '-'){
+      this.menu.editSavedDirection(
+        { 
+          'action' : 'delete', 
+          'id' : this.directionalState.editing,
+          'oldId' : this.directionalState.editing, 
+        } 
+      );
+    }
+
     var u,v,w,name,color, dirRadius, index;
     PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
-    var index ;
-    for (var i = 0; i < this.millerDirections.length; i++) { 
-      if(this.millerDirections[i].id === which) {
-        this.tempDirs.push(this.millerDirections[i]);
-        u = this.millerDirections[i].u;
-        v = this.millerDirections[i].v;
-        w = this.millerDirections[i].w;
-        name = this.millerDirections[i].name;
-        color = this.millerDirections[i].directionColor; 
-        dirRadius = this.millerDirections[i].direction.radius ;
-        index = i;
-      }
-    }; 
-    
-    this.millerDirections.splice(index,1);
+    var index,cnt=0 ;
 
+    for (var j = 0; j < this.millerDirections.length; j++) {  
+      if(this.millerDirections[j].id === which) { 
+        u = this.millerDirections[j].u;
+        v = this.millerDirections[j].v;
+        w = this.millerDirections[j].w;
+        name = this.millerDirections[j].name;
+        color = this.millerDirections[j].directionColor; 
+        dirRadius = this.millerDirections[j].direction.radius ; 
+        this.millerDirections[j].direction.destroy();
+        cnt++;
+        index = j;
+      }
+    }   
+    this.millerDirections.splice(index-cnt+1,cnt);
+     
     this.createMillerDirection({
       'millerU' : u,
       'millerV' : v,
@@ -2360,7 +2384,7 @@ define([
         'directionName' : name
       } 
     );   
-  };
+  }; 
   Lattice.prototype.directionPreview = function (which){ 
      
     var _this = this; 
@@ -2368,7 +2392,7 @@ define([
     if((which !== this.directionalState.editing || this.directionalState.state === 'initial') && which !=='current' ){
       return;
     }
- 
+   
     var params = this.menu.getDirectionInputs();
 
     if ( isNaN(params.millerU) || isNaN(params.millerV) || isNaN(params.millerW) ) {
@@ -2471,13 +2495,14 @@ define([
           PubSub.publish(events.DIRECTION_STATE,"initial"); 
           for (var i = 0; i < this.tempDirs.length; i++) {
             this.tempDirs[i].direction.destroy(); 
-          };  
+          };  // delete
           this.tempDirs.splice(0); 
           this.updateDirectionList(millerParameters, this.directionalState.editing, 'delete'); 
           this.directionalState.editing = '-';
           break;
       } 
-    }  
+    } 
+    console.log(this.millerDirections.length); 
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
@@ -2515,6 +2540,20 @@ define([
       }    
     }
     return found;
+  };
+  Lattice.prototype.directionVisibility = function (arg){ 
+    if(this.directionalState.editing === 'current'){
+      for (var i = 0; i < this.tempDirs.length; i++) {    
+        this.tempDirs[i].direction.setVisible(arg.visible); 
+      }
+    }
+    else{  
+      for (var i = 0; i < this.millerDirections.length; i++) {  
+        if(this.millerDirections[i].id === arg.id) { 
+          this.millerDirections[i].direction.setVisible(arg.visible);
+        }
+      }
+    }
   };
   //
 

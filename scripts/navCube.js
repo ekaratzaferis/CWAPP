@@ -18,7 +18,7 @@ var counter = 0;
 function NavCube( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.length =  (height + width)/260; 
+    this.length =  (height + width)/250; 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     this.cubeMats;
@@ -74,7 +74,7 @@ function NavCube( scene, latticeParams) {
      
     geom.computeFaceNormals();
 
-    this.arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
+    this.arHead = new THREE.Mesh( geom, new THREE.MeshBasicMaterial({color : 0xBDBDBD }));
     this.arHead.name = 'arrowHead';
       
     var CustomSinCurve = THREE.Curve.create(
@@ -98,7 +98,7 @@ function NavCube( scene, latticeParams) {
         8,     //radiusSegments
         false  //closed
     );
-    this.arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0x8904B1 }));
+    this.arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0xBDBDBD }));
     this.arLine.name = 'arrowLine' ;
     scene.add(this.arHead);
     scene.add(this.arLine);
