@@ -242,9 +242,11 @@ define([
         var $screenWrapper = jQuery('#screenWrapper');
         var $appContainer = jQuery("#app-container");
     
-        //Logo
+        // Logo
         var $appLogo = jQuery('#appLogoWrapper');
     
+        // Menu Zoom
+        var $menuZoom = jQuery('#menuZoom');
     
     
     /* ----------------------
@@ -491,6 +493,8 @@ define([
             $screenWrapper.fadeIn(800);
             $appContainer.width(screen_width-x);
             $progressBarWrapper.width(screen_width);
+            
+            $('.main-controls-inner').height(screen_height);
         };
 
         function init_dimensions(){
@@ -678,7 +682,7 @@ define([
                 }
             });
             _.each(lengthSlider, function(name) {
-               _this.setSlider(name,1,1,100,0.01,events.LATTICE_PARAMETER_CHANGE); 
+               _this.setSlider(name,1,1,20,0.01,events.LATTICE_PARAMETER_CHANGE); 
             });
             _.each(angleSliders, function(name) {
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
@@ -858,6 +862,8 @@ define([
             /* [Visualization Tab] */
             $fogDensity.val(1);
             _this.setSlider('fogDensity',5,1,10,0.1,events.FOG_PARAMETER_CHANGE);
+            $menuZoom.html('<option>100%</option><option>90%</option><option>80%</option><option>70%</option>');
+            $menuZoom.selectpicker();
             
             /* [Public Library Tab] */
             
@@ -1444,7 +1450,6 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-            
         
     /*$
     
@@ -1492,6 +1497,16 @@ define([
        Prototypes - Editors
        -------------------- */
     
+        Menu.prototype.disableLatticeChoice = function(argument){
+            if (argument) {
+                jQuery('#selected_lattice').addClass('disabled');
+                jQuery('#selected_lattice').parent().addClass('disabled');
+            }
+            else {
+                jQuery('#selected_lattice').removeClass('disabled');
+                jQuery('#selected_lattice').parent().removeClass('disabled');
+            }
+        }
         Menu.prototype.showTooltip = function(argument){
             jQuery('#'+argument['id']).attr('data-original-title', argument['title']).tooltip('fixTitle');
             jQuery('#'+argument['id']).tooltip('show');
@@ -1707,12 +1722,12 @@ define([
             else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
             switch(argument['action']){
                 case 'save':
-                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1725,17 +1740,19 @@ define([
                 $planesTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.PLANE_SELECTION, argument['id']);
                 });
-                $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){ 
+                $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
+                    var arg = {};
+                    arg['id'] = argument['id'];
                     if ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('visible')) {
                         $planesTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
-                        argument['visible'] = false;
+                        arg['visible'] = false;
                     }
                     else {
-                        argument['visible'] = true;
+                        arg['visible'] = true;
                         $planesTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
                     }
-                    PubSub.publish(events.PLANE_VISIBILITY, argument);
                     $planesTable.find('#'+argument['id']).find('.planeButton').toggleClass('visible');
+                    PubSub.publish(events.PLANE_VISIBILITY, arg);
                 });
                 $planesTable.find('#'+argument['id']).find('.planeButton').hover(
                     function(){
@@ -1860,12 +1877,12 @@ define([
             else parameters = '['+argument['u']+','+argument['v']+','+argument['w']+','+argument['t']+']';
             switch(argument['action']){
                 case 'save':
-                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;  
 
                 case 'edit':
-                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                    $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
                     $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                     break;
 
@@ -1879,16 +1896,18 @@ define([
                     PubSub.publish(events.DIRECTION_SELECTION, argument['id']);
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){ 
+                    var arg = {};
+                    arg['id'] = argument['id'];
                     if ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('visible')) {
                         $directionTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
-                        argument['visible'] = false;
+                        arg['visible'] = false;
                     }
                     else {
-                        argument['visible'] = true;
+                        arg['visible'] = true;
                         $directionTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
                     }
-                    PubSub.publish(events.DIRECTION_VISIBILITY, argument);
-                    $directionTable.find('#'+argument['id']).find('.directionButton').toggleClass('visible'); 
+                    $directionTable.find('#'+argument['id']).find('.directionButton').toggleClass('visible');
+                    PubSub.publish(events.DIRECTION_VISIBILITY, arg);
                 });
                 $directionTable.find('#'+argument['id']).find('.directionButton').hover(
                     function(){

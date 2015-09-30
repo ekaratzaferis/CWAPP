@@ -75,12 +75,18 @@
                     <div id="leapIcon"></div>
                     <!-- Canvasses -->
                     <div id="unitCellRenderer" ></div>
-                    <div id="unitCellRendererCaption" class="motifBorderTop motifBorderLeft"><h1>UNIT CELL&nbsp;</h1></div>
                     <div id="crystalRenderer">
                         <div id="hudRenderer"></div> 
                         <div id="hudRendererCube"></div>
                     </div>
-                    <div id="crystalRendererCaption" class="motifBorderTop motifBorderLeft motifBorderRight"><h1>CRYSTAL&nbsp;</h1></div>
+                    <div id="topRowTable">
+                        <div id="unitCellRendererMouse" ></div>
+                        <div id="crystalRendererMouse" ></div>
+                    </div>  
+                    <div id="topRowTableCaption">
+                        <div id="unitCellRendererCaption" class="motifBorderTop motifBorderLeft"><h1>UNIT CELL&nbsp;</h1></div>
+                        <div id="crystalRendererCaption" class="motifBorderTop motifBorderLeft motifBorderRight"><h1>CRYSTAL&nbsp;</h1></div>
+                    </div>
                     <div id="motifRenderer"></div> 
                     <div id="motifScreenTable">
                         <div id="motifPosX"></div>
@@ -997,16 +1003,6 @@
 																								<div class="col col-sm-4">
 																									<div class="coordinates-group theme-light">
 																										<div class="coordinates-label form-group-label">
-																											<label for="txt_coordinates_h">i</label>
-																										</div>
-																										<div class="coordinates-input form-group-input theme-light">
-																											<input type="text" name="txt_coordinates_i" id="millerI" class="form-control"/>
-																										</div>
-																									</div>
-																								</div>
-																								<div class="col col-sm-4">
-																									<div class="coordinates-group theme-light">
-																										<div class="coordinates-label form-group-label">
 																											<label for="txt_coordinates_h">h</label>
 																										</div>
 																										<div class="coordinates-input form-group-input theme-light">
@@ -1031,6 +1027,19 @@
 																										</div>
 																										<div class="coordinates-input form-group-input theme-light">
 																											<input type="text" name="txt_coordinates_l" id="millerL" class="form-control"/>
+																										</div>
+																									</div>
+																								</div>
+                                                                                                <div class="col col-sm-4">
+																									<!-- Empty -->
+																								</div>
+                                                                                                <div class="col col-sm-4">
+																									<div class="coordinates-group theme-light">
+																										<div class="coordinates-label form-group-label">
+																											<label for="txt_coordinates_h">i</label>
+																										</div>
+																										<div class="coordinates-input form-group-input theme-light">
+																											<input type="text" name="txt_coordinates_i" id="millerI" class="form-control"/>
 																										</div>
 																									</div>
 																								</div>
@@ -1136,8 +1145,8 @@
 															<div class="tab-box">
 																<div class="box-head">
 																	<div class="pnd-top-action-bar-container">
-																		<div class="action action-add-new">
-																			<a><img id="newDirection" src="Images/add-new-directions-icon.png" class="img-responsive" alt=""/></a>
+																		<div class="action action-add-new" id="newDirection">
+																			<a><img src="Images/add-new-directions-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1154,16 +1163,6 @@
 																						<div class="coordinates-properties-container">
 																							<div class="row row-10">
 																								
-                                                                                                <div class="col col-sm-4">
-																									<div class="coordinates-group theme-light">
-																										<div class="coordinates-label form-group-label">
-																											<label for="txt_coordinates_t">t</label>
-																										</div>
-																										<div class="coordinates-input form-group-input theme-light">
-																											<input type="text" name="txt_coordinates_t" class="form-control" id="millerT"/>
-																										</div>
-																									</div>
-																								</div>
 																								<div class="col col-sm-4">
 																									<div class="coordinates-group theme-light">
 																										<div class="coordinates-label form-group-label">
@@ -1191,6 +1190,19 @@
 																										</div>
 																										<div class="coordinates-input form-group-input theme-light">
 																											<input type="text" name="txt_coordinates_l" class="form-control" id="millerW"/>
+																										</div>
+																									</div>
+																								</div>
+                                                                                                <div class="col col-sm-4">
+																									<!-- Empty -->
+																								</div>
+                                                                                                <div class="col col-sm-4">
+																									<div class="coordinates-group theme-light">
+																										<div class="coordinates-label form-group-label">
+																											<label for="txt_coordinates_t">t</label>
+																										</div>
+																										<div class="coordinates-input form-group-input theme-light">
+																											<input type="text" name="txt_coordinates_t" class="form-control" id="millerT"/>
 																										</div>
 																									</div>
 																								</div>
@@ -1591,6 +1603,17 @@
 													<h3>visualization tools</h3>
 												</div>
 												<div class="tab-blocks-container">
+                                                    <div class="tab-block theme-dark">
+														<div class="block-title">
+															<h3>Menu Zoom</h3>
+														</div>
+														<div class="block-content">
+                                                            <label class="btn btn-light">100%</label>
+                                                            <label class="btn btn-light">90%</label>
+                                                            <label class="btn btn-light">80%</label>
+                                                            <label class="btn btn-light">70%</label>
+														</div>
+													</div>
 													<div class="tab-block theme-light color-properties-block">
 														<div class="color-properties-container">
 															<div class="row row-10">
