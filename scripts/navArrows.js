@@ -18,6 +18,7 @@ define([
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.arrowLength =  (height+width)/350 ; 
+    this.visibility = true;
 
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
@@ -115,6 +116,11 @@ define([
 
 };
 NavArrows.prototype.setVisibility = function(bool) {
+    if(bool === undefined){
+        bool = this.visibility;
+    }
+    this.visibility = bool;
+    
     this.aScale.visible = bool;
     this.bScale.visible = bool;
     this.cScale.visible = bool;

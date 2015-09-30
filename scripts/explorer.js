@@ -78,9 +78,9 @@ define([
       new THREE.Vector3( 0,0,-1000 )
     );
      
-    this.xAxisLine = new THREE.Line( xAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) );
-    this.yAxisLine = new THREE.Line( yAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) );
-    this.zAxisLine = new THREE.Line( zAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) ); 
+    this.xAxisLine = new THREE.Line( xAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
+    this.yAxisLine = new THREE.Line( yAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
+    this.zAxisLine = new THREE.Line( zAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
     
     this.object3d.add(this.xAxisLine);
     this.object3d.add(this.yAxisLine);

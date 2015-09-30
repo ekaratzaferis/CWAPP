@@ -285,6 +285,12 @@ require([
   menu.planeSelection(function(message, which) {
     lattice.selectPlane(which);
   });
+  menu.onPlanePreview(function(message, which) {
+    lattice.planePreview(which);
+  });
+  menu.onDirectionPreview(function(message, which) {
+    lattice.directionPreview(which);
+  });
   lattice.onPlaneStateChange(function(message, state) {
     lattice._planeState(state);
   });
@@ -604,6 +610,7 @@ require([
     }
     hudArrows.updateLengths(params);
     hudArrows.updateAngles(params); 
+    hudArrows.setVisibility();
     hudCube.updateAngles(params);
     crystalScene.updateAbcAxes(params);
 

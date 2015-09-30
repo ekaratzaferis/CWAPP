@@ -19,7 +19,7 @@ define([
 
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
-    var arrow = new THREE.ArrowHelper( direction , start, length , "#"+color, length/8, length/20);
+    var arrow = new THREE.ArrowHelper( direction , start, length , color, length/8, length/20);
  
     this.object3d = arrow;
     Explorer.add(this);
@@ -77,7 +77,7 @@ define([
     var color =  this.color ;
      
     var meshGeometry = new THREE.CylinderGeometry( 0.001, 0.001, 0.001, 8, 8 ); 
-    var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial({color : "#"+color })  );  
+    var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial({color : color })  );  
 
     var pointA = start.clone();  
     var pointB = getPointInBetweenByLen(end, start, start.distanceTo(end)/8); 
@@ -109,9 +109,9 @@ define([
   };
  
   MillerVector.prototype.setColor = function(color) { 
-    this.color = color;    
-    this.object3d.setColor("#"+color);
-    this.tubeMesh.object3d.material.color.setHex( "0x"+color );
+    this.color = color;     
+    this.object3d.material.color.setHex( color ); 
+    this.tubeMesh.object3d.material.color.setHex( color );
   };
  
   MillerVector.prototype.destroy = function() { 

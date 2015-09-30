@@ -1,10 +1,5 @@
   
-ADDING
-a. User starts with everything emptied / grayed out (hkl/name..)
-b. Leads to user clicking on new plane, which adds an empty item on list
-c. User changes value, previews… clicks on save. bvgt5
-d. On save click, item parameters are updated on the list (hkl, name…)
-
+ 
 CHANGING DATA
 a. User clicks on item list to select it
 b. Item is highlighted on the list and parameters are loaded to the
@@ -28,6 +23,10 @@ ones is the same as the one he is currently trying to create.
   33. otan kleinw to menu de douleuei kala to mouse event ston kuvo ston ME
   34. renderization mode - deacctivate menu
   35 gear bar tour to idio provlima me renderization mode
+thelw na kanw disable ta renderization modes
+thelw na kanw disable genika pragmata tou menu
+
+gia kapoio logo planes/directions me dekadiko exoun themata sto idi
 
 TODO list 
     

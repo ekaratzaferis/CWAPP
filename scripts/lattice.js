@@ -57,12 +57,12 @@ define([
     this.millerParameters = []; 
 
     this.millerPlanes = [];
-    this.planeState = {state:"initial", editing : undefined, dname : undefined};
+    this.planeState = {state:"initial", editing : undefined };
     this.planeList =[];
     this.tempPlanes =[];
 
     this.millerDirections = [];
-    this.directionalState = {state:"initial", editing : undefined, dname : undefined};    
+    this.directionalState = {state:"initial", editing : undefined };    
     this.directionalList =[];
     this.tempDirs = [] ;
     this.planesUnique = [];
@@ -78,7 +78,7 @@ define([
     var _this = this, i =0;
     this.viewMode = arg.mode ;
     
-    this.menu.resetProgressBar( 'Processing...');
+    setTimeout( function(){_this.menu.resetProgressBar( 'Processing...');},0);
 
     if(this.actualAtoms.length!==0){
 
@@ -1045,6 +1045,11 @@ define([
     directional.direction.updateDirectionPos(start, end); 
   };
   Lattice.prototype.directionParameterChange = function(arg) {
+
+    if(arg.u === undefined || arg.v === undefined || arg.w === undefined){
+      return;
+    }
+
     var _this = this, parameters = this.parameters ;
     
    // _.each(_this.tempDirs, function(directional, ref) {
@@ -1105,19 +1110,26 @@ define([
           });
         } 
       }    
-    //});  
- 
+    //});   
   };
   Lattice.prototype.planeParameterChange = function(arg) {
 
-    if(arg.h === undefined || arg.k === undefined || arg.l === undefined){
+    var checkParams = this.menu.getPlaneInputs();
+       
+    if(checkParams.millerH.length === 0 || checkParams.millerK.length === 0 || checkParams.millerL.length === 0){ 
       return;
     }
+    else if(this.planeState.state === 'creating'){
+      this.planePreview('current');
+      PubSub.publish(events.PLANE_STATE,"editing");
+      return; 
+    }
+     
     var _this = this, parameters = this.parameters ;
      
-    if( !_.isUndefined(arg.planeColor)) {
+    if( !_.isUndefined(arg.planeColor)) { 
       _.each(_this.tempPlanes, function(plane, ref) { 
-        plane.plane.setColor(arg.planeColor);  
+        plane.plane.setColor('0x'+arg.planeColor);  
       }); 
     }   
     else if( !_.isUndefined(arg.planeOpacity)) { 
@@ -1481,6 +1493,10 @@ define([
   Lattice.prototype.onLoad = function(callback) {
     PubSub.subscribe(events.LOAD, callback);
   };
+  
+ 
+  // Millers
+ 
   Lattice.prototype.reCreateMillers = function() {
     var _this = this; 
 
@@ -1525,9 +1541,48 @@ define([
         dirRadius : directional.direction.radius
       };   
       this.createMillerDirection(params, false, true); 
-    } 
-       
-  }
+    }  
+  };
+  Lattice.prototype.transformMiller = function( shape, parameterKeys, operation ) {
+    var matrix; 
+    var argument;
+    var parameters = this.parameters;
+    var _this = this;
+     
+    _.each(parameterKeys, function(k) { // TODO performance imporvement - no need to be executed so many times
+ 
+        if (_.isUndefined(parameters[k]) === false) {
+          argument = {};
+          argument[k] = operation(parameters[k]);
+          matrix = transformationMatrix(argument);
+          if(_.isUndefined ( shape.plane) ){ 
+            shape.startPoint.applyMatrix4(matrix);
+            shape.endpointPoint.applyMatrix4(matrix); 
+
+          }  
+          else{ 
+            shape.plane.object3d.geometry.verticesNeedUpdate = true ;
+            var vertices = shape.plane.object3d.geometry.vertices;
+            _.each(vertices, function(vertex , k){
+              vertex.applyMatrix4(matrix); 
+            }); 
+          } 
+        } 
+    }); 
+  }; 
+  Lattice.prototype.revertShearingMiller = function() { 
+    this.transformMiller(reverseShearing, function(value) {  
+      return -value;
+    });
+  };
+  Lattice.prototype.onDirectionStateChange = function(callback) {
+    PubSub.subscribe(events.DIRECTION_STATE, callback);
+  };
+  Lattice.prototype.onPlaneStateChange = function(callback) { 
+    PubSub.subscribe(events.PLANE_STATE, callback);
+  };
+
+  // planes
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform) {
     var _this = this ;
     var parameters = this.parameters ;
@@ -1535,8 +1590,8 @@ define([
     var k = parseInt(millerParameters.millerK ); 
     var l = parseInt(millerParameters.millerL );
     var id;  
-
-    h = (h!=0) ? 1/h : 0 ;
+   
+    h = (h!=0) ? 1/h : 0 ;  
     k = (k!=0) ? 1/k : 0 ;
     l = (l!=0) ? 1/l : 0 ;
     
@@ -1550,6 +1605,7 @@ define([
               var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
               
               var x =  new MillerPlane(a, b, c, undefined, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor );
+            
               id = _this.generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
@@ -1760,10 +1816,308 @@ define([
           _this.forwardTransformationsMiller(_this.tempPlanes[id]); 
         }
       }*/
+    }  
+  };  
+  Lattice.prototype._planeState = function (state){ 
+    var _this = this ;
+    _this.planeState.state = state;
+    switch(state) {
+        case "initial":  
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : false,
+              'deletePlane' : true,
+              'savePlane' : true 
+            }
+          );
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : '',
+              'millerK' : '',
+              'millerL' : '',
+              'millerI' : '',
+              'planeColor' : "#1F2227",
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : true,
+              'millerK' : true,
+              'millerL' : true,
+              'millerI' : true,
+              'planeColor' : true,
+              'planeOpacity' : true,
+              'planeName' : true
+            } 
+          );  
+          break;
+        case "creating": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : true,
+              'deletePlane' : false,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          ); 
+          this.menu.editPlaneInputs(
+            {
+              'millerH' : '',
+              'millerK' : '',
+              'millerL' : '',
+              'millerI' : '',
+              'planeColor' : "#1F2227",
+              'planeOpacity' : 10,
+              'planeName' : ""
+            } 
+          );
+          break;
+        case "editing": 
+          this.menu.disablePlaneButtons(
+            {
+              'newPlane' : true,
+              'deletePlane' : false,
+              'savePlane' : false
+            }
+          );
+          this.menu.disablePlaneInputs(
+            {
+              'millerH' : false,
+              'millerK' : false,
+              'millerL' : false,
+              'millerI' : false,
+              'planeColor' : false,
+              'planeOpacity' : false,
+              'planeName' : false
+            } 
+          ); 
+          break;
+      }
+  };
+  Lattice.prototype.selectPlane = function (which){ 
+    var _this = this; 
+
+    if(which === this.planeState.editing){
+      return;
+    }
+    
+    this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
+    this.menu.highlightPlaneEntry({id : which, color : 'bg-light-purple'});
+ 
+    for (var i = 0; i < this.tempPlanes.length; i++) {
+      this.tempPlanes[i].plane.destroy(); 
+    };  
+    this.tempPlanes.splice(0); 
+     
+    PubSub.publish(events.PLANE_STATE,"editing"); 
+
+    var h,k,l,name,color, opacity; 
+ 
+    var index ;
+    for (var i = 0; i < this.millerPlanes.length; i++) { 
+      if(this.millerPlanes[i].id === which) {
+        this.tempPlanes.push(this.millerPlanes[i]);
+        h = this.millerPlanes[i].h; 
+        k = this.millerPlanes[i].k;
+        l = this.millerPlanes[i].l;
+        name = this.millerPlanes[i].planeName;
+        color =  this.millerPlanes[i].planeColor;
+        opacity =  this.millerPlanes[i].planeOpacity;  
+        index=i; console.log(9);
+      }
+    }   
+    this.millerPlanes.splice(index,1);
+
+    this.createMillerPlane({
+      'millerH' : h,
+      'millerK' : k,
+      'millerL' : l,
+      'planeColor' : color,
+      'planeOpacity' : opacity  
+      }, true, false);
+
+    this.planeState.editing = which; 
+  
+    this.menu.editPlaneInputs(
+      {
+        'millerH' : h,
+        'millerK' : k,
+        'millerL' : l,
+        'millerI' : -1,
+        'planeColor' : color,
+        'planeOpacity' : opacity,
+        'planeName' : name
+      } 
+    );
+  }
+  Lattice.prototype.planePreview = function (which){ 
+     
+    var _this = this; 
+ 
+    if((which !== this.planeState.editing || this.planeState.state === 'initial') && which !=='current' ){
+      return;
+    }
+   
+    var params = this.menu.getPlaneInputs();
+
+    if ( isNaN(params.millerH) || isNaN(params.millerK) || isNaN(params.millerL) ) {
+      return;
     }
       
+    for (var i = 0; i < this.tempPlanes.length; i++) {
+      this.tempPlanes[i].plane.destroy(); 
+    };
+    this.tempPlanes.splice(0);
+    
+    if(this.planeState.editing !== '-' && this.planeState.editing !== which ){
+      this.menu.editSavedPlane({ action : 'delete', oldId : this.planeState.editing});
+    }
+     
+    this.createMillerPlane(params, true, false); 
+  }; 
+  Lattice.prototype.submitPlane = function(millerParameters) {  
+    if(
+      ( millerParameters.millerH === "" || 
+        millerParameters.millerK === "" || 
+        millerParameters.millerL === ""
+      )
+      && ( millerParameters.button === "savePlane")) {
+      return;
+    }
+    var _this = this ;
+    var buttonClicked = millerParameters.button ;
+    var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+ 
+    if (this.planeState.state === "initial"){
+      if( buttonClicked === "newPlane"){  
+        this.menu.editSavedPlane(
+          { 
+            'action' : 'save', 
+            'id' : 'current', 
+            'h' : ' ',
+            'k' : ' ',
+            'l' : ' ',
+            'i' : ' ',
+            'name' : ' ', 
+            'color' : '#1F2227'
+          } 
+        ); 
+        this.planeState.editing = 'current';
+        this.menu.highlightPlaneEntry({id : 'current', color : 'bg-light-purple'});
+        PubSub.publish(events.PLANE_STATE,"creating");
+      }
+    }
+    else if (_this.planeState.state === "creating"){
+      switch(buttonClicked) {  
+        case "savePlane":
+            
+        var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
+        if(_.isUndefined(found)){ 
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0);
+          millerParameters.planeColor = (millerParameters.planeColor.charAt( 0 ) === '#') ? (millerParameters.planeColor) : ('#'+millerParameters.planeColor);
+          this.createMillerPlane(millerParameters, false, false);
+          this.updatePlaneList(millerParameters, 'current', 'edit');  
+          this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
+          this.planeState.editing = '-';
+          PubSub.publish(events.PLANE_STATE,"initial");
+        }
+        else{
+          this.menu.showTooltip({id : 'planesTooltip', title : ' This plane already exists!'})
+        }
+        break; 
+          
+      }
+    }
+    else if (_this.planeState.state === "editing"){
+
+      switch(buttonClicked) {  
+        case "savePlane": 
+           
+          millerParameters.planeColor = (millerParameters.planeColor.charAt( 0 ) === '#') ? (millerParameters.planeColor) : ('#'+millerParameters.planeColor);
+          var suc = this.updatePlaneList(millerParameters, this.planeState.editing, 'edit');
+
+          if( suc === undefined){ 
+            for (var i = 0; i < this.tempPlanes.length; i++) {
+              this.tempPlanes[i].plane.destroy(); 
+            };  
+            this.tempPlanes.splice(0);
+
+            this.createMillerPlane(millerParameters, false, false);   
+            this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
+            this.planeState.editing = '-';
+            PubSub.publish(events.PLANE_STATE,"initial");
+          }
+          else{
+            this.menu.showTooltip({id : 'planesTooltip', title : ' This plane already exists!'})
+          }
+          
+          break;
+
+        case "deletePlane": 
+          PubSub.publish(events.PLANE_STATE,"initial"); 
+          for (var i = 0; i < this.tempPlanes.length; i++) {
+            this.tempPlanes[i].plane.destroy(); 
+          };  
+          this.tempPlanes.splice(0); 
+          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
+          this.planeState.editing = '-';
+          break;
+      } 
+    }  
+  };
+  Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
+    var _this = this ; 
+ 
+    if( oldId !== undefined){ 
+      _.each(_this.planeList, function(x, reference) {
+        if(x.id === oldId) {
+          delete _this.planeList[reference];
+        }
+      }); 
+    } 
+    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";  
+    
+    var found = (action === 'edit') ? _.find(_this.planeList, function(plane){ return plane.id === id; }) : undefined; 
+
+    if( found === undefined){ 
+      this.menu.editSavedPlane(
+        { 
+          'action' : action,
+          'h' : millerParameters.millerH,
+          'k' : millerParameters.millerK,
+          'l' : millerParameters.millerL,
+          'i' : undefined,
+          'name' : millerParameters.planeName,
+          'id' : id,
+          'oldId' : oldId,
+          'color' : millerParameters.planeColor
+        } 
+      );
+    
+      if( action !== 'delete'){
+        var item = { id : id};
+        _this.planeList.push(item); 
+      }    
+    }
+    return found;
   };
 
+  // directions 
   Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform) {
     var _this = this ;
     var hexagonal = (this.latticeName !== 'hexagonal') ? false : true ;
@@ -1859,351 +2213,11 @@ define([
         });
       });
     }
-  };
-
-  Lattice.prototype.selectDirection = function (which){ 
-    if(which === this.directionalState.editing && this.directionalState.state === 'editing'){
-      return;
-    }
-    for (var i = 0; i < this.tempDirs.length; i++) {
-      this.tempDirs[i].direction.destroy(); 
-      if( i === 0){
-        this.menu.editSavedDirection({ action : 'delete', oldId : this.tempDirs[0].id});
-      }
-    };  
-    this.tempDirs.splice(0); 
-
-    var _this = this;
-    var u,v,w,name,color, dirRadius;
-    PubSub.publish(events.DIRECTION_STATE,"editing"); 
-   
-    var index ;
-    for (var i = 0; i < this.millerDirections.length; i++) { 
-      if(this.millerDirections[i].id === which) {
-        this.tempDirs.push(this.millerDirections[i]);
-        u = this.millerDirections[i].u;
-        v = this.millerDirections[i].v;
-        w = this.millerDirections[i].w;
-        name = this.millerDirections[i].directionName;
-        color = this.millerDirections[i].directionColor; 
-        dirRadius = this.millerDirections[i].direction.radius ;
-        index = i;
-      }
-    };
-    this.millerDirections.splice(index,1);
-    _this.directionalState.editing = which;
-    _this.directionalState.dname = name;
-  
-    this.menu.editDirectionInputs(
-      {
-        'millerU' : u,
-        'millerV' : v,
-        'millerW' : w,
-        'millerT' : -1,
-        'directionColor' : '#'+color,
-        'dirRadius' : dirRadius,
-        'directionName' : name
-      } 
-    );
-
-  };
-  Lattice.prototype.submitPlane = function(millerParameters) { console.log(millerParameters);
-    if(
-      ( millerParameters.millerH === "" || 
-        millerParameters.millerK === "" || 
-        millerParameters.millerL === ""
-      )
-      && ( millerParameters.button==="savePlane")) {
-      return;
-    }
-    var _this = this ;
-    var buttonClicked = millerParameters.button ;
-    var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
- 
-    if (_this.planeState.state === "initial"){
-      if( buttonClicked === "newPlane"){  
-        this.menu.editSavedPlane(
-          { 
-            'action' : 'save', 
-            'id' : 'current', 
-            'h' : ' ',
-            'k' : ' ',
-            'l' : ' ',
-            'i' : ' ',
-            'name' : ' ', 
-            'color' : '#'+millerParameters.planeColor
-          } 
-        ); 
-        PubSub.publish(events.PLANE_STATE,"creating");
-      }
-    }
-    else if (_this.planeState.state === "creating"){
-      switch(buttonClicked) {  
-        case "savePlane":
-         /*
-        for (var i = 0; i < this.tempPlanes.length; i++) {
-          this.tempPlanes[i].plane.destroy(); 
-        };
-        this.tempPlanes.splice(0);
-        this.createMillerPlane(millerParameters, true, false);
-        PubSub.publish(events.PLANE_STATE,"creating");
-        
-          PubSub.publish(events.PLANE_STATE,"initial");
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          var found = _.find(_this.planeList, function(plane){ return plane.id === planeID; });
-          if(_.isUndefined(found)){
-            this.createMillerPlane(millerParameters, false, false);
-            this.updatePlaneList(millerParameters, undefined, 'save'); 
-          }
-          break; 
-          */
-      }
-    }
-    else if (_this.planeState.state === "editing"){
-
-      switch(buttonClicked) {  
-        case "savePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial");
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-           
-          var suc = this.updatePlaneList(millerParameters, this.planeState.editing, 'edit'); 
-          if( suc === undefined){
-            this.createMillerPlane(millerParameters, false, false); 
-          }
-          
-          break;
-
-        case "deletePlane": 
-          PubSub.publish(events.PLANE_STATE,"initial"); 
-          for (var i = 0; i < this.tempPlanes.length; i++) {
-            this.tempPlanes[i].plane.destroy(); 
-          };  
-          this.tempPlanes.splice(0);
-          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
-          break;
-      } 
-    }  
-  };
-  Lattice.prototype._planeState = function (state){ 
-    var _this = this ;
-    _this.planeState.state = state;
-    switch(state) {
-        case "initial":  
-          this.menu.disablePlaneButtons(
-            {
-              'newPlane' : false,
-              'deletePlane' : true,
-              'savePlane' : true 
-            }
-          );
-          this.menu.editPlaneInputs(
-            {
-              'millerH' : '',
-              'millerK' : '',
-              'millerL' : '',
-              'millerI' : '',
-              'planeColor' : "#1F2227",
-              'planeOpacity' : 10,
-              'planeName' : ""
-            } 
-          );
-          this.menu.disablePlaneInputs(
-            {
-              'millerH' : true,
-              'millerK' : true,
-              'millerL' : true,
-              'millerI' : true,
-              'planeColor' : true,
-              'planeOpacity' : true,
-              'planeName' : true
-            } 
-          );  
-          break;
-        case "creating": 
-          this.menu.disablePlaneButtons(
-            {
-              'newPlane' : true,
-              'deletePlane' : false,
-              'savePlane' : true
-            }
-          );
-          this.menu.disablePlaneInputs(
-            {
-              'millerH' : false,
-              'millerK' : false,
-              'millerL' : false,
-              'millerI' : false,
-              'planeColor' : false,
-              'planeOpacity' : false,
-              'planeName' : false
-            } 
-          );
-          this.menu.editPlaneInputs(
-            {
-              'millerH' : 1,
-              'millerK' : 1,
-              'millerL' : 1,
-              'millerI' : -1,
-              'planeColor' : '#FFFFFF',
-              'planeOpacity' : 10,
-              'planeName' : ""
-            } 
-          );
-          break;
-        case "editing": 
-          this.menu.disablePlaneButtons(
-            {
-              'newPlane' : true,
-              'deletePlane' : false,
-              'savePlane' : false
-            }
-          );
-          this.menu.disablePlaneInputs(
-            {
-              'millerH' : false,
-              'millerK' : false,
-              'millerL' : false,
-              'millerI' : false,
-              'planeColor' : false,
-              'planeOpacity' : false,
-              'planeName' : false
-            } 
-          ); 
-          break;
-      }
-  };
-  Lattice.prototype.selectPlane = function (which){ 
-
-    if(which === this.directionalState.editing && this.directionalState.state === 'editing'){
-      return;
-    }
-    this.menu.highlightDirectionEntry({id : which, color : 'bg-light-purple'});
-
- 
-    for (var i = 0; i < this.tempDirs.length; i++) {
-      this.tempDirs[i].direction.destroy(); 
-      if( i === 0){
-        this.menu.editSavedDirection({ action : 'delete', oldId : this.tempDirs[0].id});
-      }
-    };  
-    this.tempDirs.splice(0); 
-
-    var _this = this;
-    var u,v,w,name,color, dirRadius;
-    PubSub.publish(events.DIRECTION_STATE,"editing"); 
-   
-    var index ;
-    for (var i = 0; i < this.millerDirections.length; i++) { 
-      if(this.millerDirections[i].id === which) {
-        this.tempDirs.push(this.millerDirections[i]);
-        u = this.millerDirections[i].u;
-        v = this.millerDirections[i].v;
-        w = this.millerDirections[i].w;
-        name = this.millerDirections[i].directionName;
-        color = this.millerDirections[i].directionColor; 
-        dirRadius = this.millerDirections[i].direction.radius ;
-        index = i; 
-      }
-    };
-    this.millerDirections.splice(index,1);
-    _this.directionalState.editing = which;
-    _this.directionalState.dname = name;
-  
-    this.menu.editPlaneInputs(
-      {
-        'millerU' : u,
-        'millerV' : v,
-        'millerW' : w,
-        'millerT' : -1,
-        'directionColor' : '#'+color,
-        'dirRadius' : dirRadius,
-        'directionName' : name
-      } 
-    );
-  }
-  Lattice.prototype.previewPlane = function (which){ 
-      
-    if(which === 'current' ){
-      var params = this.menu.getPlaneInputs();
-      if
-      ( isNaN(params.millerH) || isNaN(params.millerK) || isNaN(params.millerL) ) {
-        return;
-      }
-        
-      for (var i = 0; i < this.tempPlanes.length; i++) {
-        this.tempPlanes[i].plane.destroy(); 
-      };
-      this.tempPlanes.splice(0);
-    
-      var suc = this.updatePlaneList(params, 'current', 'edit'); 
-      if( suc === undefined){
-        this.createMillerPlane(params, true, false);
-        PubSub.publish(events.PLANE_STATE,"editing"); 
-      }
-      else{
-        // this.menu.tooltip('This plane already exists!');
-      } 
-      return;
-    }
- 
-    for (var i = 0; i < this.tempPlanes.length; i++) {
-      this.tempPlanes[i].plane.destroy(); 
-      if( i === 0){
-        this.menu.editSavedPlane({ action : 'delete', oldId : this.tempPlanes[0].id});
-      }
-    };  
-    this.tempPlanes.splice(0); 
-
-    var _this = this;
-    var h,k,l,name,color, opacity;
-    PubSub.publish(events.PLANE_STATE,"editing");
- 
-    var index ;
-    for (var i = 0; i < this.millerPlanes.length; i++) { 
-      if(this.millerPlanes[i].id === which) {
-        this.tempPlanes.push(this.millerPlanes[i]);
-        h = this.millerPlanes[i].h; 
-        k = this.millerPlanes[i].k;
-        l = this.millerPlanes[i].l;
-        name = this.millerPlanes[i].planeName;
-        color =  this.millerPlanes[i].planeColor;
-        opacity =  this.millerPlanes[i].planeOpacity;  
-        index=i;
-      }
-    }   
-    this.millerPlanes.splice(index,1);
-
-    this.planeState.editing = which;
-    this.planeState.dname = name;
-       
-    this.menu.editPlaneInputs(
-      {
-        'millerH' : h,
-        'millerK' : k,
-        'millerL' : l,
-        'millerI' : -1,
-        'planeColor' : '#'+color,
-        'planeOpacity' : opacity,
-        'planeName' : name
-      } 
-    );
- 
-  };
-  Lattice.prototype.onDirectionStateChange = function(callback) {
-    PubSub.subscribe(events.DIRECTION_STATE, callback);
-  };
-  Lattice.prototype.onPlaneStateChange = function(callback) { 
-    PubSub.subscribe(events.PLANE_STATE, callback);
-  };
+  }; 
   Lattice.prototype.directionState = function (state){
     var _this = this ;
-    _this.directionalState.state = state;
+    this.directionalState.state = state;
+   
     switch(state) {
         case "initial": 
           this.menu.disableDirectionButtons(
@@ -2239,11 +2253,12 @@ define([
         case "creating": 
           this.menu.disableDirectionButtons(
             {
-              'saveDirection' : true,
+              'saveDirection' : false,
               'deleteDirection' : false,
               'newDirection' : true 
             }
           );
+
           this.menu.disableDirectionInputs(
             {
               'millerU' : false,
@@ -2257,11 +2272,11 @@ define([
           );
           this.menu.editDirectionInputs(
             {
-              'millerU' : 1,
-              'millerV' : 1,
-              'millerW' : 1,
-              'millerT' : -1,
-              'directionColor' : '#FFFFFF',
+              'millerU' : '',
+              'millerV' : '',
+              'millerW' : '',
+              'millerT' : '',
+              'directionColor' : '#1F2227',
               'dirRadius' : 1,
               'directionName' : ""
             }
@@ -2288,179 +2303,221 @@ define([
           );
           break;
       }
-  } 
-  Lattice.prototype.submitDirectional = function(millerParameters) {   
-    if( (millerParameters.millerU === "" || millerParameters.millerV === "" || millerParameters.millerW==="")
-      && ( millerParameters.button === "saveDirection")) { 
+  };  
+  Lattice.prototype.selectDirection = function (which){ 
+    var _this = this; 
+
+    if(which === this.directionalState.editing){
+      return;
+    }
+     
+    this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
+    this.menu.highlightDirectionEntry({id : which, color : 'bg-light-purple'});
+ 
+    for (var i = 0; i < this.tempDirs.length; i++) {
+      this.tempDirs[i].direction.destroy();  
+    };  
+    this.tempDirs.splice(0); 
+       
+    var u,v,w,name,color, dirRadius, index;
+    PubSub.publish(events.DIRECTION_STATE,"editing"); 
+   
+    var index ;
+    for (var i = 0; i < this.millerDirections.length; i++) { 
+      if(this.millerDirections[i].id === which) {
+        this.tempDirs.push(this.millerDirections[i]);
+        u = this.millerDirections[i].u;
+        v = this.millerDirections[i].v;
+        w = this.millerDirections[i].w;
+        name = this.millerDirections[i].name;
+        color = this.millerDirections[i].directionColor; 
+        dirRadius = this.millerDirections[i].direction.radius ;
+        index = i;
+      }
+    }; 
+    
+    this.millerDirections.splice(index,1);
+
+    this.createMillerDirection({
+      'millerU' : u,
+      'millerV' : v,
+      'millerW' : w,
+      'directionColor' : color,
+      'dirRadius' : dirRadius, 
+      'directionName' : name
+      }, true, false);
+
+    this.directionalState.editing = which; 
+     
+    this.menu.editDirectionInputs(
+      {
+        'millerU' : u,
+        'millerV' : v,
+        'millerW' : w,
+        'millerT' : -1,
+        'directionColor' : color,
+        'dirRadius' : dirRadius,
+        'directionName' : name
+      } 
+    );   
+  };
+  Lattice.prototype.directionPreview = function (which){ 
+     
+    var _this = this; 
+ 
+    if((which !== this.directionalState.editing || this.directionalState.state === 'initial') && which !=='current' ){
+      return;
+    }
+ 
+    var params = this.menu.getDirectionInputs();
+
+    if ( isNaN(params.millerU) || isNaN(params.millerV) || isNaN(params.millerW) ) {
+      return;
+    }
+      
+    for (var i = 0; i < this.tempDirs.length; i++) {
+      this.tempDirs[i].direction.destroy(); 
+    };
+    this.tempDirs.splice(0);
+    
+    if(this.directionalState.editing !== '-' && this.directionalState.editing !== which ){
+      this.menu.editSavedDirection({ action : 'delete', oldId : this.directionalState.editing});
+    }
+     
+    this.createMillerDirection(params, true, false); 
+  };  
+  Lattice.prototype.submitDirectional = function(millerParameters) {  
+    if(
+      ( millerParameters.millerU === "" || 
+        millerParameters.millerV === "" || 
+        millerParameters.millerW === ""
+      )
+      && ( millerParameters.button === "saveDirection")) {
       return;
     }
     var _this = this ;
     var buttonClicked = millerParameters.button ;
     var directionID = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
  
-    if (_this.directionalState.state === "initial"){
-      if( buttonClicked === "newDirection"){   
-        for (var i = 0; i < this.tempDirs.length; i++) {
-          this.tempDirs[i].direction.destroy(); 
-        };  
-        this.tempDirs.splice(0);
-
-        this.createMillerDirection(millerParameters, true, false);
-        
+    if (this.directionalState.state === "initial"){
+      if( buttonClicked === "newDirection"){  
+        this.menu.editSavedDirection(
+          { 
+            'action' : 'save', 
+            'id' : 'current', 
+            'u' : ' ',
+            'v' : ' ',
+            'w' : ' ',
+            't' : '',
+            'name' : ' ', 
+            'color' : '#1F2227'
+          } 
+        ); 
+        this.directionalState.editing = 'current';
+        this.menu.highlightDirectionEntry({id : 'current', color : 'bg-light-purple'});
         PubSub.publish(events.DIRECTION_STATE,"creating");
       }
     }
     else if (_this.directionalState.state === "creating"){
       switch(buttonClicked) {  
         case "saveDirection":
-          PubSub.publish(events.DIRECTION_STATE,"initial");
+            
+        var found = _.find(_this.directionalList, function(dir){ return dir.id === directionID; });
+        if(_.isUndefined(found)){ 
           for (var i = 0; i < this.tempDirs.length; i++) {
             this.tempDirs[i].direction.destroy(); 
           };  
           this.tempDirs.splice(0);
-          var found = _.find(_this.directionalList, function(directional){ return directional.id === directionID; }); 
-          if(_.isUndefined(found)){
-            this.createMillerDirection(millerParameters, false, false);
-            _this.updateDirectionList(millerParameters, undefined, 'save'); 
-          } 
-          break;
+          millerParameters.directionColor = (millerParameters.directionColor.charAt( 0 ) === '#') ? (millerParameters.directionColor) : ('#'+millerParameters.directionColor);
+          this.createMillerDirection(millerParameters, false, false);
+          this.updateDirectionList(millerParameters, 'current', 'edit');  
+          this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
+          this.directionalState.editing = '-';
+          PubSub.publish(events.DIRECTION_STATE,"initial");
+        }
+        else{
+          this.menu.showTooltip({id : 'directionsTooltip', title : ' This direction already exists!'})
+        }
+        break; 
+          
       }
     }
-    else if (_this.directionalState.state === "editing"){ 
-      switch(buttonClicked) { 
+    else if (_this.directionalState.state === "editing"){
 
+      switch(buttonClicked) {  
         case "saveDirection": 
-          PubSub.publish(events.DIRECTION_STATE,"initial");
-          
-          for (var i = 0; i < this.tempDirs.length; i++) {
-            this.tempDirs[i].direction.destroy(); 
-          };  
-          this.tempDirs.splice(0);
-          
-          var suc = this.updateDirectionList(millerParameters, _this.directionalState.editing, 'edit');
-          if( suc === undefined){
-            this.createMillerDirection(millerParameters, false, false);  
+           
+          millerParameters.directionColor = (millerParameters.directionColor.charAt( 0 ) === '#') ? (millerParameters.directionColor) : ('#'+millerParameters.directionColor);
+          var suc = this.updateDirectionList(millerParameters, this.directionalState.editing, 'edit');
+
+          if( suc === undefined){ 
+            for (var i = 0; i < this.tempDirs.length; i++) {
+              this.tempDirs[i].direction.destroy(); 
+            };  
+            this.tempDirs.splice(0);
+
+            this.createMillerDirection(millerParameters, false, false);   
+            this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
+            this.directionalState.editing = '-';
+            PubSub.publish(events.DIRECTION_STATE,"initial");
           }
+          else{
+            this.menu.showTooltip({id : 'directionsTooltip', title : ' This direction already exists!'})
+          }
+          
           break;
-  
+
         case "deleteDirection": 
-          PubSub.publish(events.DIRECTION_STATE,"initial");
+          PubSub.publish(events.DIRECTION_STATE,"initial"); 
           for (var i = 0; i < this.tempDirs.length; i++) {
             this.tempDirs[i].direction.destroy(); 
           };  
-          this.tempDirs.splice(0);
-          _this.updateDirectionList(millerParameters,  this.directionalState.editing, 'delete'); 
+          this.tempDirs.splice(0); 
+          this.updateDirectionList(millerParameters, this.directionalState.editing, 'delete'); 
+          this.directionalState.editing = '-';
           break;
       } 
     }  
-  }; 
-  Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
-    var _this = this ; 
-
-    if( oldId !== undefined){ 
-      _.each(_this.planeList, function(x, reference) {
-        if(x.id === oldId) {
-          delete _this.planeList[reference];
-        }
-      }); 
-    } 
-    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";  
-    
-    var found = (action === 'edit') ? _.find(_this.planeList, function(plane){ return plane.id === id; }) : undefined; 
-
-    if( found === undefined){ 
-      this.menu.editSavedPlane(
-        { 
-          'action' : action,
-          'h' : millerParameters.millerH,
-          'k' : millerParameters.millerK,
-          'l' : millerParameters.millerL,
-          'i' : undefined,
-          'name' : millerParameters.planeName,
-          'id' : id,
-          'oldId' : oldId,
-          'color' : '#'+millerParameters.planeColor
-        } 
-      );
-    
-      if( action !== 'delete'){
-        var item = { id : id};
-        _this.planeList.push(item); 
-      }    
-    }
-    return found;
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
-    
-    if( oldId !== undefined){
+   
+    if( oldId !== undefined){ 
       _.each(_this.directionalList, function(x, reference) {
         if(x.id === oldId) {
           delete _this.directionalList[reference];
         }
       }); 
     } 
-
-    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
-
-    var found = (action === 'edit') ? _.find(_this.directionalList, function(directional){ return directional.id === directionID; }) : undefined; 
+    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";  
     
+    var found = (action === 'edit') ? _.find(_this.directionalList, function(dir){ return dir.id === id; }) : undefined; 
+
     if( found === undefined){ 
       this.menu.editSavedDirection(
         { 
           'action' : action,
           'u' : millerParameters.millerU,
-          'v' : millerParameters.millerU,
+          'v' : millerParameters.millerV,
           'w' : millerParameters.millerW,
           't' : undefined,
           'name' : millerParameters.directionName,
           'id' : id,
           'oldId' : oldId,
-          'color' : '#'+millerParameters.directionColor
+          'dirRadius' : dirRadius,
+          'color' : millerParameters.directionColor
         } 
       );
-      
+    
       if( action !== 'delete'){
         var item = { id : id};
         _this.directionalList.push(item); 
-      } 
+      }    
     }
     return found;
-  }; 
-  Lattice.prototype.transformMiller = function( shape, parameterKeys, operation ) {
-    var matrix; 
-    var argument;
-    var parameters = this.parameters;
-    var _this = this;
-     
-    _.each(parameterKeys, function(k) { // TODO performance imporvement - no need to be executed so many times
- 
-        if (_.isUndefined(parameters[k]) === false) {
-          argument = {};
-          argument[k] = operation(parameters[k]);
-          matrix = transformationMatrix(argument);
-          if(_.isUndefined ( shape.plane) ){ 
-            shape.startPoint.applyMatrix4(matrix);
-            shape.endpointPoint.applyMatrix4(matrix); 
-
-          }  
-          else{ 
-            shape.plane.object3d.geometry.verticesNeedUpdate = true ;
-            var vertices = shape.plane.object3d.geometry.vertices;
-            _.each(vertices, function(vertex , k){
-              vertex.applyMatrix4(matrix); 
-            }); 
-          } 
-        } 
-    });
-      
   };
+  //
 
-  Lattice.prototype.revertShearingMiller = function() { 
-    this.transformMiller(reverseShearing, function(value) {  
-      return -value;
-    });
-  };
   Lattice.prototype.getLatticeType = function(){
     if(!this.lattice){
       return;
