@@ -1,4 +1,6 @@
-  
+  todos gia aurio
+  saved atom list
+  plane/dirs/atoms save last saved state to restore
   
  performance TODOs
  
@@ -22,7 +24,7 @@ TODO list
     18. sync cameras when autoratating do not work great 
     19. check every global array for memory leaks
     20. available atoms list for rotating in drag mode shouldnt have the NewSphere atom in. 
-    
+    22. http://jsfiddle.net/kgxeuz24/7/ xyz label positions
     25. when change view, if you change tab and return in MT bug   
     
 List with Ideas

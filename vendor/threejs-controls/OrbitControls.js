@@ -25,9 +25,10 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	this.updating = false ;
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
-
+ 
 	this.leapMotion = false ; // enable control of camera by leap motion device
 	// API
+	var dollOnDocumentMouseDown; 
 
 	// Set to false to disable this control
 	this.enabled = true;
@@ -127,6 +128,9 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	var startEvent = { type: 'start'};
 	var endEvent = { type: 'end'};
 
+	this.dollOnDocumentMouseDown = function ( _dollOnDocumentMouseDown ) {
+		dollOnDocumentMouseDown = _dollOnDocumentMouseDown ;
+	};
 	this.rotateLeft = function ( angle ) {
 
 		if ( angle === undefined ) {
@@ -381,7 +385,15 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	};
 
 	function onMouseDown( event ) {
-
+		
+		var clickedOndollOrGear = false;
+		if( dollOnDocumentMouseDown !== undefined) { 
+			clickedOndollOrGear = dollOnDocumentMouseDown(event);
+		}
+		console.log(clickedOndollOrGear);
+		if(clickedOndollOrGear === true){
+			return;
+		}
 		if ( scope.enabled === false ) return;
 		event.preventDefault();
  

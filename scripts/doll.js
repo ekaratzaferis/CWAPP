@@ -110,11 +110,11 @@ define([
     this.rePosition();
 
     var mMoove = this.onDocumentMouseMove.bind(this) ;
-    var mDown  = this.onDocumentMouseDown.bind(this) ;
+    //var mDown  = this.onDocumentMouseDown.bind(this) ;
     var mUp    = this.onDocumentMouseUp.bind(this) ;
     
     document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false);
-    document.getElementById('crystalRendererMouse').addEventListener("mousedown",  mDown, false);
+    //document.getElementById('crystalRendererMouse').addEventListener("mousedown",  mDown, false);
     document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
 
   }; 
@@ -489,11 +489,12 @@ define([
     }  
   };
   Doll.prototype.onDocumentMouseDown = function(event){  
-    var _this = this;
+    var _this = this, clickedOnMe = false; 
 
     if(this.enablemouseEvents !== true){
       return;
-    }
+    } 
+    
     event.preventDefault();
  
     this.SELECTED = undefined;
@@ -516,6 +517,7 @@ define([
     for (var i = intersects.length - 1; i >= 0; i--) { 
       
       if(intersects[i].object.name === 'dollHolder'){  
+        clickedOnMe = true;
         if(this.soundMachine.procced) {
           this.soundMachine.play('dollHolder');
         }
@@ -546,6 +548,7 @@ define([
         }
       }
       else if(intersects[i].object.name === 'minus'){
+        clickedOnMe = true;
         this.soundMachine.play('dollHolder'); // to change 
          
         if(this.gearState > 1 ){
@@ -560,6 +563,7 @@ define([
         } 
       }  
       else if(intersects[i].object.name === 'plus'){ 
+        clickedOnMe = true;
         this.soundMachine.play('dollHolder'); //to change 
         if(this.gearState < 5 ){
           this.gearState++;
@@ -573,20 +577,22 @@ define([
         } 
       } 
       else if(intersects[i].object.name === 0 || intersects[i].object.name === 1 || intersects[i].object.name === 2 || intersects[i].object.name === 3 ||intersects[i].object.name === 4 ){ 
+        clickedOnMe = true;
         this.gearBarSlider.position.y = yPosGearSlider[intersects[i].object.name];
         this.gearState = intersects[i].object.name + 1 ;
         if(this.soundMachine.procced) this.soundMachine.storePlay('dollHolder'); 
         this.gearTour.setState(this.gearState);
       }  
-      else if(intersects[i].object.name === 'doll'){    
+      else if(intersects[i].object.name === 'doll'){   
+        clickedOnMe = true; 
         this.crystalOrbit.control.enabled = false;
         this.SELECTED = intersects[i].object; 
         var intersects_ = raycaster.intersectObject( this.plane.object3d ); 
         this.offset.copy( intersects_[0].point ).sub( this.plane.object3d.position ); 
         document.getElementById(this.container).style.cursor = 'none'; 
       }
-    };
-       
+    }; 
+    return clickedOnMe; 
   }; 
    
   Doll.prototype.onDocumentMouseUp  = function(event){  

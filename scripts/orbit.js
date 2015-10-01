@@ -38,7 +38,10 @@ define([
     else if (type == "orthographic"){
       this.control = new THREE.OrbitAndPanControls(camera, $rendererContainer[0]);
     }
-  } 
+  };
+  Orbit.prototype.dollOnDocumentMouseDown = function(onDocumentMouseDown){ 
+    this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
+  };
   Orbit.prototype.getCamName = function(){
     return this.camName ;
   };
@@ -120,8 +123,7 @@ define([
 
         this.hudCameras[i].lookAt( new THREE.Vector3(0,0,0) );
 
-      };
-
+      }; 
     }
   }; 
   return Orbit;

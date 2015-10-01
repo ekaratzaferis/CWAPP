@@ -102,7 +102,9 @@ require([
   RStatsExtras, 
   LeapMotionHandler
 ) {
-  // Scenes
+  var menu = new Menu();
+  
+  // Scenes 
   var crystalScene = Explorer.getInstance();
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
@@ -149,8 +151,7 @@ require([
   var soundMachine = new Sound(animationMachine); 
   animationMachine.soundMachine = soundMachine;
   crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
- 
-  var menu = new Menu();
+  
   var lattice = new Lattice(menu, soundMachine);
   
   // HUD  
@@ -176,7 +177,15 @@ require([
   
   var canvasSnapshot = new Snapshot(crystalRenderer);
 
-  var orbitCrystal = new Orbit(crystalRenderer.getMainCamera(), '#crystalRendererMouse',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
+  var orbitCrystal = new Orbit(
+    crystalRenderer.getMainCamera(), 
+    '#crystalRendererMouse',   
+    "perspective",  
+    false, 
+    'crystal', 
+    unitCellRenderer.getMainCamera(),
+    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()]
+    ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
@@ -222,7 +231,8 @@ require([
   crystalRenderer.setDoll(dollScene.object3d ); 
   var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
-  dollEditor.rePosition();
+  dollEditor.rePosition(); 
+  orbitCrystal.dollOnDocumentMouseDown(dollEditor.onDocumentMouseDown.bind(dollEditor)) ;
 
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor);
@@ -489,6 +499,9 @@ require([
   });
   menu.onAtomTangencyChange(function(message, param) { 
     motifEditor.setAtomsTangency(param);
+  });
+  menu.onAtomVisibility(function(message, param) { 
+    motifEditor.atomVisibility(param);
   });
   menu.setDimsManually(function(message, param) { 
     motifEditor.setDimsManually(param);

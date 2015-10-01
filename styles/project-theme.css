@@ -3102,15 +3102,15 @@ html,body {
 #hudRenderer{ opacity:1; position: fixed; z-index:10; }
 #hudRendererCube{ position: fixed; z-index:100; }
 #motifRenderer{ position:fixed; }
-<<<<<<< HEAD
+ 
 
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
 
 #motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption,#crystalRenderer,#unitCellRendereMouse{ display: table-cell; }
 
-=======
+ 
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
->>>>>>> 3eca604fd53a0898806dbf73441bcfc154f339a1
+ 
 #motifScreenTable{
     display: table; 
     position:fixed;

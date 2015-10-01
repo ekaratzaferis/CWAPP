@@ -20,6 +20,10 @@ define([
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2();
 
+  //
+  // possible useless FILE and will be DELETED
+  //
+
   function CrystalMouseEvents( client, func, _camera, domElement, state, dollEditor ) {
     this.plane = {'object3d' : undefined} ;
     this.camera = _camera;

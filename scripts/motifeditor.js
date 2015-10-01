@@ -1514,13 +1514,14 @@ define([
     if(this.editorState.state === "creating"){ 
       switch(buttonClicked) { 
         case "saveChanges": 
+          //this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-dark-gray'});
           this.motifsAtoms.push(this.newSphere); 
           this.updateAtomList(
             this.newSphere.object3d.position.clone(), 
             this.newSphere.getID(), 
             this.newSphere.getRadius(), 
             this.newSphere.elementName,
-            'save'
+            'edit'
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.lastSphereAdded = this.newSphere ;
@@ -1550,6 +1551,7 @@ define([
     else if(this.editorState.state === "editing"){
       switch(buttonClicked) { 
         case "saveChanges":
+          //this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-dark-gray'});
           this.motifsAtoms.push(this.newSphere); 
           this.updateAtomList(
             this.newSphere.object3d.position.clone(), 
@@ -1777,6 +1779,8 @@ define([
       });
     }
     else{
+      pos = (pos.x === '-') ? pos : (new THREE.Vector3(pos.x.toFixed(1),pos.y.toFixed(1),pos.z.toFixed(1)));
+
       this.menu.editSavedAtom({
         'action':action,
         'id':id,
@@ -1787,7 +1791,7 @@ define([
         'elementCode':name.toLowerCase(),
         'elementName':name,
         'colSpan':'',
-        'atomPos':'('+(pos.x.toFixed(0))+','+(pos.y.toFixed(0))+','+(pos.z.toFixed(0))+')',
+        'atomPos':'('+(pos.x)+','+(pos.y)+','+(pos.z)+')',
         'buttonTangent':true
       });
     } 
@@ -2087,8 +2091,16 @@ define([
     return f;  
   }
   Motifeditor.prototype.selectAtom = function (which){ 
-     
-    var _this = this; 
+    var _this = this;
+
+    if(this.newSphere !== undefined && which === this.newSphere.getID()){
+      return;
+    }
+    
+    if(this.newSphere !== undefined){
+      //this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-dark-gray'});
+    } 
+    //this.menu.highlightAtomEntry({id : which, color : 'bg-light-purple'}); 
      
     if(this.dragMode) { 
         
@@ -2933,12 +2945,27 @@ define([
    
     this.updateAtomList(
       {x:'-',y:'-',z:'-'}, 
-      'current', 
+      this.newSphere.getID(), 
       '-', 
-      '-',
+      this.newSphere.elementName,
       'save'
     );
   }; 
+  Motifeditor.prototype.atomVisibility = function(arg){ 
+    for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) { 
+      if(this.unitCellAtoms[i].myID === arg.id){
+        this.unitCellAtoms[i].object3d.visible = arg.visible;
+      }
+    }
+    for (var i = this.motifsAtoms.length - 1; i >= 0; i--) { 
+      if(this.motifsAtoms[i].getID() === arg.id){
+        this.motifsAtoms[i].object3d.visible = arg.visible;
+      }
+    } 
+    if(this.newSphere !== undefined && this.newSphere.getID() === arg.id){
+      this.newSphere.object3d.visible = arg.visible;
+    }
+  };
   Motifeditor.prototype.leastVolume = function(){ 
     
     var coll = false;
