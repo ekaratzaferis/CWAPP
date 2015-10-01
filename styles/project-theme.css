@@ -3102,11 +3102,15 @@ html,body {
 #hudRenderer{ opacity:1; position: fixed; z-index:10; }
 #hudRendererCube{ position: fixed; z-index:100; }
 #motifRenderer{ position:fixed; }
+<<<<<<< HEAD
 
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
 
 #motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption,#crystalRenderer,#unitCellRendereMouse{ display: table-cell; }
 
+=======
+#motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
+>>>>>>> 3eca604fd53a0898806dbf73441bcfc154f339a1
 #motifScreenTable{
     display: table; 
     position:fixed;
@@ -3171,26 +3175,22 @@ html,body {
 .toggle_menu:hover #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
 .toggle_menu.lightThemeActive #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
 
-.motifBorderTop{ border-top: 10px solid #7F8289;}
-.motifBorderBottom{ border-bottom: 10px solid #7F8289; }
-.motifBorderLeft{ border-left: 10px solid #7F8289; }
-.motifBorderRight{ border-right: 10px solid #7F8289; }
+.motifBorderTop{ border-top: 8px solid #7F8289;}
+.motifBorderBottom{ border-bottom: 8px solid #7F8289; }
+.motifBorderLeft{ border-left: 8px solid #7F8289; }
+.motifBorderRight{ border-right: 8px solid #7F8289; }
 
 .motifBorderTop h1{
     color: white;
     font-family: "Open Sans", sans-serif;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 19.2px;
     display: inline;
     background-color: #7F8289;
 }
-
 .selectable{ cursor: pointer; }
-
-input.disabled[type="text"]{
-    background-color: black;
-}
-.block-btn.disabled{
-    cursor: not-allowed;
-}
+input.disabled[type="text"]{ background-color: black; }
+.block-btn.disabled{ cursor: not-allowed; }
+.directionButton, .atomButton, .planeButton{ background: #1f2227 !important; border: #1f2227 !important; }
+.directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; }

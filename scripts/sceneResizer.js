@@ -44,8 +44,8 @@ define([
       $('#crystalRendererMouse').width(width/2);
       $('#crystalRendererMouse').height(height/2); 
       
-      $('#crystalRendererCaption').width((width/2)-20);
-      $('#crystalRendererCaption').height((height/2)-10);
+      $('#crystalRendererCaption').width((width/2)-16);
+      $('#crystalRendererCaption').height((height/2)-8);
       $('#crystalRendererCaption').css('left',width/2);
 
       $('#unitCellRenderer').width(width/2);
@@ -54,8 +54,8 @@ define([
       $('#unitCellRendererMouse').width(width/2);
       $('#unitCellRendererMouse').height(height/2);
         
-      $('#unitCellRendererCaption').width((width/2)-10);
-      $('#unitCellRendererCaption').height((height/2)-10);
+      $('#unitCellRendererCaption').width((width/2)-8);
+      $('#unitCellRendererCaption').height((height/2)-8);
 
       $('#motifRenderer').width(width);
       $('#motifRenderer').height(height/2);
