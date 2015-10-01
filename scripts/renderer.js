@@ -180,46 +180,25 @@ define([
       // hud arrows
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
-        if(this.containerWidth < 1000 || this.containerHeight < 500 ){  
+         
+        var tempW8 = 1.5 * this.containerWidth/this.displayFactor ;
+        var tempH8 = 1.5 * this.containerHeight/this.displayFactor ;
 
-          var tempW8 = 1.5 * 1.5 * this.containerWidth/this.displayFactor ;
-          var tempH8 = 1.5 * 1.5 * this.containerHeight/this.displayFactor ;
-          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight);
-          this.renderer.setViewport(
-            this.containerWidth-tempW8, 
-            0, 
-            tempW8, 
-            tempH8  
-          );
+        this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
+        this.renderer.setViewport(
+          this.containerWidth-tempW8, 
+          0, 
+          tempW8, 
+          tempH8  
+        );
 
-          this.renderer.setScissor( 
-            this.containerWidth-tempW8, 
-            0, 
-            tempW8, 
-            tempH8  
-          );
-        }
-        else{ 
-          var tempW8 = 1.5 * this.containerWidth/this.displayFactor ;
-          var tempH8 = 1.5 * this.containerHeight/this.displayFactor ;
-
-          this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
-          this.renderer.setViewport(
-            this.containerWidth-tempW8, 
-            0, 
-            tempW8, 
-            tempH8  
-          );
-
-          this.renderer.setScissor(  
-            this.containerWidth-tempW8, 
-            0, 
-            tempW8, 
-            tempH8  
-          );
- 
-        }
-        
+        this.renderer.setScissor(  
+          this.containerWidth-tempW8, 
+          0, 
+          tempW8, 
+          tempH8  
+        ); 
+          
         this.renderer.enableScissorTest ( true );  
          
         this.hudCamera.updateProjectionMatrix();
@@ -230,41 +209,22 @@ define([
       }
       // hud cube
       if(this.hudCameraCube !== undefined ){  
-          
-        if(this.containerWidth < 1000 || this.containerHeight < 500 ){   
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight );
-          this.renderer.setViewport(
-            0, 
-            this.containerHeight - 1.5 * this.containerHeight/this.displayFactor,  
-            1.5 * this.containerWidth/this.displayFactor, 
-            1.5 * this.containerHeight/this.displayFactor  
-          );
-
-          this.renderer.setScissor( 
-            0, 
-            this.containerHeight - (1.5 * this.containerHeight)/this.displayFactor,  
-            (1.5 * this.containerWidth)/this.displayFactor, 
-            (1.5 * this.containerHeight)/this.displayFactor  
-          ); 
-        }
-        else{ 
-          this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
-          this.renderer.setViewport(
-            0, 
-            this.containerHeight - this.containerHeight/this.displayFactor,  
-            this.containerWidth/this.displayFactor, 
-            this.containerHeight/this.displayFactor  
-          );
-
-          this.renderer.setScissor( 
-            0, 
-            this.containerHeight - this.containerHeight/this.displayFactor,  
-            this.containerWidth/this.displayFactor, 
-            this.containerHeight/this.displayFactor  
-          ); 
- 
-        }
          
+        this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
+        this.renderer.setViewport(
+          0, 
+          this.containerHeight - this.containerHeight/this.displayFactor,  
+          this.containerWidth/this.displayFactor, 
+          this.containerHeight/this.displayFactor  
+        );
+
+        this.renderer.setScissor( 
+          0, 
+          this.containerHeight - this.containerHeight/this.displayFactor,  
+          this.containerWidth/this.displayFactor, 
+          this.containerHeight/this.displayFactor  
+        ); 
+  
         this.hudCameraCube.updateProjectionMatrix();
 
         this.renderer.enableScissorTest ( true ); 

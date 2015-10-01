@@ -139,7 +139,7 @@ define([
     var ctext = THREE.ImageUtils.loadTexture( "Images/clabel.png" ); 
     var cmat = new THREE.SpriteMaterial( { map: ctext, color: 0xffffff, fog: true } );
     this.cSprite = new THREE.Sprite( cmat ); 
-    this.cSprite.position.z = 0.01;
+    this.cSprite.position.z = 0.01; 
     this.object3d.add( this.cSprite );
     
     var atext = THREE.ImageUtils.loadTexture( "Images/alabel.png" ); 

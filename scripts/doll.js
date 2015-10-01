@@ -33,7 +33,7 @@ define([
     this.lattice = lattice;
     this.animationMachine = animationMachine;
     this.gearTour = gearTour;
-    this.container = 'crystalRenderer';
+    this.container = 'crystalRendererMouse';
     this.INTERSECTED;
     this.SELECTED;
     this.offset = new THREE.Vector3();
@@ -113,9 +113,9 @@ define([
     var mDown  = this.onDocumentMouseDown.bind(this) ;
     var mUp    = this.onDocumentMouseUp.bind(this) ;
     
-    document.getElementById('crystalRenderer').addEventListener("mousemove", mMoove, false);
-    document.getElementById('crystalRenderer').addEventListener("mousedown",  mDown, false);
-    document.getElementById('crystalRenderer').addEventListener("mouseup"  ,    mUp, false);
+    document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false);
+    document.getElementById('crystalRendererMouse').addEventListener("mousedown",  mDown, false);
+    document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
 
   }; 
   function createGearBarSlider(){
@@ -331,7 +331,7 @@ define([
     obj1.name = 'dollHolder'; 
     obj.add(obj1);
 
-    var obj2 = new THREE.Mesh( new THREE.CircleGeometry( 0.8, 32 ), new THREE.MeshBasicMaterial({ color: 0x000000 }) );
+    var obj2 = new THREE.Mesh( new THREE.CircleGeometry( 0.85, 32 ), new THREE.MeshBasicMaterial({ color: 0x000000 }) );
     obj2.name = 'dollHolder';   
     obj.add(obj2);
 

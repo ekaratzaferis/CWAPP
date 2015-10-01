@@ -176,11 +176,11 @@ require([
   
   var canvasSnapshot = new Snapshot(crystalRenderer);
 
-  var orbitCrystal   = new Orbit(crystalRenderer.getMainCamera(),    '#crystalRenderer',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
+  var orbitCrystal = new Orbit(crystalRenderer.getMainCamera(), '#crystalRendererMouse',   "perspective",  false, 'crystal', unitCellRenderer.getMainCamera(),[crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
-  var orbitUnitCell   = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRenderer',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
+  var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRendererMouse',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
   var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "perspective", true, 'motif'   );
@@ -225,7 +225,7 @@ require([
   dollEditor.rePosition();
 
   // mouse events happen in crytal screen 
-  var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRenderer', 'default', dollEditor);
+  var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor);
 
   // full screen
   var fullScreen = new FullScreen();

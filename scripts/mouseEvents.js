@@ -267,9 +267,9 @@ define([
         mouse.x =  -1 + 2 * ( (event.clientX - crCanvWidth)/ contWidth );
         mouse.y =   1 - 2 * ( event.clientY  / contHeight ); 
       }
- 
-      raycaster.setFromCamera( mouse, _this.camera );
        
+      raycaster.setFromCamera( mouse, _this.camera );
+       console.log(mouse);
       var intersects = raycaster.intersectObjects( _this.getAtoms() );
        
       if ( intersects.length > 0  ) {
@@ -304,8 +304,8 @@ define([
               this.orbitControls[i].setThetaPhi(angles[index].theta, angles[index].phi );
             } 
           };  
-        }
-        else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name === 'arrowLine'){
+        } 
+        else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name === 'arrowLine'){  
           for (var i = this.orbitControls.length - 1; i >= 0; i--) {  
             if(this.orbitControls[i].getCamName() == 'crystal'){
               var isRotating = this.orbitControls[i].getAutoRotate();  
@@ -318,14 +318,32 @@ define([
               }
               else{ 
                 this.orbitControls[i].autoRotate(true);
-                arrowH.material.color.setHex(0x8904B1);   
-                arrowL.material.color.setHex(0x8904B1);   
+                arrowH.material.color.setHex(0x6F6299);   
+                arrowL.material.color.setHex(0x6F6299);   
               } 
             } 
           };  
         }
       } 
-      
+      else if(mouse.x < 0.21 && mouse.x > -0.11 && mouse.y < -0.65){ 
+        for (var i = this.orbitControls.length - 1; i >= 0; i--) {  
+          if(this.orbitControls[i].getCamName() == 'crystal'){
+            var isRotating = this.orbitControls[i].getAutoRotate();  
+            var arrowL = NavCubeHud.getInstance().object3d.getObjectByName( "arrowLine" );
+            var arrowH = NavCubeHud.getInstance().object3d.getObjectByName( "arrowHead" );
+            if(isRotating){
+              this.orbitControls[i].autoRotate(false);
+              arrowH.material.color.setHex(0xBDBDBD);   
+              arrowL.material.color.setHex(0xBDBDBD);   
+            }
+            else{ 
+              this.orbitControls[i].autoRotate(true);
+              arrowH.material.color.setHex(0x6F6299);   
+              arrowL.material.color.setHex(0x6F6299);   
+            } 
+          } 
+        };  
+      } 
     }
   };
 
