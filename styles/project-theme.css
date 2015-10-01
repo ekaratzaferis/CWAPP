@@ -3094,15 +3094,15 @@ html,body {
     display: none; 
     position:fixed;
     top:0;
-    z-index: 14;
+    z-index: 13;
 }
 #unitCellRendererCaption{ float: left; }
 #crystalRendererCaption{ float: left; }
 #crystalRenderer{ float: left; }
 #hudRenderer{ opacity:1; position: fixed; z-index:10; }
-#hudRendererCube{ position: fixed; z-index:10; }
+#hudRendererCube{ position: fixed; z-index:100; }
 #motifRenderer{ position:fixed; }
-#motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
+#motifPosX,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption,#crystalRenderer,#unitCellRendereMouse{ display: table-cell; }
 #motifScreenTable{
     display: table; 
     position:fixed;
@@ -3113,7 +3113,7 @@ html,body {
     display: none; 
     position:fixed;
     bottom:0;
-    z-index: 14;
+    z-index: 13;
 }
 #elementSymbolContainer{
     display: none;
