@@ -392,6 +392,7 @@ define([
        List of Published Events
        ------------------------ */
         var events = {
+            ATOM_VISIBILITY: 'menu.atom_visibility',
             PLANE_VISIBILITY: 'menu.plane_visibility',
             DIRECTION_VISIBILITY: 'menu.direction_visibility',
             STEREOSCOPIC: 'menu.stereoscopic',
@@ -1001,7 +1002,7 @@ define([
                             jQuery('.tooltip-inner').css('background', '#2c2e33');
                             jQuery('.tooltip-inner').css('color', '#fff');
                             jQuery('.tooltip-inner').siblings().css('border-left-color', '#2c2e33');
-                            _this.setSlider('atomRadius',$tempValRadius,1,10,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+                            _this.setSlider('atomRadius',$tempValRadius,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
                         }, 250);
                     }
             });
@@ -1754,18 +1755,6 @@ define([
                     $planesTable.find('#'+argument['id']).find('.planeButton').toggleClass('visible');
                     PubSub.publish(events.PLANE_VISIBILITY, arg);
                 });
-                $planesTable.find('#'+argument['id']).find('.planeButton').hover(
-                    function(){
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#08090b');
-                        $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#08090b');
-                    },
-                    function(){
-                        //if (!($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('active'))){
-                            $planesTable.find('#'+argument['id']).find('.planeButton').css('background','#1f2227');
-                            $planesTable.find('#'+argument['id']).find('.planeButton').css('border','#1f2227');
-                        //}
-                    }
-                );
             }
 
             if ($planesTable.find('tr').length > 0) $planesTable.css('display','block');
@@ -1909,18 +1898,6 @@ define([
                     $directionTable.find('#'+argument['id']).find('.directionButton').toggleClass('visible');
                     PubSub.publish(events.DIRECTION_VISIBILITY, arg);
                 });
-                $directionTable.find('#'+argument['id']).find('.directionButton').hover(
-                    function(){
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#08090b');
-                        $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#08090b');
-                    },
-                    function(){
-                        //if (!($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('active'))){
-                            $directionTable.find('#'+argument['id']).find('.directionButton').css('background','#1f2227');
-                            $directionTable.find('#'+argument['id']).find('.directionButton').css('border','#1f2227');
-                        //}
-                    }
-                );
             }
             if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
             else $directionTable.css('display','none');
@@ -1930,7 +1907,8 @@ define([
             //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
             var backColor = 'bg-light-gray';
             //visible hidden
-            var eyeButton = 'hidden';
+            var eyeButton = '';
+            var visible = '';
             //<td class="blank"></td>
             var blankTD = '';
             //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
@@ -1950,8 +1928,9 @@ define([
                     case 'backColor':
                         backColor = 'bg-' + $parameter;
                         break;
-                    case 'eyeButton':
-                        eyeButton = $parameter;
+                    case 'visible':
+                        if ($parameter) { visible = 'visible'; eyeButton = visible; }
+                        else { visible = ''; eyeButton = 'hidden'; }   
                         break;
                     case 'blankTD':
                         if ($parameter) blankTD = '<td class="blank"></td>';
@@ -1978,7 +1957,7 @@ define([
                 }
             });
 
-            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td>'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive '+visible+'" alt=""/></a></td">'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial selectable" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -1995,27 +1974,23 @@ define([
 
             }
             if ( (argument['action']==='save') || (argument['action']==='edit') ){
-                $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
+                $atomTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
-                    $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
-                    if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active')){
-                        $atomTable.find('.atomButton').removeClass('active');
+                });
+                $atomTable.find('#'+argument['id']).find('.atomButton').on('click', function(){
+                    var arg = {};
+                    arg['id'] = argument['id'];
+                    if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('visible')) {
+                        $atomTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
+                        arg['visible'] = false;
                     }
                     else {
-                        $atomTable.find('.atomButton').removeClass('active');
-                        $atomTable.find('#'+argument['id']).find('.atomButton').addClass('active');
+                        arg['visible'] = true;
+                        $atomTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
                     }
+                    $atomTable.find('#'+argument['id']).find('.atomButton').toggleClass('visible');
+                    PubSub.publish(events.ATOM_VISIBILITY, arg);
                 });
-                $atomTable.find('#'+argument['id']).find('.atomButton').hover(
-                    function(){
-                        $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#08090b');
-                    },
-                    function(){
-                        if (!($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('active'))){
-                            $atomTable.find('#'+argument['id']).find('.atomButton').find('a').css('background','#1f2227');
-                        }
-                    }
-                );
             }
             if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
             else $atomTable.css('display','none');
@@ -2397,6 +2372,9 @@ define([
         };
         Menu.prototype.onDirectionVisibility = function(callback) { 
             PubSub.subscribe(events.DIRECTION_VISIBILITY, callback);
+        };
+        Menu.prototype.onAtomVisibility = function(callback) { 
+            PubSub.subscribe(events.ATOM_VISIBILITY, callback);
         };
     
   /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
