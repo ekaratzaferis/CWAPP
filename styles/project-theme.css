@@ -886,6 +886,7 @@ label {
 
 /*==========  Color Picker  ==========*/
 .color-picker-container {
+    cursor: pointer;
   text-align: center; }
   .color-picker-container .color-label {
     margin-bottom: 5px; }
