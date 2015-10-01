@@ -1781,7 +1781,7 @@ define([
         'action':action,
         'id':id,
         'backColor':'light-purple',
-        'eyeButton':'visible',
+        'visible':'true',
         'blankTD':false,
         'chainTD':false,
         'elementCode':name.toLowerCase(),
@@ -2930,6 +2930,14 @@ define([
       console.log(this.unitCellAtoms.length);
     }
     */ 
+   
+    this.updateAtomList(
+      {x:'-',y:'-',z:'-'}, 
+      'current', 
+      '-', 
+      '-',
+      'save'
+    );
   }; 
   Motifeditor.prototype.leastVolume = function(){ 
     

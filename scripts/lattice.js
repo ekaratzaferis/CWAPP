@@ -1821,10 +1821,10 @@ define([
           );
           this.menu.editPlaneInputs(
             {
-              'millerH' : '',
-              'millerK' : '',
-              'millerL' : '',
-              'millerI' : '',
+              'millerH' : '-',
+              'millerK' : '-',
+              'millerL' : '-',
+              'millerI' : '-',
               'planeColor' : "#1F2227",
               'planeOpacity' : 10,
               'planeName' : ""
@@ -1863,10 +1863,10 @@ define([
           ); 
           this.menu.editPlaneInputs(
             {
-              'millerH' : '',
-              'millerK' : '',
-              'millerL' : '',
-              'millerI' : '',
+              'millerH' : '-',
+              'millerK' : '-',
+              'millerL' : '-',
+              'millerI' : '-',
               'planeColor' : "#1F2227",
               'planeOpacity' : 10,
               'planeName' : ""
@@ -2004,11 +2004,11 @@ define([
           { 
             'action' : 'save', 
             'id' : 'current', 
-            'h' : ' ',
-            'k' : ' ',
-            'l' : ' ',
-            'i' : ' ',
-            'name' : ' ', 
+            'h' : '-',
+            'k' : '-',
+            'l' : '-',
+            'i' : '-',
+            'name' : '-', 
             'color' : '#1F2227'
           } 
         ); 
@@ -2429,11 +2429,11 @@ define([
           { 
             'action' : 'save', 
             'id' : 'current', 
-            'u' : ' ',
-            'v' : ' ',
-            'w' : ' ',
-            't' : '',
-            'name' : ' ', 
+            'u' : '-',
+            'v' : '-',
+            'w' : '-',
+            't' : '-',
+            'name' : '-', 
             'color' : '#1F2227'
           } 
         ); 
