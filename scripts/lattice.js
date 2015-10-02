@@ -1572,7 +1572,7 @@ define([
   };
 
   // planes
-  Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform) {
+  Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
     var parameters = this.parameters ;
     var h = parseInt(millerParameters.millerH ); 
@@ -1610,24 +1610,68 @@ define([
                   planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
+                  lastSaved : { 
+                    visible: true,  
+                    a : a, 
+                    b : b, 
+                    c : c, 
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName
+                  }
                 };  
                 _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
               }
               else{ 
-                _this.tempPlanes.push({
-                  visible: true,
-                  plane : x, 
-                  a : a, 
-                  b : b, 
-                  c : c ,  
-                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : parseInt(millerParameters.millerH),
-                  k : parseInt(millerParameters.millerK),
-                  l : parseInt(millerParameters.millerL),
-                  planeOpacity : parseInt(millerParameters.planeOpacity),
-                  planeColor : millerParameters.planeColor,
-                  planeName : millerParameters.planeName,
-                }); 
+                if(_lastSaved !== undefined){
+                  _this.tempPlanes.push({
+                    visible: true,
+                    plane : x, 
+                    a : a, 
+                    b : b, 
+                    c : c ,  
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName,
+                    lastSaved : { 
+                      visible: true, 
+                      a : a, 
+                      b : b, 
+                      c : c, 
+                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                      h : parseInt(millerParameters.millerH),
+                      k : parseInt(millerParameters.millerK),
+                      l : parseInt(millerParameters.millerL),
+                      planeOpacity : parseInt(millerParameters.planeOpacity),
+                      planeColor : millerParameters.planeColor,
+                      planeName : millerParameters.planeName
+                    }
+                  }); 
+                }
+                else{ 
+                  _this.tempPlanes.push({
+                    visible: true,
+                    plane : x, 
+                    a : a, 
+                    b : b, 
+                    c : c ,  
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName,
+                  }); 
+                }
                 _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);  
               }
             });
@@ -1736,25 +1780,72 @@ define([
                   planeOpacity : parseInt(millerParameters.planeOpacity),
                   planeColor : millerParameters.planeColor,
                   planeName : millerParameters.planeName,
+                  lastSaved : { 
+                    visible: true,  
+                    a : a, 
+                    b : b, 
+                    c : c, 
+                    l : parseInt(millerParameters.millerL),
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName
+                  }
                 }; 
                 _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
               }
               else{
-                 _this.tempPlanes.push({
-                  visible: true,
-                  plane : x, 
-                  a : a, 
-                  b : b, 
-                  c : c , 
-                  d : d , 
-                  id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                  h : parseInt(millerParameters.millerH),
-                  k : parseInt(millerParameters.millerK),
-                  l : parseInt(millerParameters.millerL),
-                  planeOpacity : parseInt(millerParameters.planeOpacity),
-                  planeColor : millerParameters.planeColor,
-                  planeName : millerParameters.planeName,
-                }); 
+                if(_lastSaved !== undefined){ 
+                  _this.tempPlanes.push({
+                    visible: true,
+                    plane : x, 
+                    a : a, 
+                    b : b, 
+                    c : c , 
+                    d : d , 
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName,
+                    lastSaved : { 
+                      visible: true,  
+                      a : a, 
+                      b : b, 
+                      c : c, 
+                      l : parseInt(millerParameters.millerL),
+                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                      h : parseInt(millerParameters.millerH),
+                      k : parseInt(millerParameters.millerK),
+                      l : parseInt(millerParameters.millerL),
+                      planeOpacity : parseInt(millerParameters.planeOpacity),
+                      planeColor : millerParameters.planeColor,
+                      planeName : millerParameters.planeName
+                    }
+                  }); 
+                }
+                else{
+                  _this.tempPlanes.push({
+                    visible: true,
+                    plane : x, 
+                    a : a, 
+                    b : b, 
+                    c : c , 
+                    d : d , 
+                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                    h : parseInt(millerParameters.millerH),
+                    k : parseInt(millerParameters.millerK),
+                    l : parseInt(millerParameters.millerL),
+                    planeOpacity : parseInt(millerParameters.planeOpacity),
+                    planeColor : millerParameters.planeColor,
+                    planeName : millerParameters.planeName
+                  }); 
+                }
                 _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);
               }
             });
@@ -1896,13 +1987,65 @@ define([
       }
   };
   Lattice.prototype.selectPlane = function (which){ 
-    var _this = this; 
+    var _this = this, alreadyExists = false; 
 
     if(which === this.planeState.editing){
       return;
     }
-    
-    this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
+
+    if(this.planeState.editing !== '-'){
+      
+      var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
+      
+      if (r !== true) {
+          return;
+      }  
+ 
+      this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
+
+      if(this.tempPlanes.length === 0){
+        // plane hasn't yet been created  
+        this.updatePlaneList(
+          undefined , 
+          'current', 
+          'delete'
+        );
+      }
+      else{
+        // plane has been created but we don't know if it has an old save or it is brand new
+
+        if(this.tempPlanes[0].lastSaved !== undefined){
+          // case were we have retrieve old save and recreate plane
+          this.createMillerPlane(
+            { 
+              'millerH' : this.tempPlanes[0].lastSaved.h,
+              'millerK' : this.tempPlanes[0].lastSaved.k,
+              'millerL' : this.tempPlanes[0].lastSaved.l,
+              'planeColor' : this.tempPlanes[0].lastSaved.planeColor,
+              'planeOpacity' : this.tempPlanes[0].lastSaved.planeOpacity,
+              'planeName' : this.tempPlanes[0].lastSaved.planeName   
+            }, 
+            false, 
+            false, 
+            true
+          );  
+          this.updatePlaneList(
+            { 
+              'millerH' : this.tempPlanes[0].lastSaved.h,
+              'millerK' : this.tempPlanes[0].lastSaved.k,
+              'millerL' : this.tempPlanes[0].lastSaved.l,
+              'planeColor' : this.tempPlanes[0].lastSaved.planeColor,
+              'planeOpacity' : this.tempPlanes[0].lastSaved.planeOpacity, 
+              'planeName' : this.tempPlanes[0].lastSaved.planeName  
+            }, 
+            this.planeState.editing, 
+            'edit'
+          );
+          alreadyExists = true;
+        }
+      } 
+    }
+ 
     this.menu.highlightPlaneEntry({id : which, color : 'bg-light-purple'});
  
     for (var i = 0; i < this.tempPlanes.length; i++) {
@@ -1912,25 +2055,21 @@ define([
      
     PubSub.publish(events.PLANE_STATE,"editing"); 
 
-    if(this.planeState.editing !== '-'){
-      this.menu.editSavedPlane(
-        { 
-          'action' : 'delete', 
-          'id' : this.planeState.editing,
-          'oldId' : this.planeState.editing, 
-        } 
-      );
+    if(this.planeState.editing !== '-' && alreadyExists !== true){
+      this.updatePlaneList(undefined, this.planeState.editing, 'delete');  
     }
-    var h,k,l,name,color, opacity, index, cnt = 0; 
+    var h,k,l,name,color,visible, opacity, index, cnt = 0; 
   
     for (var j = 0; j < this.millerPlanes.length; j++) {  
       if(this.millerPlanes[j].id === which) { 
-        h = this.millerPlanes[j].h; 
-        k = this.millerPlanes[j].k;
-        l = this.millerPlanes[j].l;
-        name = this.millerPlanes[j].planeName;
-        color =  this.millerPlanes[j].planeColor;
-        opacity =  this.millerPlanes[j].planeOpacity;   
+        if(color === undefined){   
+          h = this.millerPlanes[j].h; 
+          k = this.millerPlanes[j].k;
+          l = this.millerPlanes[j].l;
+          name = this.millerPlanes[j].planeName;
+          color =  this.millerPlanes[j].planeColor;
+          opacity =  this.millerPlanes[j].planeOpacity;   
+        }
         this.millerPlanes[j].plane.destroy(); 
         cnt++;
         index = j;
@@ -1938,13 +2077,19 @@ define([
     }   
     this.millerPlanes.splice(index-cnt+1,cnt);
      
-    this.createMillerPlane({
-      'millerH' : h,
-      'millerK' : k,
-      'millerL' : l,
-      'planeColor' : color,
-      'planeOpacity' : opacity  
-      }, true, false);
+    this.createMillerPlane(
+      { 
+        'millerH' : h,
+        'millerK' : k,
+        'millerL' : l,
+        'planeColor' : color,
+        'planeOpacity' : opacity,
+        'planeName' : name
+      }, 
+      true, 
+      false, 
+      true
+    );
 
     this.planeState.editing = which; 
   
@@ -1958,7 +2103,7 @@ define([
         'planeOpacity' : opacity,
         'planeName' : name
       } 
-    ); 
+    );   
   }
   Lattice.prototype.planePreview = function (which){ 
      
@@ -1980,7 +2125,12 @@ define([
     this.tempPlanes.splice(0);
     
     if(this.planeState.editing !== '-' && this.planeState.editing !== which ){
-      this.menu.editSavedPlane({ action : 'delete', oldId : this.planeState.editing});
+       
+      this.updatePlaneList(
+        undefined , 
+        this.planeState.editing, 
+        'delete'
+      );
     }
      
     this.createMillerPlane(params, true, false); 
@@ -2000,18 +2150,21 @@ define([
  
     if (this.planeState.state === "initial"){
       if( buttonClicked === "newPlane"){  
-        this.menu.editSavedPlane(
+        this.updatePlaneList(
           { 
             'action' : 'save', 
             'id' : 'current', 
-            'h' : '',
-            'k' : '',
-            'l' : '',
-            'i' : '',
-            'name' : '', 
-            'color' : '#1F2227'
-          } 
-        ); 
+            'millerH' : '',
+            'millerK' : '',
+            'millerL' : '',
+            'millerI' : '',
+            'planeName' : '',  
+            'planeColor' : '#1F2227'
+          } , 
+          'current', 
+          'save'
+        );
+        
         this.planeState.editing = 'current';
         this.menu.highlightPlaneEntry({id : 'current', color : 'bg-light-purple'});
         PubSub.publish(events.PLANE_STATE,"creating");
@@ -2072,12 +2225,11 @@ define([
             this.tempPlanes[i].plane.destroy(); 
           };  
           this.tempPlanes.splice(0); 
-          this.updatePlaneList(millerParameters, this.planeState.editing, 'delete'); 
+          this.updatePlaneList(undefined, this.planeState.editing, 'delete'); 
           this.planeState.editing = '-';
           break;
       } 
-    }
-    console.log(this.millerPlanes.length); 
+    } 
   };
   Lattice.prototype.updatePlaneList = function(millerParameters, oldId, action)  {
     var _this = this ; 
@@ -2089,24 +2241,45 @@ define([
         }
       }); 
     } 
-    var id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";  
+
+    var id = 'nonexistent';
+
+    if(millerParameters !== undefined){
+      if(this.planeState.state === 'initial'){
+        id = 'current';
+      }
+      else{
+        id = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
+      } 
+    } 
     
     var found = (action === 'edit') ? _.find(_this.planeList, function(plane){ return plane.id === id; }) : undefined; 
-
+     
     if( found === undefined){ 
-      this.menu.editSavedPlane(
-        { 
-          'action' : action,
-          'h' : millerParameters.millerH,
-          'k' : millerParameters.millerK,
-          'l' : millerParameters.millerL,
-          'i' : undefined,
-          'name' : millerParameters.planeName,
-          'id' : id,
-          'oldId' : oldId,
-          'color' : millerParameters.planeColor
-        } 
-      );
+      if(millerParameters !== undefined){ 
+        this.menu.editSavedPlane(
+          { 
+            'action' : action,
+            'h' : millerParameters.millerH,
+            'k' : millerParameters.millerK,
+            'l' : millerParameters.millerL,
+            'i' : undefined,
+            'name' : millerParameters.planeName,
+            'id' : id,
+            'oldId' : oldId,
+            'color' : millerParameters.planeColor
+          } 
+        );
+      }
+      else{
+        this.menu.editSavedPlane(
+          { 
+            'action' : action, 
+            'id' : id,
+            'oldId' : oldId 
+          } 
+        );
+      }
     
       if( action !== 'delete'){
         var item = { id : id};
@@ -2131,12 +2304,14 @@ define([
   };
 
   // directions 
-  Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform) {
+  Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
     var hexagonal = (this.latticeName !== 'hexagonal') ? false : true ;
     var parameters = this.parameters ;
     var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
     var id, checkVals = parseInt(u + v) * -1 ; 
+
+    console.log(millerParameters);
 
     if(hexagonal){
       if(t != checkVals ) {   
@@ -2199,7 +2374,19 @@ define([
                 v : parseInt(millerParameters.millerV),
                 w : parseInt(millerParameters.millerW),
                 directionColor : millerParameters.directionColor,
-                name : millerParameters.directionName
+                name : millerParameters.directionName,
+                lastSaved : { 
+                  visible: true, 
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  u : parseInt(millerParameters.millerU),
+                  v : parseInt(millerParameters.millerV),
+                  w : parseInt(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName,
+                  dirRadius : millerParameters.dirRadius
+                }
               };
                
               _this.forwardTransformationsMiller(_this.millerDirections[id]); 
@@ -2207,18 +2394,46 @@ define([
             
             }
             else{  
-              _this.tempDirs.push({
-                visible: true,
-                direction : undefined,
-                startPoint : startPoint , 
-                endpointPoint : endpointPoint,
-                id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                u : parseInt(millerParameters.millerU),
-                v : parseInt(millerParameters.millerV),
-                w : parseInt(millerParameters.millerW),
-                directionColor : millerParameters.directionColor,
-                name : millerParameters.directionName
-              });
+              if(_lastSaved !== undefined){
+                _this.tempDirs.push({
+                  visible: true,
+                  direction : undefined,
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  u : parseInt(millerParameters.millerU),
+                  v : parseInt(millerParameters.millerV),
+                  w : parseInt(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName,
+                  lastSaved : { 
+                    visible: true, 
+                    startPoint : startPoint , 
+                    endpointPoint : endpointPoint,
+                    id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                    u : parseInt(millerParameters.millerU),
+                    v : parseInt(millerParameters.millerV),
+                    w : parseInt(millerParameters.millerW),
+                    directionColor : millerParameters.directionColor,
+                    name : millerParameters.directionName,
+                    dirRadius : millerParameters.dirRadius
+                  }
+                });
+              }
+              else{
+                _this.tempDirs.push({
+                  visible: true,
+                  direction : undefined,
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  u : parseInt(millerParameters.millerU),
+                  v : parseInt(millerParameters.millerV),
+                  w : parseInt(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName
+                });
+              }
               _this.forwardTransformationsMiller(_this.tempDirs[_this.tempDirs.length-1]); 
               _this.tempDirs[_this.tempDirs.length-1].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ;
             }
@@ -2318,13 +2533,65 @@ define([
       }
   };  
   Lattice.prototype.selectDirection = function (which){ 
-    var _this = this; 
+     
+    var _this = this, alreadyExists = false; 
 
     if(which === this.directionalState.editing){
       return;
     }
      
-    this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
+    if(this.directionalState.editing !== '-'){
+     
+      var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
+      
+      if (r !== true) {
+          return;
+      }  
+
+      this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
+
+      if(this.tempDirs.length === 0){ 
+        // plane hasn't yet been created  
+        this.updateDirectionList(
+          undefined , 
+          'current', 
+          'delete'
+        );
+      }
+      else{ 
+        // plane has been created but we don't know if it has an old save or it is brand new
+         
+        if(this.tempDirs[0].lastSaved !== undefined){
+          // case were we have retrieve old save and recreate plane
+          this.createMillerDirection(
+            { 
+              'millerU' : this.tempDirs[0].lastSaved.u,
+              'millerV' : this.tempDirs[0].lastSaved.v,
+              'millerW' : this.tempDirs[0].lastSaved.w,
+              'directionColor' : this.tempDirs[0].lastSaved.directionColor, 
+              'directionName' : this.tempDirs[0].lastSaved.directionName,  
+              'dirRadius' : this.tempDirs[0].lastSaved.radius   
+            }, 
+            false, 
+            false, 
+            true
+          );  
+          this.updateDirectionList(
+            { 
+              'millerU' : this.tempDirs[0].lastSaved.u,
+              'millerV' : this.tempDirs[0].lastSaved.v,
+              'millerW' : this.tempDirs[0].lastSaved.w,
+              'directionColor' : this.tempDirs[0].lastSaved.directionColor,  
+              'directionName' : this.tempDirs[0].lastSaved.name  
+            }, 
+            this.directionalState.editing, 
+            'edit'
+          );
+          alreadyExists = true;
+        }
+      } 
+    }
+  
     this.menu.highlightDirectionEntry({id : which, color : 'bg-light-purple'});
  
     for (var i = 0; i < this.tempDirs.length; i++) {
@@ -2332,36 +2599,33 @@ define([
     };  
     this.tempDirs.splice(0); 
     
-    if(this.directionalState.editing !== '-'){
-      this.menu.editSavedDirection(
-        { 
-          'action' : 'delete', 
-          'id' : this.directionalState.editing,
-          'oldId' : this.directionalState.editing, 
-        } 
-      );
+    if(this.directionalState.editing !== '-' && alreadyExists !== true){
+      this.updateDirectionList(undefined, this.directionalState.editing, 'delete');  
     }
 
     var u,v,w,name,color, dirRadius, index;
     PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
-    var index,cnt=0 ;
-
-    for (var j = 0; j < this.millerDirections.length; j++) {  
+    var index,cnt=0 ; 
+ 
+    for (var j = 0; j < this.millerDirections.length; j++) { 
+      console.log(this.millerDirections[0]); 
       if(this.millerDirections[j].id === which) { 
-        u = this.millerDirections[j].u;
-        v = this.millerDirections[j].v;
-        w = this.millerDirections[j].w;
-        name = this.millerDirections[j].name;
-        color = this.millerDirections[j].directionColor; 
-        dirRadius = this.millerDirections[j].direction.radius ; 
+        if(color === undefined){  
+          u = this.millerDirections[j].u;
+          v = this.millerDirections[j].v;
+          w = this.millerDirections[j].w;
+          name = this.millerDirections[j].name;
+          color = this.millerDirections[j].directionColor; 
+          dirRadius = this.millerDirections[j].direction.radius ;  
+        }
         this.millerDirections[j].direction.destroy();
         cnt++;
         index = j;
       }
     }   
     this.millerDirections.splice(index-cnt+1,cnt);
-     
+      
     this.createMillerDirection({
       'millerU' : u,
       'millerV' : v,
@@ -2369,7 +2633,11 @@ define([
       'directionColor' : color,
       'dirRadius' : dirRadius, 
       'directionName' : name
-      }, true, false);
+      }, 
+      true, 
+      false, 
+      true
+    );
 
     this.directionalState.editing = which; 
      
@@ -2383,7 +2651,7 @@ define([
         'dirRadius' : dirRadius,
         'directionName' : name
       } 
-    );   
+    );  
   }; 
   Lattice.prototype.directionPreview = function (which){ 
      
@@ -2404,8 +2672,8 @@ define([
     };
     this.tempDirs.splice(0);
     
-    if(this.directionalState.editing !== '-' && this.directionalState.editing !== which ){
-      this.menu.editSavedDirection({ action : 'delete', oldId : this.directionalState.editing});
+    if(this.directionalState.editing !== '-' && this.directionalState.editing !== which ){ 
+      this.updateDirectionList(millerParameters, this.directionalState.editing, 'delete'); 
     }
      
     this.createMillerDirection(params, true, false); 
@@ -2424,19 +2692,22 @@ define([
     var directionID = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
  
     if (this.directionalState.state === "initial"){
-      if( buttonClicked === "newDirection"){  
-        this.menu.editSavedDirection(
+      if( buttonClicked === "newDirection"){    
+        this.updateDirectionList(
           { 
             'action' : 'save', 
             'id' : 'current', 
-            'u' : '',
-            'v' : '',
-            'w' : '',
-            't' : '',
-            'name' : '', 
-            'color' : '#1F2227'
-          } 
-        ); 
+            'millerU' : '',
+            'millerV' : '',
+            'millerW' : '',
+            'millerT' : '',
+            'directionName' : '',
+            'directionColor' : '#1F2227'
+          } , 
+          'current', 
+          'save'
+        );
+
         this.directionalState.editing = 'current';
         this.menu.highlightDirectionEntry({id : 'current', color : 'bg-light-purple'});
         PubSub.publish(events.DIRECTION_STATE,"creating");
@@ -2501,12 +2772,11 @@ define([
           this.directionalState.editing = '-';
           break;
       } 
-    } 
-    console.log(this.millerDirections.length); 
+    }  
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
-   
+    
     if( oldId !== undefined){ 
       _.each(_this.directionalList, function(x, reference) {
         if(x.id === oldId) {
@@ -2514,26 +2784,46 @@ define([
         }
       }); 
     } 
-    var id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";  
-    
+
+    var id = 'nonexistent';
+
+    if(millerParameters !== undefined){
+      if(this.directionalState.state === 'initial'){
+        id = 'current';
+      }
+      else{
+        id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+      } 
+    } 
+ 
     var found = (action === 'edit') ? _.find(_this.directionalList, function(dir){ return dir.id === id; }) : undefined; 
 
     if( found === undefined){ 
-      this.menu.editSavedDirection(
-        { 
-          'action' : action,
-          'u' : millerParameters.millerU,
-          'v' : millerParameters.millerV,
-          'w' : millerParameters.millerW,
-          't' : undefined,
-          'name' : millerParameters.directionName,
-          'id' : id,
-          'oldId' : oldId,
-          'dirRadius' : dirRadius,
-          'color' : millerParameters.directionColor
-        } 
-      );
-    
+      if(millerParameters !== undefined){ 
+        this.menu.editSavedDirection(
+          { 
+            'action' : action,
+            'u' : millerParameters.millerU,
+            'v' : millerParameters.millerV,
+            'w' : millerParameters.millerW,
+            't' : undefined,
+            'name' : millerParameters.directionName,
+            'id' : id,
+            'oldId' : oldId,
+            'dirRadius' : dirRadius,
+            'color' : millerParameters.directionColor
+          } 
+        );
+      } 
+      else{
+        this.menu.editSavedDirection(
+          { 
+            'action' : action, 
+            'id' : id,
+            'oldId' : oldId 
+          } 
+        );
+      }
       if( action !== 'delete'){
         var item = { id : id};
         _this.directionalList.push(item); 

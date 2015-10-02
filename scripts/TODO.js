@@ -1,7 +1,4 @@
-  todos gia aurio
-  saved atom list
-  plane/dirs/atoms save last saved state to restore
-  
+
  performance TODOs
  
  3. na dw ti paizei me grids faces.
@@ -9,7 +6,14 @@
 5. fps drop in unit cell renderern motif renderer
   6. suggest merge in crystal because atoms do not move.
 
- 
+ small todo : /* allages se updateDirectionList kai na kaleitai mono auti kai selectDirection
+    setPlaneEntryVisibility
+    setDirectionEntryVisibility
+    setAtomEntryVisibility 
+    {'action':true,'id':'eimai mpines'}
+    */
+
+    ola ta stoixeia (opws planes dirs na pairnoun fws)
 
 gia kapoio logo planes/directions me dekadiko exoun themata sto idi
 

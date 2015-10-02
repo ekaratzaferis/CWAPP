@@ -390,7 +390,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 		if( dollOnDocumentMouseDown !== undefined) { 
 			clickedOndollOrGear = dollOnDocumentMouseDown(event);
 		}
-		console.log(clickedOndollOrGear);
+		 
 		if(clickedOndollOrGear === true){
 			return;
 		}
