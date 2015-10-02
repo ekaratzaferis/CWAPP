@@ -243,7 +243,7 @@ define([
         var $appContainer = jQuery("#app-container");
     
         // Logo
-        var $appLogo = jQuery('#appLogoWrapper');
+        var $appLogo = jQuery('#appLogo');
     
         // Menu Zoom
         var $menuZoom = jQuery('#menuZoom');
@@ -494,6 +494,7 @@ define([
             $screenWrapper.fadeIn(800);
             $appContainer.width(screen_width-x);
             $progressBarWrapper.width(screen_width);
+            $appLogo.width(screen_width-x);
             
             $('.main-controls-inner').height(screen_height);
         };
@@ -1981,12 +1982,12 @@ define([
                     var arg = {};
                     arg['id'] = argument['id'];
                     if ($atomTable.find('#'+argument['id']).find('.atomButton').hasClass('visible')) {
-                        $atomTable.find('#'+argument['id']).find('img').attr('src','Images/hidden-icon-sm.png');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/hidden-icon-sm.png');
                         arg['visible'] = false;
                     }
                     else {
                         arg['visible'] = true;
-                        $atomTable.find('#'+argument['id']).find('img').attr('src','Images/visible-icon-sm.png');
+                        $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/visible-icon-sm.png');
                     }
                     $atomTable.find('#'+argument['id']).find('.atomButton').toggleClass('visible');
                     PubSub.publish(events.ATOM_VISIBILITY, arg);
@@ -2151,8 +2152,14 @@ define([
                     $('#'+k+'Slider').slider('option','disabled',argument[k]);
                 }
             });
-            if (argument['atomPositioningXYZ'] !== undefined) $atomPositioningXYZ.toggleClass('disabled');
-            if (argument['atomPositioningABC'] !== undefined) $atomPositioningABC.toggleClass('disabled');
+            if (argument['atomPositioningXYZ'] !== undefined){
+                if (argument['atomPositioningXYZ']) $atomPositioningXYZ.addClass('disabled');
+                else $atomPositioningXYZ.removeClass('disabled');
+            }
+            if (argument['atomPositioningABC'] !== undefined) {
+                if (argument['atomPositioningABC']) $atomPositioningABC.addClass('disabled');
+                else $atomPositioningABC.removeClass('disabled');
+            }
             if (argument['tangency'] !== undefined){
                 $tangency.parent().toggleClass('disabled');
             }

@@ -3102,6 +3102,7 @@ html,body {
 #hudRenderer{ opacity:1; position: fixed; z-index:10; }
 #hudRendererCube{ position: fixed; z-index:100; }
 #motifRenderer{ position:fixed; }
+<<<<<<< HEAD
  
 
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
@@ -3111,6 +3112,10 @@ html,body {
  
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
  
+=======
+
+#motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
+>>>>>>> 7f624914ca8f631b33c3534cc072e5c82fb555d0
 #motifScreenTable{
     display: table; 
     position:fixed;
@@ -3193,4 +3198,13 @@ html,body {
 input.disabled[type="text"]{ background-color: black; }
 .block-btn.disabled{ cursor: not-allowed; }
 .directionButton, .atomButton, .planeButton{ background: #1f2227 !important; border: #1f2227 !important; }
-.directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; }
+.directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; cursor: pointer !important;}
+#appLogo{
+    position: fixed;
+    height: 15%;
+    width: 100%;
+    bottom: 1%;
+    z-index: 12;
+    text-align: center;
+}
+#appLogo img{ max-height:100%; max-width:100%; };
