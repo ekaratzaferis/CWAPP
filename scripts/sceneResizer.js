@@ -34,7 +34,9 @@ define([
     if( state === 'motifScreen'){
       this.crystalRenderer.changeContainerDimensions(width/2, height/2);
       this.unitCellRenderer.changeContainerDimensions(width/2, height/2);
-      this.motifRenderer.changeContainerDimensions(width, height/2);    
+      this.motifRenderer.changeContainerDimensions(width, height/2);   
+        
+      $('#appLogo').css('display','none');
 
       $('#topRowTableCaption').css('display','table');
         
@@ -91,6 +93,8 @@ define([
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0); 
         
+      $('#appLogo').css('display','block');
+
       $('#topRowTableCaption').css('display','none');
         
       $('#crystalRenderer').width(width);
