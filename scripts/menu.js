@@ -781,9 +781,11 @@ define([
             _.each(atomParameters, function($parameter, k ) {
                 switch(k){
                     case 'atomOpacity':
-                        $parameter.val(10);
+                        $parameter.prop('disabled',true);
+                        _this.setOnOffSlider(k,true);
                         break;
                     case 'atomColor':
+                        $parameter.spectrum("disable");
                         break;
                     case 'atomTexture':
                         break;
@@ -812,7 +814,7 @@ define([
                 }); 
             });
             _.each(cellManDimensions, function($parameter, k) {
-                $parameter.val(1);
+                $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
                     argument = {}; 
                     argument[k] = $parameter.val(); 
@@ -821,7 +823,7 @@ define([
                 });
             });
             _.each(cellManAngles, function($parameter, k) {
-                $parameter.val(90);
+                $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
                     argument = {}; 
                     argument[k] = $parameter.val(); 
@@ -838,7 +840,7 @@ define([
                 _this.setOnOffSlider(name,true);
             });
             _.each(motifInputs, function($parameter, k) {
-                $parameter.val(1);
+                $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
                     argument = {}; 
                     argument[k] = $parameter.val(); 
@@ -848,10 +850,11 @@ define([
                 });
             });
             _.each(motifSliders, function(name) {
-                _this.setSlider(name,0,-20.000,20.000,0.001, events.ATOM_POSITION_CHANGE); 
+                _this.setSlider(name,0,-20.000,20.000,0.001, events.ATOM_POSITION_CHANGE);
+                _this.setOnOffSlider(name,true);
             });
             _.each(rotatingAngles, function($parameter, k) {
-                $parameter.val(1);
+                $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
                     argument = {};
                     argument['rotAnglePhi'] =  $('#rotAnglePhi').val()
@@ -859,7 +862,7 @@ define([
                     PubSub.publish(events.SET_ROTATING_ANGLE, argument);
                 });
             });
-            $tangentR.val(1);
+            $tangentR.prop('disabled',true);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -1186,6 +1189,8 @@ define([
                 }
                 PubSub.publish(events.ATOM_SUBMIT, argument);
             });
+            $atomPositioningXYZ.addClass('disabled');
+            $atomPositioningABC.addClass('disabled');
             $atomPositioningXYZ.on('click', function() {
                 argument = {};  
                 if (!($atomPositioningXYZ.hasClass('disabled'))){ 
@@ -1234,6 +1239,7 @@ define([
                     PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
                 }
             });
+            _this.disableMEButtons({'previewAtomChanges':true,'saveAtomChanges':true});
 
             /* [Visualization Tab] */
             $fogDensity.on('change',function(){
@@ -1452,6 +1458,8 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
+            
+            
         
     /*$
     
@@ -1958,7 +1966,7 @@ define([
                 }
             });
 
-            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive '+visible+'" alt=""/></a></td">'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial selectable" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td">'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial selectable" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2189,16 +2197,32 @@ define([
            _.each($atomButtons, function($parameter, k) {
                 if (argument[k] !== undefined){
                     if (argument[k] === true) {
-                        $parameter.addClass('disabled');
-                        if (k === 'atomPalette') $parameter.children().removeAttr('data-toggle');
+                        if (k === 'deleteAtom') $parameter.addClass('disabled');
+                        else if (k === 'atomPalette') {
+                            $parameter.children().removeAttr('data-toggle');
+                            $parameter.addClass('disabled');
+                        }
+                        else{
+                            $parameter.each(function(){$parameter.addClass('disabled');});
+                        }
                     }
                     else {
-                        $parameter.removeClass('disabled');
-                        if (k === 'atomPalette') $parameter.children().attr('data-toggle','modal');
+                        if (k === 'deleteAtom') $parameter.removeClass('disabled');
+                        else if (k === 'atomPalette') {
+                            if (k === 'atomPalette') $parameter.children().attr('data-toggle','modal');
+                            $parameter.removeClass('disabled');
+                        }
+                        else{
+                            $parameter.each(function(){$parameter.removeClass('disabled');});
+                        }
                     }
                 }
             });
         }
+        Menu.prototype.highlightAtomEntry = function(argument){
+             $atomTable.find('#'+argument['id']).removeAttr('class');
+             $atomTable.find('#'+argument['id']).attr('class',argument['color']);
+        };
         Menu.prototype.disableRenderizationButtons = function(argument){
             _.each(renderizationMode, function($parameter, k) {
                 if (argument[k] !== undefined){
@@ -2209,6 +2233,36 @@ define([
                     }
                 }
             });
+        }
+        Menu.prototype.setPlaneEntryVisibility = function(argument){
+            if(argument['action']){ 
+                $planesTable.find('#'+argument['id']).find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
+                $planesTable.find('#'+argument['id']).find('.planeButton').addClass('visible');
+            }
+            else{
+                $planesTable.find('#'+argument['id']).find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                $planesTable.find('#'+argument['id']).find('.planeButton').removeClass('visible');
+            }
+        }
+        Menu.prototype.setDirectionEntryVisibility = function(argument){
+            if(argument['action']) {
+                $directionTable.find('#'+argument['id']).find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
+                $directionTable.find('#'+argument['id']).find('.directionButton').addClass('visible');
+            }
+            else {
+                $directionTable.find('#'+argument['id']).find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                $directionTable.find('#'+argument['id']).find('.directionButton').removeClass('visible');
+            }
+        }
+        Menu.prototype.setAtomEntryVisibility = function(argument){
+            if(argument['action']){ 
+                $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/visible-icon-sm.png');
+                $atomTable.find('#'+argument['id']).find('.atomButton').addClass('visible');
+            }
+            else {
+                $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                $atomTable.find('#'+argument['id']).find('.atomButton').removeClass('visible');
+            }
         }
    
     /* ------------------------

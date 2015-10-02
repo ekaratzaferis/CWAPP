@@ -886,8 +886,10 @@ label {
 
 /*==========  Color Picker  ==========*/
 .color-picker-container {
-    cursor: pointer;
+    
   text-align: center; }
+.color-picker[disabled]{ cursor: not-allowed !important; }
+.color-picker{ cursor: pointer; }
   .color-picker-container .color-label {
     margin-bottom: 5px; }
     .color-picker-container .color-label label {
@@ -3195,4 +3197,5 @@ input.disabled[type="text"]{ background-color: black; }
     z-index: 12;
     text-align: center;
 }
-#appLogo img{ max-height:100%; max-width:100%; };
+#appLogo img{ max-height:100%; max-width:100%; }
+.btn-action.disabled { cursor: not-allowed; }
