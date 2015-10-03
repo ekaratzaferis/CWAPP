@@ -3199,3 +3199,8 @@ input.disabled[type="text"]{ background-color: black; }
 }
 #appLogo img{ max-height:100%; max-width:100%; }
 .btn-action.disabled { cursor: not-allowed; }
+.atomButton a:hover { background: #08090b !important; }
+.btn-tangent a:hover { background: #08090b !important; }
+.btn-tangent.active a { background: green !important; }
+.btn-tangent.disabled a { background: red !important; }
+.hiddenIcon{ display: none };
