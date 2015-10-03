@@ -1121,15 +1121,7 @@ define([
                     }
                 });
             });
-            $planesTable.find('tbody').sortable({
-                appendTo: document.body,
-                axis: 'y',
-                containment: "parent",
-                cursor: "move",
-                items: "> tr",
-                tolerance: "pointer",
-                stop: function(){console.log('thano mpine');}
-            });
+
             
             /* [Motif Tab] */
             $motifPadlock.on('click', function() {
@@ -1249,6 +1241,19 @@ define([
                 }
             });
             _this.disableMEButtons({'previewAtomChanges':true,'saveAtomChanges':true});
+            $atomTable.find('tbody').sortable({
+                appendTo: document.body,
+                axis: 'y',
+                containment: "parent",
+                cursor: "move",
+                items: "> tr",
+                tolerance: "pointer",
+                stop: function(e,ui){ 
+                    if (jQuery(ui.item).is('[tangentTo]')){
+                        
+                    }
+                }
+            });
 
             /* [Visualization Tab] */
             $fogDensity.on('change',function(){
@@ -1493,11 +1498,6 @@ define([
         argument[k] = $parameter.val();
         PubSub.publish(events.MOTIF_CELLDIMENSIONS_CHANGE, argument);
       });
-    });
-    $('#dragMode').change(function() {  
-      var argument = {};
-      argument["dragMode"]= ($('#dragMode').is(':checked')) ? true : false ;
-      PubSub.publish(events.DRAG_ATOM, argument);           
     });
     
     $storeState.on('click', function() {
@@ -1927,19 +1927,11 @@ define([
             //visible hidden
             var eyeButton = '';
             var visible = '';
-            //<td class="blank"></td>
-            var blankTD = '';
-            //<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>
-            var chainTD = '';
             //Lowercase
             var elementCode = '';
             //Capitalized
             var elementName;
-            //'', 2 , 3 [colspan="3"]
-            var colSpan = 'colspan="3"';
             var atomPos = '';
-            // <td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>
-            var buttonTangent;
 
             _.each(argument, function($parameter, k){
                 switch(k){
@@ -1950,32 +1942,19 @@ define([
                         if ($parameter) { visible = 'visible'; eyeButton = visible; }
                         else { visible = ''; eyeButton = 'hidden'; }   
                         break;
-                    case 'blankTD':
-                        if ($parameter) blankTD = '<td class="blank"></td>';
-                        break;
-                    case 'chainTD':
-                        if ($parameter) chainTD = '<td class="chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td>';
-                        break;
                     case 'elementCode':
                         elementCode = $parameter;
                         break;
                     case 'elementName':
                         elementName = $parameter;
                         break;
-                    case 'colSpan':
-                        if ($parameter !== '') colSpan = 'colspan="'+$parameter+'"';
-                        else colSpan = $parameter;
-                        break;
                     case 'atomPos':
                         atomPos = $parameter;
-                        break;
-                    case 'buttonTangent':
-                        if ($parameter) buttonTangent = '<td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td>';
                         break;
                 }
             });
 
-            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td">'+blankTD+chainTD+'<td class="element ch-'+elementCode+'">'+elementName+'</td><td class="element-serial selectable" '+colSpan+'><a>'+atomPos+'</a></td>'+buttonTangent+'</tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td colspan="2" class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td colspan="1" class="hiddenIcon blank"></td><td colspan="1" class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td colspan="2" class="element ch-'+elementCode+'">'+elementName+'</td><td colspan="4" class="element-serial selectable"><a>'+atomPos+'</a></td><td colspan="2" class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -1992,6 +1971,27 @@ define([
 
             }
             if ( (argument['action']==='save') || (argument['action']==='edit') ){
+                $atomTable.find('#'+argument['id']).find('.btn-tangent').on('click', function(){
+                    var arg = {};
+                    if ($atomTable.find('#'+argument['id']).find('.btn-tangent').hasClass('active')) {
+                        $atomTable.find('#'+argument['id']).removeAttr('tangentTo');
+                        $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('active');
+                        $atomTable.find('#'+argument['id']).find('.chain').addClass('hiddenIcon');
+                        $atomTable.find('#'+argument['id']).find('.element-serial').attr('colspan','4');
+                        arg["dragMode"]= false;
+                        arg["parentId"]= $atomTable.find('#'+argument['id']).prev('tr').attr('id');
+                        PubSub.publish(events.DRAG_ATOM, arg);
+                    }
+                    else if ($atomTable.find('#'+argument['id']).prev('tr').length !== 0 ) {
+                        $atomTable.find('#'+argument['id']).attr('tangentTo',$atomTable.find('#'+argument['id']).prev('tr').attr('id'));
+                        $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('active');
+                        $atomTable.find('#'+argument['id']).find('.chain').removeClass('hiddenIcon');
+                        $atomTable.find('#'+argument['id']).find('.element-serial').attr('colspan','3');
+                        arg["dragMode"]= true;
+                        arg["parentId"]= $atomTable.find('#'+argument['id']).prev('tr').attr('id');
+                        PubSub.publish(events.DRAG_ATOM, arg);
+                    }
+                });
                 $atomTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
                 });
@@ -2011,7 +2011,10 @@ define([
                 });
             }
             if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
-            else $atomTable.css('display','none');
+            else {
+                $atomTable.css('display','none');
+                $atomTable.find('tbody').sortable('disable');
+            }
         }
         Menu.prototype.editMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
