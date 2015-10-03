@@ -1032,6 +1032,7 @@ define([
                         $motifMEButton.tooltip('hide');
                     }, 2500);
                 }
+                else _this.disableLatticeChoice(true);
             });
             $controls_toggler.on('click', function(){
                 if ($main_controls.hasClass('controls-open'))
@@ -1279,7 +1280,7 @@ define([
             }); 
             $leapMotion.click(function() {  
                 var argument = {};
-                argument["leap"]= ($leapMotion.hasClass('active')) ? true : false ;
+                argument["leap"]= ($leapMotion.hasClass('active')) ? false : true ;
                 PubSub.publish(events.LEAP_MOTION, argument);           
             });
             _.each(renderizationMode, function($parameter, k) {
@@ -2232,6 +2233,7 @@ define([
             });
         }
         Menu.prototype.highlightAtomEntry = function(argument){
+            console.log(argument);
              $atomTable.find('#'+argument['id']).removeAttr('class');
              $atomTable.find('#'+argument['id']).attr('class',argument['color']);
         };
