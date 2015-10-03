@@ -2233,7 +2233,6 @@ define([
             });
         }
         Menu.prototype.highlightAtomEntry = function(argument){
-            console.log(argument);
              $atomTable.find('#'+argument['id']).removeAttr('class');
              $atomTable.find('#'+argument['id']).attr('class',argument['color']);
         };
@@ -2277,6 +2276,10 @@ define([
                 $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/hidden-icon-sm.png');
                 $atomTable.find('#'+argument['id']).find('.atomButton').removeClass('visible');
             }
+        }
+        Menu.prototype.hideChainIcon = function(argument){
+            if (argument['hide']) $atomTable.find('#'+argument['id']).find('.chain').addClass('hiddenIcon');
+            else $atomTable.find('#'+argument['id']).find('.chain').removeClass('hiddenIcon');
         }
    
     /* ------------------------
