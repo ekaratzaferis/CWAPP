@@ -2310,9 +2310,7 @@ define([
     var parameters = this.parameters ;
     var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
     var id, checkVals = parseInt(u + v) * -1 ; 
-
-    console.log(millerParameters);
-
+ 
     if(hexagonal){
       if(t != checkVals ) {   
         return null ;
@@ -2608,8 +2606,7 @@ define([
    
     var index,cnt=0 ; 
  
-    for (var j = 0; j < this.millerDirections.length; j++) { 
-      console.log(this.millerDirections[0]); 
+    for (var j = 0; j < this.millerDirections.length; j++) {  
       if(this.millerDirections[j].id === which) { 
         if(color === undefined){  
           u = this.millerDirections[j].u;
