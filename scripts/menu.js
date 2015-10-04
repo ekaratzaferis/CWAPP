@@ -2108,12 +2108,14 @@ define([
                         $atomPositioningXYZ.addClass('btn-purple');
                     }
                 }
+            }
             if (argument['padlock'] !== undefined){
-                if (argument['padlock'] === true) $motifPadlock.find('a').removeClass('active');
-                else $motifPadlock.find('a').addClass('active');
+                if (argument['padlock']) $motifPadlock.find('a').addClass('active');
+                else $motifPadlock.find('a').removeClass('active');
             }
             if (argument['tangency'] !== undefined){
-                $tangency.trigger('click');
+                if (argument['tangency']) $tangency.parent().addClass('purpleThemeActive');
+                else $tangency.parent().removeClass('purpleThemeActive');
             }
             if (argument['atomName'] !== undefined){
                 var newAtom = 'ch-' + argument['atomName'];
@@ -2124,7 +2126,6 @@ define([
                 $elementContainer.find('a').html(newAtomName);
             }
             $tangentR.val(argument['tangentR']);
-        }
         }
         Menu.prototype.disableMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
