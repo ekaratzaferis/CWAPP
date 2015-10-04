@@ -174,6 +174,7 @@ define([
         var $tangency = jQuery('#tangency');
         var $atomPositioningXYZ = jQuery('#atomPositioningXYZ');
         var $atomPositioningABC = jQuery('#atomPositioningABC');
+        var $lockCameras = jQuery('#lockCameraIcon');
     
         // [Visualization Tab]
         var $sounds = jQuery('#sounds');
@@ -528,6 +529,11 @@ define([
                 {
                     init_dimensions();
                 });
+            });
+            jQuery(window).on('load', function(){
+                setTimeout(function(){
+                    _this.progressBarFinish();
+                },500); 
             });
             jQuery(document).ready(function(){
                 init_dimensions();
@@ -1255,6 +1261,19 @@ define([
                     }
                 }
             });
+            $lockCameras.click(function() {  
+                var argument = {};
+                if ($lockCameras.hasClass('active')) {
+                    $lockCameras.find('img').attr('src','Images/lockCameras.png');
+                    argument['syncCameras'] = false;
+                }
+                else {
+                    $lockCameras.find('img').attr('src','Images/lockCamerasActive.png');
+                    argument['syncCameras'] = true;
+                }
+                $lockCameras.toggleClass('active');
+                PubSub.publish(events.MOTIF_CAMERASYNC_CHANGE, argument);           
+            });
 
             /* [Visualization Tab] */
             $fogDensity.on('change',function(){
@@ -1474,7 +1493,6 @@ define([
                 }
             });
             
-            
         
     /*$
     
@@ -1487,12 +1505,6 @@ define([
     });
     
     
-    
-    $('#syncCameras').change(function() {  
-      var argument = {};
-      argument["syncCameras"]= ($('#syncCameras').is(':checked')) ? true : false ;
-      PubSub.publish(events.MOTIF_CAMERASYNC_CHANGE, argument);           
-    });
     _.each(fixedDimensions, function($parameter, k) {
       $parameter.on('change', function() {
         argument = {};
@@ -1505,8 +1517,7 @@ define([
       PubSub.publish(events.STORE_PROJECT, argument);   
     });
     
-     
-
+    
     this.restrictionEvents = []; */
      
   };

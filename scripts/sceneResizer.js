@@ -37,6 +37,7 @@ define([
       this.motifRenderer.changeContainerDimensions(width, height/2);   
         
       $('#appLogo').css('display','none');
+      $('#lockCameraIcon').css('display','block');
 
       $('#topRowTableCaption').css('display','table');
         
@@ -94,6 +95,7 @@ define([
       this.motifRenderer.changeContainerDimensions(0,0); 
         
       $('#appLogo').css('display','block');
+      $('#lockCameraIcon').css('display','none');
 
       $('#topRowTableCaption').css('display','none');
         
