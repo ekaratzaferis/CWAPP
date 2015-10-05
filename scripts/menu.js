@@ -1493,6 +1493,7 @@ define([
                 }
             });
             
+            
         
     /*$
     
@@ -2121,8 +2122,14 @@ define([
                 }
             }
             if (argument['padlock'] !== undefined){
-                if (argument['padlock']) $motifPadlock.find('a').addClass('active');
-                else $motifPadlock.find('a').removeClass('active');
+                if (argument['padlock']) {
+                    $motifPadlock.find('a').addClass('active');
+                    $motifPadlock.find('a').attr('aria-pressed','true');
+                }
+                else {
+                    $motifPadlock.find('a').removeClass('active');
+                    $motifPadlock.find('a').attr('aria-pressed','false');
+                }
             }
             if (argument['tangency'] !== undefined){
                 if (argument['tangency']) $tangency.parent().addClass('purpleThemeActive');
