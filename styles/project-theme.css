@@ -3213,7 +3213,7 @@ input.disabled[type="text"]{ background-color: black; }
 .atomButton a:hover { background: #08090b !important; }
 .btn-tangent a:hover { background: #08090b !important; }
 .btn-tangent.active a { background: green !important; }
-.btn-tangent.disabled a { background: red !important; }
+.btn-tangent.disabled a { background: red !important; cursor: not-allowed;}
 .hiddenIcon{ display: none };
 
 #loading{

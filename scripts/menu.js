@@ -1256,8 +1256,8 @@ define([
                 items: "> tr",
                 tolerance: "pointer",
                 stop: function(e,ui){ 
-                    if (jQuery(ui.item).is('[tangentTo]')){
-                        
+                    if (jQuery(ui.item).attr('role') !== 'empty'){
+                        $atomTable.find('tbody').sortable("cancel");
                     }
                 }
             });
@@ -1967,7 +1967,7 @@ define([
                 }
             });
 
-            var HTMLQuery = '<tr id="'+argument['id']+'" class="'+backColor+'"><td colspan="2" class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td colspan="1" class="hiddenIcon blank"></td><td colspan="1" class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td colspan="2" class="element ch-'+elementCode+'">'+elementName+'</td><td colspan="4" class="element-serial selectable"><a>'+atomPos+'</a></td><td colspan="2" class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="empty" class="'+backColor+'"><td colspan="2" class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td colspan="1" class="hiddenIcon blank"></td><td colspan="1" class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td colspan="2" class="element ch-'+elementCode+'">'+elementName+'</td><td colspan="4" class="element-serial selectable"><a>'+atomPos+'</a></td><td colspan="2" class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -1986,23 +1986,72 @@ define([
             if ( (argument['action']==='save') || (argument['action']==='edit') ){
                 $atomTable.find('#'+argument['id']).find('.btn-tangent').on('click', function(){
                     var arg = {};
-                    if ($atomTable.find('#'+argument['id']).find('.btn-tangent').hasClass('active')) {
-                        $atomTable.find('#'+argument['id']).removeAttr('tangentTo');
-                        $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('active');
-                        $atomTable.find('#'+argument['id']).find('.chain').addClass('hiddenIcon');
-                        $atomTable.find('#'+argument['id']).find('.element-serial').attr('colspan','4');
-                        arg["dragMode"]= false;
-                        arg["parentId"]= $atomTable.find('#'+argument['id']).prev('tr').attr('id');
-                        PubSub.publish(events.DRAG_ATOM, arg);
+                    var current = $atomTable.find('#'+argument['id']);
+                    var above = current.prev('tr');
+                    var parent = $atomTable.find('#'+current.attr('tangentTo'));
+                    //UNLINK
+                    if (current.find('.btn-tangent').hasClass('active')) {
+                        
+                        // If atom is a child
+                        if (current.attr('role') === 'child') {
+                            
+                            // Publish Event
+                            arg["dragMode"]= false;
+                            arg["parentId"]= current.attr('tangentTo');
+                            PubSub.publish(events.DRAG_ATOM, arg);
+                            
+                            // Assign role empty and deactivate button
+                            current.attr('role','empty');
+                            current.find('.btn-tangent').removeClass('active');
+                            
+                            // Remove role if only parent
+                            if (parent.attr('role') === 'parent'){
+                                parent.attr('role','empty');
+                                parent.find('.btn-tangent').removeClass('disabled');
+                            }
+                            // Assign child role again
+                            else{
+                                parent.attr('role','child');
+                                parent.find('.btn-tangent').removeClass('disabled');
+                                parent.find('.btn-tangent').addClass('active');
+                            }
+                            
+                            //UNLINK and hide icon
+                            current.removeAttr('tangentTo');
+                            current.find('.chain').addClass('hiddenIcon');
+                            current.find('.element-serial').attr('colspan','4');
+                        }
                     }
-                    else if ($atomTable.find('#'+argument['id']).prev('tr').length !== 0 ) {
-                        $atomTable.find('#'+argument['id']).attr('tangentTo',$atomTable.find('#'+argument['id']).prev('tr').attr('id'));
-                        $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('active');
-                        $atomTable.find('#'+argument['id']).find('.chain').removeClass('hiddenIcon');
-                        $atomTable.find('#'+argument['id']).find('.element-serial').attr('colspan','3');
-                        arg["dragMode"]= true;
-                        arg["parentId"]= $atomTable.find('#'+argument['id']).prev('tr').attr('id');
-                        PubSub.publish(events.DRAG_ATOM, arg);
+                    //LINK
+                    else if (!(current.find('.btn-tangent').hasClass('disabled'))) {
+                        if (current.attr('role') === 'empty') {
+                            // If there's an atom above
+                            if (above.length !== 0 ) {
+                                
+                                // If atom above isn't a parent
+                                if (above.attr('role') !== 'parent'){
+                                    
+                                    // Make child and activate button
+                                    current.attr('role','child');
+                                    current.find('.btn-tangent').addClass('active');
+                                
+                                    // Make atom above a parent or parentChild
+                                    if (above.attr('role') === 'empty') above.attr('role','parent');
+                                    else above.attr('role','parentChild');
+                                    above.find('.btn-tangent').addClass('disabled');
+                                
+                                    // Link Parent-Child and show icon
+                                    current.attr('tangentTo',above.attr('id'));
+                                    current.find('.chain').removeClass('hiddenIcon');
+                                    current.find('.element-serial').attr('colspan','3');
+                                
+                                    // Publish Event
+                                    arg["dragMode"]= true;
+                                    arg["parentId"]= above.attr('id');
+                                    PubSub.publish(events.DRAG_ATOM, arg);
+                                }
+                            }
+                        }
                     }
                 });
                 $atomTable.find('#'+argument['id']).find('.selectable').on('click',function(){
@@ -2123,12 +2172,12 @@ define([
             }
             if (argument['padlock'] !== undefined){
                 if (argument['padlock']) {
-                    $motifPadlock.find('a').addClass('active');
-                    $motifPadlock.find('a').attr('aria-pressed','true');
-                }
-                else {
                     $motifPadlock.find('a').removeClass('active');
                     $motifPadlock.find('a').attr('aria-pressed','false');
+                }
+                else {
+                    $motifPadlock.find('a').addClass('active');
+                    $motifPadlock.find('a').attr('aria-pressed','true');
                 }
             }
             if (argument['tangency'] !== undefined){
