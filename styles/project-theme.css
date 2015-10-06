@@ -1738,6 +1738,8 @@ label {
             float: left;
             width: 55%;
             margin-top: 40px; }
+.motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .tangent-properties-container{
+    display: none;}
         .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .tangent-properties-container .par-properties-container {
           margin-bottom: 10px; }
           .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .tangent-properties-container .par-properties-container .par-properties-wrapper {
@@ -1792,7 +1794,17 @@ label {
         .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody {
           /*  Row Styles  */ }
           .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr td {
+            width: 50px;
+            overflow: hidden;
+            display: inline-block;
+            white-space: nowrap;
             border: 0; }
+
+    .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr td.element-serial {
+            width: 150px; }
+    .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr td.small {
+            width: 100px !important; }
+
             .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr td a {
               border-top: 1px solid transparent;
               border-bottom: 1px solid transparent; }
@@ -3141,9 +3153,14 @@ html,body {
 .list-title{padding-bottom:5px;}
 
 .lightTheme{background: #34373e;}
-.lightTheme:hover{background: #3C3D4A;cursor: pointer;}
-.lightTheme.lightThemeActive{background: #434255;}
-.lightTheme.lightThemeActive:hover{background: #434255;}
+.lightTheme:hover{background: #524D6C; cursor: pointer;}
+.lightTheme.lightThemeActive{
+    background: #6F6299; 
+    -webkit-box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
+    box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
+}
+.lightTheme.lightThemeActive:hover{background: #6F6299;}
 
 .toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
 .toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
@@ -3214,7 +3231,8 @@ input.disabled[type="text"]{ background-color: black; }
 .btn-tangent a:hover { background: #08090b !important; }
 .btn-tangent.active a { background: green !important; }
 .btn-tangent.disabled a { background: red !important; cursor: not-allowed;}
-.hiddenIcon{ display: none };
+.btn-tangent.blocked a { background: black !important; cursor: not-allowed;}
+.hiddenIcon{ display: none !important; }
 
 #loading{
     display: block;

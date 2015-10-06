@@ -531,9 +531,7 @@ define([
                 });
             });
             jQuery(window).on('load', function(){
-                setTimeout(function(){
-                    _this.progressBarFinish();
-                },500); 
+                _this.progressBarFinish();
             });
             jQuery(document).ready(function(){
                 init_dimensions();
@@ -547,6 +545,7 @@ define([
             $progressBarWrapper.height(screen_height);
             
             // Help (Tooltips)
+            // P&D Tooltip
             jQuery('.coordinates-pnd-blocks-container').tooltip({
                 container : 'body',
                 trigger: 'manual',
@@ -1038,7 +1037,10 @@ define([
                         $motifMEButton.tooltip('hide');
                     }, 2500);
                 }
-                else _this.disableLatticeChoice(true);
+                else {
+                    $motifMEButton.removeClass('disabled');
+                    _this.disableLatticeChoice(true);
+                }
             });
             $controls_toggler.on('click', function(){
                 if ($main_controls.hasClass('controls-open'))
@@ -1074,7 +1076,7 @@ define([
             });
             jQuery('.control-open').on('click', function(){
                 if( !( jQuery(this).hasClass('toggle_menu') ) ){
-                    if (!(( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) && (jQuery(this).attr('aria-controls') === 'scrn_motif'))) {
+                    if( !( jQuery(this).parent().hasClass('disabled') ) ){
                         $controls_toggler.find('.img-open').fadeOut('fast', function()
                         {
                             $controls_toggler.find('.img-close').fadeIn('fast')
@@ -1210,6 +1212,9 @@ define([
                         $atomPositioningABC.removeClass('btn-purple');
                         $atomPositioningABC.addClass('btn-light');
                         argument['xyz'] = true;
+                        jQuery('label[for=txt_coordinates_x]').html('x');
+                        jQuery('label[for=txt_coordinates_y]').html('y');
+                        jQuery('label[for=txt_coordinates_z]').html('z');
                     }
                     else{  
                         $atomPositioningXYZ.removeClass('buttonPressed');
@@ -1219,6 +1224,9 @@ define([
                         $atomPositioningABC.removeClass('btn-light');
                         $atomPositioningABC.addClass('btn-purple');
                         argument['abc'] = true;
+                        jQuery('label[for=txt_coordinates_x]').html('a');
+                        jQuery('label[for=txt_coordinates_y]').html('b');
+                        jQuery('label[for=txt_coordinates_z]').html('c');
                     } 
                     PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
                 }
@@ -1234,6 +1242,9 @@ define([
                         $atomPositioningXYZ.removeClass('btn-purple');
                         $atomPositioningXYZ.addClass('btn-light');
                         argument['abc'] = true;
+                        jQuery('label[for=txt_coordinates_x]').html('a');
+                        jQuery('label[for=txt_coordinates_y]').html('b');
+                        jQuery('label[for=txt_coordinates_z]').html('c');
                     }
                     else{
                         $atomPositioningABC.removeClass('buttonPressed');
@@ -1243,6 +1254,9 @@ define([
                         $atomPositioningXYZ.removeClass('btn-light');
                         $atomPositioningXYZ.addClass('btn-purple');
                         argument['xyz'] = true;
+                        jQuery('label[for=txt_coordinates_x]').html('x');
+                        jQuery('label[for=txt_coordinates_y]').html('y');
+                        jQuery('label[for=txt_coordinates_z]').html('z');
                     }
                     PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, argument);
                 }
@@ -1492,8 +1506,6 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-            
-            
         
     /*$
     
@@ -1529,6 +1541,34 @@ define([
        Prototypes - Editors
        -------------------- */
     
+        Menu.prototype.setTabDisable = function(argument){
+            _.each(argument, function($parameter, k){
+                if ($parameter) {
+                    jQuery('#'+k).addClass('disabled');
+                    jQuery('#'+k).find('a').removeAttr('href');
+                }
+                else {
+                    jQuery('#'+k).removeClass('disabled');
+                    switch(k){
+                        case 'latticeTab': 
+                            jQuery('#'+k).find('a').attr('href','#scrn_lattice');
+                            break;        
+                        case 'millerPI': 
+                            jQuery('#'+k).find('a').attr('href','#scrn_pnd'); 
+                            break;
+                        case 'motifLI': 
+                            jQuery('#'+k).find('a').attr('href','#scrn_motif'); 
+                            break;
+                        case 'visualTab': 
+                            jQuery('#'+k).find('a').attr('href','#scrn_visualize'); 
+                            break;
+                        case 'publicTab': 
+                            jQuery('#'+k).find('a').attr('href','#scrn_public_library');
+                            break;
+                    }
+                }
+            });
+        }
         Menu.prototype.disableLatticeChoice = function(argument){
             if (argument) {
                 jQuery('#selected_lattice').addClass('disabled');
@@ -1966,8 +2006,8 @@ define([
                         break;
                 }
             });
-
-            var HTMLQuery = '<tr id="'+argument['id']+'" role="empty" class="'+backColor+'"><td colspan="2" class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td colspan="1" class="hiddenIcon blank"></td><td colspan="1" class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td colspan="2" class="element ch-'+elementCode+'">'+elementName+'</td><td colspan="4" class="element-serial selectable"><a>'+atomPos+'</a></td><td colspan="2" class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+        
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="empty" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial selectable"><a>'+atomPos+'</a></td><td class="btn-tangent blocked"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2003,6 +2043,7 @@ define([
                             // Assign role empty and deactivate button
                             current.attr('role','empty');
                             current.find('.btn-tangent').removeClass('active');
+                            jQuery('.tangent-properties-container').css('display','none');
                             
                             // Remove role if only parent
                             if (parent.attr('role') === 'parent'){
@@ -2019,11 +2060,11 @@ define([
                             //UNLINK and hide icon
                             current.removeAttr('tangentTo');
                             current.find('.chain').addClass('hiddenIcon');
-                            current.find('.element-serial').attr('colspan','4');
+                            current.find('.element-serial').toggleClass('small');
                         }
                     }
                     //LINK
-                    else if (!(current.find('.btn-tangent').hasClass('disabled'))) {
+                    else if ( (!(current.find('.btn-tangent').hasClass('disabled'))) || (!(current.find('.btn-tangent').hasClass('blocked'))) ){
                         if (current.attr('role') === 'empty') {
                             // If there's an atom above
                             if (above.length !== 0 ) {
@@ -2034,6 +2075,7 @@ define([
                                     // Make child and activate button
                                     current.attr('role','child');
                                     current.find('.btn-tangent').addClass('active');
+                                    jQuery('.tangent-properties-container').css('display','block');
                                 
                                     // Make atom above a parent or parentChild
                                     if (above.attr('role') === 'empty') above.attr('role','parent');
@@ -2043,7 +2085,7 @@ define([
                                     // Link Parent-Child and show icon
                                     current.attr('tangentTo',above.attr('id'));
                                     current.find('.chain').removeClass('hiddenIcon');
-                                    current.find('.element-serial').attr('colspan','3');
+                                    current.find('.element-serial').toggleClass('small');
                                 
                                     // Publish Event
                                     arg["dragMode"]= true;
@@ -2301,8 +2343,9 @@ define([
             });
         }
         Menu.prototype.highlightAtomEntry = function(argument){
-             $atomTable.find('#'+argument['id']).removeAttr('class');
-             $atomTable.find('#'+argument['id']).attr('class',argument['color']);
+            $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('blocked');
+            $atomTable.find('#'+argument['id']).removeAttr('class');
+            $atomTable.find('#'+argument['id']).attr('class',argument['color']);
         };
         Menu.prototype.disableRenderizationButtons = function(argument){
             _.each(renderizationMode, function($parameter, k) {
