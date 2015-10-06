@@ -3150,17 +3150,12 @@ html,body {
 #motifPadlock:hover{
     background: #08090b;
 }
-.list-title{padding-bottom:5px;}
+.list-title{color: #aaa !important; padding-bottom:5px;}
 
 .lightTheme{background: #34373e;}
-.lightTheme:hover{background: #524D6C; cursor: pointer;}
-.lightTheme.lightThemeActive{
-    background: #6F6299; 
-    -webkit-box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
-    -moz-box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
-    box-shadow: inset 0px 0px 25px 2px rgba(0,0,0,0.75);
-}
-.lightTheme.lightThemeActive:hover{background: #6F6299;}
+.lightTheme:hover{background: #555; cursor: pointer;}
+.lightTheme.lightThemeActive{ background: #777;}
+.lightTheme.lightThemeActive:hover{background: #777;}
 
 .toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
 .toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}

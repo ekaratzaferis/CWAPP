@@ -1471,6 +1471,7 @@ define([
                     PubSub.publish(events.LATTICE_CHANGE,selected.attr('id'));
                     // Enable Motif Tab.
                     $motifMEButton.find('a').attr('href','#scrn_motif');
+                    $motifMEButton.removeClass('disabled');
                 }
             });   
             $periodicModal.on('click',function(){
