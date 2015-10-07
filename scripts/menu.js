@@ -124,6 +124,7 @@ define([
         var $cellAlpha = jQuery('#cellAlpha');
         var $cellBeta = jQuery('#cellBeta');
         var $cellGamma = jQuery('#cellGamma');
+        var $cellVolume = jQuery('#cellVolume');
     
         // [Visualization Tab]
         var $fogColor = jQuery('#fogColor');
@@ -531,7 +532,7 @@ define([
                 });
             });
             jQuery(window).on('load', function(){
-                _this.progressBarFinish();
+                //_this.progressBarFinish();
             });
             jQuery(document).ready(function(){
                 init_dimensions();
@@ -868,6 +869,15 @@ define([
                 });
             });
             $tangentR.prop('disabled',true);
+            $cellVolume.prop('disabled',true);
+            $cellVolume.on('change', function() {
+                argument = {}; 
+                argument['cellVolume'] = $('#cellVolume').val(); 
+                _this.setSliderValue('cellVolume',argument['cellVolume']); 
+                PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
+            });
+            _this.setSlider('cellVolume',100,1,100,1,events.CELL_VOLUME_CHANGE);
+            _this.setOnOffSlider('cellVolume',true);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -1011,7 +1021,7 @@ define([
                             jQuery('.tooltip-inner').css('background', '#2c2e33');
                             jQuery('.tooltip-inner').css('color', '#fff');
                             jQuery('.tooltip-inner').siblings().css('border-left-color', '#2c2e33');
-                            _this.setSlider('atomRadius',$tempValRadius,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+                            _this.setSlider('atomRadius',$tempValRadius,10.2,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
                         }, 250);
                     }
             });
@@ -1059,17 +1069,13 @@ define([
                 }
                 else
                 {
-                    $controls_toggler.find('.img-open').fadeOut('fast', function()
-                    {
-                        $controls_toggler.find('.img-close').fadeIn('fast')
-                    });
-                    $screenWrapper.fadeOut('slow');
-                    $main_controls.animate({'right': '0'}, 500, function()
-                    {
-                        $main_controls.removeClass('controls-close');
-                        $main_controls.addClass('controls-open');
-                        window.dispatchEvent(new Event('resize'));
-                    });
+                    var openTab = jQuery('.main-tab-nav-container').find('li.active');
+                    if (!(openTab.hasClass('disabled'))) openTab.find('a').trigger('click');  
+                    else {
+                        openTab = jQuery('.main-tab-nav-container').find('li:not(.disabled):first');
+                        openTab.find('a').trigger('click');
+                        console.log(openTab);
+                    }
                 }
 
                 return false;
@@ -1200,7 +1206,9 @@ define([
                 PubSub.publish(events.ATOM_SUBMIT, argument);
             });
             $atomPositioningXYZ.addClass('disabled');
+            $atomPositioningXYZ.parent().addClass('disabled');
             $atomPositioningABC.addClass('disabled');
+            $atomPositioningABC.parent().addClass('disabled');
             $atomPositioningXYZ.on('click', function() {
                 argument = {};  
                 if (!($atomPositioningXYZ.hasClass('disabled'))){ 
@@ -1509,15 +1517,6 @@ define([
             });
         
     /*$
-    
-    
-    $('#cellVolume').on('change', function() {
-      argument = {}; 
-      argument['cellVolume'] = $('#cellVolume').val(); 
-      _this.setSliderValue('cellVolume',argument['cellVolume']); 
-      PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
-    });
-    
     
     _.each(fixedDimensions, function($parameter, k) {
       $parameter.on('change', function() {
@@ -1986,11 +1985,16 @@ define([
             //Capitalized
             var elementName;
             var atomPos = '';
+            var ref = this;
+            var small = '';
+            var role = 'empty';
+            var btnTangent = 'btn-tangent disabled';
+            var chain = 'hiddenIcon chain';
 
             _.each(argument, function($parameter, k){
                 switch(k){
                     case 'backColor':
-                        backColor = 'bg-' + $parameter;
+                        backColor = $parameter;
                         break;
                     case 'visible':
                         if ($parameter) { visible = 'visible'; eyeButton = visible; }
@@ -2007,8 +2011,20 @@ define([
                         break;
                 }
             });
-        
-            var HTMLQuery = '<tr id="'+argument['id']+'" role="empty" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="hiddenIcon chain"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial selectable"><a>'+atomPos+'</a></td><td class="btn-tangent blocked"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+            
+            if (argument['action']==='edit') {
+                // Element serial size
+                if (($atomTable.find('#'+argument['id']).attr('role')) === 'child') small = 'small';
+                else if (($atomTable.find('#'+argument['id']).attr('role')) === 'parentChild') small = 'small';
+                // Button State
+                btnTangent = $atomTable.find('#'+argument['id']).find('.btn-tangent').attr('class');
+                // Chain
+                chain = $atomTable.find('#'+argument['id']).find('.chain').attr('class');
+                // Role
+                role = $atomTable.find('#'+argument['id']).attr('role');
+            }
+            
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnTangent+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2026,76 +2042,7 @@ define([
             }
             if ( (argument['action']==='save') || (argument['action']==='edit') ){
                 $atomTable.find('#'+argument['id']).find('.btn-tangent').on('click', function(){
-                    var arg = {};
-                    var current = $atomTable.find('#'+argument['id']);
-                    var above = current.prev('tr');
-                    var parent = $atomTable.find('#'+current.attr('tangentTo'));
-                    //UNLINK
-                    if (current.find('.btn-tangent').hasClass('active')) {
-                        
-                        // If atom is a child
-                        if (current.attr('role') === 'child') {
-                            
-                            // Publish Event
-                            arg["dragMode"]= false;
-                            arg["parentId"]= current.attr('tangentTo');
-                            PubSub.publish(events.DRAG_ATOM, arg);
-                            
-                            // Assign role empty and deactivate button
-                            current.attr('role','empty');
-                            current.find('.btn-tangent').removeClass('active');
-                            jQuery('.tangent-properties-container').css('display','none');
-                            
-                            // Remove role if only parent
-                            if (parent.attr('role') === 'parent'){
-                                parent.attr('role','empty');
-                                parent.find('.btn-tangent').removeClass('disabled');
-                            }
-                            // Assign child role again
-                            else{
-                                parent.attr('role','child');
-                                parent.find('.btn-tangent').removeClass('disabled');
-                                parent.find('.btn-tangent').addClass('active');
-                            }
-                            
-                            //UNLINK and hide icon
-                            current.removeAttr('tangentTo');
-                            current.find('.chain').addClass('hiddenIcon');
-                            current.find('.element-serial').toggleClass('small');
-                        }
-                    }
-                    //LINK
-                    else if ( (!(current.find('.btn-tangent').hasClass('disabled'))) || (!(current.find('.btn-tangent').hasClass('blocked'))) ){
-                        if (current.attr('role') === 'empty') {
-                            // If there's an atom above
-                            if (above.length !== 0 ) {
-                                
-                                // If atom above isn't a parent
-                                if (above.attr('role') !== 'parent'){
-                                    
-                                    // Make child and activate button
-                                    current.attr('role','child');
-                                    current.find('.btn-tangent').addClass('active');
-                                    jQuery('.tangent-properties-container').css('display','block');
-                                
-                                    // Make atom above a parent or parentChild
-                                    if (above.attr('role') === 'empty') above.attr('role','parent');
-                                    else above.attr('role','parentChild');
-                                    above.find('.btn-tangent').addClass('disabled');
-                                
-                                    // Link Parent-Child and show icon
-                                    current.attr('tangentTo',above.attr('id'));
-                                    current.find('.chain').removeClass('hiddenIcon');
-                                    current.find('.element-serial').toggleClass('small');
-                                
-                                    // Publish Event
-                                    arg["dragMode"]= true;
-                                    arg["parentId"]= above.attr('id');
-                                    PubSub.publish(events.DRAG_ATOM, arg);
-                                }
-                            }
-                        }
-                    }
+                    ref.tangent(argument['id']);
                 });
                 $atomTable.find('#'+argument['id']).find('.selectable').on('click',function(){
                     PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
@@ -2120,6 +2067,75 @@ define([
                 $atomTable.css('display','none');
                 $atomTable.find('tbody').sortable('disable');
             }
+        }
+        Menu.prototype.tangent = function(id){
+            var arg = {};
+            var current = $atomTable.find('#'+id);
+            var above = current.prev('tr');
+            var parent = $atomTable.find('#'+current.attr('tangentTo'));
+            //UNLINK
+            if (current.find('.btn-tangent').hasClass('active')) {
+
+                // If atom is a child
+                if (current.attr('role') === 'child') {
+
+                    // Publish Event
+                    arg["dragMode"]= false;
+                    arg["parentId"]= current.attr('tangentTo');
+                    PubSub.publish(events.DRAG_ATOM, arg);
+
+                    // Assign role empty and deactivate button
+                    current.attr('role','empty');
+                    current.find('.btn-tangent').removeClass('active');
+
+                    // Remove role if only parent
+                    if (parent.attr('role') === 'parent'){
+                        parent.attr('role','empty');
+                    }
+                    // Assign child role again
+                    else{
+                        parent.attr('role','child');
+                        parent.find('.btn-tangent').addClass('active');
+                        parent.find('.btn-tangent').removeClass('disabled');
+                    }
+
+                    //UNLINK and hide icon
+                    current.removeAttr('tangentTo');
+                    current.find('.chain').addClass('hiddenIcon');
+                    current.find('.element-serial').toggleClass('small');
+                }
+            }
+            //LINK
+            else if (!(current.find('.btn-tangent').hasClass('disabled'))) {
+                if (current.attr('role') === 'empty') {
+                    // If there's an atom above
+                    if (above.length !== 0 ) {
+
+                        // If atom above isn't a parent
+                        if (above.attr('role') !== 'parent'){
+
+                            // Make child and activate button
+                            current.attr('role','child');
+                            current.find('.btn-tangent').addClass('active');
+
+                            // Make atom above a parent or parentChild
+                            above.find('.btn-tangent').addClass('disabled');
+                            if (above.attr('role') === 'empty') above.attr('role','parent');
+                            else above.attr('role','parentChild');
+                            
+                            // Link Parent-Child and show icon
+                            current.attr('tangentTo',above.attr('id'));
+                            current.find('.chain').removeClass('hiddenIcon');
+                            current.find('.element-serial').toggleClass('small');
+
+                            // Publish Event
+                            arg["dragMode"]= true;
+                            arg["parentId"]= above.attr('id');
+                            PubSub.publish(events.DRAG_ATOM, arg);
+                        }
+                    }
+                }
+            }   
         }
         Menu.prototype.editMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
@@ -2173,6 +2189,10 @@ define([
                     $('#'+k+'Slider').slider('value',argument[k]);
                 }
             });
+            if (argument['cellVolume'] !== undefined){
+                $cellVolume.val(argument['cellVolume']);
+                $('#cellVolumeSlider').slider('value',argument['cellVolume']);
+            }
             if (argument['atomPositioningXYZ'] !== undefined){
                 if (!($atomPositioningXYZ.hasClass('disabled'))){ 
                     if (!($atomPositioningXYZ.hasClass('buttonPressed'))){
@@ -2284,13 +2304,29 @@ define([
                     $('#'+k+'Slider').slider('option','disabled',argument[k]);
                 }
             });
+            if (argument['cellVolume'] !== undefined){
+                $cellVolume.prop('disabled', argument['cellVolume']);
+                $('#cellVolumeSlider').slider('option','disabled',argument['cellVolume']);
+            }
             if (argument['atomPositioningXYZ'] !== undefined){
-                if (argument['atomPositioningXYZ']) $atomPositioningXYZ.addClass('disabled');
-                else $atomPositioningXYZ.removeClass('disabled');
+                if (argument['atomPositioningXYZ']) {
+                    $atomPositioningXYZ.addClass('disabled');
+                    $atomPositioningXYZ.parent().addClass('disabled');
+                }
+                else {
+                    $atomPositioningXYZ.removeClass('disabled');
+                    $atomPositioningXYZ.parent().removeClass('disabled');
+                }
             }
             if (argument['atomPositioningABC'] !== undefined) {
-                if (argument['atomPositioningABC']) $atomPositioningABC.addClass('disabled');
-                else $atomPositioningABC.removeClass('disabled');
+                if (argument['atomPositioningABC']) {
+                    $atomPositioningABC.addClass('disabled');
+                    $atomPositioningABC.parent().addClass('disabled');
+                }
+                else {
+                    $atomPositioningABC.removeClass('disabled');
+                    $atomPositioningABC.parent().removeClass('disabled');
+                }
             }
             if (argument['tangency'] !== undefined){
                 $tangency.parent().toggleClass('disabled');
@@ -2344,9 +2380,12 @@ define([
             });
         }
         Menu.prototype.highlightAtomEntry = function(argument){
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('blocked');
+            if (argument['color'] === 'bg-light-purple') $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('disabled');
+            else $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('disabled');
             $atomTable.find('#'+argument['id']).removeAttr('class');
             $atomTable.find('#'+argument['id']).attr('class',argument['color']);
+            if ($atomTable.find('#'+argument['id']).attr('role') !== 'empty') jQuery('.tangent-properties-container').css('display','block');
+            else jQuery('.tangent-properties-container').css('display','none');
         };
         Menu.prototype.disableRenderizationButtons = function(argument){
             _.each(renderizationMode, function($parameter, k) {

@@ -258,7 +258,7 @@ body {
   .btn.btn-purple-light {
     background: #74629c; }
     .btn.btn-purple-light:hover, .btn.btn-purple-light:active, .btn.btn-purple-light:focus {
-      background: #68588c; }
+      background: #524D6C;}
   .btn.btn-purple-dark {
     background: #443771; }
     .btn.btn-purple-dark:hover, .btn.btn-purple-dark:active, .btn.btn-purple-dark:focus {
@@ -267,10 +267,11 @@ body {
     background: #36383d; }
     .btn.btn-light:hover, .btn.btn-light:active, .btn.btn-light:focus {
       background: #524D6C; }
-    .btn.btn-light.disabled {
+    .btn.btn-purple-light.disabled {
+    background: #36383d; }
+    .btn-light.disabled {
         color: #fff;
-        background: #36383d; 
-        cursor: not-allowed;}
+        background: #36383d;}
   .btn.btn-dark {
     color: #3f4247;
     background: #353942; }
@@ -766,6 +767,13 @@ label {
     height: 26px; }
 .slider-control.slider-control-sm .ui-slider {
   height: 4px; }
+.slider-control.slider-control-sml .ui-slider {
+  height: 4px;
+width: 70px;}
+.slider-control.slider-control-sml .ui-slider .ui-slider-handle {
+    top: -7px;
+    width: 18px;
+    height: 18px; }
   .slider-control.slider-control-sm .ui-slider .ui-slider-handle {
     top: -7px;
     width: 18px;
@@ -823,7 +831,7 @@ label {
   .action a:hover {
     cursor:pointer;
     text-decoration: none;
-    background: #36383d; }
+    background: #6F6299; }
   .action a:active, .action a:focus{
     cursor:pointer;
     text-decoration: none;
@@ -1795,6 +1803,7 @@ label {
           /*  Row Styles  */ }
           .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr td {
             width: 50px;
+            height: 50px;
             overflow: hidden;
             display: inline-block;
             white-space: nowrap;
@@ -1843,7 +1852,7 @@ label {
               padding: 15px 5px;
               padding-right: 20px;
               font-family: "Open Sans", sans-serif;
-              font-size: 16px;
+              font-size: 15px;
               font-weight: 400;
               line-height: 16px;
               color: #fff; }
@@ -1855,10 +1864,10 @@ label {
               display: block;
               padding: 10px;
               height: 50px;
-              background: #15171b;
+              background: #565c62;
               border-top-color: #3f4247; }
           .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr:last-child .visibility a, .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr:last-child .btn-tangent a {
-            border-bottom-color: #3f4247; }
+            border-bottom-color: #565c62; }
       .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-footer .item-table-action .action-delete {
         background: #15171b; }
         .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-footer .item-table-action .action-delete a {
@@ -3207,7 +3216,7 @@ html,body {
     display: inline;
     background-color: #7F8289;
 }
-.selectable{ cursor: pointer; }
+.selectable{ cursor: pointer; overflow:hidden; }
 input.disabled[type="text"]{ background-color: black; }
 .block-btn.disabled{ cursor: not-allowed; }
 .directionButton, .atomButton, .planeButton{ background: #1f2227 !important; border: #1f2227 !important; }
@@ -3221,13 +3230,12 @@ input.disabled[type="text"]{ background-color: black; }
     text-align: center;
 }
 #appLogo img{ max-height:100%; max-width:100%; }
-.btn-action.disabled { cursor: not-allowed; }
+.btn-action.disabled { cursor: not-allowed;}
 .atomButton a:hover { background: #08090b !important; }
 .btn-tangent a:hover { background: #08090b !important; }
-.btn-tangent.active a { background: green !important; }
-.btn-tangent.disabled a { background: red !important; cursor: not-allowed;}
-.btn-tangent.blocked a { background: black !important; cursor: not-allowed;}
-.hiddenIcon{ display: none !important; }
+.btn-tangent.active a { background: #5B547B !important; }
+.btn-tangent.disabled a { background: #36383d!important; cursor: not-allowed;}
+.hiddenIcon {display: none !important;}
 
 #loading{
     display: block;
@@ -3239,3 +3247,6 @@ input.disabled[type="text"]{ background-color: black; }
     background-image: url(../Images/loader.gif);
     background-size: cover;
 }
+#scaleBox{ margin-bottom: 35px; }
+#scaleLabel{ width: 142px !important; }
+#scaleSlider{ margin-left: 32px !important; }

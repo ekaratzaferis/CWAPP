@@ -659,7 +659,7 @@
 																										<input type="text" name="txt_color_opacity" id="atomOpacity" class="form-control"/>
 																									</div>
 																								</div>
-																								<div class="slider-control slider-control-sm">
+																								<div class="slider-control slider-control-sml">
 																									<div class="slider" id="atomOpacitySlider"></div>
 																								</div>
 																							</div>
@@ -783,6 +783,47 @@
 												<div class="tab-blocks-container">
 													<div class="tab-block">
 														<div class="tab-boxes-container">
+                                                            
+                                                            <div class="tab-box lattice-parameters-box" id="scaleBox">
+                                                                <div class="box-body">
+																	<div class="row row-nopad">
+                                                                        <div class="col col-sm-12">
+																			<div class="slider-blocks-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
+                                                                                <div class="slider-block">
+                                                                                    <div class="block-title">
+                                                                                        <h3>Uniform Lattice Scaling</h3>
+                                                                                    </div>
+                                                                                    <div class="block-content">
+                                                                                        <div class="sliders-container">
+                                                                                            <div class="slider-group form-group theme-light">
+                                                                                                <div class="row row-10">
+
+                                                                                                    <div class="col col-sm-5">
+                                                                                                        <div class="slider-detail" id="scaleLabel">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label for="txt_lattice_scaling">volume %</label>
+                                                                                                            </div>
+                                                                                                            <div class="slider-input form-group-input">
+                                                                                                                <input id="cellVolume" type="text" name="txt_lattice_scaling" class="form-control"/>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col col-sm-7">
+                                                                                                        <div class="slider-control slider-control-sm" id="scaleSlider">
+                                                                                                            <div id="cellVolumeSlider" class="slider"></div>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 															
 															<div class="tab-box lattice-parameters-box">
 																<div class="box-body">
@@ -2411,6 +2452,12 @@
 			</article>
             
 		</section>
+        
+        <script>
+            window.onload = function(){
+                document.getElementById("progressBarWrapper").style.display = "none";
+            }
+        </script>
         
 	</body>
 </html>
