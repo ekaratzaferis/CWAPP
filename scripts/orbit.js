@@ -83,9 +83,9 @@ define([
     
     this.control.update(); 
      
-    var dx = Math.abs(this.camera.position.x - this.currPos.x ) ;
-    var dy = Math.abs(this.camera.position.y - this.currPos.y ) ;
-    var dz = Math.abs(this.camera.position.z - this.currPos.z ) ;
+    var dx = this.camera.position.x - this.currPos.x ;
+    var dy = this.camera.position.y - this.currPos.y ;
+    var dz = this.camera.position.z - this.currPos.z ;
  
     if(this.sync && (this.camName === 'cell' || this.camName ==='crystal') && (dx!=0) && (dy!=0) && (dz!=0) ) {  
       this.syncedCamera.position.x = this.camera.position.x ;

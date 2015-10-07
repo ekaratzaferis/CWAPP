@@ -17,13 +17,17 @@ define([
     this.lattice = lattice ;
     this.crystalHasChanged = true ;
     this.menu = menu;
+    this.state = 5;
   };
  
   GearTour.prototype.setState = function(state){
-    
+
     if(this.lattice.actualAtoms.length === 0) {
       return;
     }
+
+    this.state = state;
+
     this.menu.resetProgressBar( 'Processing...');
 
     switch(state){ 
@@ -32,13 +36,22 @@ define([
         this.setActualAtoms(false, 1);
         this.setMillers(false); 
         this.hideSubtractedCell();
+        this.menu.setTabDisable({
+          'latticeTab': true,
+          'motifLI':true,
+          'publicTab':true
+        });
       break;
-
-
+ 
       case 2:  
         this.setActualAtoms(false,2);
         this.setMillers(false); 
         this.hideSubtractedCell();
+        this.menu.setTabDisable({
+          'latticeTab': true,
+          'motifLI':true,
+          'publicTab':true
+        });
       break;
 
 
@@ -46,6 +59,11 @@ define([
         this.setActualAtoms(false,3); 
         this.setMillers(true);
         this.subtractedCell(); 
+        this.menu.setTabDisable({
+          'latticeTab': true,
+          'motifLI':true,
+          'publicTab':true
+        });
       break;
 
 
@@ -53,10 +71,20 @@ define([
         this.setActualAtoms(false, 4);
         this.setMillers(true); 
         this.hideSubtractedCell();
+        this.menu.setTabDisable({
+          'latticeTab': true,
+          'motifLI':true,
+          'publicTab':true
+        });
       break;
 
 
       case 5:  
+        this.menu.setTabDisable({
+          'latticeTab': false,
+          'motifLI':false,
+          'publicTab':false
+        });
         this.setActualAtoms(true, []);
         this.setMillers(true); 
         this.hideSubtractedCell();

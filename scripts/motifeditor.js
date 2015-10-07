@@ -122,7 +122,7 @@ define([
       
   };  
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem, restore) {
-     
+
     if(this.editorState.updated === true || !anglesScales) {
       return;
     }
@@ -188,8 +188,8 @@ define([
       10
     );
 
-    this.newSphere = a;
-    console.log(p);
+    this.newSphere = a;  
+   
     this.addAtomInCell( 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
@@ -221,7 +221,7 @@ define([
         "object3d" : {"position" : { "x": x, "y": y, "z": z, 
         clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); } } },
         getRadius: function() { return newAtomRadius; },
-        getID: function() { return "_0"; }, 
+        getID: function() { return "-"; }, 
         getTangency: function() { return true; },
         getName: function() { return elName; },
         changeColor: function(a) {}  
@@ -232,7 +232,7 @@ define([
     }
     if(_this.latticeSystem === 'cubic' && _this.motifsAtoms.length === 1 && _this.latticeType === 'primitive'){
       
-      if(_this.latticeType === 'primitive'){ 
+      if(_this.latticeType === 'primitive'){   
         _this.tangentToThis = _this.motifsAtoms[0] ;
         _this.setTangentAngle(  45, 54.7354 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0]);
     
@@ -358,18 +358,21 @@ define([
  
     this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
 
-    var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
-
-    this.padlockMode({padlock : bool}); 
-
-    this.menu.editMEInputs(
-      {
-       'padlock' : bool ,
-       'tangency' : bool 
-      }
-    ); 
-   
+    
+ 
     if(this.editorState.atomPosMode === 'relative'){ 
+
+      var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
+
+      this.padlockMode({padlock : bool}); 
+
+      this.menu.editMEInputs(
+        {
+         'padlock' : bool ,
+         'tangency' : bool 
+        }
+      );
+
       this.setAtomsTangency({tangency : false});
 
       this.menu.setSliderMin('atomPosX', 0);
@@ -388,18 +391,19 @@ define([
     else if(this.editorState.atomPosMode === 'absolute'){
       this.menu.setSliderMin('atomPosX', -20.0000000000);
       this.menu.setSliderMax('atomPosX', 20.0000000000);
-      this.menu.setSliderValue('atomPosX', 0);
+      this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x);
 
       this.menu.setSliderMin('atomPosY', -20.0000000000);
       this.menu.setSliderMax('atomPosY', 20.0000000000);
-      this.menu.setSliderValue('atomPosY', 0);
+      this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y);
 
       this.menu.setSliderMin('atomPosZ', -20.0000000000);
       this.menu.setSliderMax('atomPosZ', 20.0000000000);
-      this.menu.setSliderValue('atomPosZ', 0);
+      this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z);
 
-      this.removeFromUnitCell(this.newSphere.getID());
-      this.newSphere.destroy();
+      //this.removeFromUnitCell(this.newSphere.getID());
+      //this.newSphere.destroy();
+      /*
       if(!_.isUndefined( this.motifsAtoms[0])) {
         this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
         this.newSphere =  undefined;  
@@ -411,8 +415,8 @@ define([
         this.isEmpty = true ;  
       }
       this.dragMode = false;
-
-      PubSub.publish(events.EDITOR_STATE,{ 'state' : "initial"});
+      */
+      //PubSub.publish(events.EDITOR_STATE,{ 'state' : "initial"});
     }
      
   };
@@ -491,132 +495,133 @@ define([
       this.translateCellAtoms("y", vecHelper.y ,this.newSphere.getID());
       this.translateCellAtoms("z", vecHelper.z ,this.newSphere.getID());
     } 
- 
-    if(!_.isUndefined(param.atomPosX)){ 
-      if(this.mutex){ 
+    else{
+      if(!_.isUndefined(param.atomPosX)){ 
+        if(this.mutex){ 
 
-        this.mutex = false; 
-        
-        this.newSphere.object3d.position.x = parseFloat(  param.atomPosX ) ;  
-        
-        this.translateCellAtoms("x", sliderXVal, this.newSphere.getID());
+          this.mutex = false; 
+          
+          this.newSphere.object3d.position.x = parseFloat(  param.atomPosX ) ;  
+          
+          this.translateCellAtoms("x", sliderXVal, this.newSphere.getID());
 
-        if( this.motifsAtoms.length === 0 || doNotOverlap===false ){ 
-          this.mutex = true;   
-          this.configureCellPoints();
-          return ;
-        }
-
-        var zOffset = this.check("z");
-        var yOffset = this.check("y");
-        
-        if(yOffset.offset>=zOffset.offset){
-          if(yOffset.offset!=0 && zOffset.offset!=0){
-            this.newSphere.object3d.position.z += zOffset.offset ;
-            var newSliderVal = sliderZVal + zOffset.offset ;
-            this.menu.setSliderValue("atomPosZ", newSliderVal );
-            this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
+          if( this.motifsAtoms.length === 0 || doNotOverlap===false ){ 
+            this.mutex = true;   
+            this.configureCellPoints();
+            return ;
           }
-        }
-        else{ 
-          this.newSphere.object3d.position.y += yOffset.offset ;
-          var newSliderVal = sliderYVal + yOffset.offset ;
-          this.menu.setSliderValue("atomPosY", newSliderVal );
-          this.translateCellAtoms("y",this.newSphere.object3d.position.y + yOffset.offset,this.newSphere.getID());
-        }
 
-        this.mutex = true; 
-        
-      }
-    }
-    else if( !_.isUndefined(param.atomPosY) ) { 
-      if(this.mutex){
-        
-        this.mutex = false; 
-
-        this.newSphere.object3d.position.y = parseFloat(  param.atomPosY );
-        this.translateCellAtoms("y", sliderYVal ,this.newSphere.getID());
-
-        if(this.motifsAtoms.length===0 || doNotOverlap===false ){
-          this.mutex = true; 
-          this.configureCellPoints();
-          return ;
-        }
-
-        var zOffset = this.check("z");
-        var xOffset = this.check("x"); 
-
-        if(xOffset.offset>=zOffset.offset){
-          if(xOffset.offset!=0 && zOffset.offset!=0){  
-            this.newSphere.object3d.position.z += zOffset.offset ;
-            var newSliderVal = sliderZVal + zOffset.offset ;
-            this.menu.setSliderValue("atomPosZ", newSliderVal );
-            this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
-          } 
-        }
-        else{ 
-
-          this.newSphere.object3d.position.x += xOffset.offset ;
-           var newSliderVal = sliderXVal + xOffset.offset ;
-          this.menu.setSliderValue("atomPosX", newSliderVal );
-          this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
-        }
-
-        this.mutex = true;
-
-      }       
-    }
-    else if(!_.isUndefined(param.atomPosZ)){ 
-      if(this.mutex){
-        
-        this.mutex = false; 
-         
-        this.newSphere.object3d.position.z = parseFloat(  param.atomPosZ ); 
-        this.translateCellAtoms("z", sliderZVal ,this.newSphere.getID());
-
-        if(this.motifsAtoms.length === 0 || doNotOverlap===false ){
-          this.mutex = true; 
-          this.configureCellPoints(); 
-          return ;
-        }
-
-        var xOffset = this.check("x");
-        var yOffset = this.check("y");
-         
-        if(xOffset.offset>=yOffset.offset){
-          if(yOffset.offset!=0 && xOffset.offset!=0){ 
+          var zOffset = this.check("z");
+          var yOffset = this.check("y");
+          
+          if(yOffset.offset>=zOffset.offset){
+            if(yOffset.offset!=0 && zOffset.offset!=0){
+              this.newSphere.object3d.position.z += zOffset.offset ;
+              var newSliderVal = sliderZVal + zOffset.offset ;
+              this.menu.setSliderValue("atomPosZ", newSliderVal );
+              this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
+            }
+          }
+          else{ 
             this.newSphere.object3d.position.y += yOffset.offset ;
-             var newSliderVal = sliderYVal + yOffset.offset ;
+            var newSliderVal = sliderYVal + yOffset.offset ;
             this.menu.setSliderValue("atomPosY", newSliderVal );
             this.translateCellAtoms("y",this.newSphere.object3d.position.y + yOffset.offset,this.newSphere.getID());
           }
-        }
-        else{ 
-          this.newSphere.object3d.position.x += xOffset.offset ;
-          var newSliderVal = sliderXVal + xOffset.offset ;
-          this.menu.setSliderValue("atomPosX", newSliderVal );
-          this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
-        }
 
-        this.mutex = true; 
-
+          this.mutex = true; 
+          
+        }
       }
-    }  
+      else if( !_.isUndefined(param.atomPosY) ) { 
+        if(this.mutex){
+          
+          this.mutex = false; 
 
-    this.configureCellPoints();
-    
-    if(this.editorState.atomPosMode !== 'relative'){ 
-      this.menu.editMEInputs(
-        {   
-          'Aa' : this.cellParameters.scaleZ,
-          'Ab' : this.cellParameters.scaleX,
-          'Ac' : this.cellParameters.scaleY,
-          'cellAlpha' : this.cellParameters.alpha,
-          'cellBeta' : this.cellParameters.beta,
-          'cellGamma' : this.cellParameters.gamma
+          this.newSphere.object3d.position.y = parseFloat(  param.atomPosY );
+          this.translateCellAtoms("y", sliderYVal ,this.newSphere.getID());
+
+          if(this.motifsAtoms.length===0 || doNotOverlap===false ){
+            this.mutex = true; 
+            this.configureCellPoints();
+            return ;
+          }
+
+          var zOffset = this.check("z");
+          var xOffset = this.check("x"); 
+
+          if(xOffset.offset>=zOffset.offset){
+            if(xOffset.offset!=0 && zOffset.offset!=0){  
+              this.newSphere.object3d.position.z += zOffset.offset ;
+              var newSliderVal = sliderZVal + zOffset.offset ;
+              this.menu.setSliderValue("atomPosZ", newSliderVal );
+              this.translateCellAtoms("z",this.newSphere.object3d.position.z + zOffset.offset,this.newSphere.getID());
+            } 
+          }
+          else{ 
+
+            this.newSphere.object3d.position.x += xOffset.offset ;
+             var newSliderVal = sliderXVal + xOffset.offset ;
+            this.menu.setSliderValue("atomPosX", newSliderVal );
+            this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
+          }
+
+          this.mutex = true;
+
+        }       
+      }
+      else if(!_.isUndefined(param.atomPosZ)){ 
+        if(this.mutex){
+          
+          this.mutex = false; 
+           
+          this.newSphere.object3d.position.z = parseFloat(  param.atomPosZ ); 
+          this.translateCellAtoms("z", sliderZVal ,this.newSphere.getID());
+
+          if(this.motifsAtoms.length === 0 || doNotOverlap===false ){
+            this.mutex = true; 
+            this.configureCellPoints(); 
+            return ;
+          }
+
+          var xOffset = this.check("x");
+          var yOffset = this.check("y");
+           
+          if(xOffset.offset>=yOffset.offset){
+            if(yOffset.offset!=0 && xOffset.offset!=0){ 
+              this.newSphere.object3d.position.y += yOffset.offset ;
+               var newSliderVal = sliderYVal + yOffset.offset ;
+              this.menu.setSliderValue("atomPosY", newSliderVal );
+              this.translateCellAtoms("y",this.newSphere.object3d.position.y + yOffset.offset,this.newSphere.getID());
+            }
+          }
+          else{ 
+            this.newSphere.object3d.position.x += xOffset.offset ;
+            var newSliderVal = sliderXVal + xOffset.offset ;
+            this.menu.setSliderValue("atomPosX", newSliderVal );
+            this.translateCellAtoms("x",this.newSphere.object3d.position.x + xOffset.offset,this.newSphere.getID());
+          }
+
+          this.mutex = true; 
+
         }
-      ); 
+      }  
+
+       
+      if(this.editorState.atomPosMode !== 'relative'){ 
+        this.menu.editMEInputs(
+          {   
+            'Aa' : this.cellParameters.scaleZ,
+            'Ab' : this.cellParameters.scaleX,
+            'Ac' : this.cellParameters.scaleY,
+            'cellAlpha' : this.cellParameters.alpha,
+            'cellBeta' : this.cellParameters.beta,
+            'cellGamma' : this.cellParameters.gamma
+          }
+        ); 
+      }
     }
+    this.configureCellPoints();
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -777,7 +782,7 @@ define([
     if(this.cellMutex === false) {
       return ;
     }
-       
+    // fernando's request to change motif's atom postiion based on user cell lengths
     var moreCollisions = true;
 
     this.cellMutex = false ;
@@ -1522,8 +1527,7 @@ define([
    
     if(this.editorState.state === "creating"){ 
       switch(buttonClicked) { 
-        case "saveChanges":  
-          this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-light-gray'});
+        case "saveChanges":   
           this.motifsAtoms.push(this.newSphere); 
           this.updateAtomList(
             this.newSphere.object3d.position.clone(), 
@@ -1531,7 +1535,7 @@ define([
             this.newSphere.getRadius(), 
             this.newSphere.elementName,
             'edit',
-            'bg-light-gray',
+            'light-gray',
             this.newSphere.tangentParent
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1561,8 +1565,7 @@ define([
     }
     else if(this.editorState.state === "editing"){ 
       switch(buttonClicked) { 
-        case "saveChanges":
-          this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-light-gray'});
+        case "saveChanges": 
           this.motifsAtoms.push(this.newSphere);
           this.updateAtomList(
             this.newSphere.object3d.position.clone(), 
@@ -1570,7 +1573,7 @@ define([
             this.newSphere.getRadius(),  
             this.newSphere.elementName,
             'edit',
-            'bg-light-gray',
+            'light-gray',
             this.newSphere.tangentParent
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1654,6 +1657,8 @@ define([
             'atomOpacity' : true, 
             'rotAngleTheta' : true, 
             'rotAnglePhi' : true,
+            'atomPositioningXYZ' : true,
+            'atomPositioningABC' : true,
             'tangentR' : true,
             'Aa' : true,
             'Ab' : true,
@@ -1679,8 +1684,7 @@ define([
             'atomPosX' : arg.atomPos.x,
             'atomPosY' : arg.atomPos.y,
             'atomPosZ' : arg.atomPos.z,  
-            'atomColor' : arg.color, 
-            'atomPositioningXYZ' : true,
+            'atomColor' : arg.color,  
             'atomOpacity' : 10, 
             'tangentR' : 0,
             'atomName' : arg.atomName, 
@@ -1703,10 +1707,10 @@ define([
             'atomPosY' : false,
             'atomPosZ' : false,  
             'atomColor' : false, 
-            'atomPositioningXYZ' : false,
-            'atomPositioningABC' : false, 
             'atomOpacity' : false, 
             'tangentR' : false,  
+            'atomPositioningXYZ' : false,
+            'atomPositioningABC' : false,
             'Aa' : padD,
             'Ab' : padD,
             'Ac' : padD,
@@ -1730,8 +1734,7 @@ define([
             'atomPosX' : arg.atomPos.x,
             'atomPosY' : arg.atomPos.y,
             'atomPosZ' : arg.atomPos.z,  
-            'atomColor' : arg.color, 
-            'atomPositioningXYZ' : true, 
+            'atomColor' : arg.color,  
             'atomOpacity' : arg.opacity,
             'tangentR' : 0,
             'atomName' : arg.atomName
@@ -1748,9 +1751,7 @@ define([
             'atomPosX' : false,
             'atomPosY' : false,
             'atomPosZ' : false,  
-            'atomColor' : false, 
-            'atomPositioningXYZ' : false,
-            'atomPositioningABC' : false, 
+            'atomColor' : false,  
             'atomOpacity' : false, 
             'rotAngleTheta' : true, 
             'rotAnglePhi' : true,
@@ -2138,7 +2139,7 @@ define([
     else if(!this.dragMode){ 
       
       if(this.newSphere !== undefined){
-        this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-light-gray'});
+        this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'light-gray'});
       } 
       this.menu.highlightAtomEntry({id : which, color : 'bg-light-purple'}); 
 
@@ -2410,7 +2411,7 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
     var dimensions, identity ;
- 
+     
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
       dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
     } 
@@ -2444,8 +2445,8 @@ define([
         }
       }; 
       return o; 
-    }
- 
+    } 
+    
     if(_this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
@@ -2457,7 +2458,7 @@ define([
                   createHelperObj(
                     pos,
                     radius, 
-                    "_"+_x+_y+_z, 
+                    identity, 
                     pos.x + _this.unitCellPositions[identity].position.x, 
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z
@@ -2465,8 +2466,7 @@ define([
                 );  
              });
             });
-          });
-
+          }); 
           break;
         case "face":   
           _.times(2 , function(_x) {
@@ -2482,8 +2482,7 @@ define([
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z
                   )
-                );
-
+                ); 
               });
             });
           }); 
@@ -2666,15 +2665,18 @@ define([
         });
       });   
     }
-    
+ 
     this.reconstructCellPoints(restore);  
     
-    this.leastVolume();  
+    if(this.padlock === true || this.globalTangency === true){
 
-    this.cellVolume.xInitVal = this.cellParameters.scaleX;
-    this.cellVolume.yInitVal = this.cellParameters.scaleY;
-    this.cellVolume.zInitVal = this.cellParameters.scaleZ;
+      this.leastVolume();  
 
+      this.cellVolume.xInitVal = this.cellParameters.scaleX;
+      this.cellVolume.yInitVal = this.cellParameters.scaleY;
+      this.cellVolume.zInitVal = this.cellParameters.scaleZ;
+    }
+    
     if(_this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
@@ -2682,11 +2684,13 @@ define([
             _.times(2 , function(_y) {
               _.times(2 , function(_z) { 
                 identity = "_"+_x+_y+_z;
+                 
                 _this.unitCellAtoms.push(
-                  new UnitCellAtom( new THREE.Vector3(
-                    pos.x + _this.unitCellPositions[identity].position.x, 
-                    pos.y + _this.unitCellPositions[identity].position.y, 
-                    pos.z + _this.unitCellPositions[identity].position.z
+                  new UnitCellAtom( 
+                    new THREE.Vector3(
+                      pos.x + _this.unitCellPositions[identity].position.x, 
+                      pos.y + _this.unitCellPositions[identity].position.y, 
+                      pos.z + _this.unitCellPositions[identity].position.z
                     ), 
                     radius, 
                     color, 
@@ -2697,6 +2701,7 @@ define([
                     opacity
                   ) 
                 ); 
+
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("y",pos.y );
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("z",pos.z );
@@ -2974,7 +2979,7 @@ define([
               _.times(2 , function(_z) { 
                 for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {
                   if(!_.isUndefined(_this.unitCellAtoms[i].object3d) && _this.unitCellAtoms[i].latticeIndex === ("_"+_x+_y+_z)  && _this.unitCellAtoms[i].temp === undefined ){  
-                    var offset = _this.unitCellAtoms[i].getUserOffset(); 
+                    var offset = _this.unitCellAtoms[i].getUserOffset();  
                     _this.unitCellAtoms[i].object3d.position.set( 
                       _this.unitCellPositions["_"+_x+_y+_z].position.x + offset.x , 
                       _this.unitCellPositions["_"+_x+_y+_z].position.y + offset.y , 
@@ -3161,8 +3166,9 @@ define([
   }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
+
     _.each(_this.unitCellAtoms, function(a, k) {  
-      if(a.myID === id ){
+      if(a.getID() === id ){
         switch(axes) {
           case "x":  
             a.object3d.position.x = parseFloat(val) ;

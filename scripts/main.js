@@ -390,7 +390,7 @@ require([
     height = $(window).height() ;
     width = $('#app-container').width(); ;
  
-    gearTour.removeSubtractedCell();
+    
     //
 
     if($(this).attr('id') === "millerPI" ){ 
@@ -402,8 +402,8 @@ require([
       } 
     } 
  
-    if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice')){     
-       
+    if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && lattice.viewMode === 'Classic' && gearTour.state === 5){     
+      // gearTour.removeSubtractedCell();
       // invisible Navigators
       dollEditor.setVisibility(false); 
       hudCube.setVisibility(false);
@@ -420,11 +420,15 @@ require([
 
       // reset view mode
       if(lattice.viewMode !== 'Classic'){
-        lattice.changeView({'mode': 'Classic', 'reset': true});
+        //lattice.changeView({'mode': 'Classic', 'reset': true});
       }
     }
     else if($(this).attr('id') !== "motifLI" ){  
-      
+      // gearTour.removeSubtractedCell();
+      if((lattice.viewMode !== 'Classic' || gearTour.state !== 5) && ( $(this).attr('id') === "latticeTab" || $(this).attr('id') === "publicTab")){
+        return;
+      } 
+
       // visible Navigators
       dollEditor.setVisibility(true);
       hudCube.setVisibility(true);
@@ -442,8 +446,8 @@ require([
       crystalScreenEvents.state = 'default';
 
       // reset view mode
-      if(lattice.viewMode !== 'Classic'){
-        lattice.changeView({'mode': 'Classic', 'reset': true});
+      if(lattice.viewMode !== 'Classic' && $(this).attr('id') !== "visualTab" ){
+        //lattice.changeView({'mode': 'Classic', 'reset': true});
       }
     }
   });
@@ -473,6 +477,7 @@ require([
       }
       hudArrows.updateLengths(params);
       hudArrows.updateAngles(params); 
+      hudArrows.setVisibility();
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params);
 

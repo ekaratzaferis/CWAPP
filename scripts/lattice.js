@@ -78,8 +78,22 @@ define([
     var _this = this, i =0;
     this.viewMode = arg.mode ;
     
-    setTimeout( function(){_this.menu.resetProgressBar( 'Processing...');},0);
+    this.menu.resetProgressBar( 'Processing...'); 
 
+    if(this.viewMode !== 'Classic'){
+      this.menu.setTabDisable({
+        'latticeTab': true,
+        'motifLI':true,
+        'publicTab':true
+      });
+    }
+    else{
+      this.menu.setTabDisable({
+        'latticeTab': false, 
+        'motifLI':false,
+        'publicTab':false 
+      });
+    }
     if(this.actualAtoms.length!==0){
 
       var geometry = new THREE.Geometry();  
@@ -274,13 +288,12 @@ define([
   Lattice.prototype.toggleRadius = function(arg) {
     
     arg = arg.atomRadius;
-    
+     
     if(arg > 10) return ;
     var radius = arg/10;
-    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
-      this.actualAtoms[i].object3d.scale.x = radius ;
-      this.actualAtoms[i].object3d.scale.y = radius ;
-      this.actualAtoms[i].object3d.scale.z = radius ;
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
+      var ratio = this.actualAtoms[i].radius * radius ; 
+      this.actualAtoms[i].object3d.scale.set(ratio,ratio,ratio); 
     };  
   };
   Lattice.prototype.destroyPoints = function() {
@@ -773,6 +786,11 @@ define([
       _this.lattice = lattice; 
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ; 
+      if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){
+
+        _this.menu.toggleExtraParameter('i', 'block');
+        _this.menu.toggleExtraParameter('t', 'block');
+      }
       _this.update();
       PubSub.publish(events.LOAD, lattice); 
     }); 
