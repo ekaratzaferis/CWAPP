@@ -1092,15 +1092,18 @@ define([
                     event.preventDefault();
                     event.stopPropagation();
                     if (jQuery(this).attr('id') === 'motifLI'){
-                       if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
-                            $motifMEButton.tooltip('show');
-                            setTimeout(function(){
-                                $motifMEButton.tooltip('hide');
-                            }, 2500);
-                        }
-                        else {
-                            $motifMEButton.removeClass('disabled');
-                            _this.disableLatticeChoice(true);
+                        if ($motifMEButton.hasClass('blocked')) {
+                            if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
+                                $motifMEButton.tooltip('show');
+                                setTimeout(function(){
+                                    $motifMEButton.tooltip('hide');
+                                }, 2500);
+                            }
+                            else {
+                                $motifMEButton.removeClass('disabled');
+                                $motifMEButton.removeClass('blocked');
+                                _this.disableLatticeChoice(true);
+                            }
                         }
                     }
                     return false;
@@ -1287,6 +1290,10 @@ define([
                 stop: function(e,ui){ 
                     if (jQuery(ui.item).attr('role') !== 'empty'){
                         $atomTable.find('tbody').sortable("cancel");
+                    }
+                    else if (ui.item.prev('tr').length > 0){
+                        if (ui.item.prev('tr').attr('role') === 'parent') $atomTable.find('tbody').sortable("cancel");
+                        else if (ui.item.prev('tr').attr('role') === 'parentChild') $atomTable.find('tbody').sortable("cancel");
                     }
                 }
             });
@@ -1487,6 +1494,7 @@ define([
                     // Enable Motif Tab.
                     $motifMEButton.find('a').attr('href','#scrn_motif');
                     $motifMEButton.removeClass('disabled');
+                    $motifMEButton.removeClass('blocked');
                 }
             });   
             $periodicModal.on('click',function(){
@@ -1522,7 +1530,6 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-            
         
     /*$
     
@@ -1983,12 +1990,10 @@ define([
         };
         Menu.prototype.editSavedAtom = function(argument){
 
-            //bg-dark-gray bg-light-gray bg-lighter-gray bg-light-purple
-            var backColor = 'bg-light-gray';
+    
             //visible hidden
             var eyeButton = '';
             var visible = '';
-            //Lowercase
             var elementCode = '';
             //Capitalized
             var elementName;
@@ -1996,17 +2001,13 @@ define([
             var ref = this;
             var small = '';
             var role = 'empty';
-            var btnTangent = 'btn-tangent disabled';
             var chain = 'hiddenIcon chain';
-            var tangentTo = 'undefined';
+            var tangentTo = 'x';
 
             _.each(argument, function($parameter, k){
                 switch(k){
-                    case 'backColor':
-                        backColor = $parameter;
-                        break;
                     case 'visible':
-                        if ($parameter) { visible = 'visible'; eyeButton = visible; }
+                        if ($parameter === true) { visible = 'visible'; eyeButton = visible; }
                         else { visible = ''; eyeButton = 'hidden'; }   
                         break;
                     case 'elementCode':
@@ -2022,20 +2023,17 @@ define([
             });
             
             if (argument['action']==='edit') {
-                // Element serial size
-                if (($atomTable.find('#'+argument['id']).attr('role')) === 'child') small = 'small';
-                else if (($atomTable.find('#'+argument['id']).attr('role')) === 'parentChild') small = 'small';
-                // Button State
-                btnTangent = $atomTable.find('#'+argument['id']).find('.btn-tangent').attr('class');
-                // Chain
-                chain = $atomTable.find('#'+argument['id']).find('.chain').attr('class');
                 // Role
                 role = $atomTable.find('#'+argument['id']).attr('role');
-                
                 tangentTo = $atomTable.find('#'+argument['id']).attr('tangentTo');
+                // Element serial size
+                if (role === 'child') small = 'small';
+                else if (role === 'parentChild') small = 'small';
+                // Chain
+                chain = $atomTable.find('#'+argument['id']).find('.chain').attr('class');
             }
             
-            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" tangentTo="'+tangentTo+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnTangent+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" tangentTo="'+tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="btn-tangent"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2107,11 +2105,10 @@ define([
                     else{
                         parent.attr('role','child');
                         parent.find('.btn-tangent').addClass('active');
-                        parent.find('.btn-tangent').removeClass('disabled');
                     }
 
                     //UNLINK and hide icon
-                    current.removeAttr('tangentTo');
+                    current.attr('tangentTo','x');
                     current.find('.chain').addClass('hiddenIcon');
                     current.find('.element-serial').toggleClass('small');
                 }
@@ -2130,7 +2127,6 @@ define([
                             current.find('.btn-tangent').addClass('active');
 
                             // Make atom above a parent or parentChild
-                            above.find('.btn-tangent').addClass('disabled');
                             if (above.attr('role') === 'empty') above.attr('role','parent');
                             else above.attr('role','parentChild');
                             
