@@ -15,6 +15,7 @@ define([
      
     var _this = this; 
     this.radius = radius;  
+    this.fresh = true;  
     this.material;
     this.materialLetter;
     this.materials;

@@ -38,8 +38,7 @@ define([
     this.menu = menu ; 
     this.cellParameters = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
     this.initialLatticeParams = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
- 
-    this.motifParameters ;   
+    
     this.motifsAtoms = [];
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
@@ -357,8 +356,7 @@ define([
     var z = $('#Aa').val() ;
  
     this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
-
-    
+ 
  
     if(this.editorState.atomPosMode === 'relative'){ 
 
@@ -514,7 +512,7 @@ define([
           var zOffset = this.check("z");
           var yOffset = this.check("y");
           
-          if(yOffset.offset>=zOffset.offset){
+          if(yOffset.offset>=zOffset.offset){ 
             if(yOffset.offset!=0 && zOffset.offset!=0){
               this.newSphere.object3d.position.z += zOffset.offset ;
               var newSliderVal = sliderZVal + zOffset.offset ;
@@ -775,14 +773,77 @@ define([
 
     this.configureCellPoints('manual'); // final fix
  
-    this.boxHelper(); // remove after testing 
+    this.boxHelper();  
+  };
+  Motifeditor.prototype.scaleRelative = function(par){
+
+    var _this = this;
+
+    if(par.Aa != undefined){ 
+
+      _.each(_this.motifsAtoms, function(atom, r) { 
+        
+          var ratio = atom.object3d.position.z / _this.cellParameters.scaleZ ;
+          var newPos = ratio * parseFloat(par.Aa) ;
+          atom.object3d.position.z = newPos; 
+          _this.translateCellAtoms("z", newPos ,atom.getID());
+
+      }); 
+      if(this.newSphere !== undefined){
+        var ratio = this.newSphere.object3d.position.z / this.cellParameters.scaleZ ;
+        var newPos = ratio * parseFloat(par.Aa) ;
+        this.newSphere.object3d.position.z = newPos; 
+        this.translateCellAtoms("z", newPos ,this.newSphere.getID());
+      }
+
+      this.cellParameters.scaleZ = parseFloat( par.Aa ); 
+
+    }
+    else if(par.Ab != undefined){ 
+
+      _.each(_this.motifsAtoms, function(atom, r) { 
+        var ratio = atom.object3d.position.x / _this.cellParameters.scaleX ;
+        var newPos = ratio * parseFloat(par.Ab) ;
+        atom.object3d.position.x = newPos;
+        _this.translateCellAtoms("x", newPos ,atom.getID());
+      });
+      if(this.newSphere !== undefined){
+        var ratio = this.newSphere.object3d.position.x / this.cellParameters.scaleX ;
+        var newPos = ratio * parseFloat(par.Ab) ;
+        this.newSphere.object3d.position.x = newPos; 
+        this.translateCellAtoms("x", newPos ,this.newSphere.getID());
+      }
+
+      this.cellParameters.scaleX = parseFloat( par.Ab ); 
+    } 
+    else if(par.Ac != undefined){ 
+
+      _.each(_this.motifsAtoms, function(atom, r) { 
+        var ratio = atom.object3d.position.y / _this.cellParameters.scaleY ;
+        var newPos = ratio * parseFloat(par.Ac) ;
+        atom.object3d.position.y = newPos;
+        _this.translateCellAtoms("y", newPos ,atom.getID());
+      });
+      if(this.newSphere !== undefined){
+        var ratio = this.newSphere.object3d.position.y / this.cellParameters.scaleY ;
+        var newPos = ratio * parseFloat(par.Ac) ;
+        this.newSphere.object3d.position.y = newPos; 
+        this.translateCellAtoms("y", newPos ,this.newSphere.getID());
+      }
+      this.cellParameters.scaleY = parseFloat( par.Ac );  
+    }
+    this.configureCellPoints();
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
      
     if(this.cellMutex === false) {
       return ;
     }
-    // fernando's request to change motif's atom postiion based on user cell lengths
+    
+    if(this.editorState.atomPosMode === 'relative'){
+      this.scaleRelative(par);
+      return;
+    }
     var moreCollisions = true;
 
     this.cellMutex = false ;
@@ -1522,7 +1583,7 @@ define([
   };
   Motifeditor.prototype.submitAtom = function(parameters) {
     var _this = this;
-    this.motifParameters = parameters ;
+
     var buttonClicked = parameters.button;
    
     if(this.editorState.state === "creating"){ 
@@ -1535,7 +1596,7 @@ define([
             this.newSphere.getRadius(), 
             this.newSphere.elementName,
             'edit',
-            'light-gray',
+            'bg-light-gray',
             this.newSphere.tangentParent
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1573,7 +1634,7 @@ define([
             this.newSphere.getRadius(),  
             this.newSphere.elementName,
             'edit',
-            'light-gray',
+            'bg-light-gray',
             this.newSphere.tangentParent
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1616,8 +1677,7 @@ define([
     var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
      
     switch(arg.state) {
-      case "initial":  
-        
+      case "initial":   
         this.menu.disableMEButtons(
           {
             'atomPalette' : false,
@@ -1670,7 +1730,11 @@ define([
         ); 
         break;
       case "creating":
-       
+        if(this.editorState.atomPosMode === 'relative'){
+          arg.atomPos.x = arg.atomPos.x/ parseFloat($('#Ab').val());
+          arg.atomPos.y = arg.atomPos.y/ parseFloat($('#Ac').val());
+          arg.atomPos.z = arg.atomPos.z/ parseFloat($('#Aa').val());
+        } 
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -1721,6 +1785,11 @@ define([
         );  
         break;
       case "editing": 
+        if(this.editorState.atomPosMode === 'relative'){
+          arg.atomPos.x = arg.atomPos.x/ parseFloat($('#Ab').val());
+          arg.atomPos.y = arg.atomPos.y/ parseFloat($('#Ac').val());
+          arg.atomPos.z = arg.atomPos.z/ parseFloat($('#Aa').val());
+        } 
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -1788,6 +1857,18 @@ define([
     else{
       pos = (pos.x === '-') ? pos : (new THREE.Vector3(pos.x.toFixed(1),pos.y.toFixed(1),pos.z.toFixed(1)));
 
+      var atomPos;
+       
+      if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
+        var x = parseFloat($('#Ab').val()) ;
+        var y = parseFloat($('#Ac').val()) ;
+        var z = parseFloat($('#Aa').val()) ;
+        atomPos = '('+(pos.z/z).toFixed(1)+','+(pos.x/x).toFixed(1)+','+(pos.y/y).toFixed(1)+')';
+      }  
+      else{
+        atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
+      }
+       
       this.menu.editSavedAtom({
         'action':action,
         'id':id,
@@ -1795,7 +1876,7 @@ define([
         'visible':'true',
         'elementCode':name.toLowerCase(),
         'elementName':name,
-        'atomPos':'('+(pos.x)+','+(pos.y)+','+(pos.z)+')'
+        'atomPos': atomPos
       });
       if(chainLevel !== undefined){ 
         this.menu.hideChainIcon({id : id, hide : false});
@@ -2098,11 +2179,64 @@ define([
   }
   Motifeditor.prototype.selectAtom = function (which){ 
     var _this = this;
+    var doNotDestroy = false;
+    var x = $('#Ab').val() ;
+    var y = $('#Ac').val() ;
+    var z = $('#Aa').val() ;
+
+    this.menu.disableMEInputs(
+    { 
+      'atomPositioningXYZ' : false,
+      'atomPositioningABC' : false
+    });
 
     if(this.newSphere !== undefined && which === this.newSphere.getID()){
+      // case where user clicks ont he current atom
       return;
     }
-       
+    else if(this.newSphere !== undefined){
+      // case where the user clicks other atom without having saved last atom's changes
+      if(this.newSphere.fresh === true){
+        var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
+      
+        if (r !== true) {
+            return;
+        }  
+        this.updateAtomList(
+          undefined, 
+          this.newSphere.getID(), 
+          undefined, 
+          undefined,
+          'delete'
+        );
+      }
+      else if(this.newSphere.fresh === false){
+        var r = confirm("Your changes will be automatically saved. Are you sure you want to proceed?");
+        
+        if (r !== true) {
+            return;
+        }
+        else{ 
+          this.motifsAtoms.push(this.newSphere);
+          
+          this.updateAtomList(
+            this.newSphere.object3d.position.clone(), 
+            this.newSphere.getID(), 
+            this.newSphere.getRadius(),  
+            this.newSphere.elementName,
+            'edit',
+            'bg-light-gray',
+            this.newSphere.tangentParent
+          );
+           
+          this.newSphere.blinkMode(false);
+          this.newSphere = undefined ;
+          this.dragMode = false; 
+          doNotDestroy = true;
+        }
+      }
+    }
+      
     if(this.dragMode) { 
         
       this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });  
@@ -2121,6 +2255,7 @@ define([
       this.findAngles('x');
       this.findAngles('y');
       this.findAngles('z');
+
       var p = new THREE.Vector3(
         this.newSphere.object3d.position.x-_this.tangentToThis.object3d.position.x,
         this.newSphere.object3d.position.y-_this.tangentToThis.object3d.position.y,
@@ -2139,15 +2274,32 @@ define([
     else if(!this.dragMode){ 
       
       if(this.newSphere !== undefined){
-        this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'light-gray'});
+        this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-light-gray'});
       } 
       this.menu.highlightAtomEntry({id : which, color : 'bg-light-purple'}); 
 
       var name,color, opacity;
- 
-      if(!_.isUndefined(_this.newSphere)) _this.newSphere.destroy() ; 
+      
+      if(!_.isUndefined(this.newSphere) && doNotDestroy === false) { 
+        this.newSphere.destroy() ; 
+        this.removeFromUnitCell(this.newSphere.getID());
+        this.initVolumeState();
+      }
        
       this.newSphere = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });
+      this.newSphere.fresh = false;
+
+      if(this.editorState.atomPosMode === 'relative'){
+         
+        this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
+        this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y/y);
+        this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z/z);
+      }
+      else{
+        this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x);
+        this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y);
+        this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z);
+      }
        
       _.each(_this.motifsAtoms, function(atom, r) { 
         if(atom.getID() == which) { 
@@ -2926,7 +3078,7 @@ define([
       '-', 
       this.newSphere.elementName,
       'save',
-      'light-purple'
+      'bg-light-purple'
     );
   }; 
   Motifeditor.prototype.atomVisibility = function(arg){ 
@@ -4404,15 +4556,18 @@ define([
   }; 
 
   Motifeditor.prototype.initVolumeState = function(){   
-    this.leastVolume();
-       
-    $("#cellVolume").val(100);   
-    this.menu.setSliderValue("cellVolume", 100 ); 
-    this.menu.setSliderMin("cellVolume", 90 );
 
-    this.cellVolume.xInitVal = this.cellParameters.scaleX;
-    this.cellVolume.yInitVal = this.cellParameters.scaleY;
-    this.cellVolume.zInitVal = this.cellParameters.scaleZ;
+    if(this.padlock === true || this.globalTangency === true){
+      this.leastVolume();
+         
+      $("#cellVolume").val(100);   
+      this.menu.setSliderValue("cellVolume", 100 ); 
+      this.menu.setSliderMin("cellVolume", 90 );
+
+      this.cellVolume.xInitVal = this.cellParameters.scaleX;
+      this.cellVolume.yInitVal = this.cellParameters.scaleY;
+      this.cellVolume.zInitVal = this.cellParameters.scaleZ;
+    }
 
   };
   Motifeditor.prototype.removeFromUnitCell = function( id ){  //

@@ -119,7 +119,7 @@ define(function() {
     Uup: { radius : 0 ,color : "#FFFFF" },
     Lv : { radius : 0 ,color : "#FFFFF" },
     Uus: { radius : 0 ,color : "#FFFFF" },
-    Uuo: { radius : 0 ,color : "#FFFFF" },
+    Uuo: { radius : 0 ,color : "#FFFFF" }
      
 
 
