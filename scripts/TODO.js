@@ -1,4 +1,5 @@
-
+font na luthei universal.
+logo mporei na ginei centered at : this.containerHeight/8 
 disabled tangent icons
 getMEInputs('inputName')
 

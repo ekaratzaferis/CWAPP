@@ -75,8 +75,11 @@ define([
     });
   };
   Motifeditor.prototype.setDraggableAtom = function(arg){ 
+    
+    this.menu.rotAnglesSection(arg.dragMode);
+
     this.dragMode = arg.dragMode;
-    if(arg.dragMode) {   
+    if(arg.dragMode === true) {   
       if(!_.isUndefined(this.newSphere)) this.newSphere.blinkMode(true, '#58D3F7');  
       this.menu.disableMEInputs(
         {
@@ -88,7 +91,7 @@ define([
       this.selectAtom(arg.parentId);
       this.newSphere.tangentParent = arg.parentId ;
     }
-    else if(!arg.dragMode){ 
+    else if(arg.dragMode === false){ 
       this.menu.disableMEInputs(
         {
           'rotAngleTheta' : true,
@@ -1677,7 +1680,8 @@ define([
     var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
      
     switch(arg.state) {
-      case "initial":   
+      case "initial":  
+        this.menu.rotAnglesSection(false); 
         this.menu.disableMEButtons(
           {
             'atomPalette' : false,
@@ -1692,10 +1696,7 @@ define([
             'atomPosY' : 0,
             'atomPosZ' : 0,  
             'atomColor' : '#1F2227',  
-            'atomOpacity' : 10, 
-            'rotAngleTheta' : 0, 
-            'rotAnglePhi' : 0,
-            'tangentR' : 0,
+            'atomOpacity' : 10,
             'atomName' : '-',
             'rotAngleX' : '-',
             'rotAngleY' : '-',
@@ -1714,12 +1715,9 @@ define([
             'atomPosY' : true,
             'atomPosZ' : true,  
             'atomColor' : true,  
-            'atomOpacity' : true, 
-            'rotAngleTheta' : true, 
-            'rotAnglePhi' : true,
+            'atomOpacity' : true,  
             'atomPositioningXYZ' : true,
-            'atomPositioningABC' : true,
-            'tangentR' : true,
+            'atomPositioningABC' : true, 
             'Aa' : true,
             'Ab' : true,
             'Ac' : true,
@@ -1771,7 +1769,7 @@ define([
             'atomPosY' : false,
             'atomPosZ' : false,  
             'atomColor' : false, 
-            'atomOpacity' : false, 
+            'atomOpacity' : false,  
             'tangentR' : false,  
             'atomPositioningXYZ' : false,
             'atomPositioningABC' : false,
@@ -1821,10 +1819,7 @@ define([
             'atomPosY' : false,
             'atomPosZ' : false,  
             'atomColor' : false,  
-            'atomOpacity' : false, 
-            'rotAngleTheta' : true, 
-            'rotAnglePhi' : true,
-            'tangentR' : true,  
+            'atomOpacity' : false,  
             'Aa' : padD,
             'Ab' : padD,
             'Ac' : padD,
@@ -1871,13 +1866,15 @@ define([
        
       this.menu.editSavedAtom({
         'action':action,
-        'id':id,
-        'backColor':classColor,
-        'visible':'true',
+        'id':id, 
+        'visible':true,
         'elementCode':name.toLowerCase(),
         'elementName':name,
         'atomPos': atomPos
       });
+
+      this.menu.highlightAtomEntry({id : id, color : classColor});
+
       if(chainLevel !== undefined){ 
         this.menu.hideChainIcon({id : id, hide : false});
       }
@@ -2190,53 +2187,7 @@ define([
       'atomPositioningABC' : false
     });
 
-    if(this.newSphere !== undefined && which === this.newSphere.getID()){
-      // case where user clicks ont he current atom
-      return;
-    }
-    else if(this.newSphere !== undefined){
-      // case where the user clicks other atom without having saved last atom's changes
-      if(this.newSphere.fresh === true){
-        var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
-      
-        if (r !== true) {
-            return;
-        }  
-        this.updateAtomList(
-          undefined, 
-          this.newSphere.getID(), 
-          undefined, 
-          undefined,
-          'delete'
-        );
-      }
-      else if(this.newSphere.fresh === false){
-        var r = confirm("Your changes will be automatically saved. Are you sure you want to proceed?");
-        
-        if (r !== true) {
-            return;
-        }
-        else{ 
-          this.motifsAtoms.push(this.newSphere);
-          
-          this.updateAtomList(
-            this.newSphere.object3d.position.clone(), 
-            this.newSphere.getID(), 
-            this.newSphere.getRadius(),  
-            this.newSphere.elementName,
-            'edit',
-            'bg-light-gray',
-            this.newSphere.tangentParent
-          );
-           
-          this.newSphere.blinkMode(false);
-          this.newSphere = undefined ;
-          this.dragMode = false; 
-          doNotDestroy = true;
-        }
-      }
-    }
-      
+     
     if(this.dragMode) { 
         
       this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });  
@@ -2272,7 +2223,52 @@ define([
 
     }
     else if(!this.dragMode){ 
-      
+      if(this.newSphere !== undefined && which === this.newSphere.getID()){
+        // case where user clicks ont he current atom
+        return;
+      }
+      else if(this.newSphere !== undefined){
+        // case where the user clicks other atom without having saved last atom's changes
+        if(this.newSphere.fresh === true){
+          var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
+        
+          if (r !== true) {
+              return;
+          }  
+          this.updateAtomList(
+            undefined, 
+            this.newSphere.getID(), 
+            undefined, 
+            undefined,
+            'delete'
+          );
+        }
+        else if(this.newSphere.fresh === false){
+          var r = confirm("Your changes will be automatically saved. Are you sure you want to proceed?");
+          
+          if (r !== true) {
+              return;
+          }
+          else{ 
+            this.motifsAtoms.push(this.newSphere);
+            
+            this.updateAtomList(
+              this.newSphere.object3d.position.clone(), 
+              this.newSphere.getID(), 
+              this.newSphere.getRadius(),  
+              this.newSphere.elementName,
+              'edit',
+              'bg-light-gray',
+              this.newSphere.tangentParent
+            );
+             
+            this.newSphere.blinkMode(false);
+            this.newSphere = undefined ;
+            this.dragMode = false; 
+            doNotDestroy = true;
+          }
+        }
+      }
       if(this.newSphere !== undefined){
         this.menu.highlightAtomEntry({id : this.newSphere.getID(), color : 'bg-light-gray'});
       } 

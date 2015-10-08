@@ -1,5 +1,5 @@
  /*unused:false*/
-'use strict';
+'use strict'; 
 
 require.config({
   baseUrl: 'scripts',

@@ -25,23 +25,25 @@ define([
     this.scales = {'aScale':1, 'bScale':1, 'cScale':1 }; 
      
     // arrows
+    var arrowHcolor = '#5B3D82';
+
     var startA = new THREE.Vector3(0,0,0);
     var endA = new THREE.Vector3(0,0,this.arrowLength);
     var length =  startA.distanceTo(endA) ; 
     var directionA = new THREE.Vector3().subVectors( endA,  startA).normalize();
-    this.arrowA = new THREE.ArrowHelper( directionA , startA, length , "#045FB4" , undefined, this.arrowLength/10);
+    this.arrowA = new THREE.ArrowHelper( directionA , startA, length , arrowHcolor , undefined, this.arrowLength/10);
 
     var startB = new THREE.Vector3(0,0,0);
     var endB = new THREE.Vector3(this.arrowLength,0,0);
     var length =  startB.distanceTo(endB) ; 
     var directionB = new THREE.Vector3().subVectors( endB,  startB).normalize();
-    this.arrowB = new THREE.ArrowHelper( directionB , startB, length , "#FF0000" , undefined, this.arrowLength/10);
+    this.arrowB = new THREE.ArrowHelper( directionB , startB, length , arrowHcolor , undefined, this.arrowLength/10);
 
     var startC = new THREE.Vector3(0,0,0);
     var endC = new THREE.Vector3(0,this.arrowLength,0);
     var length =  startC.distanceTo(endC) ; 
     var directionC = new THREE.Vector3().subVectors( endC,  startC).normalize();
-    this.arrowC = new THREE.ArrowHelper( directionC, startC, length , "#04B404", undefined, this.arrowLength/10);
+    this.arrowC = new THREE.ArrowHelper( directionC, startC, length , arrowHcolor, undefined, this.arrowLength/10);
   
     scene.add( this.arrowC ); 
     scene.add( this.arrowB ); 
@@ -52,15 +54,42 @@ define([
 
     // a,b,c lengths
      
-    this.aScale = makeTextSprite( "  a : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:255, a:1.0},     fontColor: {r:0, g:128, b:255, a:1.0} } );
+    this.aScale = makeTextSprite( 
+        "  a : 1 ",  
+        { 
+            fontsize: this.arrowLength*7.5, 
+            fontface: "Arial", 
+            borderColor: {r:0, g:128, b:255, a:1.0},     
+            fontColor: {r:111, g:98, b:153, a:1.0},
+            fontStyle: ' ' 
+        } 
+    );
     this.aScale.position.set(0.5,-1.5,this.arrowLength+0.5);
     scene.add( this.aScale  );
     
-    this.bScale = makeTextSprite( "       b : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+    this.bScale = makeTextSprite( 
+        "       b : 1 ",  
+        { 
+            fontsize: this.arrowLength*7.5, 
+            fontface: "Arial", 
+            borderColor: {r:0, g:0, b:255, a:1.0},     
+            fontColor: {r:111, g:98, b:153, a:1.0},
+            fontStyle: ' '  
+        } 
+    );
     this.bScale.position.set(this.arrowLength+2,-1,0);
     scene.add( this.bScale  );
 
-    this.cScale = makeTextSprite( "       c : 1 ",  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:0, g:128, b:5, a:1.0} } );
+    this.cScale = makeTextSprite( 
+        "       c : 1 ",  
+        { 
+            fontsize: this.arrowLength*7.5, 
+            fontface: "Arial", 
+            borderColor: {r:0, g:0, b:255, a:1.0},     
+            fontColor: {r:111, g:98, b:153, a:1.0},
+            fontStyle: ' '  
+        } 
+    );
     this.cScale.position.set(0,this.arrowLength,0);
     scene.add( this.cScale  );
   
@@ -74,7 +103,7 @@ define([
         new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5          ),  
         medianAlpha,  
         new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5          ),  
-        0xEE8D05
+        0xDFD2DF
     );  
 
     var medianBeta = median( new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5), new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5) );
@@ -84,7 +113,7 @@ define([
         new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5),  
         medianBeta,  
         new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5),  
-        0xEFA0FEE 
+        0xDFD2DF 
     );
 
     var medianGamma = median( new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5), new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5) );
@@ -94,23 +123,42 @@ define([
         new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5          ),  
         medianGamma,  
         new THREE.Vector3(endB.x/5, endB.y/5, endB.z/5          ),  
-        0xF4D1AA
+        0xDFD2DF
     );
     scene.add(this.alphaCurve);
     scene.add(this.betaCurve);
     scene.add(this.gammaCurve);
 
-    this.beta = makeTextSprite( "    α : 90° ",  { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+    this.beta = makeTextSprite( 
+        "    α : 90° ",  
+        {   fontsize: this.arrowLength*7 , 
+            fontface: "Arial", 
+            borderColor: {r:0, g:0, b:255, a:1.0},     
+            fontColor: {r:223, g:210, b:223, a:1.0} 
+        } 
+    );
     this.beta.position.set(medianAlpha.x + 5, medianAlpha.y, medianAlpha.z);
     scene.add( this.beta );
     
-    this.alpha = makeTextSprite( "β : 90° ", 
-      { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+    this.alpha = makeTextSprite( 
+        "β : 90° ", 
+        {   fontsize: this.arrowLength*7 , 
+            fontface: "Arial", 
+            borderColor: {r:0, g:0, b:255, a:1.0},     
+            fontColor: {r:223, g:210, b:223, a:1.0} 
+        } 
+    );  
     this.alpha.position.set(medianBeta.x - 2, medianBeta.y - 0.5, medianBeta.z);
    scene.add( this.alpha );
     
-    this.gamma = makeTextSprite( "    γ : 90° ", 
-      { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+    this.gamma = makeTextSprite( 
+        "    γ : 90° ", 
+        {   fontsize: this.arrowLength*7 , 
+            fontface: "Arial", 
+            borderColor: {r:0, g:0, b:255, a:1.0}, 
+            fontColor: {r:223, g:210, b:223, a:1.0}  
+        } 
+    );
     this.gamma.position.set(medianGamma.x + 2.5, medianGamma.y - 3, medianGamma.z + 2);
     scene.add( this.gamma );
 
@@ -153,18 +201,42 @@ NavArrows.prototype.updateLengths = function(params) {
     // sprites
     if(params.scaleZ !== undefined)  { 
         this.scene.remove(this.aScale); 
-        this.aScale = makeTextSprite( "a : "+this.scales.aScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor:  {r:0, g:128, b:255, a:1.0},     fontColor:  {r:0, g:128, b:255, a:1.0} } ); 
+        this.aScale = makeTextSprite( 
+            "a : "+this.scales.aScale,  
+            {   fontsize: this.arrowLength*7.5, 
+                fontface: "Arial", 
+                borderColor:  {r:0, g:128, b:255, a:1.0},     
+                fontColor:  {r:111, g:98, b:153, a:1.0},
+                fontStyle: ' '  
+            } 
+        ); 
         scene.add( this.aScale  );
     }
     if(params.scaleX !== undefined)  { 
         this.scene.remove(this.bScale);
-        this.bScale = makeTextSprite( "  b : "+this.scales.bScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:5, b:5, a:1.0} } );
+        this.bScale = makeTextSprite( 
+            "  b : "+this.scales.bScale,  
+            {   fontsize: this.arrowLength*7.5, 
+                fontface: "Arial", 
+                borderColor: {r:0, g:0, b:255, a:1.0},     
+                fontColor: {r:111, g:98, b:153, a:1.0},
+                fontStyle: ' '  
+            } 
+        );
         this.bScale.position.set(this.arrowLength+0.5,-1,0);
         scene.add( this.bScale  );
     }
     if(params.scaleY !== undefined)  { 
         this.scene.remove(this.cScale);
-        this.cScale = makeTextSprite( "   c : "+this.scales.cScale,  { fontsize: this.arrowLength*7.5, fontface: "Arial", borderColor: {r:0, g:128, b:5, a:1.0},     fontColor: {r:0, g:128, b:5, a:1.0} } ); 
+        this.cScale = makeTextSprite( 
+            "   c : "+this.scales.cScale,  
+            {   fontsize: this.arrowLength*7.5, 
+                fontface: "Arial", 
+                borderColor: {r:0, g:128, b:5, a:1.0},     
+                fontColor: {r:111, g:98, b:153, a:1.0},
+                fontStyle: ' '  
+            } 
+        ); 
         scene.add( this.cScale  );
     }
 
@@ -220,7 +292,7 @@ NavArrows.prototype.updateAngles = function(angle) {
         new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5    ),  
         medianAlpha,  
         new THREE.Vector3(this.arrowLength/5, 0, 0        ),  
-        0xEE8D05
+        0xDFD2DF
     );  
     this.scene.add(this.alphaCurve);
 
@@ -233,7 +305,7 @@ NavArrows.prototype.updateAngles = function(angle) {
         new THREE.Vector3(endC.x/5, endC.y/5, endC.z/5),  
         medianBeta,  
         new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5),  
-        0xEFA0FEE 
+        0xDFD2DF 
     ); 
     this.scene.add(this.betaCurve); 
 
@@ -246,29 +318,47 @@ NavArrows.prototype.updateAngles = function(angle) {
         new THREE.Vector3(endA.x/5, endA.y/5, endA.z/5          ),  
         medianGamma,  
         new THREE.Vector3(this.arrowLength/5, 0, 0          ),  
-        0xF4D1AA
+        0xDFD2DF
     );  
     this.scene.add(this.gammaCurve);
 
     // sprites
     if(angle.beta !== undefined)  { 
         this.scene.remove(this.beta);
-        this.beta = makeTextSprite( "    α : "+_this.angles.beta+"° ", 
-          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:238, g:141, b:5, a:1.0} } );
+        this.beta = makeTextSprite( 
+            "    α : "+_this.angles.beta+"° ", 
+            {     fontsize: this.arrowLength*7 , 
+                fontface: "Arial", 
+                borderColor: {r:0, g:0, b:255, a:1.0},     
+                fontColor: {r:223, g:210, b:223, a:1.0} 
+            } 
+        );
         this.beta.position.set(medianAlpha.x + 5, medianAlpha.y  , medianAlpha.z);
         this.scene.add( this.beta );
     }
     if(angle.alpha  !== undefined)  {  
         this.scene.remove(this.alpha);
-        this.alpha = makeTextSprite( "β : "+_this.angles.alpha+"° ", 
-          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:0, g:0, b:255, a:1.0},     fontColor: {r:255, g:25, b:117, a:1.0} } );  
+        this.alpha = makeTextSprite( 
+            "β : "+_this.angles.alpha+"° ", 
+            {   fontsize: this.arrowLength*7 , 
+                fontface: "Arial", 
+                borderColor: {r:255, g:5, b:5, a:1.0},     
+                fontColor: {r:223, g:210, b:223, a:1.0} 
+            } 
+        );  
         this.alpha.position.set(medianBeta.x -2, medianBeta.y - 0.5 , medianBeta.z);
         this.scene.add( this.alpha );
     }
     if(angle.gamma !== undefined)  {  
         this.scene.remove(this.gamma);
-        this.gamma = makeTextSprite( "      γ : "+_this.angles.gamma+"° ", 
-          { fontsize: this.arrowLength*7 , fontface: "Arial", borderColor: {r:239, g:160, b:254, a:1.0}, fontColor: {r:244, g:209, b:170, a:1.0}  } );
+        this.gamma = makeTextSprite( 
+            "      γ : "+_this.angles.gamma+"° ", 
+            {   fontsize: this.arrowLength*7 , 
+                fontface: "Arial", 
+                borderColor: {r:255, g:5, b:5, a:1.0}, 
+                fontColor: {r:223, g:210, b:223, a:1.0}  
+            } 
+        );
         this.gamma.position.set(medianGamma.x + 2, medianGamma.y - 3, medianGamma.z + 2);
         this.scene.add( this.gamma ); 
     }
@@ -327,7 +417,8 @@ var transformationMatrix = function(parameter) {
   function makeTextSprite( message, parameters ) { 
     if ( parameters === undefined ) parameters = {};
     
-    var fontface = parameters.hasOwnProperty("fontface") ?  parameters["fontface"] : "Arial"; 
+    var fontStyle = parameters.hasOwnProperty("fontStyle") ?  parameters["fontStyle"] : " italic "; 
+    var fontface = parameters.hasOwnProperty("fontface") ?  parameters["fontface"] : "Open Sans"; // not found 
     var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 18; 
     var borderThickness = parameters.hasOwnProperty("borderThickness") ?   parameters["borderThickness"] : 0; 
     var borderColor = parameters.hasOwnProperty("borderColor") ? parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 }; 
@@ -335,7 +426,7 @@ var transformationMatrix = function(parameter) {
   
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
-    context.font = " bold " + fontsize + "px " + fontface;
+    context.font = fontStyle + fontsize + "px " + fontface;
       
     // get size data (height depends only on font size)
     var metrics = context.measureText( message );
