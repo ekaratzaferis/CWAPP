@@ -1040,18 +1040,6 @@ define([
             );
             
             // Handle Motif access without a chosen Lattice
-            $motifMEButton.on('click',function(){
-                if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
-                    $motifMEButton.tooltip('show');
-                    setTimeout(function(){
-                        $motifMEButton.tooltip('hide');
-                    }, 2500);
-                }
-                else {
-                    $motifMEButton.removeClass('disabled');
-                    _this.disableLatticeChoice(true);
-                }
-            });
             $controls_toggler.on('click', function(){
                 if ($main_controls.hasClass('controls-open'))
                 {
@@ -1096,9 +1084,28 @@ define([
                                 window.dispatchEvent(new Event('resize'));
                             });
                         }
-                    } 
+                    }
                 }
             });
+            $('[role=presentation]').click(function(event){
+                if (jQuery(this).hasClass('disabled') ) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (jQuery(this).attr('id') === 'motifLI'){
+                       if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
+                            $motifMEButton.tooltip('show');
+                            setTimeout(function(){
+                                $motifMEButton.tooltip('hide');
+                            }, 2500);
+                        }
+                        else {
+                            $motifMEButton.removeClass('disabled');
+                            _this.disableLatticeChoice(true);
+                        }
+                    }
+                    return false;
+                }
+             });    
 
             /* [Lattice Tab] */
             $latticePadlock.on('click', function() {
@@ -1515,6 +1522,7 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
+            
         
     /*$
     
@@ -1990,6 +1998,7 @@ define([
             var role = 'empty';
             var btnTangent = 'btn-tangent disabled';
             var chain = 'hiddenIcon chain';
+            var tangentTo = 'undefined';
 
             _.each(argument, function($parameter, k){
                 switch(k){
@@ -2022,9 +2031,11 @@ define([
                 chain = $atomTable.find('#'+argument['id']).find('.chain').attr('class');
                 // Role
                 role = $atomTable.find('#'+argument['id']).attr('role');
+                
+                tangentTo = $atomTable.find('#'+argument['id']).attr('tangentTo');
             }
             
-            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnTangent+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" tangentTo="'+tangentTo+'" class="'+backColor+'"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnTangent+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2074,7 +2085,7 @@ define([
             var above = current.prev('tr');
             var parent = $atomTable.find('#'+current.attr('tangentTo'));
             //UNLINK
-            if (current.find('.btn-tangent').hasClass('active')) {
+            if ( (current.find('.btn-tangent').hasClass('active')) && !(current.find('.btn-tangent').hasClass('disabled')) ) {
 
                 // If atom is a child
                 if (current.attr('role') === 'child') {
@@ -2125,8 +2136,8 @@ define([
                             
                             // Link Parent-Child and show icon
                             current.attr('tangentTo',above.attr('id'));
-                            current.find('.chain').removeClass('hiddenIcon');
                             current.find('.element-serial').toggleClass('small');
+                            current.find('.chain').removeClass('hiddenIcon');
 
                             // Publish Event
                             arg["dragMode"]= true;
@@ -2255,7 +2266,53 @@ define([
                 $elementContainer.find('a').attr('class',newAtom+' ch');
                 $elementContainer.find('a').html(newAtomName);
             }
-            $tangentR.val(argument['tangentR']);
+            if (argument['tangentR'] !== undefined){
+                $tangentR.val(argument['tangentR']);
+            }
+        }
+        Menu.prototype.getMEInputs = function(inputName){
+            _.each(atomParameters, function($parameter, k) {
+                if (inputName === k){
+                    switch(inputName){
+                        case 'atomColor': return atomParameters['atomColor'].spectrum('get');
+                        case 'atomOpacity': return atomParameters['atomOpacity'].val();
+                    }
+                }
+            });
+            _.each(motifInputs, function($parameter, k) {
+                if (inputName === k) return $parameter.val();
+            });
+            _.each(rotatingAngles, function($parameter, k) {
+                if (inputName === k) return $parameter.val();
+            });
+            _.each(rotLables, function($parameter, k) {
+                if (inputName === k) return $parameter.text();
+            });
+            _.each(cellManDimensions, function($parameter, k) {
+                if (inputName === k) return $parameter.val();
+            });
+             _.each(cellManAngles, function($parameter, k) {
+                if (inputName === k) return $parameter.val();
+            });
+            if (inputName === 'cellVolume'){ return $cellVolume.val(); }
+            if (inputName === 'atomPositioningXYZ'){
+                if ($atomPositioningXYZ.hasClass('buttonPressed')) return true;
+                else return false;
+            }
+            if (inputName === 'atomPositioningABC'){
+                if ($atomPositioningABC.hasClass('buttonPressed')) return true;
+                else return false;
+            }
+            if (inputName === 'padlock'){
+                if ($motifPadlock.find('a').hasClass('active')) return true;
+                else return false;
+            }
+            if (inputName === 'tangency'){
+                if ($tangency.parent().hasClass('purpleThemeActive')) return true;
+                else return false;
+            }
+            if (inputName === 'atomName'){ return $elementContainer.find('a').html(); }
+            if (inputName === 'tangentR'){ return $tangentR.val(); }
         }
         Menu.prototype.disableMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
