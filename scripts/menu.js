@@ -1558,7 +1558,7 @@ define([
     
         Menu.prototype.setTabDisable = function(argument){
             _.each(argument, function($parameter, k){
-                if ($parameter) {
+                if ($parameter === true) {
                     jQuery('#'+k).addClass('disabled');
                     jQuery('#'+k).find('a').removeAttr('href');
                 }
@@ -1585,7 +1585,7 @@ define([
             });
         }
         Menu.prototype.disableLatticeChoice = function(argument){
-            if (argument) {
+            if (argument === true) {
                 jQuery('#selected_lattice').addClass('disabled');
                 jQuery('#selected_lattice').parent().addClass('disabled');
             }
@@ -2134,7 +2134,7 @@ define([
                             current.attr('tangentTo',above.attr('id'));
                             current.find('.element-serial').toggleClass('small');
                             current.find('.chain').removeClass('hiddenIcon');
-
+                        
                             // Publish Event
                             arg["dragMode"]= true;
                             arg["parentId"]= above.attr('id');
@@ -2241,7 +2241,7 @@ define([
                 }
             }
             if (argument['padlock'] !== undefined){
-                if (argument['padlock']) {
+                if (argument['padlock'] === true) {
                     $motifPadlock.find('a').removeClass('active');
                     $motifPadlock.find('a').attr('aria-pressed','false');
                 }
@@ -2251,7 +2251,7 @@ define([
                 }
             }
             if (argument['tangency'] !== undefined){
-                if (argument['tangency']) $tangency.parent().addClass('purpleThemeActive');
+                if (argument['tangency'] === true) $tangency.parent().addClass('purpleThemeActive');
                 else $tangency.parent().removeClass('purpleThemeActive');
             }
             if (argument['atomName'] !== undefined){
@@ -2315,7 +2315,7 @@ define([
                 if (argument[k] !== undefined){
                     switch(k){
                         case 'atomColor':
-                            if(argument[k]) $parameter.spectrum("disable");
+                            if(argument[k] === true) $parameter.spectrum("disable");
                             else $parameter.spectrum("enable");
                             break;
 
@@ -2436,14 +2436,16 @@ define([
             if (argument['color'] === 'bg-light-purple') $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('disabled');
             else $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('disabled');
             $atomTable.find('#'+argument['id']).removeAttr('class');
-            $atomTable.find('#'+argument['id']).attr('class',argument['color']);
-            if ($atomTable.find('#'+argument['id']).attr('role') !== 'empty') jQuery('.tangent-properties-container').css('display','block');
-            else jQuery('.tangent-properties-container').css('display','none');
+            $atomTable.find('#'+argument['id']).attr('class',argument['color']); 
         };
+        Menu.prototype.rotAnglesSection = function(visibility){
+            if (visibility === true) jQuery('.tangent-properties-container').css('display','block');
+            else jQuery('.tangent-properties-container').css('display','none');
+        }
         Menu.prototype.disableRenderizationButtons = function(argument){
             _.each(renderizationMode, function($parameter, k) {
                 if (argument[k] !== undefined){
-                    if (argument[k]){
+                    if (argument[k] === true){
                         $parameter.css('background','white');
                         $parameter.removeClass('active');
                         $parameter.addClass('disabled');
@@ -2452,7 +2454,7 @@ define([
             });
         }
         Menu.prototype.setPlaneEntryVisibility = function(argument){
-            if(argument['action']){ 
+            if(argument['action'] === true){ 
                 $planesTable.find('#'+argument['id']).find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
                 $planesTable.find('#'+argument['id']).find('.planeButton').addClass('visible');
             }
@@ -2462,7 +2464,7 @@ define([
             }
         }
         Menu.prototype.setDirectionEntryVisibility = function(argument){
-            if(argument['action']) {
+            if(argument['action'] === true) {
                 $directionTable.find('#'+argument['id']).find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
                 $directionTable.find('#'+argument['id']).find('.directionButton').addClass('visible');
             }
@@ -2472,7 +2474,7 @@ define([
             }
         }
         Menu.prototype.setAtomEntryVisibility = function(argument){
-            if(argument['action']){ 
+            if(argument['action'] === true){ 
                 $atomTable.find('#'+argument['id']).find('.atomButton').find('img').attr('src','Images/visible-icon-sm.png');
                 $atomTable.find('#'+argument['id']).find('.atomButton').addClass('visible');
             }
@@ -2482,7 +2484,7 @@ define([
             }
         }
         Menu.prototype.hideChainIcon = function(argument){
-            if (argument['hide']) $atomTable.find('#'+argument['id']).find('.chain').addClass('hiddenIcon');
+            if (argument['hide'] === true) $atomTable.find('#'+argument['id']).find('.chain').addClass('hiddenIcon');
             else $atomTable.find('#'+argument['id']).find('.chain').removeClass('hiddenIcon');
         }
    
