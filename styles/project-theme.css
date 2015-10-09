@@ -1834,6 +1834,20 @@ width: 70px;}
             text-align: center;
             padding: 7px 10px;
             background: #15171b !important; }
+
+.motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr .chain a {
+                position: absolute;
+              display: block;
+              padding: 10px 10px;
+              padding-right: 20px;
+              font-family: "Open Sans", sans-serif;
+              font-size: 15px;
+              font-weight: 400;
+              line-height: 16px;
+              color: #fff; }
+.motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr .chain img {
+    height: 37px;
+             }
           .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .items-box .box-body .items-table-container table.items-table tbody tr .element {
             padding: 15px 10px;
             padding-top: 17px;
@@ -3223,9 +3237,9 @@ input.disabled[type="text"]{ background-color: black; }
 .directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; cursor: pointer !important;}
 #appLogo{
     position: fixed;
-    height: 15%;
+    height: 25%;
     width: 100%;
-    bottom: 1%;
+    bottom: 0;
     z-index: 12;
     text-align: center;
 }
@@ -3234,7 +3248,8 @@ input.disabled[type="text"]{ background-color: black; }
 .atomButton a:hover { background: #08090b !important; }
 .btn-tangent a:hover { background: #08090b !important; }
 .btn-tangent.active a { background: #5B547B !important; }
-.btn-tangent.disabled a { background: #36383d!important; cursor: not-allowed;}
+.btn-tangent.disabled a { background: #36383d!important; }
+.btn-tangent.blocked a {cursor: not-allowed;}
 .hiddenIcon {display: none !important;}
 
 #loading{
