@@ -3237,9 +3237,9 @@ input.disabled[type="text"]{ background-color: black; }
 .directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; cursor: pointer !important;}
 #appLogo{
     position: fixed;
-    height: 15%;
+    height: 25%;
     width: 100%;
-    bottom: 1%;
+    bottom: 0;
     z-index: 12;
     text-align: center;
 }
