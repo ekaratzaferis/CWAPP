@@ -17,7 +17,7 @@ define([
   function NavArrows( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.arrowLength =  (height+width)/350 ; 
+    this.arrowLength = 8;//=  (height+width)/350 ; 
     this.visibility = true;
 
     this.scene = scene ;

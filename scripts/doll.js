@@ -37,6 +37,7 @@ define([
     this.INTERSECTED;
     this.SELECTED;
     this.offset = new THREE.Vector3();
+    this.offset2 = new THREE.Vector3();
     this.crystalOrbit = crystalOrbit;
     this.atomUnderDoll ; 
     this.objsToIntersect = [];
@@ -355,8 +356,39 @@ define([
 
     this.enablemouseEvents = bool;
   }; 
+  Doll.prototype.findPlanePoint = function(pos){  
+    
+    raycaster.setFromCamera( pos, this.camera ); 
+    var intersects = raycaster.intersectObject( this.plane.object3d );
+    if(intersects.length > 0){ 
+      var intPos = intersects[ 0 ].point.sub( this.offset2 ) ;
+    }
+    else{
+      var intPos = new THREE.Vector2(0,0);
+    }
+ 
+    return intPos.x;
+  }; 
+
   Doll.prototype.rePosition = function(){  
-     
+    
+    var xFromCubeScaled = (($('#hudRendererCube').width()/2)/$('#app-container').width())*2 - 1;
+    var newX = this.findPlanePoint(new THREE.Vector2(xFromCubeScaled, 0 ));
+    this.dollHolder.position.x = newX;
+ 
+    this.doll.position.x = newX + 4 ; 
+    this.doll.position.y = 4; 
+    this.dollHolder.position.x = newX ;  ; 
+    this.gearBar.position.x = newX ;  ; 
+    this.gearBarSlider.position.x = newX ;  ;
+
+    for (var j = 0; j < this.levels.length ; j++) { 
+      this.levels[j].position.x = newX ;  ;
+      this.levelLabels[j].position.x = newX  + 7 ; 
+    };
+
+    // the below is deprecated
+    /*
     var frustum = new THREE.Frustum(); 
     var _this = this;
     this.camera.updateProjectionMatrix(); 
@@ -380,6 +412,7 @@ define([
         }; 
       } 
     }; 
+    */
 
   } 
   Doll.prototype.setAtomUnderDoll = function(atom){  
@@ -487,7 +520,7 @@ define([
       };
 
     }  
-  };
+  }; 
   Doll.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 
 

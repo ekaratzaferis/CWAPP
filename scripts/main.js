@@ -241,7 +241,7 @@ require([
   var fullScreen = new FullScreen();
 
   // resizer
-  var sceneResizer = new SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, displayFactor, dollEditor);
+  var sceneResizer = new SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, displayFactor, dollEditor, hudCube);
   $( document ).ready(function() {
     sceneResizer.resize( 'crystal');
   });
@@ -480,9 +480,28 @@ require([
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params);
-
+      motifEditor.submitAtom(atomParam); 
     }
-    motifEditor.submitAtom(atomParam);
+    else if(atomParam.button === 'deleteAtom'){
+      motifEditor.submitAtom(atomParam);
+      var parameters = motifEditor.getDimensions() ;
+      lattice.setMotif(motifEditor.getMotif(), parameters)  ;
+      
+      var params = {
+        alpha : parameters.alpha,
+        beta : parameters.beta,
+        gamma : parameters.gamma, 
+        scaleX : parameters.x,
+        scaleY : parameters.y,
+        scaleZ : parameters.z,
+      }
+      hudArrows.updateLengths(params);
+      hudArrows.updateAngles(params); 
+      hudArrows.setVisibility();
+      hudCube.updateAngles(params);
+      crystalScene.updateAbcAxes(params);
+    }
+    
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);

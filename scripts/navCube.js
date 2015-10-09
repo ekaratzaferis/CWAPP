@@ -18,7 +18,8 @@ var counter = 0;
 function NavCube( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.length =  (height + width)/250; 
+    this.length =  10.5;//(height + width)/250; 
+    console.log(this.length);
     this.scene = scene ;
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     this.cubeMats;

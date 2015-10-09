@@ -9,13 +9,14 @@ define([
   _
 ) { 
 
-  function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, hudDisplayFactor, dollEditor) {
+  function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, hudDisplayFactor, dollEditor, hudCube) {
     
     this.crystalRenderer = crystalRenderer ;
     this.unitCellRenderer = unitCellRenderer ;
     this.motifRenderer = motifRenderer ;   
     this.hudDisplayFactor = hudDisplayFactor ;  
     this.dollEditor = dollEditor ;  
+    this.hudCube = hudCube ;  
   };
 
   SceneResizer.prototype.resize = function(state){
@@ -147,7 +148,32 @@ define([
     
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
- 
+  SceneResizer.prototype.toScreenPositionCube = function(obj){ 
+    var camera = this.crystalRenderer.hudCameraCube;
+    var obj = this.hudCube.cube;
+
+    var vector = new THREE.Vector3();
+    var width = jQuery('#hudRendererCube').width() ;
+    var height = jQuery('#hudRendererCube').height() ; 
+
+    // TODO: need to update this when resize window
+    var widthHalf = 0.5*width;
+    var heightHalf = 0.5*height;
+    
+    obj.updateMatrixWorld();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(camera);
+    
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = - ( vector.y * heightHalf ) + heightHalf;
+    
+    return { 
+        x: vector.x,
+        y: vector.y
+    };
+
+  };
+
   return SceneResizer;
   
 });

@@ -1,4 +1,13 @@
-font na luthei universal.
+1. to tangent icon otan ginetai purple prepei na diathreitai otan stelnw thn editSavedAtoms. 
+2. otan exw ena saved atom pou einai tangent se ena allo 
+(dld exei paththei palia to tangent tou koumpi kai eiani purple-(oxi akoma alla etsi tha einai)) 
+parathrw oti otan ksanapataw to tangent koumpi de ginetai tpt
+3. ta rotAnglePhi kai rotAngleTheta na nai enabled by default
+4. thelw sinartisi pou na mporw na allazw to state (pruple, gray ktl) tou tangent icon manually
+5. ksexwristo kainourgio event gia to tangentR. de mou stelneis kati otan allazei twra ap oti vlepw.
+6. an mporeseis kane mou ta div/labels pou legame pou tha tous dinw position kai tha kanoun reposition to kentro tou ekei. 
+7. an mporeseis kai to logo alignment. to kentro tou prepei na vrisketai panta this.containerHeight/8 pixels panw apo to bottom
+
 logo mporei na ginei centered at : this.containerHeight/8 
 disabled tangent icons
 getMEInputs('inputName')

@@ -25,7 +25,9 @@ define([
     this.fogActive = false ;
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
-   
+    
+    this.lastFrustumPlane =0;
+
     this.movingCube = new THREE.Mesh( new THREE.BoxGeometry( 0.001, 0.001, 0.001 ), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
     this.movingCube.name = 'movingCube'; 
     this.movingCube.position.set(29.9, 29.9, 59.9);
@@ -156,15 +158,42 @@ define([
     this.bSprite.visible = false;
     this.cSprite.visible = false; 
      
-  };
+  }; 
+  Explorer.prototype.toScreenPosition = function(obj, camera){ 
+    var vector = new THREE.Vector3();
+    var width = jQuery('#app-container').width() ;
+    var height = jQuery(window).height() ; 
 
+    // TODO: need to update this when resize window
+    var widthHalf = 0.5*width;
+    var heightHalf = 0.5*height;
+    
+    obj.updateMatrixWorld();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(camera);
+    
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = - ( vector.y * heightHalf ) + heightHalf;
+    
+    return { 
+        x: vector.x,
+        y: vector.y
+    };
+
+  };
   Explorer.prototype.updateXYZlabelPos = function(camera){
 
     // positioning
-
+ 
     var frustum = new THREE.Frustum();
     frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
+    if(frustum.planes[0].constant === this.lastFrustumPlane){
+      return; // no need to run always
+    }
+
+    this.lastFrustumPlane = frustum.planes[0].constant;
+  
     var yValues = []; 
      
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 

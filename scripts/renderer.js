@@ -184,7 +184,7 @@ define([
         var tempW8 = 1.5 * this.containerWidth/this.displayFactor ;
         var tempH8 = 1.5 * this.containerHeight/this.displayFactor ;
 
-        this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight  ); 
+        this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight ); 
         this.renderer.setViewport(
           this.containerWidth-tempW8, 
           0, 
