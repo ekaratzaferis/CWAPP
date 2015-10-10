@@ -1,8 +1,7 @@
 'use strict';
 
 define(function() {
-  return {
-
+  return { 
     H  : { radius : 53, color : "#FFFFFF" },   
     He : { radius : 31 ,color : "#D9FFFF" }, 
     Li : { radius : 167 ,color : "#CC80FF" },

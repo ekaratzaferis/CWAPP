@@ -506,6 +506,9 @@ require([
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
   });
+  menu.onTangentR(function(message, arg) { 
+    motifEditor.changeTangentR(arg);
+  });
   menu.onAtomParameterChange(function(message, param) { 
     motifEditor.setAtomsParameter(param);
   });

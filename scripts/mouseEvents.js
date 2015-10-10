@@ -163,18 +163,18 @@ define([
       return ;
     } 
  
-    raycaster.setFromCamera( mouse, _this.camera );
+    raycaster.setFromCamera( mouse, this.camera );
      
     if ( this.SELECTED ) {
       
-      var intersects = raycaster.intersectObject( _this.plane.object3d );
-      var pos = intersects[ 0 ].point.sub( _this.offset ) ;
+      var intersects = raycaster.intersectObject( this.plane.object3d );
+      var pos = intersects[ 0 ].point.sub( this.offset ) ;
       this.SELECTED.position.copy( pos );
        
       if(pos.x>20 || pos.x<-20){  
         this.SELECTED.position.x = pos.x>0 ? 20 : -20 ;
         pos.x = pos.x>0 ? 20 : -20 ;
-        this.plane.object3d.position.copy( _this.INTERSECTED.position ); 
+        this.plane.object3d.position.copy( this.INTERSECTED.position ); 
         document.getElementById(_this.container).style.cursor = 'auto';
       }
       if(pos.y>20 || pos.y<-20){ 
@@ -205,7 +205,7 @@ define([
      
     var intersects = raycaster.intersectObjects( this.getAtoms() );
 
-    if ( intersects.length > 0 &&  intersects[0].object.parent.name ==='atom') {
+    if ( intersects.length > 0 &&  intersects[0].object.parent.name ==='atom' ) {
       
       if ( this.INTERSECTED != intersects[0].object.parent ) {
 
@@ -220,12 +220,11 @@ define([
     } 
     else {
 
-      this.INTERSECTED = null;
+      this.INTERSECTED = undefined ;
 
       document.getElementById(this.container).style.cursor = 'auto';
 
-    }
-    
+    } 
   }
   MouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this =this;
@@ -238,17 +237,18 @@ define([
 
     this.SELECTED = undefined;
     if(this.func === 'dragNdrop'){  
-      if( !(_this.motifEditor.editorState.state === 'initial') /*&& (_this.motifEditor.manualAabc === false) && (_this.motifEditor.manualAlphBtGmm === false)*/) {
+      
+      if( this.motifEditor.editorState.state !== 'initial' ) {
         raycaster.setFromCamera( mouse, _this.camera );
         
         var intersects = raycaster.intersectObjects( _this.getAtoms() );
 
         if ( intersects.length > 0 &&  intersects[0].object.parent.name === 'atom' && (intersects[0].object.parent.id === _this.motifEditor.newSphere.object3d.id) ) {
            
-          _this.SELECTED = intersects[0].object.parent; 
-          var intersects = raycaster.intersectObject( _this.plane.object3d ); 
-          _this.offset.copy( intersects[ 0 ].point ).sub( _this.plane.object3d.position ); 
-          document.getElementById(_this.container).style.cursor = 'none';
+          this.SELECTED = intersects[0].object.parent; 
+          var intersects = raycaster.intersectObject( this.plane.object3d ); 
+          this.offset.copy( intersects[ 0 ].point ).sub( this.plane.object3d.position ); 
+          document.getElementById(this.container).style.cursor = 'none';
 
         } 
       }
@@ -269,7 +269,7 @@ define([
       }
        
       raycaster.setFromCamera( mouse, _this.camera );
-       console.log(mouse);
+     
       var intersects = raycaster.intersectObjects( _this.getAtoms() );
        
       if ( intersects.length > 0  ) {
@@ -363,15 +363,13 @@ define([
 
     if(this.func === 'dragNdrop'){ 
 
-      if ( _this.INTERSECTED ) {
-
-        _this.plane.object3d.position.copy( _this.INTERSECTED.position );
-        _this.motifEditor.rotateAroundAtom(undefined, _this.INTERSECTED.id);
-        _this.SELECTED = null;
-         
+      if ( this.INTERSECTED !== undefined && this.motifEditor.editorState.state !== 'initial' ) {  
+        this.plane.object3d.position.copy( this.INTERSECTED.position );
+        this.motifEditor.rotateAroundAtom(undefined, this.INTERSECTED.id);
+        this.SELECTED = null; 
       }
 
-      document.getElementById(_this.container).style.cursor = 'auto';
+      document.getElementById(this.container).style.cursor = 'auto';
     }
 
   };

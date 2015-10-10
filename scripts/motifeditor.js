@@ -94,6 +94,7 @@ define([
         this.newSphere.blinkMode(false);
       }
       this.newSphere.tangentParent = undefined;
+      this.newSphere.tangentR = undefined; 
     } 
   };
   Motifeditor.prototype.updateCellDimens = function(arg){  
@@ -1728,10 +1729,10 @@ define([
             'atomColor' : true,  
             'atomOpacity' : true,  
             'atomPositioningXYZ' : true,
-            'atomPositioningABC' : true, 
-            'tangentR' :  false, 
+            'atomPositioningABC' : true,  
             'rotAngleTheta' :  false, 
             'rotAnglePhi' : false,
+            'tangentR' : false,
             'Aa' : true,
             'Ab' : true,
             'Ac' : true,
@@ -1956,7 +1957,7 @@ define([
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
     
-    if(!this.dragMode && this.globalTangency){
+    if(this.dragMode === false && this.globalTangency === true){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
         var calcDist = this.motifsAtoms[i].getRadius() + this.newSphere.getRadius();
@@ -1975,7 +1976,7 @@ define([
       var stillAtom = (colAtom) ? colAtom : this.tangentToThis;
       var movingPoint = new THREE.Vector3(movingAtom.object3d.position.x, movingAtom.object3d.position.y, movingAtom.object3d.position.z); 
       var stillPoint = new THREE.Vector3(stillAtom.object3d.position.x, stillAtom.object3d.position.y, stillAtom.object3d.position.z);
-      var tangentDistance = movingAtom.getRadius() + stillAtom.getRadius() ; 
+      var tangentDistance = this.newSphere.tangentR ; 
       var angle = _angle;
 
       if(axis === 'x'){
@@ -2099,15 +2100,9 @@ define([
       // for volume reduce functionality 
       this.initVolumeState();
 
-    }
+    } 
 
-    this.menu.editMEInputs(
-      { 
-        'tangentR' : tangentDistance  
-      }
-    );
-
-  };
+  }; 
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
     var _this = this ; 
      
@@ -2115,7 +2110,7 @@ define([
     var stillAtom = this.tangentToThis;
     var movingPoint = new THREE.Vector3(movingAtom.object3d.position.x, movingAtom.object3d.position.y, movingAtom.object3d.position.z); 
     var stillPoint = new THREE.Vector3(stillAtom.object3d.position.x, stillAtom.object3d.position.y, stillAtom.object3d.position.z);
-    var tangentDistance = movingAtom.getRadius() + stillAtom.getRadius() ; 
+    var tangentDistance = this.newSphere.tangentR ;  
     var angle;
 
     if(axis === 'x'){
@@ -2185,6 +2180,32 @@ define([
      
     return f;  
   }
+  Motifeditor.prototype.changeTangentR = function(arg){
+
+    var movingAtom = this.newSphere;
+    var stillAtom = this.tangentToThis;
+
+    if(arg === undefined || arg.tangentR === ''){
+      
+      var tangentDistance = movingAtom.getRadius() + stillAtom.getRadius() ; 
+      this.newSphere.tangentR = tangentDistance;
+      this.menu.editMEInputs(
+        { 
+          'tangentR' : tangentDistance  
+        }
+      );
+    }
+    else{ 
+      this.newSphere.tangentR = parseFloat(arg.tangentR);
+      this.rotateAroundAtom();
+      this.menu.editMEInputs(
+        { 
+          'tangentR' : arg.tangentR  
+        }
+      );
+    }
+     
+  };
   Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState){ 
     var _this = this;
     var doNotDestroy = false;
@@ -2199,14 +2220,17 @@ define([
     });
 
      
-    if(this.dragMode) { 
+    if(this.dragMode === true && doNotChangeState !== undefined) { 
         
       this.tangentToThis = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; }); 
-
+ 
       if(doNotRepos === undefined) {  
         var newPos = this.findNewAtomsPos(this.tangentToThis, this.newSphere.getRadius(), true);  
-         
+
         this.newSphere.object3d.position.set(newPos.x, newPos.y, newPos.z); 
+
+        this.changeTangentR();
+
         this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
         this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
         this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
@@ -2216,6 +2240,9 @@ define([
         this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
         this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
       }
+      else{
+        this.changeTangentR({'tangentR' : this.newSphere.tangentR});
+      } 
 
       this.findAngles('x');
       this.findAngles('y');
