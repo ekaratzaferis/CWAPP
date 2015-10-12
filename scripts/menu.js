@@ -211,6 +211,14 @@ define([
        Other Selectors
        --------------- */
     
+        // Labels
+        var $xLabel = jQuery('#xLabel');
+        var $yLabel = jQuery('#yLabel');
+        var $zLabel = jQuery('#zLabel');
+        var $aLabel = jQuery('#aLabel');
+        var $bLabel = jQuery('#bLabel');
+        var $cLabel = jQuery('#cLabel');
+    
         // All custom scrollbars
         var $scrollBars = jQuery('.custom_scrollbar');
     
@@ -262,6 +270,16 @@ define([
     /* ---------------------------
        Organize Elements to Arrays
        --------------------------- */
+    
+        // Labels
+        var labels = {
+            'xLabel': $xLabel,
+            'yLabel': $yLabel,
+            'zLabel': $zLabel,
+            'aLabel': $aLabel,
+            'bLabel': $bLabel,
+            'cLabel': $cLabel
+        };
     
         // Toggle Buttons [Menu Ribbon]
         var toggles = {
@@ -500,6 +518,11 @@ define([
             $appLogo.width(screen_width-x);
             
             $('.main-controls-inner').height(screen_height);
+        
+            _.each(labels, function($parameter,k){
+                $parameter.css('width',screen_width*0.02); 
+                $parameter.css('height',screen_height*0.02); 
+            });
         };
 
         function init_dimensions(){
@@ -551,7 +574,7 @@ define([
                 title: 'Help'
             });
             
-        
+            
         /* ------
            Inputs
            ------ */
@@ -944,6 +967,9 @@ define([
                 else argument['xyzAxes'] = false;
                 $xyzAxes.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.AXIS_MODE, argument);
+                $xLabel.toggleClass('hiddenLabel');
+                $yLabel.toggleClass('hiddenLabel');
+                $zLabel.toggleClass('hiddenLabel');
             });
             $abcAxes.click(function() {
                 argument = {};
@@ -951,6 +977,9 @@ define([
                 else argument['abcAxes'] = false;
                 $abcAxes.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.AXIS_MODE, argument);
+                $aLabel.toggleClass('hiddenLabel');
+                $bLabel.toggleClass('hiddenLabel');
+                $cLabel.toggleClass('hiddenLabel');
             });
             $edges.click(function() {
                 $edges.parent().toggleClass('lightThemeActive');
@@ -1556,6 +1585,37 @@ define([
        Prototypes - Editors
        -------------------- */
     
+        Menu.prototype.moveLabel = function(argument){
+            console.log(parseFloat($xLabel.css('width')));
+            var x = argument['xCoord'] - ( parseFloat($xLabel.css('width')) / 2);
+            var y = argument['yCoord'] - ( parseFloat($xLabel.css('height')) / 2);
+            switch(argument['label']){
+                case 'x':
+                    $xLabel.css('left',x);
+                    $xLabel.css('top',y);
+                    break;
+                case 'y':
+                    $yLabel.css('left',x);
+                    $yLabel.css('top',y);
+                    break;
+                case 'z':
+                    $zLabel.css('left',x);
+                    $zLabel.css('top',y);
+                    break;
+                case 'a':
+                    $aLabel.css('left',x);
+                    $aLabel.css('top',y);
+                    break;
+                case 'b':
+                    $bLabel.css('left',x);
+                    $bLabel.css('top',y);
+                    break;
+                case 'c':
+                    $cLabel.css('left',x);
+                    $cLabel.css('top',y);
+                    break;
+            }
+        };
         Menu.prototype.setTabDisable = function(argument){
             _.each(argument, function($parameter, k){
                 if ($parameter === true) {
@@ -2202,11 +2262,11 @@ define([
             if (argument['remove'] === true) current.remove();
             else{
                 current.attr('role','empty');
-                current.attr('tangentTo','x');
                 current.find('.chain').addClass('hiddenIcon');
                 current.find('.element-serial').removeClass('small');
                 current.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
                 if (above.attr('tangentTo') !== 'x') ref.tangent(current.attr('id'));
+                else current.attr('tangentTo','x');
             }
             jQuery('#tableAtom tbody tr').each(function(){
                 jQuery(this).find('.chain').find('a').html(ref.getChainLevel(jQuery(this).attr('id')));
