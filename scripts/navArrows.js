@@ -17,7 +17,7 @@ define([
   function NavArrows( scene, latticeParams) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
-    this.arrowLength = 8;//=  (height+width)/350 ; 
+    this.arrowLength = 8 ;  
     this.visibility = true;
 
     this.scene = scene ;
@@ -57,20 +57,20 @@ define([
     this.aScale = makeTextSprite( 
         "  a : 1 ",  
         { 
-            fontsize: this.arrowLength*7.5, 
+            fontsize: this.arrowLength*6, 
             fontface: "Arial", 
             borderColor: {r:0, g:128, b:255, a:1.0},     
             fontColor: {r:111, g:98, b:153, a:1.0},
             fontStyle: ' ' 
         } 
     );
-    this.aScale.position.set(0.5,-1.5,this.arrowLength+0.5);
+    this.aScale.position.set(1.5,-1.5,this.arrowLength+0.5);
     scene.add( this.aScale  );
     
     this.bScale = makeTextSprite( 
-        "       b : 1 ",  
+        "        b : 1 ",  
         { 
-            fontsize: this.arrowLength*7.5, 
+            fontsize: this.arrowLength*6, 
             fontface: "Arial", 
             borderColor: {r:0, g:0, b:255, a:1.0},     
             fontColor: {r:111, g:98, b:153, a:1.0},
@@ -83,14 +83,14 @@ define([
     this.cScale = makeTextSprite( 
         "       c : 1 ",  
         { 
-            fontsize: this.arrowLength*7.5, 
+            fontsize: this.arrowLength*6, 
             fontface: "Arial", 
             borderColor: {r:0, g:0, b:255, a:1.0},     
             fontColor: {r:111, g:98, b:153, a:1.0},
             fontStyle: ' '  
         } 
     );
-    this.cScale.position.set(0,this.arrowLength,0);
+    this.cScale.position.set(0,this.arrowLength-0.5,0);
     scene.add( this.cScale  );
   
     // angles and their curves
@@ -131,7 +131,7 @@ define([
 
     this.beta = makeTextSprite( 
         "    α : 90° ",  
-        {   fontsize: this.arrowLength*7 , 
+        {   fontsize: this.arrowLength*6 , 
             fontface: "Arial", 
             borderColor: {r:0, g:0, b:255, a:1.0},     
             fontColor: {r:223, g:210, b:223, a:1.0} 
@@ -142,7 +142,7 @@ define([
     
     this.alpha = makeTextSprite( 
         "β : 90° ", 
-        {   fontsize: this.arrowLength*7 , 
+        {   fontsize: this.arrowLength*6 , 
             fontface: "Arial", 
             borderColor: {r:0, g:0, b:255, a:1.0},     
             fontColor: {r:223, g:210, b:223, a:1.0} 
@@ -153,7 +153,7 @@ define([
     
     this.gamma = makeTextSprite( 
         "    γ : 90° ", 
-        {   fontsize: this.arrowLength*7 , 
+        {   fontsize: this.arrowLength*6 , 
             fontface: "Arial", 
             borderColor: {r:0, g:0, b:255, a:1.0}, 
             fontColor: {r:223, g:210, b:223, a:1.0}  
@@ -202,8 +202,8 @@ NavArrows.prototype.updateLengths = function(params) {
     if(params.scaleZ !== undefined)  { 
         this.scene.remove(this.aScale); 
         this.aScale = makeTextSprite( 
-            "a : "+this.scales.aScale,  
-            {   fontsize: this.arrowLength*7.5, 
+            "  a : "+this.scales.aScale,  
+            {   fontsize: this.arrowLength*6, 
                 fontface: "Arial", 
                 borderColor:  {r:0, g:128, b:255, a:1.0},     
                 fontColor:  {r:111, g:98, b:153, a:1.0},
@@ -215,8 +215,8 @@ NavArrows.prototype.updateLengths = function(params) {
     if(params.scaleX !== undefined)  { 
         this.scene.remove(this.bScale);
         this.bScale = makeTextSprite( 
-            "  b : "+this.scales.bScale,  
-            {   fontsize: this.arrowLength*7.5, 
+            "      b : "+this.scales.bScale,  
+            {   fontsize: this.arrowLength*6, 
                 fontface: "Arial", 
                 borderColor: {r:0, g:0, b:255, a:1.0},     
                 fontColor: {r:111, g:98, b:153, a:1.0},
@@ -229,14 +229,15 @@ NavArrows.prototype.updateLengths = function(params) {
     if(params.scaleY !== undefined)  { 
         this.scene.remove(this.cScale);
         this.cScale = makeTextSprite( 
-            "   c : "+this.scales.cScale,  
-            {   fontsize: this.arrowLength*7.5, 
+            "    c : "+this.scales.cScale,  
+            {   fontsize: this.arrowLength*6, 
                 fontface: "Arial", 
                 borderColor: {r:0, g:128, b:5, a:1.0},     
                 fontColor: {r:111, g:98, b:153, a:1.0},
                 fontStyle: ' '  
-            } 
-        ); 
+            }  
+        );  
+        this.cScale.position.set(0,8,0);
         scene.add( this.cScale  );
     }
 
@@ -277,9 +278,10 @@ NavArrows.prototype.updateAngles = function(angle) {
     var aPos = directionA.setLength(l);
 
     // sprites
-    this.aScale.position.set(aPos.x -0.5, aPos.y - 1.5, aPos.z + 1.5); // (0,-1.5,this.arrowLength+0.5);
-    this.cScale.position.set(cPos.x + 2, cPos.y , cPos.z );  
-    this.bScale.position.set(this.arrowLength+4.5,-1,0); 
+    this.aScale.position.set(aPos.x +2, aPos.y - 1.5, aPos.z + 1.5); // (0,-1.5,this.arrowLength+0.5);
+    
+    this.cScale.position.set(cPos.x + 2, cPos.y-0.5 , cPos.z );  
+    this.bScale.position.set(this.arrowLength + 3,-1,0); 
  
     // curves 
  
@@ -327,7 +329,7 @@ NavArrows.prototype.updateAngles = function(angle) {
         this.scene.remove(this.beta);
         this.beta = makeTextSprite( 
             "    α : "+_this.angles.beta+"° ", 
-            {     fontsize: this.arrowLength*7 , 
+            {     fontsize: this.arrowLength*6 , 
                 fontface: "Arial", 
                 borderColor: {r:0, g:0, b:255, a:1.0},     
                 fontColor: {r:223, g:210, b:223, a:1.0} 
@@ -340,7 +342,7 @@ NavArrows.prototype.updateAngles = function(angle) {
         this.scene.remove(this.alpha);
         this.alpha = makeTextSprite( 
             "β : "+_this.angles.alpha+"° ", 
-            {   fontsize: this.arrowLength*7 , 
+            {   fontsize: this.arrowLength*6 , 
                 fontface: "Arial", 
                 borderColor: {r:255, g:5, b:5, a:1.0},     
                 fontColor: {r:223, g:210, b:223, a:1.0} 
@@ -353,7 +355,7 @@ NavArrows.prototype.updateAngles = function(angle) {
         this.scene.remove(this.gamma);
         this.gamma = makeTextSprite( 
             "      γ : "+_this.angles.gamma+"° ", 
-            {   fontsize: this.arrowLength*7 , 
+            {   fontsize: this.arrowLength*6 , 
                 fontface: "Arial", 
                 borderColor: {r:255, g:5, b:5, a:1.0}, 
                 fontColor: {r:223, g:210, b:223, a:1.0}  

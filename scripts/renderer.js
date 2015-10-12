@@ -181,8 +181,8 @@ define([
       if(this.hudCamera !== undefined ){  
         this.renderer.clearDepth(); 
          
-        var tempW8 = 1.5 * this.containerWidth/this.displayFactor ;
-        var tempH8 = 1.5 * this.containerHeight/this.displayFactor ;
+        var tempW8 = 1.3 * this.containerWidth/this.displayFactor ;
+        var tempH8 = 1.3 * this.containerHeight/this.displayFactor ;
 
         this.hudCamera.aspect = (this.containerWidth) / (this.containerHeight ); 
         this.renderer.setViewport(
@@ -257,7 +257,7 @@ define([
           this.renderer.setClearColor( this.viewportColors[i] );
  
           camera.updateProjectionMatrix();
-          //camera.updateMatrixWorld();
+
           this.renderer.clear(); 
           this.renderer.render( this.scene, camera);
         }

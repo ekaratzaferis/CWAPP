@@ -287,10 +287,10 @@ define([
     var tempObj = _this.newSphere ;  
     this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
     if(_.isUndefined(_this.newSphere) ) {
-      this.newSphere = tempObj ; //in case he drags the _this.newSphere already
+      this.newSphere = tempObj ; //in case he drags the this.newSphere already
     }
     var theID = _this.newSphere.getID(); 
- 
+  
     if(axis === 'x' ) {   
       this.newSphere.object3d.position.set(pos.x,pos.y,this.newSphere.object3d.position.z);  
       this.translateCellAtoms("x",  pos.x , theID);  
@@ -342,7 +342,9 @@ define([
         'cellGamma' : this.cellParameters.gamma
       }
     ); 
-
+ 
+    this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
+     
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
         
@@ -460,7 +462,9 @@ define([
     var xFactor = 1;
     var yFactor = 1;
     var zFactor = 1;
- 
+     
+    this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
+      
     if(this.editorState.atomPosMode === 'relative'){  
       xFactor = parseFloat($("#Ab").val()) ;
       yFactor = parseFloat($("#Ac").val()) ;
@@ -1602,6 +1606,7 @@ define([
           break;
         case "deleteAtom": 
           this.removeFromUnitCell(this.newSphere.getID());
+          this.menu.breakChain({id : this.newSphere.getID(), remove : true});
           this.deleteTangentChild(this.newSphere.getID());
           this.newSphere.destroy();
           if(!_.isUndefined( this.motifsAtoms[0])) {   
@@ -1641,6 +1646,7 @@ define([
           break;
         case "deleteAtom":
           this.removeFromUnitCell(this.newSphere.getID());
+          this.menu.breakChain({id : this.newSphere.getID(), remove : true});
           this.newSphere.destroy();
           this.updateAtomList(
             undefined, 
