@@ -200,18 +200,21 @@ define([
       
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(1000,0,0) ) ) ; 
       if(py !== undefined) {
+        // x pragmatiki
         this.ySprite.position.x = py.x-1 ; 
         this.bSprite.position.x = py.x-1 ; 
       }
 
       var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,1000) ) ) ; 
       if(px !== undefined) {
+        // z pragmatiki
         this.xSprite.position.z = px.z-1 ; 
         this.aSprite.position.z = px.z-1 ; 
       }
 
       var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,1000,0) ) ) ; 
       if(pz !== undefined && pz.y < 50) {
+        // y pragmatiki
         yValues.push(pz.y) ;  
       }
   
