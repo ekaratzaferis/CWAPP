@@ -1213,6 +1213,10 @@ define([
                     argument = {};
                     argument["button"] = 'deleteAtom';
                 }
+                _this.breakChain({
+                    'id': $atomTable.find('.bg-light-purple').attr('id'),
+                    'remove': false
+                });
                 PubSub.publish(events.ATOM_SUBMIT, argument);
             });
             $atomPositioningXYZ.addClass('disabled');
@@ -2163,41 +2167,72 @@ define([
             var current = $atomTable.find('#'+argument['id']);
             var above = current.prev('tr');
             var below = current.next('tr');
+            var ref = this;
             
             // Handle parent
             if (current.attr('role') === 'child'){
-                if (above.attr('role') === 'parent') above.attr('role','empty');
+                if (above.attr('role') === 'parent') {
+                    above.attr('role','empty');
+                    above.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
+                }
                 else above.attr('role','child');
             }
             else if (current.attr('role') === 'parent'){
-                if (below.attr('role') === 'child'){
-                    below.attr('role','empty');
-                    below.attr('tangentTo','x');
-                }
-                else {
-                    below.attr('role','parent');
-                    below.attr('tangentTo','x');
-                }
-            }
-            else if (current.attr('role') === 'parentChild'){
-                if (above.attr('role') === 'parent') above.attr('role','empty');
-                else above.attr('role','child');
-                below.attr('tangentTo','x');
                 if (below.attr('role') === 'child') below.attr('role','empty');
                 else below.attr('role','parent');
+                below.attr('tangentTo','x');
+                below.find('.chain').addClass('hiddenIcon');
+                below.find('.element-serial').removeClass('small');
+                below.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
+            }
+            else if (current.attr('role') === 'parentChild'){
+                if (above.attr('role') === 'parent') {
+                    above.attr('role','empty');
+                    above.attr('tangentTo','x');
+                    above.find('.chain').addClass('hiddenIcon');
+                    above.find('.element-serial').removeClass('small');
+                    above.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
+                }
+                else above.attr('role','child');
+                if (below.attr('role') === 'child') below.attr('role','empty');
+                else below.attr('role','parent');
+                below.attr('tangentTo','x');
+                below.find('.chain').addClass('hiddenIcon');
+                below.find('.element-serial').removeClass('small');
+                below.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
             }
             
             // Update list
-            if (argument['remove'] === true) current.remove();
-            else {
-                var prevRole = current.attr('role');
-                current.attr('role','empty');
-                current.attr('tangentTo','x'); 
-                if (prevRole === 'parentChild'){
-                    $atomTable.find('tbody').append(current.html());
-                    current.remove();
+            var prevRole = current.attr('role');
+            current.attr('role','empty');
+            current.attr('tangentTo','x');
+            current.find('.chain').addClass('hiddenIcon');
+            current.find('.element-serial').removeClass('small');
+            current.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
+            if (prevRole === 'parentChild'){
+                var argument = {
+                    'action': 'save',
+                    'id': current.attr('id'),
+                    'visible': true,
+                    'elementCode':'',
+                    'elementName': current.find('.element').html(),
+                    'atomPos': current.find('.selectable a').html()
                 }
+                var elementCode = current.find('.element').attr('class');
+                ref.editSavedAtom({
+                    'action': 'delete',
+                    'id': current.attr('id')
+                });
+                ref.editSavedAtom(argument);
+                $atomTable.find('#'+argument['id']).find('.element').attr('class',elementCode);
+                current = $atomTable.find('#'+argument['id']);
             }
+            jQuery('#tableAtom tbody tr').each(function(){
+                jQuery(this).find('.chain').find('a').html(ref.getChainLevel(jQuery(this).attr('id')));
+            });
+            
+            // Remove if asked
+            if (argument['remove'] === true) current.remove();
         };
         Menu.prototype.editMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
