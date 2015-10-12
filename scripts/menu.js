@@ -1287,7 +1287,7 @@ define([
                 cursor: "move",
                 items: "> tr",
                 tolerance: "pointer",
-                stop: function(e,ui){ 
+                update: function(e,ui){ 
                     if (jQuery(ui.item).attr('role') !== 'empty'){
                         $atomTable.find('tbody').sortable("cancel");
                     }
@@ -2158,6 +2158,46 @@ define([
                     }
                 }
             }   
+        };
+        Menu.prototype.breakChain = function(argument){
+            var current = $atomTable.find('#'+argument['id']);
+            var above = current.prev('tr');
+            var below = current.next('tr');
+            
+            // Handle parent
+            if (current.attr('role') === 'child'){
+                if (above.attr('role') === 'parent') above.attr('role','empty');
+                else above.attr('role','child');
+            }
+            else if (current.attr('role') === 'parent'){
+                if (below.attr('role') === 'child'){
+                    below.attr('role','empty');
+                    below.attr('tangentTo','x');
+                }
+                else {
+                    below.attr('role','parent');
+                    below.attr('tangentTo','x');
+                }
+            }
+            else if (current.attr('role') === 'parentChild'){
+                if (above.attr('role') === 'parent') above.attr('role','empty');
+                else above.attr('role','child');
+                below.attr('tangentTo','x');
+                if (below.attr('role') === 'child') below.attr('role','empty');
+                else below.attr('role','parent');
+            }
+            
+            // Update list
+            if (argument['remove'] === true) current.remove();
+            else {
+                var prevRole = current.attr('role');
+                current.attr('role','empty');
+                current.attr('tangentTo','x'); 
+                if (prevRole === 'parentChild'){
+                    $atomTable.find('tbody').append(current.html());
+                    current.remove();
+                }
+            }
         };
         Menu.prototype.editMEInputs = function(argument){
             _.each(atomParameters, function($parameter, k) {
