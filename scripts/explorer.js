@@ -169,14 +169,14 @@ define([
     };
 
   };
-  Explorer.prototype.updateXYZlabelPos = function(camera){
+  Explorer.prototype.updateXYZlabelPos = function(camera,manuallyUpdate){
 
     // positioning
      
     var frustum = new THREE.Frustum();
     frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
-    if(frustum.planes[0].constant === this.lastFrustumPlane){
+    if(frustum.planes[0].constant === this.lastFrustumPlane && manuallyUpdate === undefined){
       return; // no need to run always
     }
 
@@ -190,9 +190,11 @@ define([
       
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(1000,0,0) ) ) ; 
       if(py !== undefined) { 
-        this.helper.position.set(py.x,0,0); 
-        var screenPosY = this.toScreenPosition(this.helper, camera); 
+        this.helper.position.set(py.x,0,0);
 
+        var screenPosY = this.toScreenPosition(this.helper, camera); 
+        console.log(py.x); 
+        console.log('frustum plane : '+i); 
         this.menu.moveLabel({
           'label':'y',
           'xCoord':screenPosY.x-10,
@@ -237,6 +239,8 @@ define([
 
     // abc axis
 
+    var minV = new THREE.Vector3(0,1000000,0);
+
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
         
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.bAxisLine.geometry.vertices[0].x,this.bAxisLine.geometry.vertices[0].y,this.bAxisLine.geometry.vertices[0].z) ) ) ; 
@@ -267,16 +271,18 @@ define([
       }
 
       var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.cAxisLine.geometry.vertices[0].x,this.cAxisLine.geometry.vertices[0].y,this.cAxisLine.geometry.vertices[0].z) ) ) ; 
+      
       if(pz !== undefined && pz.y < 50) {
-        // y pragmatiki
-        yValues.push(pz.y) ;  
+        // y pragmatiki 
+        if(pz.y < minV.y){ 
+          minV = pz.clone();
+        } 
       }
   
     };
-
-    var minV = _.min(yValues);
-    if(minV>0) {
-      this.helper.position.set(0,minV,0);
+ 
+    if(minV.y>0) {
+      this.helper.position.set(minV.x, minV.y, minV.z);
       var screenPosZ = this.toScreenPosition(this.helper, camera); 
       this.menu.moveLabel({
           'label':'c',
@@ -286,7 +292,7 @@ define([
     } 
   };
 
-  Explorer.prototype.updateAbcAxes = function(angle){
+  Explorer.prototype.updateAbcAxes = function(params, camera){
     var _this = this; 
 
     var bStart =  new THREE.Vector3( 1000,0,0 );
@@ -299,9 +305,9 @@ define([
     var cEnd =  new THREE.Vector3(0,-1000,0);
       
 
-    if(angle.alpha !== undefined) _this.angles.alpha = parseInt(angle.alpha);  
-    if(angle.beta  !== undefined) _this.angles.beta  = parseInt(angle.beta);  
-    if(angle.gamma !== undefined) _this.angles.gamma = parseInt(angle.gamma); 
+    if(params.alpha !== undefined) this.angles.alpha = parseInt(params.alpha);  
+    if(params.beta  !== undefined) this.angles.beta  = parseInt(params.beta);  
+    if(params.gamma !== undefined) this.angles.gamma = parseInt(params.gamma); 
 
     _.each(_this.angles, function(angle, a ) {
         var argument ={};
@@ -325,17 +331,9 @@ define([
     this.aAxisLine.geometry.verticesNeedUpdate = true;
     this.bAxisLine.geometry.verticesNeedUpdate = true;
     this.cAxisLine.geometry.verticesNeedUpdate = true;
+    
+    this.updateXYZlabelPos(camera, true);
 
-    var aLblPos = aStart.clone();  ;
-    var bLblPos = bStart.clone();  
-    var cLblPos = cStart.clone();  
-
-    aLblPos.setLength(7);
-    bLblPos.setLength(7);
-    cLblPos.setLength(7);
-    this.aSprite.position.set(aLblPos.x, aLblPos.y - 2, aLblPos.z) ;
-    this.bSprite.position.set(bLblPos.x, bLblPos.y - 1.5, bLblPos.z) ;
-    this.cSprite.position.set(cLblPos.x, cLblPos.y, cLblPos.z) ;  
   }
   Explorer.prototype.axisMode = function(arg){
     var _this = this;

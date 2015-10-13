@@ -107,7 +107,7 @@ require([
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;
-  
+
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
 
@@ -266,7 +266,7 @@ require([
     hudArrows.updateLengths(latticeParameters);
     hudArrows.updateAngles(latticeParameters);  
     hudCube.updateAngles(latticeParameters);
-    crystalScene.updateAbcAxes(latticeParameters);
+    crystalScene.updateAbcAxes(latticeParameters, crystalRenderer.getMainCamera());
   });
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) {
@@ -481,7 +481,7 @@ require([
       hudArrows.updateAngles(params); 
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
-      crystalScene.updateAbcAxes(params);
+      crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
       motifEditor.submitAtom(atomParam); 
     }
     else if(atomParam.button === 'deleteAtom'){
@@ -501,7 +501,7 @@ require([
       hudArrows.updateAngles(params); 
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
-      crystalScene.updateAbcAxes(params);
+      crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
     }
     
   });
@@ -654,7 +654,7 @@ require([
     hudArrows.updateAngles(params); 
     hudArrows.setVisibility();
     hudCube.updateAngles(params);
-    crystalScene.updateAbcAxes(params);
+    crystalScene.updateAbcAxes(params,crystalRenderer.getMainCamera());
 
   });
   menu.setDragMode(function(message, param){
