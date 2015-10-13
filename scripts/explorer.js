@@ -182,116 +182,177 @@ define([
 
     this.lastFrustumPlane = frustum.planes[0].constant;
   
-    var yValues = []; 
+    var yValue, xValue, zValue, tempX = 100000000000, tempY = 100000000000, tempZ = 100000000000; 
+    var aValue, bValue, cValue, tempA = 100000000000, tempB = 100000000000, tempC = 100000000000; 
     
     // xyz axis
-
+      
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
       
-      var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(1000,0,0) ) ) ; 
-      if(py !== undefined) { 
-        this.helper.position.set(py.x,0,0);
+      // x real
 
-        var screenPosY = this.toScreenPosition(this.helper, camera); 
-        console.log(py.x); 
-        console.log('frustum plane : '+i); 
-        this.menu.moveLabel({
-          'label':'y',
-          'xCoord':screenPosY.x-10,
-          'yCoord':screenPosY.y-20
-        });
-
+      // y
+      var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(100000,0,0)));
+       
+      if(py !== undefined && tempX > py.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempX = py.distanceTo(new THREE.Vector3(0,0,0));
+        xValue = py.clone(); 
       }
 
-      var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,1000) ) ) ; 
-      if(px !== undefined) {
-        // z pragmatiki
-        this.helper.position.set(0,0,px.z);
-        var screenPosX = this.toScreenPosition(this.helper, camera); 
-
-        this.menu.moveLabel({
-          'label':'x',
-          'xCoord':screenPosX.x+10,
-          'yCoord':screenPosX.y-20
-        });
-
+      // b
+      py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.bAxisLine.geometry.vertices[0].x,this.bAxisLine.geometry.vertices[0].y,this.bAxisLine.geometry.vertices[0].z) ) ) ; 
+       
+      if(py !== undefined && tempB > py.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempB = py.distanceTo(new THREE.Vector3(0,0,0));
+        bValue = py.clone(); 
       }
-
-      var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,1000,0) ) ) ; 
-      if(pz !== undefined && pz.y < 50) {
-        // y pragmatiki
-        yValues.push(pz.y) ;  
-      }
-  
-    };
-
-    var minV = _.min(yValues);
-    if(minV>0) {
-      this.helper.position.set(0,minV,0);
-      var screenPosZ = this.toScreenPosition(this.helper, camera); 
-      this.menu.moveLabel({
-          'label':'z',
-          'xCoord':screenPosZ.x+10,
-          'yCoord':screenPosZ.y+20
-        });
-    } 
-
-
-    // abc axis
-
-    var minV = new THREE.Vector3(0,1000000,0);
-
-    for (var i = frustum.planes.length - 1; i >= 0; i--) { 
-        
-      var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.bAxisLine.geometry.vertices[0].x,this.bAxisLine.geometry.vertices[0].y,this.bAxisLine.geometry.vertices[0].z) ) ) ; 
-      if(py !== undefined) { 
-        this.helper.position.set(py.x,py.y,py.z); 
-        var screenPosY = this.toScreenPosition(this.helper, camera); 
-
-        this.menu.moveLabel({
-          'label':'b',
-          'xCoord':screenPosY.x-15,
-          'yCoord':screenPosY.y-20
-        });
-
-      }
-
-      var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.aAxisLine.geometry.vertices[0].x,this.aAxisLine.geometry.vertices[0].y,this.aAxisLine.geometry.vertices[0].z) ) ) ; 
-      if(px !== undefined) {
-        // z pragmatiki
-        this.helper.position.set(px.x,px.y,px.z);
-        var screenPosX = this.toScreenPosition(this.helper, camera); 
-
-        this.menu.moveLabel({
-          'label':'a',
-          'xCoord':screenPosX.x+10,
-          'yCoord':screenPosX.y-20
-        });
-
-      }
-
-      var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.cAxisLine.geometry.vertices[0].x,this.cAxisLine.geometry.vertices[0].y,this.cAxisLine.geometry.vertices[0].z) ) ) ; 
-      
-      if(pz !== undefined && pz.y < 50) {
-        // y pragmatiki 
-        if(pz.y < minV.y){ 
-          minV = pz.clone();
-        } 
-      }
-  
-    };
  
-    if(minV.y>0) {
-      this.helper.position.set(minV.x, minV.y, minV.z);
-      var screenPosZ = this.toScreenPosition(this.helper, camera); 
+
+      // z real 
+
+      // x
+      var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,100000))) ;       
+      if(px !== undefined && tempZ > px.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempZ = px.distanceTo(new THREE.Vector3(0,0,0));
+        zValue = px.clone(); 
+      }
+      
+      // a
+      px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.aAxisLine.geometry.vertices[0].x,this.aAxisLine.geometry.vertices[0].y,this.aAxisLine.geometry.vertices[0].z) ) ) ;  
+       
+      if(px !== undefined && tempA > px.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempA = px.distanceTo(new THREE.Vector3(0,0,0));
+        aValue = px.clone(); 
+      }
+
+      // y real
+
+      // z
+      var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,100000,0))) ;       
+      if(pz !== undefined && tempY > pz.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempY = pz.distanceTo(new THREE.Vector3(0,0,0));
+        yValue = pz.clone(); 
+      }
+      
+      // c
+      pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.cAxisLine.geometry.vertices[0].x,this.cAxisLine.geometry.vertices[0].y,this.cAxisLine.geometry.vertices[0].z) ) ) ;  
+       
+      if(pz !== undefined && tempC > pz.distanceTo(new THREE.Vector3(0,0,0))) {  
+        tempC = pz.distanceTo(new THREE.Vector3(0,0,0));
+        cValue = pz.clone(); 
+      }
+    };
+
+    if(xValue !== undefined){ 
+      this.helper.position.set(xValue.x,0,0); 
+      var screenPosY = this.toScreenPosition(this.helper, camera);
+      screenPosY = this.beautifyPosition(screenPosY) ;  
       this.menu.moveLabel({
-          'label':'c',
-          'xCoord':screenPosZ.x+10,
-          'yCoord':screenPosZ.y+20
-        });
-    } 
+        'label':'y',
+        'xCoord':screenPosY.x,
+        'yCoord':screenPosY.y
+      }); 
+    }
+
+    if(bValue !== undefined){
+      this.helper.position.set(bValue.x,bValue.y,bValue.z); 
+      var screenPosB = this.toScreenPosition(this.helper, camera); 
+      screenPosB = this.beautifyPosition(screenPosB) ; 
+      this.menu.moveLabel({
+        'label':'b',
+        'xCoord':screenPosB.x,
+        'yCoord':screenPosB.y
+      });
+    }
+
+    //
+
+    if(zValue !== undefined){
+      this.helper.position.set(0,0,zValue.z);
+      var screenPosX = this.toScreenPosition(this.helper, camera);  
+      screenPosX = this.beautifyPosition(screenPosX) ;
+      this.menu.moveLabel({
+        'label':'x',
+        'xCoord':screenPosX.x,
+        'yCoord':screenPosX.y
+      });
+    }
+
+    if(aValue !== undefined){
+      this.helper.position.set(aValue.x,aValue.y,aValue.z); 
+      var screenPosA = this.toScreenPosition(this.helper, camera);
+      screenPosA = this.beautifyPosition(screenPosA) ;  
+      this.menu.moveLabel({
+        'label':'a',
+        'xCoord':screenPosA.x,
+        'yCoord':screenPosA.y
+      });
+    }
+
+    //
+
+    if(yValue !== undefined){
+      this.helper.position.set(0,yValue.y,0);
+      var screenPosY = this.toScreenPosition(this.helper, camera); 
+      screenPosY = this.beautifyPosition(screenPosY) ;
+      this.menu.moveLabel({
+        'label':'z',
+        'xCoord':screenPosY.x,
+        'yCoord':screenPosY.y
+      });
+    }
+    
+    if(cValue !== undefined){
+      this.helper.position.set(cValue.x,cValue.y,cValue.z); 
+      var screenPosC = this.toScreenPosition(this.helper, camera);  
+      screenPosC = this.beautifyPosition(screenPosC);
+      this.menu.moveLabel({
+        'label':'c',
+        'xCoord':screenPosC.x,
+        'yCoord':screenPosC.y
+      });
+    }
   };
 
+  Explorer.prototype.beautifyPosition = function(p){
+   
+    var width = jQuery('#app-container').width() ;
+    var height = jQuery(window).height() ; 
+
+    if(p.x <20){
+      p.x +=10;
+      p.y -=20;
+    }
+    else if(p.x > width - 20 ){
+      p.x -=10;
+      p.y -=20;
+    }
+    else if(p.y <20 ){
+      if(p.x > width/2.01){
+        p.x +=10;
+        p.y +=15;
+      }
+      else{
+        p.x -=10;
+        p.y +=15;
+      } 
+    }
+    else if(p.y > height - 20 ){
+      if(p.x > width/2){
+        p.x +=15;
+        p.y -=15;
+      }
+      else{
+        p.x -=15;
+        p.y -=15;
+      } 
+    }
+    else{
+      p.x =10000000000000;
+      p.y =10000000000000;
+    }
+    return p;
+  }
   Explorer.prototype.updateAbcAxes = function(params, camera){
     var _this = this; 
 

@@ -311,23 +311,15 @@ define([
     this.grids.splice(0);
   }; 
   Lattice.prototype.updateLatticeUI = function(params){
- 
+   
     this.menu.setSliderValue("beta", params.beta );
     this.menu.setSliderValue("gamma", params.gamma );
     this.menu.setSliderValue("alpha", params.alpha );
 
-    this.menu.setSliderValue("scaleX", params.scaleX );
-    this.menu.setSliderValue("scaleY", params.scaleY );
-    this.menu.setSliderValue("scaleZ", params.scaleZ );
-
-    $('#beta').val(params.scaleZ);
-    $('#alpha').val(params.scaleZ);
-    $('#gamma').val(params.scaleZ);
-
-    $('#scaleX').val(params.x);
-    $('#scaleY').val(params.y);
-    $('#scaleZ').val(params.z);
-
+    this.menu.setSliderValue("scaleX", params.x );
+    this.menu.setSliderValue("scaleY", params.y );
+    this.menu.setSliderValue("scaleZ", params.z );
+  
   }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
@@ -374,7 +366,7 @@ define([
       });
     });  
 
-    _this.updateLatticeTypeRL();
+    this.updateLatticeTypeRL();
      
   }; 
   Lattice.prototype.createGrid = function() {

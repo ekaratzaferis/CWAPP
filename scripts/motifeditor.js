@@ -152,7 +152,29 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
- 
+    
+    // late feature
+    if(this.newSphere !== undefined){
+      this.removeFromUnitCell(this.newSphere.getID());
+      this.menu.breakChain({id : this.newSphere.getID(), remove : true});
+      this.deleteTangentChild(this.newSphere.getID());
+      this.newSphere.destroy();
+      if(!_.isUndefined( this.motifsAtoms[0])) {   
+        this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
+        this.newSphere =  undefined; 
+        this.configureCellPoints();
+      }
+      else{
+        this.newSphere = undefined ;
+        this.lastSphereAdded = undefined ;
+        this.isEmpty = true ; 
+      }
+      
+      this.dragMode = false;  
+      this.initVolumeState(); 
+      
+    }
+
     var _this = this ;
     var radius = this.atomsData[params.element].radius/100
     var newId = "_"+produceUuid() ;
@@ -669,7 +691,7 @@ define([
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
     var val = parseFloat(par.cellVolume);
-
+    // console.log(par);
     var newVals = {x : 1, y : 1, z : 1};
     
     var _perc ;
