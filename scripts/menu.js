@@ -520,8 +520,8 @@ define([
             $('.main-controls-inner').height(screen_height);
         
             _.each(labels, function($parameter,k){
-                $parameter.css('width',screen_width*0.02); 
-                $parameter.css('height',screen_height*0.02); 
+                $parameter.css('width',screen_width*0.015); 
+                $parameter.css('height',screen_width*0.015); 
             });
         };
 
@@ -731,7 +731,7 @@ define([
             _.each(planeParameters, function($parameter, k) {
             
                 //Initialization
-                $planesTable.css('display','none');
+                $planesTable.hide();
                 switch(k)
                 {
                     case 'planeName':
@@ -745,7 +745,7 @@ define([
                         break;
 
                     case 'millerI':
-                        $parameter.parent().parent().parent().css('display','none');
+                        $parameter.parent().parent().parent().hide();
                         break;
 
                     case 'planeColor':
@@ -768,7 +768,7 @@ define([
             _.each(directionParameters, function($parameter, k) {
 
                 //Initialization
-                $directionTable.css('display','none');
+                $directionTable.hide();
                 switch(k)
                 {
                     case 'directionName':
@@ -782,7 +782,7 @@ define([
                         break;
 
                     case 'millerT':
-                        $parameter.parent().parent().parent().css('display','none');
+                        $parameter.parent().parent().parent().hide();
                         break;
 
                     case 'directionColor':
@@ -803,7 +803,7 @@ define([
             });
 
             /* [Motif Tab] */
-            $atomTable.css('display','none');
+            $atomTable.hide();
             _this.setSlider('atomOpacity',10,1,10,0.1,events.ATOM_PARAMETER_CHANGE);
             _.each(atomParameters, function($parameter, k ) {
                 switch(k){
@@ -1091,7 +1091,6 @@ define([
                     else {
                         openTab = jQuery('.main-tab-nav-container').find('li:not(.disabled):first');
                         openTab.find('a').trigger('click');
-                        console.log(openTab);
                     }
                 }
 
@@ -1388,16 +1387,16 @@ define([
                 jQuery(this).attr('contenteditable','true');
             });
             $notepad.resizable();
-            $notepad.find('.mCSB_1_scrollbar_vertical').css('display','block');
+            $notepad.find('.mCSB_1_scrollbar_vertical').show();
             $notepad.find('img').on('click',function(){
                 $notepadButton.parent().addClass('btn-light');
                 $notepadButton.parent().removeClass('btn-purple');
-                $notepad.css('display','none');
+                $notepad.hide('slow');
             });
             $notepadButton.on('click',function(){
                 $notepadButton.parent().removeClass('btn-light');
                 $notepadButton.parent().addClass('btn-purple');
-                $notepad.css('display','block');
+                $notepad.show('slow');
             });
             $crystalCamTargetOn.click(function(){
                 if( !($crystalCamTargetOn.hasClass('active')) ){ 
@@ -1553,12 +1552,13 @@ define([
                     });
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
                     PubSub.publish(events.ATOM_SELECTION, argument);
-                    $elementContainer.css('display','block');
+                    $elementContainer.show('slow');
                     $elementContainer.find('a').removeAttr('class');
                     $elementContainer.find('a').attr('class',selected.attr('class'));
                     $elementContainer.find('a').html(selected.html());
                 }
             });
+            
         
     /*$
     
@@ -1586,7 +1586,6 @@ define([
        -------------------- */
     
         Menu.prototype.moveLabel = function(argument){
-            console.log(parseFloat($xLabel.css('width')));
             var x = argument['xCoord'] - ( parseFloat($xLabel.css('width')) / 2);
             var y = argument['yCoord'] - ( parseFloat($xLabel.css('height')) / 2);
             switch(argument['label']){
@@ -1663,7 +1662,7 @@ define([
         };
         Menu.prototype.resetProgressBar = function(title) {
             $progressBarWrapper.find('.progressLabel').text(title);
-            $progressBarWrapper.css('display','block');
+            $progressBarWrapper.show();
         };
         Menu.prototype.progressBarFinish = function(){
             $progressBarWrapper.fadeOut('slow');
@@ -1903,8 +1902,8 @@ define([
                 });
             }
 
-            if ($planesTable.find('tr').length > 0) $planesTable.css('display','block');
-            else $planesTable.css('display','none');
+            if ($planesTable.find('tr').length > 0) $planesTable.show('slow');
+            else $planesTable.hide('slow');
         };
         Menu.prototype.editDirectionInputs = function(argument){
             _.each(directionParameters, function($parameter, k) {
@@ -2045,8 +2044,8 @@ define([
                     PubSub.publish(events.DIRECTION_VISIBILITY, arg);
                 });
             }
-            if ($directionTable.find('tr').length > 0) $directionTable.css('display','block');
-            else $directionTable.css('display','none');
+            if ($directionTable.find('tr').length > 0) $directionTable.show('slow');
+            else $directionTable.hide('slow');
         };
         Menu.prototype.editSavedAtom = function(argument){
     
@@ -2264,7 +2263,7 @@ define([
                 current.attr('role','empty');
                 current.find('.chain').addClass('hiddenIcon');
                 current.find('.element-serial').removeClass('small');
-                current.find('.btn-tangent').attr('class','btn-tangent disabled');
+                current.find('.btn-tangent').attr('class','btn-tangent');
                 current.attr('tangentTo','x');
                 if (above.attr('tangentTo') !== 'x') ref.tangent(current.attr('id'));
                 else current.find('.btn-tangent').addClass('blocked');
@@ -2386,7 +2385,7 @@ define([
             if (argument['atomName'] !== undefined){
                 var newAtom = 'ch-' + argument['atomName'];
                 var newAtomName = jQuery('.'+newAtom).html();
-                $elementContainer.css('display','block');
+                $elementContainer.show('slow');
                 $elementContainer.find('a').removeAttr('class');
                 $elementContainer.find('a').attr('class',newAtom+' ch');
                 $elementContainer.find('a').html(newAtomName);
@@ -2577,8 +2576,8 @@ define([
             $atomTable.find('#'+argument['id']).attr('class',argument['color']); 
         };
         Menu.prototype.rotAnglesSection = function(visibility){
-            if (visibility === true) jQuery('.tangent-properties-container').css('display','block');
-            else jQuery('.tangent-properties-container').css('display','none');
+            if (visibility === true) jQuery('.tangent-properties-container').show('slow');
+            else jQuery('.tangent-properties-container').hide('slow');
         };
         Menu.prototype.disableRenderizationButtons = function(argument){
             _.each(renderizationMode, function($parameter, k) {
