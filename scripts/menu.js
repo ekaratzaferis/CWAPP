@@ -2264,9 +2264,10 @@ define([
                 current.attr('role','empty');
                 current.find('.chain').addClass('hiddenIcon');
                 current.find('.element-serial').removeClass('small');
-                current.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
+                current.find('.btn-tangent').attr('class','btn-tangent disabled');
+                current.attr('tangentTo','x');
                 if (above.attr('tangentTo') !== 'x') ref.tangent(current.attr('id'));
-                else current.attr('tangentTo','x');
+                else current.find('.btn-tangent').addClass('blocked');
             }
             jQuery('#tableAtom tbody tr').each(function(){
                 jQuery(this).find('.chain').find('a').html(ref.getChainLevel(jQuery(this).attr('id')));
