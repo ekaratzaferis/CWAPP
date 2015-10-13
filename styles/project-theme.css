@@ -1025,13 +1025,13 @@ width: 70px;}
       -o-transition: none 0s linear;
       transition: none 0s linear; }
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block {
-        max-height: 143px;
+        max-height: 130px;
         padding: 10px;
         border: 3px solid transparent; }
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image {
           margin-bottom: 1px; }
 .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image img{
-                 height:70px !important;}
+                 height:65px !important;}
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title {
           margin-bottom: 0; }
           .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title h4 {
@@ -1040,7 +1040,7 @@ width: 70px;}
             border-radius: 4px;
             background-clip: padding-box;
             font-family: "Open Sans", sans-serif;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
             line-height: 14.4px;
             color: #25272b; }
@@ -3339,3 +3339,4 @@ input.disabled[type="text"]{ background-color: black; }
     height: 20px !important;
 }
 .conditions{ height: 20px !important; }
+.property-block {cursor: pointer;}
