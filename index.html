@@ -1856,14 +1856,23 @@
 									<table class="table table-bordered bravais-lattice-table">
 										<thead>
 											<tr>
-												<th>Triclinic</th>
-												<th>Cubic</th>
-												<th>Tetragonal</th>
-												<th>Orthorhombic</th>
-												<th>Rhombohedral</th>
-												<th>Hexagonal</th>
-												<th>Monoclinic</th>
+												<th>Triclinic </th>
+												<th>Cubic </th>
+												<th>Tetragonal </th>
+												<th>Orthorhombic </th>
+												<th>Rhombohedral </th>
+												<th>Hexagonal </th>
+												<th>Monoclinic </th>
 											</tr>
+                                            <tr class="conditions">
+                                                <th>α,β,γ ≠ 90°</th>
+                                                <th></th>
+                                                <th>a ≠ c</th>
+                                                <th>a ≠ b ≠ c</th>
+                                                <th>α = β = γ ≠ 90°</th>
+                                                <th></th>
+                                                <th>β ≠ 90°, α,γ = 90°</th>
+                                            </tr>
 										</thead>
 										<tbody>
 											<tr>
@@ -2403,7 +2412,7 @@
 							<div class="modal-footer">
 								<div class="btn-add modal-btn">
 									<div class="btn-wrapper" id="add_atom_btn" data-dismiss="modal">
-										<a class="btn btn-purple-light btn-block">Add</a>
+										<a class="btn btn-purple-light btn-block" id="periodicAdd">Add</a>
 									</div>
 								</div>
 							</div>
