@@ -226,6 +226,10 @@ define([
         var $planesTable = jQuery('#planesTable');
         var $directionTable = jQuery('#directionTable');
         var $atomTable = jQuery('#atomTable');
+        var $periodicTable = jQuery('.periodic-table');
+    
+        // Elements from periodic table
+        var $elements = jQuery('.property-block');
     
         // Toggable DIV from the Save Online Button [Public Library]
         var $alt_atn_target = jQuery('#cnt_alternate_actions');
@@ -1557,6 +1561,17 @@ define([
                     $elementContainer.find('a').attr('class',selected.attr('class'));
                     $elementContainer.find('a').html(selected.html());
                 }
+            });
+            
+            $periodicTable.find('.ch').click(function(){
+                var preview = jQuery('#tempSelection').find('p');
+                var caller = jQuery(this);
+                preview.html(caller.html());
+                preview.attr('class',caller.attr('class'));
+            });
+            $elements.click(function(){
+                $elements.removeClass('selected');
+                jQuery(this).addClass('selected');
             });
             
         
