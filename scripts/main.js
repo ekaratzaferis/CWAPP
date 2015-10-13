@@ -106,6 +106,8 @@ require([
   
   // Scenes 
   var crystalScene = Explorer.getInstance();
+  crystalScene.menu = menu;
+  
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
 

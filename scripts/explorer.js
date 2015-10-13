@@ -27,6 +27,7 @@ define([
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     
     this.lastFrustumPlane =0;
+    this.menu ;
 
     this.movingCube = new THREE.Mesh( new THREE.BoxGeometry( 0.001, 0.001, 0.001 ), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
     this.movingCube.name = 'movingCube'; 
@@ -119,24 +120,7 @@ define([
     this.cAxisLine.visible = false;
     this.bAxisLine.visible = false;
     this.aAxisLine.visible = false;
-
-    // xyz labels
-    var xtext = THREE.ImageUtils.loadTexture( "Images/xlabel.png" ); 
-    var xmat = new THREE.SpriteMaterial( { map: xtext, color: 0xffffff, fog: true } );
-    this.xSprite = new THREE.Sprite( xmat ); 
-    this.object3d.add( this.xSprite );
-    
-    var ytext = THREE.ImageUtils.loadTexture( "Images/ylabel.png" ); 
-    var ymat = new THREE.SpriteMaterial( { map: ytext, color: 0xffffff, fog: true } );
-    this.ySprite = new THREE.Sprite( ymat ); 
-    this.object3d.add( this.ySprite );
-
-    var ztext = THREE.ImageUtils.loadTexture( "Images/zlabel.png" ); 
-    var zmat = new THREE.SpriteMaterial( { map: ztext, color: 0xffffff, fog: true } );
-    this.zSprite = new THREE.Sprite( zmat ); 
-    this.zSprite.position.z = 0.01;
-    this.object3d.add( this.zSprite );
-
+ 
     // abc labels
     var ctext = THREE.ImageUtils.loadTexture( "Images/clabel.png" ); 
     var cmat = new THREE.SpriteMaterial( { map: ctext, color: 0xffffff, fog: true } );
@@ -157,6 +141,10 @@ define([
     this.aSprite.visible = false;
     this.bSprite.visible = false;
     this.cSprite.visible = false; 
+
+    this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
+    this.helper.visible = false;
+    this.object3d.add( this.helper );
      
   }; 
   Explorer.prototype.toScreenPosition = function(obj, camera){ 
@@ -184,7 +172,7 @@ define([
   Explorer.prototype.updateXYZlabelPos = function(camera){
 
     // positioning
- 
+     
     var frustum = new THREE.Frustum();
     frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
@@ -195,21 +183,36 @@ define([
     this.lastFrustumPlane = frustum.planes[0].constant;
   
     var yValues = []; 
-     
+    
+    // xyz axis
+
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
       
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(1000,0,0) ) ) ; 
-      if(py !== undefined) {
-        // x pragmatiki
-        this.ySprite.position.x = py.x-1 ; 
-        this.bSprite.position.x = py.x-1 ; 
+      if(py !== undefined) { 
+        this.helper.position.set(py.x,0,0); 
+        var screenPosY = this.toScreenPosition(this.helper, camera); 
+
+        this.menu.moveLabel({
+          'label':'y',
+          'xCoord':screenPosY.x-10,
+          'yCoord':screenPosY.y-20
+        });
+
       }
 
       var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,1000) ) ) ; 
       if(px !== undefined) {
         // z pragmatiki
-        this.xSprite.position.z = px.z-1 ; 
-        this.aSprite.position.z = px.z-1 ; 
+        this.helper.position.set(0,0,px.z);
+        var screenPosX = this.toScreenPosition(this.helper, camera); 
+
+        this.menu.moveLabel({
+          'label':'x',
+          'xCoord':screenPosX.x+10,
+          'yCoord':screenPosX.y-20
+        });
+
       }
 
       var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(0,1000,0) ) ) ; 
@@ -222,49 +225,65 @@ define([
 
     var minV = _.min(yValues);
     if(minV>0) {
-      this.zSprite.position.y = minV-1 ; 
-      this.cSprite.position.y = minV-1 ; 
-    }
+      this.helper.position.set(0,minV,0);
+      var screenPosZ = this.toScreenPosition(this.helper, camera); 
+      this.menu.moveLabel({
+          'label':'z',
+          'xCoord':screenPosZ.x+10,
+          'yCoord':screenPosZ.y+20
+        });
+    } 
 
-    var xDistToZero = this.xSprite.position.distanceTo(new THREE.Vector3(0,0,0)) ;
-    var yDistToZero = this.ySprite.position.distanceTo(new THREE.Vector3(0,0,0)) ;
-    var zDistToZero = this.zSprite.position.distanceTo(new THREE.Vector3(0,0,0)) ;
 
-    var xFactor = 0.975 * xDistToZero;
-    var yFactor = 0.975 * yDistToZero; 
+    // abc axis
 
-    this.xSprite.position.z = xFactor ; 
-    this.aSprite.position.z = xFactor ; 
-    this.ySprite.position.x = yFactor ; 
-    this.bSprite.position.x = yFactor ;  
+    for (var i = frustum.planes.length - 1; i >= 0; i--) { 
+        
+      var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.bAxisLine.geometry.vertices[0].x,this.bAxisLine.geometry.vertices[0].y,this.bAxisLine.geometry.vertices[0].z) ) ) ; 
+      if(py !== undefined) { 
+        this.helper.position.set(py.x,py.y,py.z); 
+        var screenPosY = this.toScreenPosition(this.helper, camera); 
 
-    if(zDistToZero>100){
-      this.zSprite.position.y = 0.1 * zDistToZero ;  
-      this.cSprite.position.y = 0.1 * zDistToZero ;  
-    }
-    else{
-      this.zSprite.position.y = 0.975 * zDistToZero ; 
-      this.cSprite.position.y = 0.975 * zDistToZero ; 
-    }
-      
-    // scaling
+        this.menu.moveLabel({
+          'label':'b',
+          'xCoord':screenPosY.x-15,
+          'yCoord':screenPosY.y-20
+        });
 
-    var xSc = camera.position.distanceTo(this.xSprite.position) ;
-    var ySc = camera.position.distanceTo(this.ySprite.position) ;
-    var zSc = camera.position.distanceTo(this.zSprite.position) ;
+      }
 
-    var xScalel = xSc/this.labelSize ;
-    var yScalel = ySc/this.labelSize ;
-    var zScalel = zSc/this.labelSize ;
+      var px = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.aAxisLine.geometry.vertices[0].x,this.aAxisLine.geometry.vertices[0].y,this.aAxisLine.geometry.vertices[0].z) ) ) ; 
+      if(px !== undefined) {
+        // z pragmatiki
+        this.helper.position.set(px.x,px.y,px.z);
+        var screenPosX = this.toScreenPosition(this.helper, camera); 
 
-    this.xSprite.scale.set(xScalel, xScalel, xScalel);
-    this.ySprite.scale.set(yScalel, yScalel, yScalel);
-    this.zSprite.scale.set(zScalel, zScalel, zScalel);
+        this.menu.moveLabel({
+          'label':'a',
+          'xCoord':screenPosX.x+10,
+          'yCoord':screenPosX.y-20
+        });
 
-    this.aSprite.scale.set(xScalel, xScalel, xScalel);
-    this.bSprite.scale.set(yScalel, yScalel, yScalel);
-    this.cSprite.scale.set(zScalel, zScalel, zScalel); 
+      }
 
+      var pz = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(this.cAxisLine.geometry.vertices[0].x,this.cAxisLine.geometry.vertices[0].y,this.cAxisLine.geometry.vertices[0].z) ) ) ; 
+      if(pz !== undefined && pz.y < 50) {
+        // y pragmatiki
+        yValues.push(pz.y) ;  
+      }
+  
+    };
+
+    var minV = _.min(yValues);
+    if(minV>0) {
+      this.helper.position.set(0,minV,0);
+      var screenPosZ = this.toScreenPosition(this.helper, camera); 
+      this.menu.moveLabel({
+          'label':'c',
+          'xCoord':screenPosZ.x+10,
+          'yCoord':screenPosZ.y+20
+        });
+    } 
   };
 
   Explorer.prototype.updateAbcAxes = function(angle){
@@ -322,38 +341,26 @@ define([
     var _this = this;
     if(arg.xyzAxes !== undefined){
       if(arg.xyzAxes){ 
-        _this.zAxisLine.visible = true;
-        _this.yAxisLine.visible = true;
-        _this.xAxisLine.visible = true;
-        _this.zSprite.visible = true;
-        _this.ySprite.visible = true;
-        _this.xSprite.visible = true;
+        this.zAxisLine.visible = true;
+        this.yAxisLine.visible = true;
+        this.xAxisLine.visible = true; 
       }
       else{
-        _this.zAxisLine.visible = false;
-        _this.yAxisLine.visible = false;
-        _this.xAxisLine.visible = false;
-        _this.zSprite.visible = false;
-        _this.ySprite.visible = false;
-        _this.xSprite.visible = false;
+        this.zAxisLine.visible = false;
+        this.yAxisLine.visible = false;
+        this.xAxisLine.visible = false; 
       }
     }
     else if(arg.abcAxes !== undefined){
       if(arg.abcAxes){ 
-        _this.aAxisLine.visible = true;
-        _this.bAxisLine.visible = true;
-        _this.cAxisLine.visible = true;
-        _this.aSprite.visible = true;
-        _this.bSprite.visible = true;
-        _this.cSprite.visible = true;
+        this.aAxisLine.visible = true;
+        this.bAxisLine.visible = true;
+        this.cAxisLine.visible = true; 
       }
       else{
-        _this.cAxisLine.visible = false;
-        _this.bAxisLine.visible = false;
-        _this.aAxisLine.visible = false;
-        _this.aSprite.visible = false;
-        _this.bSprite.visible = false;
-        _this.cSprite.visible = false;
+        this.cAxisLine.visible = false;
+        this.bAxisLine.visible = false;
+        this.aAxisLine.visible = false; 
       }
     }
 
