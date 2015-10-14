@@ -35,7 +35,9 @@ define([
     if( state === 'motifScreen'){
       this.crystalRenderer.changeContainerDimensions(width/2, height/2);
       this.unitCellRenderer.changeContainerDimensions(width/2, height/2);
-      this.motifRenderer.changeContainerDimensions(width, height/2);   
+      this.motifRenderer.changeContainerDimensions(width, height/2);
+        
+      $('.axesLabel').addClass('hiddenLabel');
         
       $('#appLogo').css('display','none');
       $('#lockCameraIcon').css('display','block');
@@ -93,7 +95,20 @@ define([
     else{
       this.crystalRenderer.changeContainerDimensions(width, height);
       this.unitCellRenderer.changeContainerDimensions(0,0);
-      this.motifRenderer.changeContainerDimensions(0,0); 
+      this.motifRenderer.changeContainerDimensions(0,0);
+        
+    
+      if ($('#xyzAxes').parent().hasClass('lightThemeActive')){
+          $('#xLabel').removeClass('hiddenLabel');
+          $('#yLabel').removeClass('hiddenLabel');
+          $('#zLabel').removeClass('hiddenLabel');
+      }
+      if ($('#abcAxes').parent().hasClass('lightThemeActive')){
+          $('#aLabel').removeClass('hiddenLabel');
+          $('#bLabel').removeClass('hiddenLabel');
+          $('#cLabel').removeClass('hiddenLabel');
+      }
+    
         
       $('#appLogo').css('display','block');
       $('#lockCameraIcon').css('display','none');

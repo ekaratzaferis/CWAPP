@@ -1211,6 +1211,20 @@ width: 70px;}
               -ms-transition: all 0.3s linear;
               -o-transition: all 0.3s linear;
               transition: all 0.3s linear; }
+.periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .select-atom-properties-container .element-properties-blocks .property-block.disabled .serial{
+            background: #878e9b;
+            cursor: not-allowed;
+               }
+.periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .select-atom-properties-container .element-properties-blocks .property-block.disabled .resolution{
+            background: #707680;
+            cursor: not-allowed;
+               }
+.periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .select-atom-properties-container .element-properties-blocks .property-block.disabled:hover .serial{
+            background: #878e9b;
+               }
+.periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .select-atom-properties-container .element-properties-blocks .property-block.disabled:hover .resolution{
+            background: #707680;
+               }
               .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .select-atom-properties-container .element-properties-blocks .property-block .serial p {
                 font-family: "Open Sans", sans-serif;
                 font-size: 20px;
@@ -3330,6 +3344,7 @@ input.disabled[type="text"]{ background-color: black; }
     -o-background-size: cover;
     background-size: cover;
 }
+#tempSelection p{ width: 75px !important;}
 #periodicAdd{ height: 70px !important; padding: 34px 15px !important; font-size: 20px !important; zoom: 70%;}
 #add_atom_btn{ margin-top: 20px !important;}
 .conditions th{ 
@@ -3340,3 +3355,4 @@ input.disabled[type="text"]{ background-color: black; }
 }
 .conditions{ height: 20px !important; }
 .property-block {cursor: pointer;}
+#cellVolume{ padding-left: 8px; padding-right: 8px;}
