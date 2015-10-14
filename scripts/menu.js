@@ -228,8 +228,8 @@ define([
         var $atomTable = jQuery('#atomTable');
         var $periodicTable = jQuery('.periodic-table');
     
-        // Elements from periodic table
-        var $elements = jQuery('.property-block');
+        // Ionic values from periodic table
+        var $ionicValues = jQuery('.property-block');
     
         // Toggable DIV from the Save Online Button [Public Library]
         var $alt_atn_target = jQuery('#cnt_alternate_actions');
@@ -543,7 +543,12 @@ define([
             // Local Variables
             var _this = this;
             var argument;
-        
+            
+            // Atom Ionic Values
+            require(['atoms'], function(atomsInfo) {
+              _this.atomsData = atomsInfo ;    
+            });
+            
             
         /* ---------------------
            ScrollBars and Window
@@ -858,7 +863,7 @@ define([
                 $parameter.on('change', function() {
                     argument = {}; 
                     argument[k] = $parameter.val(); 
-                    _this.setSliderValue(k,argument[k]); 
+                    jQuery('#'+k+'Slider').slider('value',argument[k]); 
                     PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
                 });
             });
@@ -898,13 +903,14 @@ define([
                 argument['tangentR'] = $tangentR.val();  
                 PubSub.publish(events.TANGENTR, argument);
             });
+            $cellVolume.val(100);
             $cellVolume.on('change', function() {
                 argument = {}; 
                 argument['cellVolume'] = $cellVolume.val(); 
-                _this.setSliderValue('cellVolume',argument['cellVolume']); 
+                jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
                 PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
             });
-            _this.setSlider('cellVolume',100,1,100,1,events.CELL_VOLUME_CHANGE);
+            _this.setSlider('cellVolume',100,10,400,0.1,events.CELL_VOLUME_CHANGE);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -971,9 +977,11 @@ define([
                 else argument['xyzAxes'] = false;
                 $xyzAxes.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.AXIS_MODE, argument);
-                $xLabel.toggleClass('hiddenLabel');
-                $yLabel.toggleClass('hiddenLabel');
-                $zLabel.toggleClass('hiddenLabel');
+                if ( !jQuery('#motifLI').hasClass('active') ){
+                    $xLabel.toggleClass('hiddenLabel');
+                    $yLabel.toggleClass('hiddenLabel');
+                    $zLabel.toggleClass('hiddenLabel');
+                }
             });
             $abcAxes.click(function() {
                 argument = {};
@@ -981,9 +989,11 @@ define([
                 else argument['abcAxes'] = false;
                 $abcAxes.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.AXIS_MODE, argument);
-                $aLabel.toggleClass('hiddenLabel');
-                $bLabel.toggleClass('hiddenLabel');
-                $cLabel.toggleClass('hiddenLabel');
+                if ( !jQuery('#motifLI').hasClass('active') ){
+                    $aLabel.toggleClass('hiddenLabel');
+                    $bLabel.toggleClass('hiddenLabel');
+                    $cLabel.toggleClass('hiddenLabel');
+                }
             });
             $edges.click(function() {
                 $edges.parent().toggleClass('lightThemeActive');
@@ -1569,9 +1579,11 @@ define([
                 preview.html(caller.html());
                 preview.attr('class',caller.attr('class'));
             });
-            $elements.click(function(){
-                $elements.removeClass('selected');
-                jQuery(this).addClass('selected');
+            $ionicValues.click(function(){
+                if (!(jQuery(this).hasClass('disabled'))){
+                    $ionicValues.removeClass('selected');
+                    jQuery(this).addClass('selected');
+                }
             });
             
         
@@ -1599,7 +1611,7 @@ define([
     /* --------------------
        Prototypes - Editors
        -------------------- */
-    
+        
         Menu.prototype.moveLabel = function(argument){
             var x = argument['xCoord'] - ( parseFloat($xLabel.css('width')) / 2);
             var y = argument['yCoord'] - ( parseFloat($xLabel.css('height')) / 2);
