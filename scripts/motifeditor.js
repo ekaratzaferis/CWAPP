@@ -687,27 +687,38 @@ define([
     return coll;
 
   };
-
+ 
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
     var val = parseFloat(par.cellVolume);
-    // console.log(par);
+   console.log(par);
     var newVals = {x : 1, y : 1, z : 1};
     
     var _perc ;
 
-    if((this.cellVolume.xInitVal >= this.cellVolume.yInitVal) && (this.cellVolume.xInitVal >= this.cellVolume.zInitVal)){
-      _perc = (this.cellVolume.xInitVal - (par.step * 0.5)) / this.cellVolume.xInitVal ;
-    }
-    else if((this.cellVolume.yInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.yInitVal >= this.cellVolume.zInitVal)){
-      _perc = (this.cellVolume.yInitVal - (par.step * 0.5)) / this.cellVolume.yInitVal ;
-    }
-    else if((this.cellVolume.zInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.zInitVal >= this.cellVolume.yInitVal)){
-      _perc = (this.cellVolume.zInitVal - (par.step * 0.5)) / this.cellVolume.zInitVal ;
+    if(par.trigger === 'reducer'){ 
+      if((this.cellVolume.xInitVal >= this.cellVolume.yInitVal) && (this.cellVolume.xInitVal >= this.cellVolume.zInitVal)){
+        _perc = (this.cellVolume.xInitVal - (par.step * 0.5)) / this.cellVolume.xInitVal ;
+      }
+      else if((this.cellVolume.yInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.yInitVal >= this.cellVolume.zInitVal)){
+        _perc = (this.cellVolume.yInitVal - (par.step * 0.5)) / this.cellVolume.yInitVal ;
+      }
+      else if((this.cellVolume.zInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.zInitVal >= this.cellVolume.yInitVal)){
+        _perc = (this.cellVolume.zInitVal - (par.step * 0.5)) / this.cellVolume.zInitVal ;
+      }
     } 
+    else{
+      _perc = parseFloat(par.cellVolume)/100;
+    }
+
+    console.log(_perc);
+    
+
     newVals.x = _perc * this.cellVolume.xInitVal; 
     newVals.y = _perc * this.cellVolume.yInitVal;
     newVals.z = _perc * this.cellVolume.zInitVal;
+
+    console.log(newVals);
 
     this.cellVolume.aCol = undefined;
     this.cellVolume.bCol = undefined;
