@@ -1312,6 +1312,7 @@ define([
                 cursor: "move",
                 items: "> tr",
                 tolerance: "pointer",
+                cancel: 'td.atomButton, td.btn-tangent',
                 update: function(e,ui){ 
                     if (jQuery(ui.item).attr('role') !== 'empty'){
                         $atomTable.find('tbody').sortable("cancel");
