@@ -27,9 +27,6 @@
 		<link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css"/>
         <link rel="stylesheet" href="styles/project-theme.css"/>
         <link rel="stylesheet" href="styles/spectrum.css"/>
-
-		<!-- Fonts -->
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'/>
 		
         <!-- Main Script -->
         <script data-main="scripts/main" src="vendor/require.js"></script> <!-- loads main.js file -->
@@ -55,18 +52,6 @@
     
         <!-- Main Screen -->
         <div id="screenWrapper">
-            <!-- Atom Radius Slider -->
-            <div class="slider-group form-group theme-dark disabled" id="atomRadiusSliderContainer">
-                <div class="row">
-                    <p id="atomRadiusLabel"> Atom Radius</p>
-                    <div class="col-sm-12">
-                        <div class="slider-control slider-control-lg" id="atomRadiusControls">
-                            <div class="slider" id="atomRadiusSlider"></div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
             <!-- Notes -->
             <div id="noteWrapper">
                 <div id="noteBar">
@@ -82,6 +67,18 @@
             <!-- Canvasses -->
             <main id="cnt_main_screen" class="main-screen-container">
                 <div id="app-container">
+                    <!-- Atom Radius Slider -->
+                    <div class="slider-group form-group theme-dark disabled" id="atomRadiusSliderContainer">
+                        <div class="row">
+                            <p id="atomRadiusLabel"> Atom Radius</p>
+                            <div class="col-sm-12">
+                                <div class="slider-control slider-control-lg" id="atomRadiusControls">
+                                    <div class="slider" id="atomRadiusSlider"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                     <!-- Labels -->
                     <div id="xLabel" class="axesLabel"></div>
                     <div id="yLabel" class="axesLabel"></div>

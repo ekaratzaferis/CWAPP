@@ -38,6 +38,12 @@ define([
       this.motifRenderer.changeContainerDimensions(width, height/2);
         
       $('.axesLabel').addClass('hiddenLabel');
+      if ( !($('#atomRadiusSliderContainer').hasClass('disabled')) ) {
+          jQuery('#atomRadius').parent().toggleClass('lightThemeActive');
+          if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
+          else jQuery('#atomRadiusSliderContainer').hide('slow');
+          jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
+      }
         
       $('#appLogo').css('display','none');
       $('#lockCameraIcon').css('display','block');

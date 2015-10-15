@@ -150,7 +150,6 @@ define([
         var $latticePoints = jQuery("#latticePoints");
         var $planes = jQuery("#planes");
         var $directions = jQuery("#directions");
-        var $atomRadius = jQuery("#atomRadius");
         var $atomToggle = jQuery("#atomToggle");
         var $atomRadius = jQuery("#atomRadius");
         /* Tabs */
@@ -523,7 +522,9 @@ define([
             $progressBarWrapper.width(screen_width);
             $appLogo.width(screen_width-x);
             
-            $('.main-controls-inner').height(screen_height);
+            jQuery('.main-controls-inner').height(screen_height);
+            jQuery('#atomRadiusSliderContainer').width((screen_width-x)*0.18);
+            jQuery('#atomRadiusSliderContainer').css('left',(screen_width-x)*0.08);
         
             _.each(labels, function($parameter,k){
                 $parameter.css('width',screen_width*0.015); 
@@ -1052,10 +1053,12 @@ define([
             });
             _this.setSlider('atomRadius',1,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
             $atomRadius.click(function() {
-                $atomRadius.parent().toggleClass('lightThemeActive');
-                if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
-                else jQuery('#atomRadiusSliderContainer').hide('slow');
-                jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
+                if (!$motifMEButton.hasClass('active')){
+                    $atomRadius.parent().toggleClass('lightThemeActive');
+                    if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
+                    else jQuery('#atomRadiusSliderContainer').hide('slow');
+                    jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
+                }
             });
             
             
@@ -1548,7 +1551,6 @@ define([
                     argument['ionicIndex'] = jQuery('.property-block.selected .serial p').html();
                     var tempValue = jQuery('.property-block.selected .resolution p').html().split(" ");
                     argument['ionicValue'] = tempValue[0];
-                    console.log(argument['ionicValue']);
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
                     PubSub.publish(events.ATOM_SELECTION, argument);
                     $elementContainer.show('slow');
@@ -1564,16 +1566,23 @@ define([
                 preview.html(caller.html());
                 preview.attr('class',caller.attr('class'));
                 _.each($ionicValues, function($parameter, k){
+                    var ionicValue;
+                    var radius;
                     var ionicIndex = jQuery($parameter).find('p').html();
                     if ( $atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
                         jQuery($parameter).removeClass('disabled');
-                        jQuery($parameter).find('.resolution p').html($atomsData[preview.html()]['ionic'][ionicIndex]);
+                        ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
+                        jQuery($parameter).find('.resolution p').html(ionicValue/100);
                     }
                     else if (ionicIndex !== '0') {
                         jQuery($parameter).addClass('disabled');
                         jQuery($parameter).find('.resolution p').html('-');
                     }
-                    else jQuery($parameter).addClass('selected')
+                    else {
+                        jQuery($parameter).addClass('selected');
+                        radius = $atomsData[preview.html()]['radius'];
+                        jQuery($parameter).find('.resolution p').html(radius/100);
+                    }
                 });
             });
             $ionicValues.click(function(){
