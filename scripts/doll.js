@@ -423,8 +423,7 @@ define([
     
     if(this.enablemouseEvents !== true){
       return;
-    }
-    event.preventDefault();
+    } 
  
     var contWidth = $('#'+this.container).width() ;
      
@@ -527,8 +526,7 @@ define([
     if(this.enablemouseEvents !== true){
       return;
     } 
-    
-    event.preventDefault();
+     
  
     this.SELECTED = undefined;
     
@@ -629,8 +627,8 @@ define([
   }; 
    
   Doll.prototype.onDocumentMouseUp  = function(event){  
-    var _this =this;
-    event.preventDefault();
+    var _this = this;
+  
     this.crystalOrbit.control.enabled = true ; 
      
     if ( this.INTERSECTED ) {

@@ -1855,7 +1855,7 @@ define([
             'atomPosZ' : arg.atomPos.z,  
             'atomColor' : arg.color,  
             'atomOpacity' : arg.opacity, 
-            'atomName' : arg.atomName
+            'atomName' : arg.atomName.toLowerCase()
           }
         );   
 
