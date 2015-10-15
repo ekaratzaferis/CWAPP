@@ -1050,7 +1050,7 @@ define([
                 $atomToggle.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.ATOM_TOGGLE, argument);
             });
-            _this.setSlider('atomRadius',5,0,10,1,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+            _this.setSlider('atomRadius',1,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
             $atomRadius.click(function() {
                 $atomRadius.parent().toggleClass('lightThemeActive');
                 if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
@@ -1546,7 +1546,9 @@ define([
                     });
                     argument['radius'] = $atomsData[selected.html()]['radius'];
                     argument['ionicIndex'] = jQuery('.property-block.selected .serial p').html();
-                    argument['ionicValue'] = jQuery('.property-block.selected .resolution p').html();
+                    var tempValue = jQuery('.property-block.selected .resolution p').html().split(" ");
+                    argument['ionicValue'] = tempValue[0];
+                    console.log(argument['ionicValue']);
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
                     PubSub.publish(events.ATOM_SELECTION, argument);
                     $elementContainer.show('slow');
