@@ -750,6 +750,7 @@ label {
 /* Sliders */
 .slider-control .ui-slider {
   border: 0;
+  z-index: 1000;
   -webkit-border-radius: 3px;
   border-radius: 3px;
   background-clip: padding-box; }
@@ -3356,3 +3357,16 @@ input.disabled[type="text"]{ background-color: black; }
 .conditions{ height: 20px !important; }
 .property-block {cursor: pointer;}
 #cellVolume{ padding-left: 8px; padding-right: 8px;}
+#atomRadiusSliderContainer{
+    position: fixed;
+    width: 18%;
+    height: 10%;
+    outline: 1px red solid;
+    bottom: 5.8%;
+    left: 7.5%;
+    z-index: 1000;
+    display: none;
+}
+#atomRadiusSliderContainer{
+    
+}

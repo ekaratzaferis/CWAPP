@@ -39,9 +39,6 @@ define([
         var $colorPickerLeft = 0.08;
         var $colorPickerLeftMore = 0.18;
     
-        // Temporary Value for the Atom Radius Slider
-        var $tempValRadius = 0;
-    
         // Hold last value in case of none acceptable entered value
         var LastLatticeParameters = []; 
 
@@ -155,6 +152,7 @@ define([
         var $directions = jQuery("#directions");
         var $atomRadius = jQuery("#atomRadius");
         var $atomToggle = jQuery("#atomToggle");
+        var $atomRadius = jQuery("#atomRadius");
         /* Tabs */
         var $controls_toggler = jQuery('#controls_toggler');
         var $motifMEButton = jQuery('#motifLI');
@@ -210,6 +208,9 @@ define([
     /* ---------------
        Other Selectors
        --------------- */
+    
+        // Atom Data
+        var $atomsData;
     
         // Labels
         var $xLabel = jQuery('#xLabel');
@@ -294,7 +295,8 @@ define([
             'latticePoints': $latticePoints,
             'planes': $planes,
             'directions': $directions,
-            'atomToggle': $atomToggle
+            'atomToggle': $atomToggle,
+            'atomRadius': $atomRadius
         };
         
         // [Lattice Tab]
@@ -546,9 +548,11 @@ define([
             
             // Atom Ionic Values
             require(['atoms'], function(atomsInfo) {
-              _this.atomsData = atomsInfo ;    
+                $atomsData = atomsInfo;
+                _.each($periodicModal, function($parameter, k){
+                   //console.log($parameter); 
+                });
             });
-            
             
         /* ---------------------
            ScrollBars and Window
@@ -964,6 +968,9 @@ define([
                     case 'atomToggle':
                         title = 'Atoms';
                         break;
+                    case 'atomRadius':
+                        title = 'Atom Radius';
+                        break;
                 }
                 $parameter.parent().tooltip({
                     container : 'body',
@@ -1043,44 +1050,14 @@ define([
                 $atomToggle.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.ATOM_TOGGLE, argument);
             });
-            $atomRadius.parent().tooltip({
-                container : 'body',
-                trigger: 'manual',
-                title: 'Atom Radius',
-                html: true
+            _this.setSlider('atomRadius',5,0,10,1,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+            $atomRadius.click(function() {
+                $atomRadius.parent().toggleClass('lightThemeActive');
+                if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
+                else jQuery('#atomRadiusSliderContainer').hide('slow');
+                jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
             });
-            $atomRadius.parent().click(function(){
-                    if( $atomRadius.parent().hasClass('lightThemeActive') ){
-                        $atomRadius.parent().removeClass('lightThemeActive');
-                        $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
-                    }
-                    else{
-                        $atomRadius.parent().addClass('lightThemeActive');
-                        $atomRadius.parent().tooltip('hide').attr('data-original-title', '<div id="customSlider">Atom Radius</div><br/><div class="slider-control slider-control-sm theme-dark"><div id="atomRadiusSlider"></div></div>').tooltip('fixTitle');
-                        setTimeout(function() {
-                            $atomRadius.parent().tooltip("show");
-                        }, 250);
-                        setTimeout(function() {
-                            jQuery('.tooltip-inner').css('background', '#2c2e33');
-                            jQuery('.tooltip-inner').css('color', '#fff');
-                            jQuery('.tooltip-inner').siblings().css('border-left-color', '#2c2e33');
-                            _this.setSlider('atomRadius',$tempValRadius,10.2,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
-                        }, 250);
-                    }
-            });
-            $atomRadius.hover(
-                function(){
-                    if (! ($atomRadius.parent().hasClass('lightThemeActive'))) {
-                        $atomRadius.parent().tooltip('show');
-                        jQuery('.tooltip-inner').css('background', '#fff');
-                        jQuery('.tooltip-inner').css('color', '#473473');
-                        jQuery('.tooltip-inner').siblings().css('border-left-color', '#fff');
-                    }
-                },
-                function(){
-                    if (! ($atomRadius.parent().hasClass('lightThemeActive'))) $atomRadius.parent().tooltip('hide');
-                }
-            );
+            
             
             // Handle Motif access without a chosen Lattice
             $controls_toggler.on('click', function(){
@@ -1191,6 +1168,9 @@ define([
 
             
             /* [Motif Tab] */
+            $atomPalette.click(function(){
+                
+            });
             $motifPadlock.on('click', function() {
                 if ( !($motifPadlock.hasClass('disabled')) ){
                     var argument = {};
@@ -1564,6 +1544,9 @@ define([
                                 break;
                         }
                     });
+                    argument['radius'] = $atomsData[selected.html()]['radius'];
+                    argument['ionicIndex'] = jQuery('.property-block.selected .serial p').html();
+                    argument['ionicValue'] = jQuery('.property-block.selected .resolution p').html();
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
                     PubSub.publish(events.ATOM_SELECTION, argument);
                     $elementContainer.show('slow');
@@ -1578,6 +1561,18 @@ define([
                 var caller = jQuery(this);
                 preview.html(caller.html());
                 preview.attr('class',caller.attr('class'));
+                _.each($ionicValues, function($parameter, k){
+                    var ionicIndex = jQuery($parameter).find('p').html();
+                    if ( $atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
+                        jQuery($parameter).removeClass('disabled');
+                        jQuery($parameter).find('.resolution p').html($atomsData[preview.html()]['ionic'][ionicIndex]);
+                    }
+                    else if (ionicIndex !== '0') {
+                        jQuery($parameter).addClass('disabled');
+                        jQuery($parameter).find('.resolution p').html('-');
+                    }
+                    else jQuery($parameter).addClass('selected')
+                });
             });
             $ionicValues.click(function(){
                 if (!(jQuery(this).hasClass('disabled'))){
@@ -1585,6 +1580,8 @@ define([
                     jQuery(this).addClass('selected');
                 }
             });
+            
+            
             
         
     /*$
@@ -1761,12 +1758,8 @@ define([
                     PubSub.publish(eventIn, argument);
                     jQuery('#'+inputName).val(ui.value);
                 },
-                stop: function(){
-                    if (sliderName === '#atomRadiusSlider') {
-                        $atomRadius.parent().removeClass('lightThemeActive');
-                        $tempValRadius = $atomRadius.val();
-                        $atomRadius.parent().tooltip('hide').attr('data-original-title', 'Atom Radius').tooltip('fixTitle');
-                    }
+                stop: function(event, ui){
+                    if (sliderName === '#atomRadiusSlider') $tempValRadius = $atomRadius.val();
                 }
             });
         };
@@ -2146,6 +2139,10 @@ define([
                     ref.tangent(argument['id']);
                 });
                 current.find('.selectable').on('click',function(){
+                    /*$elementContainer.find('a').removeAttr('class');
+                    $elementContainer.find('a').attr('class','ch-'+elementCode);
+                    $elementContainer.find('a').html(elementName);
+                    $elementContainer.show('slow');*/
                     PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
                 });
                 current.find('.atomButton').on('click', function(){
@@ -2410,12 +2407,15 @@ define([
                 else $tangency.parent().removeClass('purpleThemeActive');
             }
             if (argument['atomName'] !== undefined){
-                var newAtom = 'ch-' + argument['atomName'];
-                var newAtomName = jQuery('.'+newAtom).html();
-                $elementContainer.show('slow');
-                $elementContainer.find('a').removeAttr('class');
-                $elementContainer.find('a').attr('class',newAtom+' ch');
-                $elementContainer.find('a').html(newAtomName);
+                if (argument['atomName'] === '-') $elementContainer.hide('slow');
+                else {
+                    var newAtom = 'ch-' + argument['atomName'];
+                    var newAtomName = jQuery('.'+newAtom).html();
+                    $elementContainer.find('a').removeAttr('class');
+                    $elementContainer.find('a').attr('class',newAtom+' ch');
+                    $elementContainer.find('a').html(newAtomName);
+                    $elementContainer.show('slow');
+                }
             }
             if (argument['tangentR'] !== undefined){
                 $tangentR.val(argument['tangentR']);
