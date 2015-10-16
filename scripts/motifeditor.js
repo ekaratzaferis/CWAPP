@@ -216,7 +216,7 @@ define([
       events.EDITOR_STATE,{
         'state' : "creating", 
         'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
-        'color' : params.atomColor
+        'atomColor' : params.atomColor
       }
     ); 
      
@@ -1732,10 +1732,10 @@ define([
   };
   Motifeditor.prototype.editorState_ = function (arg){
     var _this = this ;
-    _this.editorState.state = arg.state;
+    this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
-    var color = (arg.color === undefined) ? '#ffffff' : ('#'+arg.color);
-     
+    var color = (arg.atomColor === undefined) ? '#ffffff' : (arg.atomColor);
+      
     switch(arg.state) {
       case "initial":  
         this.menu.rotAnglesSection(false); 
@@ -1902,7 +1902,7 @@ define([
         'id':id
       });
     }
-    else{
+    else{ 
       pos = (pos.x === '-') ? pos : (new THREE.Vector3(pos.x.toFixed(1),pos.y.toFixed(1),pos.z.toFixed(1)));
 
       var atomPos;
@@ -1916,7 +1916,7 @@ define([
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-       
+     
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -2391,11 +2391,9 @@ define([
  
       if(this.newSphere.tangentParent !== undefined){
         this.setDraggableAtom({'dragMode': true, 'parentId': this.newSphere.tangentParent}, true);
-      }
-      
+      } 
       if(doNotChangeState === undefined){
-        console.log(this.newSphere.color);
-        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : '#'+this.newSphere.color });
+        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : this.newSphere.color });
       }
     } 
   };
@@ -3167,7 +3165,9 @@ define([
       '-', 
       this.newSphere.elementName,
       'save',
-      'bg-light-purple'
+      'bg-light-purple',
+      undefined,
+      this.newSphere.color
     );
   }; 
   Motifeditor.prototype.atomVisibility = function(arg){ 
