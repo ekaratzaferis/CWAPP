@@ -105,7 +105,7 @@ define(function() {
     Md : { radius : 0   ,color : "#B30DA6", ionic : { } },
     No : { radius : 0   ,color : "#BD0D87", ionic : { } },
     Lr : { radius : 0   ,color : "#C70066", ionic : { } },
-    Rf : { radius : 0   ,color : "#CC0059", ionic : { } },
+    Rf : { radius : 0   ,color : "#CC0059", ionic : { '1' : 131 } },
     Db : { radius : 0   ,color : "#D1004F", ionic : { } },
     Sg : { radius : 0   ,color : "#D90045", ionic : { } },
     Bh : { radius : 0   ,color : "#E00038", ionic : { } },

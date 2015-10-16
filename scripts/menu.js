@@ -745,7 +745,8 @@ define([
             _.each(planeParameters, function($parameter, k) {
             
                 //Initialization
-                $planesTable.hide();
+                jQuery('#hexICoord').hide('slow');
+                $planesTable.hide('slow');
                 switch(k)
                 {
                     case 'planeName':
@@ -759,7 +760,7 @@ define([
                         break;
 
                     case 'millerI':
-                        $parameter.parent().parent().parent().hide();
+                        $parameter.prop('disabled',true);
                         break;
 
                     case 'planeColor':
@@ -782,6 +783,7 @@ define([
             _.each(directionParameters, function($parameter, k) {
 
                 //Initialization
+                jQuery('#hexTCoord').hide('slow');
                 $directionTable.hide();
                 switch(k)
                 {
@@ -796,7 +798,7 @@ define([
                         break;
 
                     case 'millerT':
-                        $parameter.parent().parent().parent().hide();
+                        $parameter.prop('disabled',true);
                         break;
 
                     case 'directionColor':
@@ -1135,9 +1137,19 @@ define([
             /* [Lattice Tab] */
             $latticePadlock.on('click', function() {
                 argument = {};
-                if ($latticePadlock.children().hasClass('active')) argument["padlock"] = true;
-                else argument["padlock"] = false;
-                PubSub.publish(events.SET_PADLOCK, argument);          
+                if ($latticePadlock.children().hasClass('active')) {
+                    argument["padlock"] = true;
+                    argument["manualSetCellDims"] = true;
+                    argument["manualSetCellAngles"] = true;
+                }
+                else {
+                    argument["padlock"] = false;
+                    argument["manualSetCellDims"] = false;
+                    argument["manualSetCellAngles"] = false;
+                }
+                PubSub.publish(events.SET_PADLOCK, argument);
+                PubSub.publish(events.MANUAL_SET_DIMS, argument);
+                PubSub.publish(events.MANUAL_SET_ANGLES, argument);
             });
 
             /* [P&D Tab] */
@@ -1312,6 +1324,7 @@ define([
                 cursor: "move",
                 items: "> tr",
                 tolerance: "pointer",
+                cancel: 'td.atomButton, td.btn-tangent',
                 update: function(e,ui){ 
                     if (jQuery(ui.item).attr('role') !== 'empty'){
                         $atomTable.find('tbody').sortable("cancel");
@@ -1592,8 +1605,6 @@ define([
                 }
             });
             
-            
-            
         
     /*$
     
@@ -1650,6 +1661,25 @@ define([
                     break;
             }
         };
+        Menu.prototype.switchTab = function(tab){
+            switch(tab){
+                case 'latticeTab': 
+                    jQuery('#latticeTab').find('a').trigger('click');
+                    break;        
+                case 'millerPI': 
+                    jQuery('#millerPI').find('a').trigger('click'); 
+                    break;
+                case 'motifLI': 
+                    jQuery('#motifLI').find('a').trigger('click'); 
+                    break;
+                case 'visualTab': 
+                    jQuery('#visualTab').find('a').trigger('click'); 
+                    break;
+                case 'publicTab': 
+                    jQuery('#publicTab').find('a').trigger('click');
+                    break;
+            }
+        }
         Menu.prototype.setTabDisable = function(argument){
             _.each(argument, function($parameter, k){
                 if ($parameter === true) {
@@ -1775,8 +1805,11 @@ define([
             });
         };
         Menu.prototype.toggleExtraParameter = function(choice, action){
-            if (choice === 'i') $millerI.parent().parent().parent().css('display',action);
-            else $millerT.parent().parent().parent().css('display',action);
+            if ( (choice === 'i') && (action === 'block') ) jQuery('#hexICoord').show('fast');
+            else if ( (choice === 'i')) jQuery('#hexICoord').hide('fast');
+            else if ( (choice === 't') && (action === 'block') ) jQuery('#hexTCoord').show('fast');
+            else jQuery('#hexTCoord').hide('fast');
+            setTimeout(function(){$.fn.matchHeight._update();},500);
         }
         Menu.prototype.editPlaneInputs = function(argument){
             _.each(planeParameters, function($parameter, k) {
