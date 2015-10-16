@@ -1053,7 +1053,7 @@ define([
                 $atomToggle.parent().toggleClass('lightThemeActive');
                 PubSub.publish(events.ATOM_TOGGLE, argument);
             });
-            _this.setSlider('atomRadius',1,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
+            _this.setSlider('atomRadius',10.2,1,10.2,0.2,events.CHANGE_CRYSTAL_ATOM_RADIUS);
             $atomRadius.click(function() {
                 if (!$motifMEButton.hasClass('active')){
                     $atomRadius.parent().toggleClass('lightThemeActive');
@@ -1536,8 +1536,50 @@ define([
                 }
             });   
             $periodicModal.on('click',function(){
-                $periodicModal.removeClass('selected');
-                jQuery(this).addClass('selected');
+                if ( !jQuery(this).hasClass('disabled')){   
+                    $periodicModal.removeClass('selected');
+                    jQuery(this).addClass('selected');
+                    var preview = jQuery('#tempSelection').find('p');
+                    var caller = jQuery(this);
+                    preview.html(caller.html());
+                    preview.attr('class',caller.attr('class'));
+                    _.each($ionicValues, function($parameter, k){
+                        var ionicValue;
+                        var ionicIndex = jQuery($parameter).find('p').html();
+                        console.log(ionicIndex);
+                        if ( $atomsData[preview.html()] !== undefined ){
+                            if ($atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
+                                if ( ionicIndex === '≡') ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
+                                else ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
+                                jQuery($parameter).show('fast');
+                                jQuery($parameter).removeClass('disabled');
+                                jQuery($parameter).find('.resolution p').html((ionicValue/100).toFixed(3));
+                            }
+                            else if ( ionicIndex === '0' ){
+                                if ( $atomsData[preview.html()]['radius'] !== 0 ) {
+                                    jQuery($parameter).show('fast');
+                                    jQuery($parameter).addClass('selected');
+                                    jQuery($parameter).find('.resolution p').html(($atomsData[preview.html()]['radius']/100).toFixed(3));
+                                }
+                                else {
+                                    jQuery($parameter).addClass('disabled');
+                                    jQuery($parameter).hide('fast');
+                                    jQuery($parameter).find('.resolution p').html('-');
+                                }
+                            }
+                            else {
+                                jQuery($parameter).addClass('disabled');
+                                jQuery($parameter).hide('fast');
+                                jQuery($parameter).find('.resolution p').html('-');
+                            }
+                        }
+                        else{
+                            jQuery($parameter).addClass('disabled');
+                            jQuery($parameter).hide('fast');
+                            jQuery($parameter).find('.resolution p').html('-');
+                        }
+                    });
+                }
             });
             $periodicTableButton.on('click', function() {
                 var selected = jQuery('.ch.selected');
@@ -1572,38 +1614,13 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-            
-            $periodicTable.find('.ch').click(function(){
-                var preview = jQuery('#tempSelection').find('p');
-                var caller = jQuery(this);
-                preview.html(caller.html());
-                preview.attr('class',caller.attr('class'));
-                _.each($ionicValues, function($parameter, k){
-                    var ionicValue;
-                    var radius;
-                    var ionicIndex = jQuery($parameter).find('p').html();
-                    if ( $atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
-                        jQuery($parameter).removeClass('disabled');
-                        ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
-                        jQuery($parameter).find('.resolution p').html(ionicValue/100);
-                    }
-                    else if (ionicIndex !== '0') {
-                        jQuery($parameter).addClass('disabled');
-                        jQuery($parameter).find('.resolution p').html('-');
-                    }
-                    else {
-                        jQuery($parameter).addClass('selected');
-                        radius = $atomsData[preview.html()]['radius'];
-                        jQuery($parameter).find('.resolution p').html(radius/100);
-                    }
-                });
-            });
             $ionicValues.click(function(){
                 if (!(jQuery(this).hasClass('disabled'))){
                     $ionicValues.removeClass('selected');
                     jQuery(this).addClass('selected');
                 }
             });
+            
             
         
     /*$
@@ -1798,9 +1815,6 @@ define([
                     argument[inputName] = ui.value;
                     PubSub.publish(eventIn, argument);
                     jQuery('#'+inputName).val(ui.value);
-                },
-                stop: function(event, ui){
-                    if (sliderName === '#atomRadiusSlider') $tempValRadius = $atomRadius.val();
                 }
             });
         };
