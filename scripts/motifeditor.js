@@ -145,7 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
- 
+     
     // late feature
     if(this.newSphere !== undefined){
       this.removeFromUnitCell(this.newSphere.getID());

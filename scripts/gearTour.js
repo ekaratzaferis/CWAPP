@@ -26,6 +26,23 @@ define([
       return;
     }
 
+    if(state !== 5){
+      this.menu.switchTab('visualTab');
+      this.menu.setTabDisable({
+        'latticeTab': true,
+        'motifLI':true,
+        'millerPI':true,
+        'publicTab':true
+      });
+    }
+    else if( state === 5){
+      this.menu.setTabDisable({
+        'latticeTab': false,
+        'motifLI':false,
+        'millerPI':false,
+        'publicTab':false
+      });
+    }
     this.state = state;
 
     this.menu.resetProgressBar( 'Processing...');
@@ -35,56 +52,31 @@ define([
       case 1:  
         this.setActualAtoms(false, 1);
         this.setMillers(false); 
-        this.hideSubtractedCell();
-        this.menu.setTabDisable({
-          'latticeTab': true,
-          'motifLI':true,
-          'publicTab':true
-        });
+        this.hideSubtractedCell(); 
       break;
  
       case 2:  
         this.setActualAtoms(false,2);
         this.setMillers(false); 
-        this.hideSubtractedCell();
-        this.menu.setTabDisable({
-          'latticeTab': true,
-          'motifLI':true,
-          'publicTab':true
-        });
+        this.hideSubtractedCell(); 
       break;
 
 
       case 3:  
         this.setActualAtoms(false,3); 
         this.setMillers(true);
-        this.subtractedCell(); 
-        this.menu.setTabDisable({
-          'latticeTab': true,
-          'motifLI':true,
-          'publicTab':true
-        });
+        this.subtractedCell();  
       break;
 
 
       case 4:  
         this.setActualAtoms(false, 4);
         this.setMillers(true); 
-        this.hideSubtractedCell();
-        this.menu.setTabDisable({
-          'latticeTab': true,
-          'motifLI':true,
-          'publicTab':true
-        });
+        this.hideSubtractedCell(); 
       break;
 
 
-      case 5:  
-        this.menu.setTabDisable({
-          'latticeTab': false,
-          'motifLI':false,
-          'publicTab':false
-        });
+      case 5:   
         this.setActualAtoms(true, []);
         this.setMillers(true); 
         this.hideSubtractedCell();

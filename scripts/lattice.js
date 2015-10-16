@@ -288,7 +288,7 @@ define([
   Lattice.prototype.toggleRadius = function(arg) {
     
     arg = arg.atomRadius;
-     
+  
     if(arg > 10) return ;
     var radius = arg/10;
     for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
@@ -790,10 +790,13 @@ define([
       _this.lattice = lattice; 
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ; 
-      if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){
-
+      if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){ 
         _this.menu.toggleExtraParameter('i', 'block');
         _this.menu.toggleExtraParameter('t', 'block');
+      }
+      else{
+        _this.menu.toggleExtraParameter('i', 'none');
+        _this.menu.toggleExtraParameter('t', 'none');
       }
       _this.update();
       PubSub.publish(events.LOAD, lattice); 
@@ -1524,6 +1527,7 @@ define([
         millerH : plane.h, 
         millerK :  plane.k, 
         millerL : plane.l,
+        millerI : plane.i,
         planeColor : plane.planeColor,
         planeOpacity : plane.planeOpacity,
         planeName : plane.planeName  
@@ -1547,6 +1551,7 @@ define([
         millerU : directional.u, 
         millerV :  directional.v, 
         millerW : directional.w,
+        millerT : directional.t,
         directionColor : directional.directionColor,
         directionName : directional.directionName,
         dirRadius : directional.direction.radius
@@ -1606,7 +1611,7 @@ define([
     k = (k!=0) ? 1/k : 0 ;
     l = (l!=0) ? 1/l : 0 ;
     
-    if(_this.latticeName !== 'hexagonal'){
+    if(this.latticeName !== 'hexagonal'){
       if( h!=0 && k!=0 && l!=0) { 
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
@@ -2328,7 +2333,7 @@ define([
   // directions 
   Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
-    var hexagonal = (this.latticeName !== 'hexagonal') ? false : true ;
+    var hexagonal = (this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal') ? true : false ;
     var parameters = this.parameters ;
     var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
     var id, checkVals = parseInt(u + v) * -1 ; 

@@ -609,13 +609,14 @@ require([
     var crystalCamera = crystalRenderer.getMainCamera();
 
     if(param.syncCameras === true){    
-      crystalCamera.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z );   
-      
+      cellCamera.position.set( crystalCamera.position.x, crystalCamera.position.y, crystalCamera.position.z );   
+      orbitUnitCell.control.target = orbitCrystal.control.target.clone();
       orbitCrystal.syncCams(true);
       orbitUnitCell.syncCams(true); 
     }
     else
-    {
+    { 
+      orbitUnitCell.control.target = new THREE.Vector3(0,0,0);
       orbitCrystal.syncCams(false);
       orbitUnitCell.syncCams(false);
     }

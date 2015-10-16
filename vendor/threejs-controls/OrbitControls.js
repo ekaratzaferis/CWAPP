@@ -489,12 +489,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			panStart.copy( panEnd );
 
 		}
- 
+ 		scope.update();
 		if(scope.syncCams === true){  
 			scope.syncedControl.camera.position.set(scope.object.position.x, scope.object.position.y, scope.object.position.z);
 		} 
-		scope.syncedControl.update();
-		scope.update();
+		scope.syncedControl.update(); 
 	};
 
 	function onMouseUp( /* event */ ) {
@@ -536,15 +535,16 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			scope.dollyIn();
 
 		}
+ 
+
+		scope.update();
+		scope.dispatchEvent( startEvent );
+		scope.dispatchEvent( endEvent );
 
 		if(scope.syncCams === true){  
 			scope.syncedControl.camera.position.set(scope.object.position.x, scope.object.position.y, scope.object.position.z);
 		} 
 		scope.syncedControl.update();
-
-		scope.update();
-		scope.dispatchEvent( startEvent );
-		scope.dispatchEvent( endEvent );
 
 	};
 
