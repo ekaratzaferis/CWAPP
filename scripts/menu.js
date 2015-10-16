@@ -2176,7 +2176,7 @@ define([
                 btnState = current.find('.btn-tangent').attr('class');
             }
             
-            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" tangentTo="'+tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><a id="level">'+level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+            var HTMLQuery = '<tr id="'+argument['id']+'" role="'+role+'" tangentTo="'+tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+visible+'"><a><img src="Images/'+eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+chain+'"><a id="level">'+level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td class="element ch-'+elementCode+'">'+elementName+'</td><td  class="element-serial '+small+' selectable"><a>'+atomPos+'</a></td><td class="'+btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
             switch(argument['action']){
                 case 'save':
@@ -2185,7 +2185,9 @@ define([
 
                 case 'edit':
                     current.replaceWith(HTMLQuery);
-                    current.find('.element').css('background',argument['atomColor']+'!important');
+                    setTimeout(function(){
+                        current.find('.element').attr('class','element').css('background',argument['atomColor']);
+                    },300);
                     break;
 
                 case 'delete':
@@ -2199,10 +2201,6 @@ define([
                     ref.tangent(argument['id']);
                 });
                 current.find('.selectable').on('click',function(){
-                    /*$elementContainer.find('a').removeAttr('class');
-                    $elementContainer.find('a').attr('class','ch-'+elementCode);
-                    $elementContainer.find('a').html(elementName);
-                    $elementContainer.show('slow');*/
                     PubSub.publish(events.SAVED_ATOM_SELECTION, argument['id']);
                 });
                 current.find('.atomButton').on('click', function(){
@@ -2357,7 +2355,6 @@ define([
             });
         };
         Menu.prototype.editMEInputs = function(argument){
-            console.log(argument);
             _.each(atomParameters, function($parameter, k) {
                 if (argument[k] !== undefined){
                     switch(k){
@@ -2468,15 +2465,14 @@ define([
                 else $tangency.parent().removeClass('purpleThemeActive');
             }
             if (argument['atomName'] !== undefined){
+                console.log('poutsa'+argument['atomColor']);
                 if (argument['atomName'] === '-') $elementContainer.hide('slow');
                 else {
                     var newAtom = 'ch-' + argument['atomName'];
                     var newAtomName = jQuery('.'+newAtom).html();
-                    $elementContainer.find('a').removeAttr('class');
-                    $elementContainer.find('a').attr('class',newAtom+' ch');
+                    $elementContainer.find('a').attr('class','ch');
                     $elementContainer.find('a').html(newAtomName);
-                    console.log(argument['atomColor']+'!important');
-                    $elementContainer.find('a').css('background',argument['atomColor']+'!important');
+                    $elementContainer.find('a').css('background',argument['atomColor']);
                     $elementContainer.show('slow');
                 }
             }
