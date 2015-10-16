@@ -185,13 +185,16 @@ require([
     "perspective",  
     false, 
     'crystal', 
-    unitCellRenderer.getMainCamera(),
+    undefined,
     [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()]
     ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
-  var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(),   '#unitCellRendererMouse',  "perspective",  false, 'cell',    crystalRenderer.getMainCamera());
+  var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRendererMouse',  "perspective",  false, 'cell');
+ 
+  orbitUnitCell.setSyncedCamControl(orbitCrystal);
+  orbitCrystal.setSyncedCamControl(orbitUnitCell); 
 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
   var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "perspective", true, 'motif'   );
@@ -206,8 +209,7 @@ require([
   motifRenderer.onAnimationUpdate(motifCamZ.update.bind(motifCamZ));
 
   // Motif editor
-  var motifEditor = new Motifeditor(menu, soundMachine);
-  motifEditor.loadAtoms();
+  var motifEditor = new Motifeditor(menu, soundMachine); 
  
   var dragNdropXevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
   var dragNdropYevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
@@ -391,8 +393,7 @@ require([
     
     height = $(window).height() ;
     width = $('#app-container').width(); ;
- 
-    
+  
     //
 
     if($(this).attr('id') === "millerPI" ){ 
@@ -430,6 +431,10 @@ require([
       if((lattice.viewMode !== 'Classic' || gearTour.state !== 5) && ( $(this).attr('id') === "latticeTab" || $(this).attr('id') === "publicTab")){
         return;
       } 
+
+      if($(this).attr('id') === "latticeTab"){
+        lattice.updateLatticeUI(motifEditor.cellParameters);
+      }
 
       // visible Navigators
       dollEditor.setVisibility(true);
@@ -603,17 +608,16 @@ require([
     var cellCamera = unitCellRenderer.getMainCamera();
     var crystalCamera = crystalRenderer.getMainCamera();
 
-    if(param.syncCameras){    
-      crystalCamera.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z );  
-      orbitCrystal.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ); 
-      orbitUnitCell.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ) ; 
-      orbitCrystal.sync = true;
-      orbitUnitCell.sync = true;  
+    if(param.syncCameras === true){    
+      crystalCamera.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z );   
+      
+      orbitCrystal.syncCams(true);
+      orbitUnitCell.syncCams(true); 
     }
     else
     {
-      orbitCrystal.sync = false;
-      orbitUnitCell.sync = false; 
+      orbitCrystal.syncCams(false);
+      orbitUnitCell.syncCams(false);
     }
   });  
   menu.onCameraDistortionChange(function(message, mode){ 

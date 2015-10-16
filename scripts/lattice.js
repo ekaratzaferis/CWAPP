@@ -316,22 +316,34 @@ define([
     this.menu.setSliderValue("gamma", params.gamma );
     this.menu.setSliderValue("alpha", params.alpha );
 
-    this.menu.setSliderValue("scaleX", params.x );
-    this.menu.setSliderValue("scaleY", params.y );
-    this.menu.setSliderValue("scaleZ", params.z );
+    if(params.x !== undefined){
+       
+      this.menu.setSliderValue("scaleX", params.x );
+      this.menu.setSliderValue("scaleY", params.y );
+      this.menu.setSliderValue("scaleZ", params.z );
+    }
+    else{
+       
+      this.menu.setSliderValue("scaleX", params.scaleX );
+      this.menu.setSliderValue("scaleY", params.scaleY );
+      this.menu.setSliderValue("scaleZ", params.scaleZ );
+    }
+    
   
   }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
-    this.updateLatticeUI(params);
-    _this.currentMotif = motif ;
 
-    _.each(_this.actualAtoms, function(atom,k) {
+    this.updateLatticeUI(params);
+
+    this.currentMotif = motif ;
+
+    _.each(this.actualAtoms, function(atom,k) {
       atom.destroy();   
     }); 
-    _this.actualAtoms.splice(0); 
+    this.actualAtoms.splice(0); 
 
-    _this.backwardTransformations();
+    this.backwardTransformations();
      
     this.parameters.scaleX = params.x ;
     this.parameters.scaleY = params.y ;
@@ -340,7 +352,7 @@ define([
     this.parameters.beta = params.beta ;
     this.parameters.gamma = params.gamma ;
 
-    _this.forwardTransformations();  
+    this.forwardTransformations();  
     
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 

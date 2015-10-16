@@ -19,28 +19,30 @@ define([
     this.camName = camName; 
     this.hudCameras = hudCameras; 
     this.theta = 0; 
-    this.phi = 0; 
-    this.syncedCamera = syncedCamera; 
+    this.phi = 0;   
     this.currPos = new THREE.Vector3(0,0,0); 
     this.disableUpdate = false;
 
     if(type == "perspective" ) {
-      if( camName=== 'hud') { 
+      if( camName === 'hud') { 
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
       } 
       else if( camName === 'motif'){
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
       }
       else{
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, syncedCamera);
       }
     }
-    else if (type == "orthographic"){
+    else if (type === "orthographic"){
       this.control = new THREE.OrbitAndPanControls(camera, $rendererContainer[0]);
-    }
+    }  
   };
   Orbit.prototype.dollOnDocumentMouseDown = function(onDocumentMouseDown){ 
     this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
+  };
+  Orbit.prototype.setSyncedCamControl = function(control){ 
+    this.control.syncedControl = control;
   };
   Orbit.prototype.getCamName = function(){
     return this.camName ;
@@ -50,8 +52,7 @@ define([
     this.theta = theta;
     this.phi = phi;
     this.control.myTheta = this.theta ;
-    this.control.myPhi = this.phi ; 
-    
+    this.control.myPhi = this.phi ;  
     this.control.makeMovement = true ;
 
   }
@@ -61,10 +62,11 @@ define([
   Orbit.prototype.getAutoRotate = function(){
     return this.control.autoRotate ;
   };
-  Orbit.prototype.autoRotate = function(bool){
- 
-    this.control.autoRotate = bool;
-      
+  Orbit.prototype.autoRotate = function(bool){ 
+    this.control.autoRotate = bool; 
+  };
+  Orbit.prototype.syncCams = function(bool){ 
+    this.control.syncCams = bool; 
   };
   Orbit.prototype.getCamPosition = function(){
     return this.control.object.position ;
@@ -82,21 +84,8 @@ define([
     }
     
     this.control.update(); 
-     
-    var dx = this.camera.position.x - this.currPos.x ;
-    var dy = this.camera.position.y - this.currPos.y ;
-    var dz = this.camera.position.z - this.currPos.z ;
- 
-    if(this.sync && (this.camName === 'cell' || this.camName ==='crystal') && (dx!=0) && (dy!=0) && (dz!=0) ) {  
-      this.syncedCamera.position.x = this.camera.position.x ;
-      this.syncedCamera.position.y = this.camera.position.y ;
-      this.syncedCamera.position.z = this.camera.position.z ;
-      this.currPos.x = this.camera.position.x ;
-      this.currPos.y = this.camera.position.y ;
-      this.currPos.z = this.camera.position.z ; 
-    }
-     
-    if( this.camName =='crystal'){
+       
+    if( this.camName === 'crystal'){
        
       for (var i = this.hudCameras.length - 1; i >= 0; i--) { 
  

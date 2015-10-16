@@ -522,11 +522,10 @@ define([
   }; 
   Doll.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 
-
+     
     if(this.enablemouseEvents !== true){
       return;
-    } 
-     
+    }  
  
     this.SELECTED = undefined;
     

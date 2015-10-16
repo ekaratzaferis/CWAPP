@@ -43,8 +43,7 @@ define([
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
     this.viewState = 'Classic';
-    this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute', updated : false } ;
-    this.atomsData ;
+    this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute', updated : false } ; 
     this.isEmpty = true ;
     this.latticeName = 'none';
     this.latticeType = 'none';  
@@ -67,13 +66,7 @@ define([
 
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
-  };
-  Motifeditor.prototype.loadAtoms = function(){
-    var _this = this;
-    require(['atoms'], function(atomsInfo) {
-      _this.atomsData = atomsInfo ;    
-    });
-  };
+  }; 
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
     
     this.menu.rotAnglesSection(arg.dragMode);
@@ -152,7 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-    
+ 
     // late feature
     if(this.newSphere !== undefined){
       this.removeFromUnitCell(this.newSphere.getID());
@@ -176,7 +169,9 @@ define([
     }
 
     var _this = this ;
-    var radius = this.atomsData[params.element].radius/100
+    
+    var radius = (params.ionicIndex === '0') ? params.radius : parseFloat(params.ionicValue);
+    radius /= 100;
     var newId = "_"+produceUuid() ;
     var p = new THREE.Vector3(0,0,0);
 
@@ -197,7 +192,7 @@ define([
       true, 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
-      this.atomsData[params.element].color,
+      '#'+params.atomColor,
       params.tangency, 
       params.element, 
       newId, 
@@ -209,7 +204,7 @@ define([
     this.addAtomInCell( 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
-      this.atomsData[params.element].color, 
+      '#'+params.atomColor, 
       params.tangency, 
       params.element, 
       newId,
@@ -221,7 +216,7 @@ define([
       events.EDITOR_STATE,{
         'state' : "creating", 
         'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
-        'color' : this.atomsData[params.element].color 
+        'color' : '#'+params.atomColor
       }
     ); 
      
@@ -691,7 +686,7 @@ define([
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
     var val = parseFloat(par.cellVolume);
-   console.log(par);
+    
     var newVals = {x : 1, y : 1, z : 1};
     
     var _perc ;
@@ -710,16 +705,11 @@ define([
     else{
       _perc = parseFloat(par.cellVolume)/100;
     }
-
-    console.log(_perc);
-    
-
+ 
     newVals.x = _perc * this.cellVolume.xInitVal; 
     newVals.y = _perc * this.cellVolume.yInitVal;
     newVals.z = _perc * this.cellVolume.zInitVal;
-
-    console.log(newVals);
-
+ 
     this.cellVolume.aCol = undefined;
     this.cellVolume.bCol = undefined;
     this.cellVolume.cCol = undefined;
@@ -805,7 +795,7 @@ define([
 
     this.configureCellPoints('manual'); // final fix
  
-    this.boxHelper();  
+   // this.boxHelper();  
   };
   Motifeditor.prototype.scaleRelative = function(par){
 
@@ -1801,8 +1791,7 @@ define([
             'atomPosY' : arg.atomPos.y,
             'atomPosZ' : arg.atomPos.z,  
             'atomColor' : arg.color,  
-            'atomOpacity' : 10,  
-            'atomName' : arg.atomName, 
+            'atomOpacity' : 10,   
             'Aa' : this.cellParameters.scaleZ,
             'Ab' : this.cellParameters.scaleX,
             'Ac' : this.cellParameters.scaleY,

@@ -61,6 +61,9 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 
 	// Set to true to automatically rotate around the target
 	this.autoRotate = false;
+	this.syncCams = false;
+	this.syncedControl;
+
 	this.autoRotateSpeed = 1.5; // 30 seconds per round when fps is 60
 
 	// How far you can orbit vertically, upper and lower limits.
@@ -74,7 +77,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	this.rotationState = 'setPhi' ;
 
 	// Set to true to disable use of the keys
-	this.noKeys = deactivate;
+	this.noKeys = true; //deactivate;
 
 	// The four arrow keys
 	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
@@ -200,6 +203,12 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			// we actually don't use screenWidth, since perspective camera is fixed to screen height
 			scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
 			scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
+
+			if(scope.syncCams === true){  
+				scope.syncedControl.control.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
+				scope.syncedControl.control.panUp( 2 * deltaY * targetDistance / element.clientHeight );
+			} 
+			scope.syncedControl.update();
 
 		} else if ( scope.object.top !== undefined ) {
 
@@ -385,7 +394,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 	};
 
 	function onMouseDown( event ) {
-		
+		 
 		var clickedOndollOrGear = false;
 		if( dollOnDocumentMouseDown !== undefined) { 
 			clickedOndollOrGear = dollOnDocumentMouseDown(event);
@@ -480,9 +489,12 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			panStart.copy( panEnd );
 
 		}
-
+ 
+		if(scope.syncCams === true){  
+			scope.syncedControl.camera.position.set(scope.object.position.x, scope.object.position.y, scope.object.position.z);
+		} 
+		scope.syncedControl.update();
 		scope.update();
-
 	};
 
 	function onMouseUp( /* event */ ) {
@@ -524,6 +536,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			scope.dollyIn();
 
 		}
+
+		if(scope.syncCams === true){  
+			scope.syncedControl.camera.position.set(scope.object.position.x, scope.object.position.y, scope.object.position.z);
+		} 
+		scope.syncedControl.update();
 
 		scope.update();
 		scope.dispatchEvent( startEvent );
@@ -683,7 +700,10 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 				state = STATE.NONE;
 
 		}
-
+		if(scope.syncCams === true){  
+			scope.syncedControl.camera.position.set(scope.object.position.x, scope.object.position.y, scope.object.position.z);
+		} 
+		scope.syncedControl.update();
 	};
 
 	function touchend( /* event */ ) {
