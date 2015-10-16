@@ -1608,7 +1608,6 @@ define([
                     var tempValue = jQuery('.property-block.selected .resolution p').html().split(" ");
                     argument['ionicValue'] = tempValue[0];
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
-                    console.log(argument);
                     PubSub.publish(events.ATOM_SELECTION, argument);
                     $elementContainer.show('slow');
                     $elementContainer.find('a').removeAttr('class');
