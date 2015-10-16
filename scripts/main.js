@@ -535,7 +535,8 @@ require([
     motifEditor.setAtomsTangency(param);
   });
   menu.onAtomVisibility(function(message, param) { 
-    motifEditor.atomVisibility(param);
+    motifEditor.atomVisibility(param); 
+    lattice.atomVisibility(param); 
   });
   menu.setDimsManually(function(message, param) { 
     motifEditor.setDimsManually(param);

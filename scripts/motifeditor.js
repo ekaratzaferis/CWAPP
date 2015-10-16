@@ -145,7 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-     
+
     // late feature
     if(this.newSphere !== undefined){
       this.removeFromUnitCell(this.newSphere.getID());
@@ -170,8 +170,8 @@ define([
 
     var _this = this ;
     
-    var radius = (params.ionicIndex === '0') ? params.radius : parseFloat(params.ionicValue);
-    radius /= 100;
+    var radius = parseFloat(params.ionicValue);
+    console.log(params);
     var newId = "_"+produceUuid() ;
     var p = new THREE.Vector3(0,0,0);
 
