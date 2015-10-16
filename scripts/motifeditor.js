@@ -1555,12 +1555,23 @@ define([
   Motifeditor.prototype.calculateCellsPoints = function (){
     var _this = this ; 
   };
-  Motifeditor.prototype.getMotif = function (store){
+  Motifeditor.prototype.getMotif = function (store){return;
     var _this = this, copiedAr = this.motifsAtoms.slice() ;
-    
+
     if(_.isUndefined(store) && !_.isUndefined(this.newSphere) && _.isUndefined( _.find(_this.motifsAtoms, function(atom){ return atom.getID() == _this.newSphere.getID(); }) )) 
     {
-      copiedAr.push(_this.newSphere); 
+      copiedAr.push(
+        {
+          "object3d" : {
+            "position" : { 
+              "x": _this.newSphere.object3d.position.x, 
+              "y":_this.newSphere.object3d.position.y, 
+              "z": _this.newSphere.object3d.position.z
+            }
+          }, 
+          getRadius: function() { return _this.newSphere.getRadius(); }
+        }
+      ); 
     }
     return copiedAr; 
 
@@ -1620,6 +1631,7 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent
+            this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.lastSphereAdded = this.newSphere ;
@@ -1661,6 +1673,7 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent
+            this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.newSphere.blinkMode(false);
@@ -1790,7 +1803,7 @@ define([
             'atomPosX' : arg.atomPos.x,
             'atomPosY' : arg.atomPos.y,
             'atomPosZ' : arg.atomPos.z,  
-            'atomColor' : arg.color,  
+            'atomColor' : color,  
             'atomOpacity' : 10,   
             'Aa' : this.cellParameters.scaleZ,
             'Ab' : this.cellParameters.scaleX,
@@ -1842,7 +1855,7 @@ define([
             'atomPosX' : arg.atomPos.x,
             'atomPosY' : arg.atomPos.y,
             'atomPosZ' : arg.atomPos.z,  
-            'atomColor' : arg.color,  
+            'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
             'atomName' : arg.atomName.toLowerCase()
           }
@@ -1881,7 +1894,7 @@ define([
       $("disableME").prop("disabled",false); 
     }
   };
-  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel)  {
+  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor)  {
     var _this = this ;  
     if(action === 'delete'){
        this.menu.editSavedAtom({
@@ -1910,6 +1923,7 @@ define([
         'visible':true,
         'elementCode':name.toLowerCase(),
         'elementName':name,
+        'atomColor':atomColor,
         'atomPos': atomPos
       });
 
@@ -2329,6 +2343,7 @@ define([
               'edit',
               'bg-light-gray',
               this.newSphere.tangentParent
+              this.newSphere.color
             );
              
             this.newSphere.blinkMode(false);
@@ -2379,6 +2394,7 @@ define([
       }
       
       if(doNotChangeState === undefined){
+        console.log(this.newSphere.color);
         PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : '#'+this.newSphere.color });
       }
     } 

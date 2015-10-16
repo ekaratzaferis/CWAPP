@@ -1068,15 +1068,14 @@ define([
     directional.direction.updateDirectionPos(start, end); 
   };
   Lattice.prototype.atomVisibility = function(arg){ 
-    console.log(this.actualAtoms);
-    return;
+
     for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
-      if(this.actualAtoms[i].myID === arg.id){
+      if(this.actualAtoms[i].identity === arg.id){
         this.actualAtoms[i].object3d.visible = arg.visible;
       }
     }
-    for (var i = this.motifsAtoms.length - 1; i >= 0; i--) { 
-      if(this.actualAtoms[i].getID() === arg.id){
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
+      if(this.actualAtoms[i].identity === arg.id){
         this.actualAtoms[i].object3d.visible = arg.visible;
       }
     }  
