@@ -2185,6 +2185,7 @@ define([
 
                 case 'edit':
                     current.replaceWith(HTMLQuery);
+                    current.find('.element').css('background',argument['atomColor']+'!important');
                     break;
 
                 case 'delete':
@@ -2356,6 +2357,7 @@ define([
             });
         };
         Menu.prototype.editMEInputs = function(argument){
+            console.log(argument);
             _.each(atomParameters, function($parameter, k) {
                 if (argument[k] !== undefined){
                     switch(k){
@@ -2473,6 +2475,8 @@ define([
                     $elementContainer.find('a').removeAttr('class');
                     $elementContainer.find('a').attr('class',newAtom+' ch');
                     $elementContainer.find('a').html(newAtomName);
+                    console.log(argument['atomColor']+'!important');
+                    $elementContainer.find('a').css('background',argument['atomColor']+'!important');
                     $elementContainer.show('slow');
                 }
             }
