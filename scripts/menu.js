@@ -1546,20 +1546,22 @@ define([
                     _.each($ionicValues, function($parameter, k){
                         var ionicValue;
                         var ionicIndex = jQuery($parameter).find('p').html();
-                        console.log(ionicIndex);
                         if ( $atomsData[preview.html()] !== undefined ){
                             if ($atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
-                                if ( ionicIndex === '≡') ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
+                                if ( ionicIndex === '≡') {
+                                    ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
+                                    jQuery($parameter).addClass('selected');
+                                }
                                 else ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
                                 jQuery($parameter).show('fast');
                                 jQuery($parameter).removeClass('disabled');
-                                jQuery($parameter).find('.resolution p').html((ionicValue/100).toFixed(3));
+                                jQuery($parameter).find('.resolution p').html((ionicValue/100).toFixed(3) + ' &Aring;');
                             }
                             else if ( ionicIndex === '0' ){
                                 if ( $atomsData[preview.html()]['radius'] !== 0 ) {
                                     jQuery($parameter).show('fast');
                                     jQuery($parameter).addClass('selected');
-                                    jQuery($parameter).find('.resolution p').html(($atomsData[preview.html()]['radius']/100).toFixed(3));
+                                    jQuery($parameter).find('.resolution p').html(($atomsData[preview.html()]['radius']/100).toFixed(3) + ' &Aring;');
                                 }
                                 else {
                                     jQuery($parameter).addClass('disabled');
@@ -1595,14 +1597,13 @@ define([
                                 argument[a] = 'None';
                                 break;
                             case 'atomColor':
-                                argument[a] = $param.spectrum("get").toHex();
+                                argument[a] = $atomsData[argument["element"]]['color'];
                                 break;
                             default:
                                 argument[a] = $param.val();
                                 break;
                         }
                     });
-                    argument['radius'] = $atomsData[selected.html()]['radius'];
                     argument['ionicIndex'] = jQuery('.property-block.selected .serial p').html();
                     var tempValue = jQuery('.property-block.selected .resolution p').html().split(" ");
                     argument['ionicValue'] = tempValue[0];
