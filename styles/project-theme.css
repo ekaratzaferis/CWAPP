@@ -886,6 +886,7 @@ width: 70px;}
 .bottom-action-bar-container .action {
   text-align: center; }
   .bottom-action-bar-container .action a {
+    height: 100%;
     width: 100%;
     padding: 15px;
     display: block; }
@@ -1601,6 +1602,8 @@ width: 70px;}
       .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .pnd-detail-block .pnd-detail-container .color-picker-container .color-label {
         margin-bottom: 2px; }
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .action-save a {
+      height: 100%;
+        overflow: hidden;
       position: relative;
       display: block;
       padding: 10px; }
@@ -3407,4 +3410,12 @@ input.disabled[type="text"]{ background-color: black; }
     text-align: center;
     color: white !important; 
     font-size: 15px !important; 
+}
+#planesTooltip{
+    overflow:hidden !important;
+    height:1% !important;
+}
+#savePlane{ 
+    overflow:hidden !important;
+    height:1% !important;
 }
