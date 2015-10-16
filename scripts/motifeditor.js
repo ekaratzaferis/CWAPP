@@ -1631,6 +1631,7 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent
+            this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.lastSphereAdded = this.newSphere ;
@@ -1672,6 +1673,7 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent
+            this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.newSphere.blinkMode(false);
@@ -1892,7 +1894,7 @@ define([
       $("disableME").prop("disabled",false); 
     }
   };
-  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel)  {
+  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor)  {
     var _this = this ;  
     if(action === 'delete'){
        this.menu.editSavedAtom({
@@ -1921,6 +1923,7 @@ define([
         'visible':true,
         'elementCode':name.toLowerCase(),
         'elementName':name,
+        'atomColor':atomColor,
         'atomPos': atomPos
       });
 
@@ -2340,6 +2343,7 @@ define([
               'edit',
               'bg-light-gray',
               this.newSphere.tangentParent
+              this.newSphere.color
             );
              
             this.newSphere.blinkMode(false);
