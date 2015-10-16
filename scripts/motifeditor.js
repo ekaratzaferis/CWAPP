@@ -171,7 +171,7 @@ define([
     var _this = this ;
     
     var radius = parseFloat(params.ionicValue);
-    console.log(params);
+     
     var newId = "_"+produceUuid() ;
     var p = new THREE.Vector3(0,0,0);
 
@@ -192,7 +192,7 @@ define([
       true, 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
-      '#'+params.atomColor,
+      params.atomColor,
       params.tangency, 
       params.element, 
       newId, 
@@ -204,7 +204,7 @@ define([
     this.addAtomInCell( 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
-      '#'+params.atomColor, 
+      params.atomColor, 
       params.tangency, 
       params.element, 
       newId,
@@ -216,7 +216,7 @@ define([
       events.EDITOR_STATE,{
         'state' : "creating", 
         'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
-        'color' : '#'+params.atomColor
+        'color' : params.atomColor
       }
     ); 
      
