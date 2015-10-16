@@ -457,10 +457,11 @@ require([
         //lattice.changeView({'mode': 'Classic', 'reset': true});
       }
     }
-  });
-
+  }); 
   menu.atomSelection(function(message , arg) {
-    motifEditor.selectElem(arg);
+    motifEditor.selectElem(arg); 
+    var parameters = motifEditor.getDimensions() ;
+    //lattice.setMotif(motifEditor.getMotif(), parameters)  ;
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
