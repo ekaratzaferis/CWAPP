@@ -2465,7 +2465,6 @@ define([
                 else $tangency.parent().removeClass('purpleThemeActive');
             }
             if (argument['atomName'] !== undefined){
-                console.log('poutsa'+argument['atomColor']);
                 if (argument['atomName'] === '-') $elementContainer.hide('slow');
                 else {
                     var newAtom = 'ch-' + argument['atomName'];
