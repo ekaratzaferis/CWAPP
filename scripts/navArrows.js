@@ -191,7 +191,7 @@ NavArrows.prototype.setVisibility = function(bool) {
 NavArrows.prototype.updateLengths = function(params) {
     var l = this.arrowLength ;
     var _this = this;  
-console.log(99);
+ 
     if(params.scaleZ !== undefined) this.scales.aScale = (parseFloat(params.scaleZ)).toFixed(1);  
     if(params.scaleX !== undefined) this.scales.bScale  = (parseFloat(params.scaleX)).toFixed(1);   
     if(params.scaleY !== undefined) this.scales.cScale = (parseFloat(params.scaleY)).toFixed(1);   
@@ -246,7 +246,7 @@ NavArrows.prototype.updateAngles = function(angle) {
     var l = this.arrowLength ;
     var _this = this; 
     var matrix;
- console.log(22);
+ 
     if(angle.alpha !== undefined) _this.angles.alpha = (parseInt(angle.alpha)).toFixed(1);   
     if(angle.beta  !== undefined) _this.angles.beta  = (parseInt(angle.beta)).toFixed(1);   
     if(angle.gamma !== undefined) _this.angles.gamma = (parseInt(angle.gamma)).toFixed(1);   
