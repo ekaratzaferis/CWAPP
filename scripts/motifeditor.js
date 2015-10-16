@@ -1555,7 +1555,7 @@ define([
   Motifeditor.prototype.calculateCellsPoints = function (){
     var _this = this ; 
   };
-  Motifeditor.prototype.getMotif = function (store){return;
+  Motifeditor.prototype.getMotif = function (store){return; // edw
     var _this = this, copiedAr = this.motifsAtoms.slice() ;
 
     if(_.isUndefined(store) && !_.isUndefined(this.newSphere) && _.isUndefined( _.find(_this.motifsAtoms, function(atom){ return atom.getID() == _this.newSphere.getID(); }) )) 
@@ -1630,7 +1630,7 @@ define([
             this.newSphere.elementName,
             'edit',
             'bg-light-gray',
-            this.newSphere.tangentParent
+            this.newSphere.tangentParent,
             this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1672,7 +1672,7 @@ define([
             this.newSphere.elementName,
             'edit',
             'bg-light-gray',
-            this.newSphere.tangentParent
+            this.newSphere.tangentParent,
             this.newSphere.color
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -2342,7 +2342,7 @@ define([
               this.newSphere.elementName,
               'edit',
               'bg-light-gray',
-              this.newSphere.tangentParent
+              this.newSphere.tangentParent,
               this.newSphere.color
             );
              
