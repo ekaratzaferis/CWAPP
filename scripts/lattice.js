@@ -354,24 +354,36 @@ define([
 
     this.forwardTransformations();  
     
-    _.each(_this.points, function(point,kk) { 
+    _.each(this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
-      _.each(motif, function(atom) {   
-        var a = atom.object3d.position.clone();   
+      _.each(motif, function(atom) {  
+        var opacity,wireframe,color,a;
+        if(atom.object3d === undefined){
+          opacity = atom.opacity/10;
+          wireframe = atom.wireframe;
+          color = atom.color;
+          a = atom.position.clone();
+        }  
+        else{
+          opacity = atom.object3d.children[0].material.opacity;
+          wireframe = atom.object3d.children[1].material.wireframe;
+          color = atom.object3d.children[0].material.color;
+          a = atom.object3d.position.clone(); 
+        }
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
             atom.getRadius(), 
-            atom.object3d.children[0].material.color,
+            color,
             atom.elementName, 
             atom.getID(),
             a.x,
             a.y,
             a.z,
             p,
-            atom.object3d.children[1].material.map.image.currentSrc,
-            atom.object3d.children[0].material.opacity,
-            atom.object3d.children[2].material.wireframe,
+            '/Images/'+atom.texture+'.png',
+            opacity,
+            wireframe,
             kk
           )  
         );
@@ -723,15 +735,15 @@ define([
         var color, texture, opacity, wireframe;
         if(!_.isUndefined(atom.object3d) && !atom.object3d.children) { 
           color = atom.color; 
-          texture = atom.texture;
-          opacity = atom.opacity;
+          texture = undefined;
+          opacity = atom.opacity/10;
           wireframe = atom.wireframe; 
         }
         else{ 
           atom.object3d.children[0].material.color ; 
-          texture = atom.object3d.children[1].material.map.image.currentSrc ;
-          opacity = atom.object3d.children[1].material.opacity ;
-          wireframe = atom.object3d.children[2].material.wireframe ;
+          texture = undefined;
+          opacity = atom.object3d.children[0].material.opacity ;
+          wireframe = atom.object3d.children[1].material.wireframe ;
           color = atom.color ;
         }
         _this.actualAtoms.push( 

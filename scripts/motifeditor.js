@@ -145,7 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-
+    console.log(params);
     // late feature
     if(this.newSphere !== undefined){
       this.removeFromUnitCell(this.newSphere.getID());
@@ -187,7 +187,7 @@ define([
         params.element
       ); 
     } 
-    
+ 
     var a = new AtomSphere( 
       true, 
       new THREE.Vector3(p.x,p.y,p.z), 
@@ -1478,18 +1478,7 @@ define([
       this.checkForLengthFix(); // calculate the least acceptable length for the cell
     }
      
-  };
-  Motifeditor.prototype.setAtomMovementUI = function (action){
-    return; 
-    this.menu.setOnOffSlider('atomPosX', action);
-    this.menu.setOnOffSlider('atomPosY', action);
-    this.menu.setOnOffSlider('atomPosZ', action);     
-      
-    $("#atomPosX").prop("disabled",action);
-    $("#atomPosY").prop("disabled",action);
-    $("#atomPosZ").prop("disabled",action);
-  };
-
+  };  
   Motifeditor.prototype.fixAtomPosition = function(otherAtom,axis){
     var _this = this,sign = 1; 
 
@@ -1535,44 +1524,58 @@ define([
     var _this = this; 
      
     if(!_.isUndefined(param.atomOpacity) ) { 
-      _this.newSphere.setOpacity(param.atomOpacity);
-      _this.unitCellAtomsOpacity(_this.newSphere.getID(),param.atomOpacity);
+      this.newSphere.setOpacity(param.atomOpacity);
+      this.unitCellAtomsOpacity(this.newSphere.getID(),param.atomOpacity);
     }
     else if(!_.isUndefined(param.atomColor)){ 
       var op =  parseInt($("#atomOpacity").val());
-      _this.newSphere.setMaterial("#"+param.atomColor, op);
-      _this.colorUnitCellAtoms(_this.newSphere.getID(), "#"+param.atomColor);
+      this.newSphere.setMaterial("#"+param.atomColor, op);
+      this.colorUnitCellAtoms(this.newSphere.getID(), "#"+param.atomColor);
     }
     else if(!_.isUndefined(param.atomTexture)){ 
-      _this.newSphere.setMaterialTexture(param.atomTexture);
-      _this.unitCellAtomsTexture(_this.newSphere.getID(), param.atomTexture);
+      this.newSphere.setMaterialTexture(param.atomTexture);
+      this.unitCellAtomsTexture(this.newSphere.getID(), param.atomTexture);
     } 
     else if(!_.isUndefined(param.wireframe)){ 
-      _this.newSphere.wireframeMat(param.wireframe);
-      _this.unitCellAtomsWireframe(_this.newSphere.getID(), param.wireframe);
+      this.newSphere.wireframeMat(param.wireframe);
+      this.unitCellAtomsWireframe(this.newSphere.getID(), param.wireframe);
     }  
-  }; 
-  Motifeditor.prototype.calculateCellsPoints = function (){
-    var _this = this ; 
-  };
-  Motifeditor.prototype.getMotif = function (store){return; // edw
+  };  
+  Motifeditor.prototype.getMotif = function (store){ 
     var _this = this, copiedAr = this.motifsAtoms.slice() ;
-
-    if(_.isUndefined(store) && !_.isUndefined(this.newSphere) && _.isUndefined( _.find(_this.motifsAtoms, function(atom){ return atom.getID() == _this.newSphere.getID(); }) )) 
+     
+    /*
     {
-      copiedAr.push(
-        {
-          "object3d" : {
-            "position" : { 
-              "x": _this.newSphere.object3d.position.x, 
-              "y":_this.newSphere.object3d.position.y, 
-              "z": _this.newSphere.object3d.position.z
-            }
-          }, 
-          getRadius: function() { return _this.newSphere.getRadius(); }
-        }
-      ); 
+      "object3d" : {
+        "position" : { 
+          "x": _this.newSphere.object3d.position.x, 
+          "y": _this.newSphere.object3d.position.y, 
+          "z": _this.newSphere.object3d.position.z,
+          clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); }
+        },
+        'children' : [
+          
+        ]
+      }, 
+      getRadius: function() { return _this.newSphere.getRadius(); }
     }
+    */
+
+    // store needs fix here
+    if(this.newSphere !== undefined){ 
+      var newSphereHelper = jQuery.extend(true, {}, this.newSphere);
+      newSphereHelper.position = { 
+        "x": _this.newSphere.position.x,
+        "y": _this.newSphere.position.y,
+        "z": _this.newSphere.position.z,
+        clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); }
+      };
+      copiedAr.push(
+        newSphereHelper
+      );
+
+    }
+     
     return copiedAr; 
 
   };
@@ -3571,15 +3574,7 @@ define([
     dimensions.xDim += theZOffset;
     dimensions.zDim += theZOffset;
     return dimensions.xDim;
-  };
-  Motifeditor.prototype.changeCellAtomColor = function(id){
-    
-    for (var i = 0; i<this.unitCellAtoms.length; i++) { 
-      if(this.unitCellAtoms[i].getID() == id ){
-        //this.unitCellAtoms[i].changeColor('#FF0000', 250); 
-      } 
-    }  
-  };
+  }; 
   Motifeditor.prototype.transformHelper = function(vector){
     var _this = this ;
     _.each(shearing, function(k) {  

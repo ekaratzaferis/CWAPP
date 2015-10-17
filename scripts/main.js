@@ -461,7 +461,7 @@ require([
   menu.atomSelection(function(message , arg) {
     motifEditor.selectElem(arg); 
     var parameters = motifEditor.getDimensions() ;
-    //lattice.setMotif(motifEditor.getMotif(), parameters)  ;
+    lattice.setMotif(motifEditor.getMotif(), parameters)  ;
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);

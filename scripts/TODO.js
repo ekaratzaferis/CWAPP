@@ -23,7 +23,7 @@ gia kapoio logo planes/directions me dekadiko exoun themata sto idi
 TODO list 
     
     6.  hex faces optimization 
- 
+    33. na svisw ola ta textures
     9.  change the recreate of hex and use transform function as others
     10. focal point na einai synced me to synced cameras
     16. miller objects recreate function can be optimized
@@ -33,6 +33,7 @@ TODO list
     20. available atoms list for rotating in drag mode shouldnt have the NewSphere atom in. 
     22. http://jsfiddle.net/kgxeuz24/7/ xyz label positions
     25. when change view, if you change tab and return in MT bug   
+    33. ta materials na ginoun global (px wireframe)
     
 List with Ideas
 

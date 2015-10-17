@@ -20,8 +20,7 @@ define([
     var _this = this; 
     this.radius = radius;  
     this.material;
-    this.latticeIndex = latticeIndex;
-    this.materialLetter;
+    this.latticeIndex = latticeIndex; 
     this.materials;
     this.tangency = tangency; 
     this.wireframe = wireframe; 
@@ -32,55 +31,23 @@ define([
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0}; 
 
-    var textureLoader = new THREE.TextureLoader();
-    //textureLoader.load("Images/atoms/"+elementName+".png",
-    textureLoader.load("Images/atoms/None.png",
-      function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, color, position) ;
-      }
-    );  
-  }
-  UnitCellAtom.prototype.setMaterialTexture = function(texture) {
-    var _this = this;
-    var textureLoader = new THREE.TextureLoader();
-    textureLoader.load("Images/atoms/"+texture+".png",
-      function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.updateText(tex) ;
-      }
-    );  
+    this.addMaterial(color, position) ;
+       
   };
-  UnitCellAtom.prototype.updateText = function(texture){
-    var _this = this; 
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ map : texture, transparent:true,opacity:this.opacity/10  });
-    _this.object3d.children[1].material.needsUpdate = true;
-
-  };
-  UnitCellAtom.prototype.setOpacity = function( opacity) { 
-    if(_.isUndefined(opacity)) return;
-    this.colorMaterial = new THREE.MeshPhongMaterial({ color:this.colorMaterial.color, transparent: true, opacity: opacity/10  });
-    this.object3d.children[0].material.opacity = opacity/10  ;
-    this.object3d.children[1].material.opacity = opacity/10  ;
-    this.object3d.children[0].material.needsUpdate = true;
-    this.object3d.children[1].material.needsUpdate = true; 
-  };
-  UnitCellAtom.prototype.addMaterial = function(letterText, color, position) {
+  UnitCellAtom.prototype.addMaterial = function(color, position) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:this.opacity/10   }) ;
-    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText, transparent:true,opacity:this.opacity/10 }) ;
+
+    this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:this.opacity/10   }) ; 
 
     if(this.wireframe == true){
-      _this.materials =  [  
-        _this.colorMaterial,
-        _this.materialLetter,
+      this.materials =  [  
+        this.colorMaterial, 
         new THREE.MeshBasicMaterial({color : "#000000", wireframe: true, opacity:0})
       ];
     }
     else{
-      _this.materials =  [  
-        _this.colorMaterial,
-        _this.materialLetter,
+      this.materials =  [  
+        this.colorMaterial, 
          new THREE.MeshPhongMaterial({transparent:true, opacity:0})
       ]; 
     }
@@ -95,16 +62,21 @@ define([
     _this.object3d.position.fromArray(position.toArray()); 
     UnitCellExplorer.add(_this);  
   };
-
+  UnitCellAtom.prototype.setOpacity = function( opacity) { 
+    if(_.isUndefined(opacity)) return;
+    this.colorMaterial = new THREE.MeshPhongMaterial({ color:this.colorMaterial.color, transparent: true, opacity: opacity/10  });
+    this.object3d.children[0].material.opacity = opacity/10  ; 
+    this.object3d.children[0].material.needsUpdate = true; 
+  };
   UnitCellAtom.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;
     if(bool === true){ 
-      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
+      this.object3d.children[1].material  = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
     }
     else{
-      this.object3d.children[2].material  = new THREE.MeshPhongMaterial({transparent:true, opacity:0}) ;
+      this.object3d.children[1].material  = new THREE.MeshPhongMaterial({transparent:true, opacity:0}) ;
     }
-    this.object3d.children[2].material.needsUpdate = true;  
+    this.object3d.children[1].material.needsUpdate = true;  
   };
   UnitCellAtom.prototype.subtractedSolidView = function(box, pos) {
     var _this = this; 
@@ -121,7 +93,7 @@ define([
     var geom = THREE.CSG.fromCSG(geometry);
     var finalGeom = assignUVs(geom);
     
-    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
+    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [this.colorMaterial ]); 
     sphereCut.children[0].receiveShadow = true; 
     sphereCut.children[0].castShadow = true; 
 
@@ -152,7 +124,7 @@ define([
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
   
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [_this.materialLetter, _this.colorMaterial ]);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [ this.colorMaterial ]);
     sphere.scale.set(this.radius, this.radius, this.radius);
 
     sphere.children[0].receiveShadow = true; 

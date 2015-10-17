@@ -32,38 +32,34 @@ define([
     this.subtractedForGear = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
     this.viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false};
-    var textureLoader = new THREE.TextureLoader();
-    textureLoader.load(texture,
-      function(tex){
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(tex, color, position, opacity, wireframe,id) ;
-      }
-    );  
+    //var textureLoader = new THREE.TextureLoader();
+    this.addMaterial(color, position, opacity, wireframe,id) ;
+        
   }
-  CrystalAtom.prototype.addMaterial = function(letterText, color, position, opacity, wireframe, identity) {
+  CrystalAtom.prototype.addMaterial = function(color, position, opacity, wireframe, identity) {
     var _this = this ;
-    _this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
-    _this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
+    this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
+   // this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
     var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
     if(wireframe) {
       wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
     }
   
-    _this.materials =  [  
-      _this.colorMaterial,
-      _this.materialLetter,
+    this.materials =  [  
+      this.colorMaterial,
+      //this.materialLetter,
       wireMat
     ];
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , _this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , this.materials);
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.identity = identity ;
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
-    _this.object3d = sphere;
-    _this.object3d.position.set(position.x, position.y, position.z);
-    Explorer.add(_this); 
+    this.object3d = sphere;
+    this.object3d.position.set(position.x, position.y, position.z);
+    Explorer.add(this); 
 
   };  
   CrystalAtom.prototype.GradeLimited = function() {
@@ -87,7 +83,7 @@ define([
     var geom = THREE.CSG.fromCSG(geometry);
     var finalGeom = assignUVs(geom);
     
-    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [_this.materialLetter, _this.colorMaterial ]); 
+    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
     
     if(gear !== undefined){
       this.subtractedForGear.object3d  = sphereCut ;
@@ -129,7 +125,7 @@ define([
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [_this.materialLetter, _this.colorMaterial ]);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ _this.colorMaterial ]);
    
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
