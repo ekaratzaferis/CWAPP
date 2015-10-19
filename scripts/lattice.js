@@ -1905,7 +1905,7 @@ define([
         });
       }
     }
-    else{/*
+    else{
       if( h!=0 && k!=0 && l!=0) { 
         var a = new THREE.Vector3( (k<0 ? (1+k) : k) + _x,  (l<0 ? 1 : 0 ) + _y , (h<0 ? 1 : 0) + _z); 
         var b = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x,  (l<0 ? (1+l) : l ) + _y, (h<0 ? 1 : 0) + _z ); 
@@ -1947,7 +1947,7 @@ define([
           }; 
           _this.forwardTransformationsMiller(_this.tempPlanes[id]); 
         }
-      }*/
+      }
     }  
   };  
   Lattice.prototype._planeState = function (state){ 

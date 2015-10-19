@@ -788,11 +788,8 @@ define([
       }  
 
       var newPerc = 100 * this.cellParameters.scaleX/this.cellVolume.xInitVal ;
-      /*this.menu.setSliderValue("cellVolume", 100);
-      this.menu.setSliderMin("cellVolume", 90 );
-      $("#cellVolume").val(100); 
-      */
-
+      this.menu.setSliderValue("cellVolume", 100); 
+       
     } 
 
     this.configureCellPoints('manual'); // final fix
@@ -1742,8 +1739,7 @@ define([
     this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
     var color = (arg.atomColor === undefined) ? '#ffffff' : (arg.atomColor);
-    
-    console.log( arg);
+     
     switch(arg.state) {
       case "initial":  
         this.menu.rotAnglesSection(false); 
@@ -4650,8 +4646,7 @@ define([
       this.leastVolume();
          
       $("#cellVolume").val(100);   
-      this.menu.setSliderValue("cellVolume", 100 ); 
-      this.menu.setSliderMin("cellVolume", 90 );
+      this.menu.setSliderValue("cellVolume", 100 );  
 
       this.cellVolume.xInitVal = this.cellParameters.scaleX;
       this.cellVolume.yInitVal = this.cellParameters.scaleY;
