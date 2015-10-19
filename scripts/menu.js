@@ -550,19 +550,17 @@ define([
             // Atom Ionic Values
             require(['atoms'], function(atomsInfo) {
                 $atomsData = atomsInfo;
-                _.each($periodicModal, function($parameter, k){
-                   //console.log($parameter); 
-                });
             });
             
         /* ---------------------
            ScrollBars and Window
            --------------------- */
             $scrollBars.mCustomScrollbar();
+            jQuery(window).ready(function(){$progressBarWrapper.fadeOut(2500);});
             jQuery(window).resize(function() {
               app_container();
             });
-            jQuery(window).on('load change update', function(){
+            jQuery(window).on('change update', function(){
                 init_dimensions();
                 jQuery('#bravais_lattice_modal').on('shown.bs.modal', function()
                 {
@@ -706,6 +704,7 @@ define([
             });
             _.each(latticeParameters, function($parameter, k) {
                 if ( ($parameter.attr('id') == 'alpha')|($parameter.attr('id') == 'beta')|($parameter.attr('id') == 'gamma')) $parameter.val(90);
+                else if ( ($parameter.attr('id') == 'scaleX')|($parameter.attr('id') == 'scaleY')|($parameter.attr('id') == 'scaleZ')) $parameter.val(3);
                 else $parameter.val(1);
 
                 if ( ($parameter.attr('id') !== 'repeatX')&&($parameter.attr('id') !== 'repeatY')&&($parameter.attr('id') !== 'repeatZ')){
@@ -725,7 +724,7 @@ define([
                 }
             });
             _.each(lengthSlider, function(name) {
-               _this.setSlider(name,1,1,20,0.01,events.LATTICE_PARAMETER_CHANGE); 
+               _this.setSlider(name,1,1,20,0.001,events.LATTICE_PARAMETER_CHANGE); 
             });
             _.each(angleSliders, function(name) {
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
@@ -917,7 +916,7 @@ define([
                 jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
                 PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
             });
-            _this.setSlider('cellVolume',100,10,400,0.1,events.CELL_VOLUME_CHANGE);
+            _this.setSlider('cellVolume',100,90,400,0.1,events.CELL_VOLUME_CHANGE);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -1528,6 +1527,8 @@ define([
                 var selected = jQuery('.mh_bravais_lattice_block.selected');
                 if (selected.length > 0) {
                     jQuery('#selected_lattice').text(latticeNames[selected.attr('id')]);
+                    jQuery('#selected_lattice').parent().addClass('disabled');
+                    jQuery('#selected_lattice').addClass('disabled');
                     PubSub.publish(events.LATTICE_CHANGE,selected.attr('id'));
                     // Enable Motif Tab.
                     $motifMEButton.find('a').attr('href','#scrn_motif');
@@ -1538,6 +1539,7 @@ define([
             $periodicModal.on('click',function(){
                 if ( !jQuery(this).hasClass('disabled')){   
                     $periodicModal.removeClass('selected');
+                    $ionicValues.removeClass('selected');
                     jQuery(this).addClass('selected');
                     var preview = jQuery('#tempSelection').find('p');
                     var caller = jQuery(this);
@@ -1584,7 +1586,7 @@ define([
                 }
             });
             $periodicTableButton.on('click', function() {
-                var selected = jQuery('.ch.selected');
+                var selected = jQuery('td.ch.selected');
                 if (selected.length > 0) {
                     argument = {};
                     argument["element"] = selected.html();
@@ -1612,7 +1614,8 @@ define([
                     $elementContainer.show('slow');
                     $elementContainer.find('a').removeAttr('class');
                     $elementContainer.find('a').attr('class',selected.attr('class'));
-                    $elementContainer.find('a').html(selected.html());
+                    if ( (argument['ionicIndex']) !== '0' && (argument['ionicIndex'] !== '3b')) $elementContainer.find('a').html('<span style="font-size:17px;">'+selected.html()+'<sup>'+argument['ionicIndex']+'</sup></span>');
+                    else $elementContainer.find('a').html(selected.html());
                 }
             });
             $ionicValues.click(function(){
@@ -1769,7 +1772,7 @@ define([
             /*jshint unused:false*/
             _.each(latticeParameters, function($latticeParameter, k) {
                 if (_.isUndefined(parameters[k]) === false) {
-                    $latticeParameter.val(parameters[k]); 
+                    //$latticeParameter.val(parameters[k]); 
                 }
             });
             _.each(angleSliders, function(name) {
@@ -2143,6 +2146,7 @@ define([
             var btnState = 'btn-tangent blocked';
             var current = $atomTable.find('#'+argument['id']);
             var level = '';
+            var ionicIndex = '';
 
             _.each(argument, function($parameter, k){
                 switch(k){
@@ -2155,6 +2159,9 @@ define([
                         break;
                     case 'elementName':
                         elementName = $parameter;
+                        break;
+                    case 'ionicIndex':
+                        if ($parameter !== '0' && $parameter !== '3b') elementName = '<span style="font-size:13px;">'+elementName+'<sup>'+argument['ionicIndex']+'</sup></span>';
                         break;
                     case 'atomPos':
                         atomPos = $parameter;
@@ -2470,7 +2477,9 @@ define([
                     var newAtom = 'ch-' + argument['atomName'];
                     var newAtomName = jQuery('.'+newAtom).html();
                     $elementContainer.find('a').attr('class','ch');
-                    $elementContainer.find('a').html(newAtomName);
+                    if (argument['ionicIndex'] !== '0' && argument['ionicIndex'] !== '3b')
+                        $elementContainer.find('a').html('<span style="font-size:17px;">'+newAtomName+'<sup>'+argument['ionicIndex']+'</sup></span>');
+                    else $elementContainer.find('a').html(newAtomName);
                     $elementContainer.find('a').css('background',argument['atomColor']);
                     $elementContainer.show('slow');
                 }
