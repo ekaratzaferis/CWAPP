@@ -145,9 +145,10 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-  
+    console.log(9);
     // late feature
     if(this.newSphere !== undefined){
+      console.log(params);
       this.removeFromUnitCell(this.newSphere.getID());
       this.menu.breakChain({id : this.newSphere.getID(), remove : true});
       this.deleteTangentChild(this.newSphere.getID());

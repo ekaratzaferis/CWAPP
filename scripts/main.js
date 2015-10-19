@@ -579,31 +579,7 @@ require([
     else{
       divWidth = 700 ;
     }
-    
-    var p = $( ".noteTransparent:first" ) ;
-    var position = p.position();
-   
-    $('.noteTransparent').remove();
-      
-    $('<div>', {  
-      style: 'width:'+(divWidth+5)+'px; position:fixed; bottom : 20px; left :20px;',
-    })
-    .addClass( "noteTransparent" ) 
-    .draggable()
-    .append( $('<span>', { 
-      id:'close',
-      text:'X',
-      style: 'margin-left:15px',
-    }).click(function(e) {  
-        $(this).parent().remove();
-      })
-    )
-    .append( $('<div>', { 
-      style: 'width:'+divWidth+'px',
-      text: arg.text
-    })) 
-    .appendTo(document.body);
-
+     
   });
 
   menu.onCameraSyncChange(function(message, param) { 
@@ -757,9 +733,6 @@ require([
       restore.configureState(res.data);
     }); 
   } 
-
-  $("#noteTransparent").draggable();
- 
   
 });
  
