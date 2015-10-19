@@ -9,9 +9,9 @@ define(function() {
     latticeSystem: "rhombohedral",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
-      'scaleX': 1.0,
-      'scaleY': 1.0,
-      'scaleZ': 1.0,
+      'scaleX': 1.000,
+      'scaleY': 1.000,
+      'scaleZ': 1.000,
       'alpha': 60,
       'beta':  60,
       'gamma': 60

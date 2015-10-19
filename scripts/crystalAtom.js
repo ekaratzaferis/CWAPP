@@ -46,8 +46,7 @@ define([
     }
   
     this.materials =  [  
-      this.colorMaterial,
-      //this.materialLetter,
+      this.colorMaterial, 
       wireMat
     ];
 
@@ -70,7 +69,7 @@ define([
     var _this = this;  
     this.viewModeBeen.SubtractedSolid = true;
     if(gear === undefined){
-      Explorer.remove({'object3d':_this.object3d});
+      Explorer.remove({'object3d':this.object3d});
     }
       
     var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
@@ -90,8 +89,8 @@ define([
       Explorer.add(this.subtractedForGear);
     }
     else{
-      _this.object3d = sphereCut; 
-      Explorer.add(_this); 
+      this.object3d = sphereCut; 
+      Explorer.add(this); 
     }
      
     this.helperPos.x = pos.x ;
@@ -106,9 +105,9 @@ define([
   };
   CrystalAtom.prototype.SolidVoid = function( pos) {
     var _this = this;   
-    _this.helperPos.x = pos.x ;
-    _this.helperPos.y = pos.y ;
-    _this.helperPos.z = pos.z ;
+    this.helperPos.x = pos.x ;
+    this.helperPos.y = pos.y ;
+    this.helperPos.z = pos.z ;
     
     this.viewMode = 'SolidVoid'; 
     this.viewModeBeen.SolidVoid = true; 
@@ -118,7 +117,7 @@ define([
   }; 
   CrystalAtom.prototype.classicView = function() {
     var _this = this;
-    if(_this.viewMode === 'GradeLimited'){
+    if(this.viewMode === 'GradeLimited'){
       this.viewMode = 'Classic'; 
       return;
     }
@@ -137,24 +136,24 @@ define([
     this.object3d.position.y = _this.helperPos.y ;
     this.object3d.position.z = _this.helperPos.z ;
 
-    Explorer.add(_this); 
+    Explorer.add(this); 
     Explorer.remove({'object3d':toDestroy}); 
   };
   CrystalAtom.prototype.getID = function() {
     var _this = this ;
-    return _this.myID ;
+    return this.myID ;
   };  
   CrystalAtom.prototype.getName = function() {
     var _this = this ;
-    return _this.elementName ;
+    return this.elementName ;
   };
   CrystalAtom.prototype.setName = function(name) {
     var _this = this ;
-    _this.elementName = name ;
+    this.elementName = name ;
   };
   CrystalAtom.prototype.getRadius = function() {
     var _this = this ;
-    return _this.radius ;
+    return this.radius ;
   }; 
   CrystalAtom.prototype.setMaterial = function(color) {
     var _this = this;
@@ -165,8 +164,8 @@ define([
   };
   CrystalAtom.prototype.collided = function() {
     var _this = this;
-    _this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000" });
-    _this.object3d.children[1].material.needsUpdate = true;
+    this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ color:"#FF0000" });
+    this.object3d.children[1].material.needsUpdate = true;
     setTimeout(function() { 
       _this.object3d.children[1].material = _this.colorMaterial;
       _this.object3d.children[1].material.needsUpdate = true;

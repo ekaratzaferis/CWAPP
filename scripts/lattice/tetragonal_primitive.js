@@ -9,9 +9,9 @@ define(function() {
     latticeSystem: "tetragonal",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
-      'scaleX': 1.0,
-      'scaleY': 1.5,
-      'scaleZ': 1.0,
+      'scaleX': 1.000,
+      'scaleY': 1.500,
+      'scaleZ': 1.000,
       'alpha': 90,
       'beta': 90,
       'gamma': 90

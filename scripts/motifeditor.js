@@ -145,7 +145,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-    console.log(params);
+  
     // late feature
     if(this.newSphere !== undefined){
       this.removeFromUnitCell(this.newSphere.getID());
@@ -196,7 +196,9 @@ define([
       params.tangency, 
       params.element, 
       newId, 
-      10
+      10,
+      false,
+      params.ionicIndex
     );
 
     this.newSphere = a;  
@@ -1634,7 +1636,8 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent,
-            this.newSphere.color
+            this.newSphere.color,
+            this.newSphere.ionicIndex
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.lastSphereAdded = this.newSphere ;
@@ -1676,7 +1679,8 @@ define([
             'edit',
             'bg-light-gray',
             this.newSphere.tangentParent,
-            this.newSphere.color
+            this.newSphere.color,
+            this.newSphere.ionicIndex
           );
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.newSphere.blinkMode(false);
@@ -1738,7 +1742,8 @@ define([
     this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
     var color = (arg.atomColor === undefined) ? '#ffffff' : (arg.atomColor);
-      
+    
+    console.log( arg);
     switch(arg.state) {
       case "initial":  
         this.menu.rotAnglesSection(false); 
@@ -1860,6 +1865,7 @@ define([
             'atomPosZ' : arg.atomPos.z,  
             'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
+            'ionicIndex' : arg.ionicIndex, 
             'atomName' : arg.atomName.toLowerCase()
           }
         );   
@@ -1897,7 +1903,8 @@ define([
       $("disableME").prop("disabled",false); 
     }
   };
-  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor)  {
+  Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
+
     var _this = this ;  
     if(action === 'delete'){
        this.menu.editSavedAtom({
@@ -1927,7 +1934,8 @@ define([
         'elementCode':name.toLowerCase(),
         'elementName':name,
         'atomColor':atomColor,
-        'atomPos': atomPos
+        'atomPos': atomPos,
+        'ionicIndex': ionicIndex
       });
 
       this.menu.highlightAtomEntry({id : id, color : classColor});
@@ -2346,7 +2354,8 @@ define([
               'edit',
               'bg-light-gray',
               this.newSphere.tangentParent,
-              this.newSphere.color
+              this.newSphere.color,
+              this.newSphere.ionicIndex
             );
              
             this.newSphere.blinkMode(false);
@@ -2396,7 +2405,7 @@ define([
         this.setDraggableAtom({'dragMode': true, 'parentId': this.newSphere.tangentParent}, true);
       } 
       if(doNotChangeState === undefined){
-        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : this.newSphere.color });
+        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'ionicIndex' : this.newSphere.ionicIndex,'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity, 'atomColor' : this.newSphere.color });
       }
     } 
   };
@@ -3170,7 +3179,8 @@ define([
       'save',
       'bg-light-purple',
       undefined,
-      this.newSphere.color
+      this.newSphere.color,
+      this.newSphere.ionicIndex
     );
   }; 
   Motifeditor.prototype.atomVisibility = function(arg){ 

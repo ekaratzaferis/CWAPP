@@ -9,9 +9,9 @@ define(function() {
     latticeSystem: "triclinic",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
-      'scaleX': 1.0,
-      'scaleY': 1.2,
-      'scaleZ': 2.5,
+      'scaleX': 1.000,
+      'scaleY': 1.200,
+      'scaleZ': 2.500,
       'alpha': 60,
       'beta':  70,
       'gamma': 80 

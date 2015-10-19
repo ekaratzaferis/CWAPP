@@ -9,9 +9,9 @@ define(function() {
     latticeSystem: "orthorhombic",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
-      'scaleX': 1.5,
-      'scaleY': 2.0,
-      'scaleZ': 1.0,
+      'scaleX': 1.500,
+      'scaleY': 2.000,
+      'scaleZ': 1.000,
       'alpha': 90,
       'beta': 90,
       'gamma': 90
