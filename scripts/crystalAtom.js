@@ -40,8 +40,8 @@ define([
     this.wireframe = bool ;
 
     if(bool === true){ 
-      this.object3d.children[0].material = new THREE.MeshBasicMaterial({color : this.color, opacity:this.opacity}) ;
-      this.object3d.children[1].material = new THREE.MeshBasicMaterial({color : 0x000000, wireframe: true, opacity:0}) ;
+      this.object3d.children[0].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      this.object3d.children[1].material = new THREE.MeshBasicMaterial({color : this.color, wireframe: true, opacity:0}) ;
     }
     else{
       this.object3d.children[0].material = new THREE.MeshPhongMaterial({ color: this.color, transparent:true, opacity:this.opacity }) ;
