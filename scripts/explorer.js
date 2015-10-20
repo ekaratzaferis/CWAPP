@@ -44,14 +44,14 @@ define([
       _this.remove(object);
     });
 
-    this.light = new THREE.SpotLight( 0xFFFFFF, 1 );
+    this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
     this.light.position.set( 300, 300, 60 );
     this.light.castShadow = true;
     this.light.shadowMapWidth = 1024;    // power of 2
     this.light.shadowMapHeight = 1024;
 
-    this.light.shadowCameraNear = 200;   // keep near and far planes as tight as possible
-    this.light.shadowCameraFar = 500;    // shadows not cast past the far plane
+    this.light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
+    this.light.shadowCameraFar = 450;    // shadows not cast past the far plane
     this.light.shadowCameraFov = 20;
     this.light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
     this.light.shadowDarkness = 0.3;

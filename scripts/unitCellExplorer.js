@@ -28,6 +28,7 @@ define([
     PubSub.subscribe(events.REMOVE, function(message, object) {
       _this.remove(object);
     });
+    
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
     this.light.position.set( 300, 300, 60 );
     this.light.castShadow = true;

@@ -24,6 +24,7 @@ define([
     this.color = color; 
     this.offsetX = offsetX; 
     this.offsetY = offsetY; 
+    this.opacity = opacity; 
     this.offsetZ = offsetZ; 
     this.centerOfMotif = new THREE.Vector3(centerOfMotif.x, centerOfMotif.y, centerOfMotif.z); ; 
     this.helperPos = {"x":0, "y":0, "z":0};
@@ -31,18 +32,52 @@ define([
     this.latticeIndex = latticeIndex; 
     this.subtractedForGear = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
-    this.viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false};
-    //var textureLoader = new THREE.TextureLoader();
+    this.viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false}; 
     this.addMaterial(color, position, opacity, wireframe,id) ;
         
   }
+  CrystalAtom.prototype.wireframeMat = function(bool){
+    this.wireframe = bool ;
+
+    if(bool === true){ 
+      this.object3d.children[0].material = new THREE.MeshBasicMaterial({color : this.color, opacity:this.opacity}) ;
+      this.object3d.children[1].material = new THREE.MeshBasicMaterial({color : 0x000000, wireframe: true, opacity:0}) ;
+    }
+    else{
+      this.object3d.children[0].material = new THREE.MeshPhongMaterial({ color: this.color, transparent:true, opacity:this.opacity }) ;
+      this.object3d.children[1].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+    }
+ 
+    this.object3d.children[0].material.needsUpdate = true;  
+    this.object3d.children[1].material.needsUpdate = true;  
+  };
+  CrystalAtom.prototype.flatMode = function(bool){
+   
+    if(bool === true){ 
+      this.object3d.children[0].material =  new THREE.MeshLambertMaterial( { shading: THREE.SmoothShading, color : this.color, transparent:true, opacity:this.opacity} ); 
+    }
+    else{
+      this.object3d.children[0].material = new THREE.MeshPhongMaterial({ color: this.color, transparent:true, opacity:this.opacity }) ; 
+    }
+    this.object3d.children[0].material.needsUpdate = true;    
+  };
+  CrystalAtom.prototype.realisticMode = function(bool){
+   
+    if(bool === true){ 
+      this.object3d.children[0].material =  new THREE.MeshPhongMaterial( { shading: THREE.SmoothShading, color : this.color, transparent:true, opacity:this.opacity} ); 
+    }
+    else{
+      this.object3d.children[0].material = new THREE.MeshPhongMaterial({ shading: THREE.SmoothShading, color: this.color, transparent:true, opacity:this.opacity }) ; 
+    }
+    this.object3d.children[0].material.needsUpdate = true;    
+  };
   CrystalAtom.prototype.addMaterial = function(color, position, opacity, wireframe, identity) {
     var _this = this ;
-    this.colorMaterial = new THREE.MeshPhongMaterial({ color: color,  transparent:true,opacity:opacity    }) ;
+    this.colorMaterial = new THREE.MeshPhongMaterial({  color: color,  transparent:true,opacity:opacity }) ;
    // this.materialLetter = new THREE.MeshPhongMaterial({ map : letterText,  transparent:true,opacity:opacity  }) ;
-    var wireMat = new THREE.MeshPhongMaterial({transparent:true, opacity:0});
+    var wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0});
     if(wireframe) {
-      wireMat = new THREE.MeshPhongMaterial({color : "#000000", wireframe: true, opacity:0}) ;
+      wireMat = new THREE.MeshBasicMaterial({color : "#000000", wireframe: true, opacity:0}) ;
     }
   
     this.materials =  [  

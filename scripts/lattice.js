@@ -72,10 +72,60 @@ define([
     this.viewBox = [];
     this.viewMode = 'Classic';
     this.solidVoidObject ;
+
+    // visualization
+    this.wireframe = false;
   }; 
   Lattice.prototype.changeView = function(arg) {
+  
+    if(arg.mode === 'Classic'){
+      this.wireframe = true;
+      if(this.actualAtoms.length !== 0 ){
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].wireframeMat(true);
+        } 
+      }
+    }
+    else if(arg.mode === 'Subtracted'){return;
+      if(this.actualAtoms.length !== 0 ){  
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+            this.actualAtoms[i].wireframeMat(false);
+          } 
+        }
+      }
+    }
+    else if(arg.mode === 'SolidVoid'){
+      if(this.actualAtoms.length !== 0 ){ 
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+            this.actualAtoms[i].wireframeMat(false);
+          } 
+        } 
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].flatMode(true);
+        } 
+      }
+    }
+    else if(arg.mode === 'gradeLimited'){
+      if(this.actualAtoms.length !== 0 ){ 
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+            this.actualAtoms[i].wireframeMat(false);
+          } 
+        } 
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].realisticMode(true);
+        } 
+      }
+    }
+  };
+  Lattice.prototype.changeView_ = function(arg) {
 
-    var _this = this, i =0;
+    var _this = this, i = 0;
     this.viewMode = arg.mode ;
     
     this.menu.resetProgressBar( 'Processing...'); 
@@ -1471,7 +1521,7 @@ define([
     
     var lparams = this.menu.getLatticeParameters();
 
-    if(lparams.repeatX >= 3 || lparams.repeatY >= 3 || lparams.repeatZ >= 3 ) { 
+    if((lparams.repeatX >= 3 || lparams.repeatY >= 3 || lparams.repeatZ >= 3) && (latticeParameters.repeatX !== undefined || latticeParameters.repeatY !== undefined || latticeParameters.repeatZ !== undefined)) { 
       this.menu.resetProgressBar('Constructing lattice...');
     }
  

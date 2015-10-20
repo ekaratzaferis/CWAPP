@@ -67,7 +67,8 @@ require([
   'sceneResizer',
   'rStats', 
   'rStatsExtras', 
-  'leapMotionHandler'
+  'leapMotionHandler',
+  'renderingMode',
 ], function(
   PubSub, 
   _, 
@@ -100,7 +101,8 @@ require([
   SceneResizer, 
   RStats, 
   RStatsExtras, 
-  LeapMotionHandler
+  LeapMotionHandler,
+  RenderingMode
 ) {
   var menu = new Menu();
   
@@ -255,6 +257,9 @@ require([
 
   // leap motion
   var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal, soundMachine, dollEditor, keyboard);
+
+  // rendering modes
+  var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -649,8 +654,17 @@ require([
   menu.onCellViewChange(function(message, which) { 
     motifEditor.setCSGmode(which);
   });
-  menu.onCrystalViewChange(function(message, which) { 
-    lattice.changeView(which);
+  menu.onCrystalViewChange(function(message, arg) { 
+    lattice.changeView(arg);
+    motifEditor.renderingMode(arg);
+
+
+    renderingModes.setMode(arg);
+    crystalRenderer.renderer.shadowMapAutoUpdate = false;
+    console.log(crystalScene.light.shadowMap);
+    crystalRenderer.renderer.clearTarget( crystalScene.light.shadowMap );
+
+    
   }); 
   menu.onPlaneToggle(function(message, arg) { 
     lattice.planeToggle(arg);

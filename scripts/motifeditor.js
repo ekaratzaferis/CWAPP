@@ -64,6 +64,10 @@ define([
     this.globalTangency = true;
     this.padlock = true;
 
+
+    // rendering mode
+    this.wireframe = false;
+
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
   }; 
@@ -145,10 +149,10 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-    console.log(9);
+     
     // late feature
     if(this.newSphere !== undefined){
-      console.log(params);
+       
       this.removeFromUnitCell(this.newSphere.getID());
       this.menu.breakChain({id : this.newSphere.getID(), remove : true});
       this.deleteTangentChild(this.newSphere.getID());
@@ -4313,6 +4317,54 @@ define([
     //$("body").css("cursor", "default");
     //$('#UIBlocker').css( "display", 'none' );
   }; 
+  Motifeditor.prototype.renderingMode = function(arg){ 
+
+    if(arg.mode === 'Classic'){
+      this.wireframe = true;
+      if(this.unitCellAtoms.length !== 0 ){
+        for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+          this.unitCellAtoms[i].wireframeMat(true);
+        } 
+      }
+    }
+    else if(arg.mode === 'Subtracted'){ return;
+      if(this.unitCellAtoms.length !== 0 ){ 
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+            this.unitCellAtoms[i].wireframeMat(false);
+          } 
+        }
+
+      }
+    }
+    else if(arg.mode === 'SolidVoid'){
+      if(this.unitCellAtoms.length !== 0 ){ 
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+            this.unitCellAtoms[i].wireframeMat(false);
+          } 
+        } 
+        for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+          this.unitCellAtoms[i].flatMode(true);
+        } 
+      }
+    }
+    else if(arg.mode === 'gradeLimited'){
+      if(this.unitCellAtoms.length !== 0 ){ 
+        if(this.wireframe === true){ 
+          this.wireframe = false;
+          for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+            this.unitCellAtoms[i].wireframeMat(false);
+          } 
+        } 
+        for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+          this.unitCellAtoms[i].realisticMode(true);
+        } 
+      }
+    }
+  };
   Motifeditor.prototype.setCSGmode = function(mode){ 
     var _this = this, i = 0;
  
