@@ -179,10 +179,18 @@ define([
         var $lights = jQuery('#lights');
         var $fullScreen = jQuery('#fullScreen');
         var $leapMotion = $('#leapMotion');
-        var $Classic = jQuery('#Classic');
-        var $Subtracted = jQuery('#Subtracted');
-        var $SolidVoid = jQuery('#SolidVoid');
-        var $GradeLimited = jQuery('#GradeLimited');
+        var $realistic = jQuery('#realistic');
+        var $wireframe = jQuery('#wireframe');
+        var $toon = jQuery('#toon');
+        var $flat = jQuery('#flat');
+        var $crystalClassic = jQuery('#crystalClassic');
+        var $crystalSubstracted = jQuery('#crystalSubstracted');
+        var $crystalSolidVoid = jQuery('#crystalSolidVoid');
+        var $crystalGradeLimited = jQuery('#crystalGradeLimited');
+        var $cellClassic = jQuery('#cellClassic');
+        var $cellSubstracted = jQuery('#cellSubstracted');
+        var $cellSolidVoid = jQuery('#cellSolidVoid');
+        var $cellGradeLimited = jQuery('#cellGradeLimited');
         var $notepadButton = jQuery('#notesButton');
         var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
         var $crystalCamTargetOff = jQuery("#crystalCamTargetOff");
@@ -267,7 +275,6 @@ define([
        Unimplemented Elements
        ---------------------- */
         var $atomTexture = jQuery('#atomTexture');
-        var $wireframe = jQuery('#wireframe');
     
 
     
@@ -390,10 +397,22 @@ define([
 
         // [Visualization Tab]
         var renderizationMode = {
-            'Classic': $Classic,
-            'Subtracted': $Subtracted,
-            'SolidVoid': $SolidVoid,
-            'gradeLimited': $GradeLimited
+            'realistic': $realistic,
+            'wireframe': $wireframe,
+            'toon': $toon,
+            'flat': $flat
+        };
+        var crystalMode = {
+            'crystalClassic': $crystalClassic,
+            'crystalSubstracted': $crystalSubstracted,
+            'crystalSolidVoid': $crystalSolidVoid,
+            'crystalGradeLimited': $crystalGradeLimited
+        };
+        var unitCellMode = {
+            'cellClassic': $cellClassic,
+            'cellSubstracted': $cellSubstracted,
+            'cellSolidVoid': $cellSolidVoid,
+            'cellGradeLimited': $cellGradeLimited
         };
     
         // ColorPickers
@@ -417,6 +436,9 @@ define([
        List of Published Events
        ------------------------ */
         var events = {
+            CHANGE_REND_MODE: 'menu.change_rend_mode',
+            CHANGE_CRYSTAL_MODE: 'menu.change_crystal_mode',
+            CHANGE_UNIT_CELL_MODE: 'menu.change_unit_cell_mode',
             TANGENTR: 'menu.tangetnr',
             ATOM_VISIBILITY: 'menu.atom_visibility',
             PLANE_VISIBILITY: 'menu.plane_visibility',
@@ -473,7 +495,8 @@ define([
             FULL_SCREEN_APP: 'menu.full_screen_app', 
             UPDATE_NOTES: 'menu.update_notes',
             LEAP_MOTION: 'menu.leap_motion', 
-            LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system',
+            UC_CRYSTAL_VIEWPORT: 'menu.uc_crystal_viewport',
+            LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system'
         };    
     
     
@@ -624,6 +647,12 @@ define([
                         argument['oculus'] = false;
                         PubSub.publish(events.STEREOSCOPIC, argument);
                         break;
+                        
+                    case 'unitCellViewport':
+                        argument ={};
+                        argument[name] = true;
+                        PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
+                        break;
                 }
             });
             $icheck.on('ifUnchecked',function(){
@@ -655,6 +684,12 @@ define([
                         argument['anaglyph'] = $anaglyph.hasClass('active');
                         argument['oculus'] = false;
                         PubSub.publish(events.STEREOSCOPIC, argument);
+                        break;
+                        
+                    case 'unitCellViewport':
+                        argument ={};
+                        argument[name] = false;
+                        PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
                         break;
                 }
             });
@@ -1182,9 +1217,6 @@ define([
 
             
             /* [Motif Tab] */
-            $atomPalette.click(function(){
-                
-            });
             $motifPadlock.on('click', function() {
                 if ( !($motifPadlock.hasClass('disabled')) ){
                     var argument = {};
@@ -1382,8 +1414,34 @@ define([
                             $parameter.addClass('active');
                             argument = {};
                             argument['mode'] = k;
-                            PubSub.publish(events.CHANGE_VIEW_IN_CRYSTAL, argument);
+                            PubSub.publish(events.CHANGE_REND_MODE, argument);
                             _.each(renderizationMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                        }
+                    }
+                });
+            });
+            _.each(crystalMode, function($parameter, k) {
+                $parameter.on('click', function() {
+                    if (!($parameter.hasClass('disabled'))) {
+                        if (!($parameter.hasClass('active'))) {
+                            $parameter.addClass('active');
+                            argument = {};
+                            argument['mode'] = k;
+                            PubSub.publish(events.CHANGE_CRYSTAL_MODE, argument);
+                            _.each(crystalMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                        }
+                    }
+                });
+            });
+            _.each(unitCellMode, function($parameter, k) {
+                $parameter.on('click', function() {
+                    if (!($parameter.hasClass('disabled'))) {
+                        if (!($parameter.hasClass('active'))) {
+                            $parameter.addClass('active');
+                            argument = {};
+                            argument['mode'] = k;
+                            PubSub.publish(events.CHANGE_UNIT_CELL_MODE, argument);
+                            _.each(unitCellMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
                         }
                     }
                 });
@@ -1537,7 +1595,7 @@ define([
                 }
             });   
             $periodicModal.on('click',function(){
-                if ( !jQuery(this).hasClass('disabled')){   
+                if ( !jQuery(this).hasClass('disabled') && !jQuery(this).parent().parent().hasClass('element-symbol-container') ){   
                     $periodicModal.removeClass('selected');
                     $ionicValues.removeClass('selected');
                     jQuery(this).addClass('selected');
@@ -1624,8 +1682,6 @@ define([
                     jQuery(this).addClass('selected');
                 }
             });
-            
-            
         
     /*$
     
@@ -2475,7 +2531,7 @@ define([
                 if (argument['atomName'] === '-') $elementContainer.hide('slow');
                 else {
                     var newAtom = 'ch-' + argument['atomName'];
-                    var newAtomName = jQuery('.'+newAtom).html();
+                    var newAtomName = argument['atomName'].capitalizeFirstLetter();
                     $elementContainer.find('a').attr('class','ch');
                     if (argument['ionicIndex'] !== '0' && argument['ionicIndex'] !== '3b')
                         $elementContainer.find('a').html('<span style="font-size:17px;">'+newAtomName+'<sup>'+argument['ionicIndex']+'</sup></span>');
@@ -2684,6 +2740,28 @@ define([
                 }
             });
         };
+        Menu.prototype.disableCrystalButtons = function(argument){
+            _.each(crystalMode, function($parameter, k) {
+                if (argument[k] !== undefined){
+                    if (argument[k] === true){
+                        $parameter.css('background','white');
+                        $parameter.removeClass('active');
+                        $parameter.addClass('disabled');
+                    }
+                }
+            });
+        };
+        Menu.prototype.disableUnitCellButtons = function(argument){
+            _.each(unitCellMode, function($parameter, k) {
+                if (argument[k] !== undefined){
+                    if (argument[k] === true){
+                        $parameter.css('background','white');
+                        $parameter.removeClass('active');
+                        $parameter.addClass('disabled');
+                    }
+                }
+            });
+        };
         Menu.prototype.setPlaneEntryVisibility = function(argument){
             if(argument['action'] === true){ 
                 $planesTable.find('#'+argument['id']).find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
@@ -2738,6 +2816,9 @@ define([
                     break;
             }
         };
+        String.prototype.capitalizeFirstLetter = function() {
+            return this.charAt(0).toUpperCase() + this.slice(1);
+        }
    
     /* ------------------------
        Prototypes - Subscribers
@@ -2851,6 +2932,9 @@ define([
         Menu.prototype.onCrystalViewChange = function(callback) { 
             PubSub.subscribe(events.CHANGE_VIEW_IN_CRYSTAL, callback);
         };
+        Menu.prototype.onRendModeChange = function(callback) { 
+            PubSub.subscribe(events.CHANGE_REND_MODE, callback);
+        };
         Menu.prototype.onAxisModeChange = function(callback) { 
             PubSub.subscribe(events.AXIS_MODE, callback);
         };
@@ -2913,6 +2997,15 @@ define([
         };
         Menu.prototype.onTangentR = function(callback){
             PubSub.subscribe(events.TANGENTR, callback);
+        };
+        Menu.prototype.onUnitCellViewport = function(callback){
+            PubSub.subscribe(events.UC_CRYSTAL_VIEWPORT, callback);
+        };
+        Menu.prototype.onUnitCellChange = function(callback){
+            PubSub.subscribe(events.CHANGE_CRYSTAL_MODE, callback);
+        };
+        Menu.prototype.onCrystalChange = function(callback){
+            PubSub.subscribe(events.CHANGE_UNIT_CELL_MODE, callback);
         };
     
   /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
