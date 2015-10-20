@@ -564,8 +564,24 @@ define([
             jQuery('.mh_bravais_lattice_block').find('.block-image').matchHeight({byRow: false});
         };
     
+        function inputErrorHandler(string){
+            var result = false;
+            if (isNaN(string)) {
+                if (string.indexOf(',') !== -1) {
+                    var temp = string.split(',');
+                    if (temp.length === 2) result = string.replace(',','.');
+                }
+                else if (string.indexOf('/') !== -1) {
+                    var temp = string.split('/');
+                    if (temp.length === 2) result = parseFloat(temp[0])/parseFloat(temp[1]);
+                }
+            }
+            else result = string;
+            return result;
+        }
+    
         function Menu() {
-
+            
             // Local Variables
             var _this = this;
             var argument;
@@ -579,7 +595,9 @@ define([
            ScrollBars and Window
            --------------------- */
             $scrollBars.mCustomScrollbar();
-            jQuery(window).ready(function(){$progressBarWrapper.fadeOut(2500);});
+            jQuery(window).ready(function(){
+                $progressBarWrapper.hide(2000);
+            });
             jQuery(window).resize(function() {
               app_container();
             });
@@ -745,16 +763,20 @@ define([
                 if ( ($parameter.attr('id') !== 'repeatX')&&($parameter.attr('id') !== 'repeatY')&&($parameter.attr('id') !== 'repeatZ')){
                     $parameter.on('change', function() {
                         argument = {};
-                        argument[k] = $parameter.val();
-                        jQuery('#'+k+'Slider').slider('value',argument[k]);
-                        PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                        if (inputErrorHandler($parameter.val()) !== false) {
+                            argument[k] = inputErrorHandler($parameter.val());
+                            jQuery('#'+k+'Slider').slider('value',argument[k]);
+                            PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                        }
                     });
                 }
                 else{
                     $parameter.on('change',function(){
                         argument = {};
-                        argument[k] = $parameter.val();
-                        PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                        if (inputErrorHandler($parameter.val()) !== false) {
+                            argument[k] = inputErrorHandler($parameter.val());
+                            PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                        }
                     });
                 }
             });
@@ -768,8 +790,11 @@ define([
                 $parameter.val(1);
                 $parameter.on('change', function() {
                     argument = {};
-                    argument[k] = $parameter.val();
-                    PubSub.publish(events.GRADE_PARAMETER_CHANGE, argument);
+                    if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val());
+                        jQuery('#'+k+'Slider').slider('value',argument[k]);
+                        PubSub.publish(events.GRADE_PARAMETER_CHANGE, argument);
+                    }
                 });
             });
             _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
@@ -809,9 +834,14 @@ define([
                 // Change Handlers
                 $parameter.on('change', function() {
                     argument = {};
-                    if (k == 'planeColor') argument[k] = $parameter.spectrum("get").toHex();
-                    else argument[k] = $parameter.val();
-                    PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    if (k == 'planeColor') {
+                        argument[k] = $parameter.spectrum("get").toHex();
+                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
+                    else if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val());
+                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
                 });
             });       
             _.each(directionParameters, function($parameter, k) {
@@ -846,15 +876,20 @@ define([
                 // Handlers
                 $parameter.on('change', function() {
                     argument = {};
-                    if (k == 'directionColor') argument[k] = $parameter.spectrum("get").toHex();
-                    else argument[k] = $parameter.val();
-                    PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    if (k == 'directionColor') {
+                        argument[k] = $parameter.spectrum("get").toHex();
+                        PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    }
+                    else if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val());
+                        PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    }
                 });
             });
 
             /* [Motif Tab] */
             $atomTable.hide();
-            _this.setSlider('atomOpacity',10,1,10,0.1,events.ATOM_PARAMETER_CHANGE);
+            _this.setSlider('atomOpacity',10,0,10,0.1,events.ATOM_PARAMETER_CHANGE);
             _.each(atomParameters, function($parameter, k ) {
                 switch(k){
                     case 'atomOpacity':
@@ -881,31 +916,38 @@ define([
                             break;
                         case 'atomColor':
                             argument[k] = $parameter.spectrum("get").toHex();
+                            PubSub.publish(events.ATOM_PARAMETER_CHANGE, argument);
                             break;
                         case 'atomOpacity':
-                            jQuery('#'+k+'Slider').slider('value',argument[k]);
-                            argument[k] = $parameter.val();
+                            if (inputErrorHandler($parameter.val()) !== false) {
+                                argument[k] = inputErrorHandler($parameter.val());
+                                jQuery('#'+k+'Slider').slider('value',argument[k]);
+                                PubSub.publish(events.ATOM_PARAMETER_CHANGE, argument);
+                            }
                             break;
                     }
-                    PubSub.publish(events.ATOM_PARAMETER_CHANGE, argument);
                 }); 
             });
             _.each(cellManDimensions, function($parameter, k) {
                 $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
-                    argument = {}; 
-                    argument[k] = $parameter.val(); 
-                    jQuery('#'+k+'Slider').slider('value',argument[k]); 
-                    PubSub.publish(events.AXYZ_CHANGE, argument);
+                    argument = {};
+                    if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val()); 
+                        jQuery('#'+k+'Slider').slider('value',argument[k]); 
+                        PubSub.publish(events.AXYZ_CHANGE, argument);
+                    }
                 });
             });
             _.each(cellManAngles, function($parameter, k) {
                 $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
-                    argument = {}; 
-                    argument[k] = $parameter.val(); 
-                    jQuery('#'+k+'Slider').slider('value',argument[k]); 
-                    PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
+                    argument = {};
+                    if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val()); 
+                        jQuery('#'+k+'Slider').slider('value',argument[k]); 
+                        PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
+                    }
                 });
             });
             _.each(cellManDimensionsSliders, function(name) {  
@@ -919,11 +961,13 @@ define([
             _.each(motifInputs, function($parameter, k) {
                 $parameter.prop('disabled',true);
                 $parameter.on('change', function() {
-                    argument = {}; 
-                    argument[k] = $parameter.val(); 
-                    jQuery('#'+k+'Slider').slider('value',argument[k]);  
-                    argument['trigger'] = 'textbox';
-                    PubSub.publish(events.ATOM_POSITION_CHANGE, argument);
+                    argument = {};
+                    if (inputErrorHandler($parameter.val()) !== false) {
+                        argument[k] = inputErrorHandler($parameter.val()); 
+                        jQuery('#'+k+'Slider').slider('value',argument[k]);  
+                        argument['trigger'] = 'textbox';
+                        PubSub.publish(events.ATOM_POSITION_CHANGE, argument);
+                    }
                 });
             });
             _.each(motifSliders, function(name) {
@@ -947,9 +991,11 @@ define([
             $cellVolume.val(100);
             $cellVolume.on('change', function() {
                 argument = {}; 
-                argument['cellVolume'] = $cellVolume.val(); 
-                jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
-                PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
+                if (inputErrorHandler($cellVolume.val()) !== false) {
+                    argument['cellVolume'] = inputErrorHandler($cellVolume.val()); 
+                    jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
+                    PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
+                }
             });
             _this.setSlider('cellVolume',100,90,400,0.1,events.CELL_VOLUME_CHANGE);
 
@@ -1454,6 +1500,9 @@ define([
                 jQuery(this).attr('contenteditable','true');
             });
             $notepad.resizable();
+            $notepad.on('resize',function(){
+                jQuery('#notesScroll').css('height',jQuery('#noteWrapper').height()-45);
+            });
             $notepad.find('.mCSB_1_scrollbar_vertical').show();
             $notepad.find('img').on('click',function(){
                 $notepadButton.parent().addClass('btn-light');
