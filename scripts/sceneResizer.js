@@ -19,6 +19,8 @@ define([
     this.hudCube = hudCube ;  
   };
 
+    var viewportStatus = false;
+    
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
@@ -60,6 +62,9 @@ define([
       $('#crystalRendererCaption').height((height/2)-8);
       $('#crystalRendererCaption').css('left',width/2);
 
+      $('#unitCellRenderer').removeClass('viewport');
+      $('#unitCellRendererMouse').removeClass('viewport');
+        
       $('#unitCellRenderer').width(width/2);
       $('#unitCellRenderer').height(height/2);
         
@@ -102,7 +107,6 @@ define([
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0);
         
-    
       if ($('#xyzAxes').parent().hasClass('lightThemeActive')){
           $('#xLabel').removeClass('hiddenLabel');
           $('#yLabel').removeClass('hiddenLabel');
@@ -113,7 +117,6 @@ define([
           $('#bLabel').removeClass('hiddenLabel');
           $('#cLabel').removeClass('hiddenLabel');
       }
-    
         
       $('#appLogo').css('display','block');
       $('#lockCameraIcon').css('display','none');
@@ -129,15 +132,27 @@ define([
       $('#crystalRendererCaption').width(0);
       $('#crystalRendererCaption').height(0);
 
-      $('#unitCellRenderer').width(0);
-      $('#unitCellRenderer').height(0);
-        
-      $('#unitCellRendererMouse').width(0);
-      $('#unitCellRendererMouse').height(0);
-        
+      if (!$('#unitCellRenderer').hasClass('viewport')){
+          if (viewportStatus === true) {
+                $('#unitCellRenderer').addClass('viewport');
+                $('#unitCellRendererMouse').addClass('viewport');
+                $('#unitCellRenderer').width(width/5);
+                $('#unitCellRendererMouse').width(width/5);
+                $('#unitCellRenderer').height(height/5);
+                $('#unitCellRendererMouse').height(height/5);
+          } 
+          else{
+              $('#unitCellRenderer').width(0);
+              $('#unitCellRenderer').height(0);
+              $('#unitCellRendererMouse').width(0);
+              $('#unitCellRendererMouse').height(0);
+          }
+      }
+      
+      
       $('#unitCellRendererCaption').width(0);
       $('#unitCellRendererCaption').height(0);
-
+        
       $('#motifRenderer').width(0); 
       $('#motifRenderer').height(0);
 
@@ -169,16 +184,26 @@ define([
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
   SceneResizer.prototype.showViewport = function(arg){ 
-
+    var width = jQuery('#app-container').width() ;
+    var height = $(window).height() ;
     if(arg.viewport === 'unitCell'){
       if(arg.active === true){
-        // TODO 1
-         // edw na ginetai resize to div (kai ola ta sxetika tou) gia to unitCell 
-         // kai na pianei xwro to 1/5 tou width kai to 1/5 tou height tou crystal div 
+        viewportStatus = true;
+        $('#unitCellRenderer').addClass('viewport');
+        $('#unitCellRendererMouse').addClass('viewport');
+        $('#unitCellRenderer').width(width/5);
+        $('#unitCellRendererMouse').width(width/5);
+        $('#unitCellRenderer').height(height/5);
+        $('#unitCellRendererMouse').height(height/5);
       }
       else if(arg.active === false){
-        // TODO 2
-        // edw midenizetai pali
+        viewportStatus = false;
+        $('#unitCellRenderer').removeClass('viewport');
+        $('#unitCellRendererMouse').removeClass('viewport');
+        $('#unitCellRenderer').width(0);
+        $('#unitCellRendererMouse').width(0);
+        $('#unitCellRenderer').height(0);
+        $('#unitCellRendererMouse').height(0);
       }
     }
   };

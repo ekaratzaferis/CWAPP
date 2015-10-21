@@ -3186,6 +3186,12 @@ html,body {
     z-index:11;   
 }
 #unitCellRenderer{ float: left; }
+#unitCellRenderer.viewport{ 
+    right: 0;
+    float: none;
+    outline: 1px solid cyan;
+    position: absolute;
+}
 #topRowTable{
     display: table; 
     position:fixed;
