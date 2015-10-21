@@ -3140,7 +3140,7 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
 #progressBarWrapper{
     width: 100%;
     height: 100%;
-    z-index: 1000;
+    z-index: 10000;
     position: fixed;
     overflow: hidden;
     background: url(../Images/loaderFull.png) no-repeat center center fixed; 
@@ -3148,9 +3148,9 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    /*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
-    filter: alpha(opacity=95);
-    opacity: 0.95;*/
+    /*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+    opacity: 0.80;*/
 }
 .progressLabel{
     font-size: 25px;
