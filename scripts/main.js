@@ -112,12 +112,8 @@ require([
 
   var unitCellScene = UnitCellExplorer.getInstance();
   var motifScene = MotifExplorer.getInstance();
-
-  // Canvas Containers
-  var width = $('#app-container').width();
-  var height = $(window).height(); 
-  $('#crystalRenderer').width(width);
-  $('#crystalRenderer').height(height);
+ 
+  var height,width;
 
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
@@ -351,7 +347,7 @@ require([
       unitCellScene.light.castShadow = false;   
     }  
   });
-  menu.onLeapMotionSet(function(message, arg) { console.log(9);
+  menu.onLeapMotionSet(function(message, arg) {  
     leapM.toggle(arg.leap);
   });
   menu.onFogParameterChange(function(message, arg) { 
@@ -651,20 +647,31 @@ require([
   menu.onRotatingAngleChange(function(message, param){ 
     motifEditor.changeRotatingAngle(param)  ;
   }); 
-  menu.onCellViewChange(function(message, which) { 
+  menu.onUnitCellChange(function(message, which) { 
     motifEditor.setCSGmode(which);
   });
-  menu.onCrystalViewChange(function(message, arg) { 
-    lattice.changeView(arg);
-    motifEditor.renderingMode(arg);
+  menu.onCrystalChange(function(message, which) { 
+    lattice.setCSGmode(which);
+  });
+  menu.onUnitCellViewport(function(message, arg) { 
+    //unitCellRenderer.setUCviewport(arg);
+  });
+  menu.onRendModeChange(function(message, arg) { 
 
+    lattice.renderingModeChange(arg);
+    motifEditor.renderingModeChange(arg);
+ 
+    renderingModes.setMode(arg); 
 
-    renderingModes.setMode(arg);
-    crystalRenderer.renderer.shadowMapAutoUpdate = false;
-    console.log(crystalScene.light.shadowMap);
-    crystalRenderer.renderer.clearTarget( crystalScene.light.shadowMap );
+    if(arg.mode === 'toon'){
+      crystalRenderer.setGamma(true);
+      unitCellRenderer.setGamma(true);
+    }
+    else{
+      crystalRenderer.setGamma(false);
+      unitCellRenderer.setGamma(false);
+    }
 
-    
   }); 
   menu.onPlaneToggle(function(message, arg) { 
     lattice.planeToggle(arg);

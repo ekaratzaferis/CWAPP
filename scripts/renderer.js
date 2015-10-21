@@ -284,6 +284,10 @@ define([
       this.externalFunctions[i]();
     }; 
   };
+  Renderer.prototype.setGamma = function(bool) {  
+    this.renderer.gammaOutput = bool;
+    this.renderer.gammaInput = bool;
+  };
   Renderer.prototype.setDoll = function(scene, doll) { 
     if( doll !== undefined) {
       this.doll = doll;

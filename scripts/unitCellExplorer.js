@@ -21,14 +21,10 @@ define([
     this.object3d = new THREE.Scene();
 
     var _this = this;
+ 
+    this.fogActive = false ;
+    this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
 
-    PubSub.subscribe(events.ADD, function(message, object) {
-      _this.add(object);
-    });
-    PubSub.subscribe(events.REMOVE, function(message, object) {
-      _this.remove(object);
-    });
-    
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
     this.light.position.set( 300, 300, 60 );
     this.light.castShadow = true;
@@ -73,6 +69,13 @@ define([
     this.object3d.add(mesh2);
     this.object3d.add(mesh3);
 
+    PubSub.subscribe(events.ADD, function(message, object) {
+      _this.add(object);
+    });
+    PubSub.subscribe(events.REMOVE, function(message, object) {
+      _this.remove(object);
+    });
+    
   };
 
   UnitCellExplorer.prototype.add = function(object) { 

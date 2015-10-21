@@ -38,7 +38,7 @@ define([
     
     this.color = color ; 
 
-    this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : this.opacity/10 }) ; 
+    this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : this.opacity }) ; 
     
     if(this.wireframe == true){
       this.materials =  [  
@@ -64,7 +64,7 @@ define([
   }; 
   AtomSphere.prototype.setOpacity = function( opacity) {
     if(_.isUndefined(opacity)) return;
-    this.opacity = opacity ;
+    this.opacity = opacity/10 ;
     this.colorMaterial = new THREE.MeshBasicMaterial({ color : this.color, transparent: true, opacity: opacity/10 });
     this.object3d.children[0].material.opacity = opacity/10 ; 
     this.object3d.children[0].material.needsUpdate = true; 
@@ -95,12 +95,12 @@ define([
     var _this = this ;
     return _this.radius ;
   }; 
-  AtomSphere.prototype.setMaterial = function(color, opacity) {
+  AtomSphere.prototype.setMaterial = function(color) {
     var _this = this;
     this.color = color ; 
    
     this.colorMaterial = new THREE.MeshBasicMaterial({ color:color  });
-    this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color , transparent: true, opacity : opacity/10 });
+    this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color , transparent: true, opacity : this.opacity });
     this.object3d.children[0].material.needsUpdate = true;
 
   };   

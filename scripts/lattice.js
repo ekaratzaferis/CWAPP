@@ -74,60 +74,58 @@ define([
     this.solidVoidObject ;
 
     // visualization
-    this.wireframe = false;
+    this.renderingMode = 'realistic';
   }; 
-  Lattice.prototype.changeView = function(arg) {
-  
-    if(arg.mode === 'Classic'){
-      this.wireframe = true;
+  Lattice.prototype.renderingModeChange = function(arg) {
+    
+    this.renderingMode = arg.mode;
+
+    if(arg.mode === 'wireframe'){
+      
       if(this.actualAtoms.length !== 0 ){
         for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
           this.actualAtoms[i].wireframeMat(true);
         } 
       }
     }
-    else if(arg.mode === 'Subtracted'){return;
+    else if(arg.mode === 'toon'){ 
       if(this.actualAtoms.length !== 0 ){  
-        if(this.wireframe === true){ 
-          this.wireframe = false;
-          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
-            this.actualAtoms[i].wireframeMat(false);
-          } 
-        }
-      }
-    }
-    else if(arg.mode === 'SolidVoid'){
-      if(this.actualAtoms.length !== 0 ){ 
-        if(this.wireframe === true){ 
-          this.wireframe = false;
-          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
-            this.actualAtoms[i].wireframeMat(false);
-          } 
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].wireframeMat(false);
         } 
+      }
+      for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+        this.actualAtoms[i].coonMode(true);
+      } 
+    }
+    else if(arg.mode === 'flat'){
+      if(this.actualAtoms.length !== 0 ){ 
+          
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].wireframeMat(false);
+        } 
+          
         for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
           this.actualAtoms[i].flatMode(true);
         } 
       }
     }
-    else if(arg.mode === 'gradeLimited'){
+    else if(arg.mode === 'realistic'){
       if(this.actualAtoms.length !== 0 ){ 
-        if(this.wireframe === true){ 
-          this.wireframe = false;
-          for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
-            this.actualAtoms[i].wireframeMat(false);
-          } 
-        } 
+        for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+          this.actualAtoms[i].wireframeMat(false);
+        }  
         for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
           this.actualAtoms[i].realisticMode(true);
         } 
       }
     }
   };
-  Lattice.prototype.changeView_ = function(arg) {
+  Lattice.prototype.setCSGmode = function(arg) {
 
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
-    
+    console.log(arg);
     this.menu.resetProgressBar( 'Processing...'); 
 
     if(this.viewMode !== 'Classic'){
@@ -417,7 +415,7 @@ define([
         else{
           opacity = atom.object3d.children[0].material.opacity;
           wireframe = atom.object3d.children[1].material.wireframe;
-          color = atom.object3d.children[0].material.color;
+          color = atom.color;
           a = atom.object3d.position.clone(); 
         }
         _this.actualAtoms.push( 
@@ -433,7 +431,7 @@ define([
             p,
             '/Images/'+atom.texture+'.png',
             opacity,
-            wireframe,
+            _this.renderingMode,
             kk
           )  
         );
@@ -809,12 +807,12 @@ define([
             p,
             texture,
             opacity ,
-            wireframe,
+            _this.renderingMode,
             kk
           )  
         );
       });
-    });    
+    });  
   };
   Lattice.prototype.getAnglesScales = function(){
     if(!this.lattice) {

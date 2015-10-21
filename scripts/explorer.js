@@ -37,13 +37,7 @@ define([
     this.labelSize = 120 ; //reversed
 
     var _this = this;
-    PubSub.subscribe(events.ADD, function(message, object) {
-      _this.add(object);
-    });
-    PubSub.subscribe(events.REMOVE, function(message, object) {
-      _this.remove(object);
-    });
-
+     
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
     this.light.position.set( 300, 300, 60 );
     this.light.castShadow = true;
@@ -145,7 +139,13 @@ define([
     this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
     this.helper.visible = false;
     this.object3d.add( this.helper );
-     
+  
+    PubSub.subscribe(events.ADD, function(message, object) {
+      _this.add(object);
+    });
+    PubSub.subscribe(events.REMOVE, function(message, object) {
+      _this.remove(object);
+    });
   }; 
   Explorer.prototype.toScreenPosition = function(obj, camera){ 
     var vector = new THREE.Vector3();
