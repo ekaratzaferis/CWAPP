@@ -472,8 +472,6 @@ define([
             MOTIF_TO_LATTICE: 'menu.motif_to_lattice',
             DRAG_ATOM: 'menu.drag_atom',
             SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
-            UNIT_CELL_VIEW: 'menu.unit_cell_view',
-            CHANGE_VIEW_IN_CRYSTAL: 'menu.change_view_in_crystal',
             AXIS_MODE: 'menu.axis_mode',
             AXYZ_CHANGE: 'menu.axyz_change',
             CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
@@ -2975,12 +2973,6 @@ define([
         Menu.prototype.onRotatingAngleChange = function(callback) {
             PubSub.subscribe(events.SET_ROTATING_ANGLE, callback);
         };
-        Menu.prototype.onCellViewChange = function(callback) { 
-            PubSub.subscribe(events.UNIT_CELL_VIEW, callback);
-        };
-        Menu.prototype.onCrystalViewChange = function(callback) { 
-            PubSub.subscribe(events.CHANGE_VIEW_IN_CRYSTAL, callback);
-        };
         Menu.prototype.onRendModeChange = function(callback) { 
             PubSub.subscribe(events.CHANGE_REND_MODE, callback);
         };
@@ -3051,10 +3043,10 @@ define([
             PubSub.subscribe(events.UC_CRYSTAL_VIEWPORT, callback);
         };
         Menu.prototype.onUnitCellChange = function(callback){
-            PubSub.subscribe(events.CHANGE_CRYSTAL_MODE, callback);
+            PubSub.subscribe(events.CHANGE_UNIT_CELL_MODE, callback);
         };
         Menu.prototype.onCrystalChange = function(callback){
-            PubSub.subscribe(events.CHANGE_UNIT_CELL_MODE, callback);
+            PubSub.subscribe(events.CHANGE_CRYSTAL_MODE, callback);
         };
     
   /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
