@@ -172,10 +172,12 @@ define([
 
     if(arg.viewport === 'unitCell'){
       if(arg.active === true){
+        // TODO 1
          // edw na ginetai resize to div (kai ola ta sxetika tou) gia to unitCell 
          // kai na pianei xwro to 1/5 tou width kai to 1/5 tou height tou crystal div 
       }
       else if(arg.active === false){
+        // TODO 2
         // edw midenizetai pali
       }
     }
