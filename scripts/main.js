@@ -69,6 +69,7 @@ require([
   'rStatsExtras', 
   'leapMotionHandler',
   'renderingMode',
+  'tabActions'
 ], function(
   PubSub, 
   _, 
@@ -102,7 +103,8 @@ require([
   RStats, 
   RStatsExtras, 
   LeapMotionHandler,
-  RenderingMode
+  RenderingMode,
+  TabActions
 ) {
   var menu = new Menu();
   
@@ -256,6 +258,7 @@ require([
 
   // rendering modes
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
+  var tabActionsManager = new TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour);
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -390,74 +393,8 @@ require([
   });
   
   // motif editor events binding
-  $("#list li").click(function(e) { 
-    
-    height = $(window).height() ;
-    width = $('#app-container').width(); ;
-  
-    //
-
-    if($(this).attr('id') === "millerPI" ){ 
-      if(lattice.latticeName === 'hexagonal'){
-        $(".hexagonalMiller").css('display','block');
-      }
-      else{
-        $(".hexagonalMiller").css('display','none'); 
-      } 
-    } 
- 
-    if( ($(this).attr('id') === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && lattice.viewMode === 'Classic' && gearTour.state === 5){     
-      // gearTour.removeSubtractedCell();
-      // invisible Navigators
-      dollEditor.setVisibility(false); 
-      hudCube.setVisibility(false);
-      hudArrows.setVisibility(false);
-      CubeEvent.enableCubeEvents = false ;
-
-      sceneResizer.resize('motifScreen');
-        
-      unitCellRenderer.startAnimation();                                                                    
-      motifRenderer.startAnimation(); 
-      motifEditor.updateLatticeParameters(lattice.getAnglesScales(), lattice.getLatticeType(), lattice.getLatticeName(), lattice.getLatticeSystem());
-
-      crystalScreenEvents.state = 'motifScreen';
-
-      // reset view mode
-      if(lattice.viewMode !== 'Classic'){
-        //lattice.changeView({'mode': 'Classic', 'reset': true});
-      }
-    }
-    else if($(this).attr('id') !== "motifLI" ){  
-      // gearTour.removeSubtractedCell();
-      if((lattice.viewMode !== 'Classic' || gearTour.state !== 5) && ( $(this).attr('id') === "latticeTab" || $(this).attr('id') === "publicTab")){
-        return;
-      } 
-
-      if($(this).attr('id') === "latticeTab"){
-        lattice.updateLatticeUI(motifEditor.cellParameters);
-      }
-
-      // visible Navigators
-      dollEditor.setVisibility(true);
-      hudCube.setVisibility(true);
-      hudArrows.setVisibility(true);
-      CubeEvent.enableCubeEvents = true ;
-
-      sceneResizer.resize('crystal');
-       
-      crystalRenderer.changeContainerDimensions(width,height);
-      unitCellRenderer.changeContainerDimensions(0,0);
-      motifRenderer.changeContainerDimensions(0, 0);
-
-      unitCellRenderer.stopAtomAnimation();
-      motifRenderer.stopAtomAnimation(); 
-      crystalScreenEvents.state = 'default';
-
-      // reset view mode
-      if(lattice.viewMode !== 'Classic' && $(this).attr('id') !== "visualTab" ){
-        //lattice.changeView({'mode': 'Classic', 'reset': true});
-      }
-    }
+  $("#list li").click(function(e) {
+    tabActionsManager.tabClick($(this).attr('id'));
   }); 
   menu.atomSelection(function(message , arg) {
     motifEditor.selectElem(arg); 
@@ -654,6 +591,15 @@ require([
     lattice.setCSGmode(which);
   });
   menu.onUnitCellViewport(function(message, arg) { 
+    if(arg.unitCellViewport === true){ 
+      sceneResizer.showViewport({'viewport' : 'unitCell', 'active' : true});
+      unitCellRenderer.startAnimation();
+    }
+    else{ 
+      sceneResizer.showViewport({'viewport' : 'unitCell', 'active' : false});
+      unitCellRenderer.stopAtomAnimation();
+    }
+     
     //unitCellRenderer.setUCviewport(arg);
   });
   menu.onRendModeChange(function(message, arg) { 

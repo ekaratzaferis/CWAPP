@@ -125,7 +125,7 @@ define([
 
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
-    console.log(arg);
+     
     this.menu.resetProgressBar( 'Processing...'); 
 
     if(this.viewMode !== 'Classic'){

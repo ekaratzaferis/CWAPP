@@ -95,8 +95,7 @@ define([
  
       $('#hudRendererCube').width((0.5 * 1.5 * width) / this.hudDisplayFactor);
       $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor);
-        
-      
+         
     }
     else{
       this.crystalRenderer.changeContainerDimensions(width, height);
@@ -168,6 +167,18 @@ define([
     }
     
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
+  };
+  SceneResizer.prototype.showViewport = function(arg){ 
+
+    if(arg.viewport === 'unitCell'){
+      if(arg.active === true){
+         // edw na ginetai resize to div (kai ola ta sxetika tou) gia to unitCell 
+         // kai na pianei xwro to 1/5 tou width kai to 1/5 tou height tou crystal div 
+      }
+      else if(arg.active === false){
+        // edw midenizetai pali
+      }
+    }
   };
   SceneResizer.prototype.toScreenPositionCube = function(obj){ 
     var camera = this.crystalRenderer.hudCameraCube;
