@@ -3186,10 +3186,18 @@ html,body {
     z-index:11;   
 }
 #unitCellRenderer{ float: left; }
-#unitCellRenderer.viewport{ 
-    right: 0;
+#unitCellRenderer.viewport{
+    z-index: 13;
+    right: 2px;
     float: none;
-    outline: 1px solid cyan;
+    outline: 2px solid #aaa;
+    position: absolute;
+}
+#unitCellRendererMouse.viewport{ 
+    z-index: 13;
+    right: 2px;
+    float: none;
+    outline: 2px solid #aaa;
     position: absolute;
 }
 #topRowTable{
