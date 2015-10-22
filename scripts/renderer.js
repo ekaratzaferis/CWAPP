@@ -31,7 +31,7 @@ define([
     this.viewportColors = ['#0B0800', '#000600', '#08000A'];
     this.cameras = [];
     this.motifView = false;
-
+    this.ucViewport = false;
     this.hudCamera;
     this.hudCameraCube;
 
@@ -172,6 +172,7 @@ define([
 
         }
         else if(this.container === 'unitCellRenderer') {
+          
           this.renderer.setClearColor( this.backgroundColor );
           this.renderer.render( this.scene, this.cameras[0] );
         }
@@ -204,8 +205,7 @@ define([
         this.hudCamera.updateProjectionMatrix();
 
         this.renderer.setClearColor( this.backgroundColor );
-        this.renderer.render( this.hudScene, this.hudCamera);
-         
+        this.renderer.render( this.hudScene, this.hudCamera); 
       }
       // hud cube
       if(this.hudCameraCube !== undefined ){  
@@ -236,10 +236,8 @@ define([
         var arrowL = this.hudSceneCube.getObjectByName( "arrowLine" );
         var arrowH = this.hudSceneCube.getObjectByName( "arrowHead" );
         arrowL.lookAt(this.hudCameraCube.position);
-        arrowH.lookAt(this.hudCameraCube.position);
-
-      }
-
+        arrowH.lookAt(this.hudCameraCube.position); 
+      } 
     }
     else if( this.cameras.length>1 ){
       for ( var i = 0; i < this.cameras.length; ++i ) {
@@ -284,6 +282,9 @@ define([
       this.externalFunctions[i]();
     }; 
   };
+  Renderer.prototype.setUCviewport = function(bool) { 
+    this.ucViewport = bool;
+  }; 
   Renderer.prototype.setGamma = function(bool) {  
     this.renderer.gammaOutput = bool;
     this.renderer.gammaInput = bool;

@@ -39,10 +39,7 @@ define([
       }
       else{
         $(".hexagonalMiller").css('display','none'); 
-      } 
-      //this.unitCellRenderer.stopAtomAnimation();
-      //this.sceneResizer.showViewport({'viewport' : 'unitCell', 'active' : false});
-      //this.unitCellRenderer.stopAtomAnimation();
+      }  
     }  
     if( (tabId === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && this.lattice.viewMode === 'Classic' && this.gearTour.state === 5){     
       
@@ -52,7 +49,7 @@ define([
       this.CubeEvent.enableCubeEvents = false ;
 
       this.sceneResizer.resize('motifScreen');
-        
+                                                                            
       this.unitCellRenderer.startAnimation();                                                                    
       this.motifRenderer.startAnimation(); 
       this.motifEditor.updateLatticeParameters(this.lattice.getAnglesScales(), this.lattice.getLatticeType(), this.lattice.getLatticeName(), this.lattice.getLatticeSystem());
@@ -77,12 +74,17 @@ define([
 
       this.sceneResizer.resize('crystal');
        
-      this.crystalRenderer.changeContainerDimensions(width,height);
-      this.unitCellRenderer.changeContainerDimensions(0,0);
+      this.crystalRenderer.changeContainerDimensions(width,height); 
       this.motifRenderer.changeContainerDimensions(0, 0);
-
-      this.unitCellRenderer.stopAtomAnimation();
-      this.motifRenderer.stopAtomAnimation(); 
+ 
+      if(this.unitCellRenderer.ucViewport === false){
+        this.unitCellRenderer.changeContainerDimensions(0,0);
+        this.unitCellRenderer.stopAnimation();
+      }
+      else {
+        this.unitCellRenderer.setUCviewport(true);
+      }
+      this.motifRenderer.stopAnimation(); 
       this.crystalScreenEvents.state = 'default';
  
     }

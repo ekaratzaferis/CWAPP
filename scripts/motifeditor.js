@@ -4450,19 +4450,17 @@ define([
       }
     }
   };
-  Motifeditor.prototype.setCSGmode = function(mode){ 
+  Motifeditor.prototype.setCSGmode = function(arg){ 
     var _this = this, i = 0;
-    
-    console.log('mode');
-    console.log(mode);
-    this.viewState = mode;
+     
+    this.viewState = arg.mode;
  
     var g = this.customBox(_this.unitCellPositions, _this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
     var scene = UnitCellExplorer.getInstance().object3d;
   
-    if(_this.viewState === 'Subtracted'){
+    if(this.viewState === 'cellSubstracted'){
       while(i < _this.unitCellAtoms.length ) {
         _this.unitCellAtoms[i].object3d.visible = true; 
         _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
@@ -4472,10 +4470,9 @@ define([
       
       var object = scene.getObjectByName('solidvoid');
       if(!_.isUndefined(object)) scene.remove(object);
-      PubSub.publish(events.VIEW_STATE,"Subtracted"); 
-       
+      PubSub.publish(events.VIEW_STATE,"Subtracted");  
     }
-    else if(_this.viewState === 'SolidVoid'){  
+    else if(this.viewState === 'cellSolidVoid'){  
 
       var geometry = new THREE.Geometry();  
   
@@ -4502,7 +4499,7 @@ define([
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
     }
-    else if(_this.viewState === 'GradeLimited'){ 
+    else if(this.viewState === 'cellGradeLimited'){ 
       var g = customBox2(_this.unitCellPositions) ; 
       var g2 = g.clone() ; 
       var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
@@ -4562,7 +4559,7 @@ define([
 
       PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
     }
-    else if(_this.viewState === 'Classic'){ 
+    else if(this.viewState === 'cellClassic'){ 
       while(i < _this.unitCellAtoms.length ) { 
         _this.unitCellAtoms[i].object3d.visible = true;
         _this.unitCellAtoms[i].classicView(); 
@@ -4571,8 +4568,7 @@ define([
       var object = scene.getObjectByName('solidvoid');
       if(!_.isUndefined(object)) scene.remove(object);
       PubSub.publish(events.VIEW_STATE,"Classic");
-    }
-  
+    };
   };
 
   function assignUVs( geometry ){ 

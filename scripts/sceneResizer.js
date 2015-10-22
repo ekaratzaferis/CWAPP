@@ -17,6 +17,8 @@ define([
     this.hudDisplayFactor = hudDisplayFactor ;  
     this.dollEditor = dollEditor ;  
     this.hudCube = hudCube ;  
+
+    this.ucViewPortActive = false;
   };
 
     var viewportStatus = false;
@@ -104,7 +106,13 @@ define([
     }
     else{
       this.crystalRenderer.changeContainerDimensions(width, height);
-      this.unitCellRenderer.changeContainerDimensions(0,0);
+      if(this.ucViewPortActive === false){
+        this.unitCellRenderer.changeContainerDimensions(0,0);
+      }
+      else{
+        this.unitCellRenderer.changeContainerDimensions(width/5,height/5);
+      }
+      
       this.motifRenderer.changeContainerDimensions(0,0);
         
       if ($('#xyzAxes').parent().hasClass('lightThemeActive')){
@@ -195,6 +203,7 @@ define([
         $('#unitCellRendererMouse').width(width/5);
         $('#unitCellRenderer').height(height/5);
         $('#unitCellRendererMouse').height(height/5);
+        this.unitCellRenderer.changeContainerDimensions(width/5, height/5);
       }
       else if(arg.active === false){
         viewportStatus = false;
@@ -204,6 +213,7 @@ define([
         $('#unitCellRendererMouse').width(0);
         $('#unitCellRenderer').height(0);
         $('#unitCellRendererMouse').height(0);
+        this.unitCellRenderer.changeContainerDimensions(0, 0);
       }
     }
   };

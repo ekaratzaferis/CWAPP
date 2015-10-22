@@ -122,12 +122,13 @@ define([
     }
   };
   Lattice.prototype.setCSGmode = function(arg) {
-
+     
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
      
     this.menu.resetProgressBar( 'Processing...'); 
 
+    /*
     if(this.viewMode !== 'Classic'){
       this.menu.setTabDisable({
         'latticeTab': true,
@@ -141,7 +142,8 @@ define([
         'motifLI':false,
         'publicTab':false 
       });
-    }
+    }*/
+
     if(this.actualAtoms.length!==0){
 
       var geometry = new THREE.Geometry();  
@@ -155,7 +157,7 @@ define([
       var g = this.customBox(this.viewBox);
       var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, color:"#FF0000" }) );
        
-      if(this.viewMode === 'Subtracted'){
+      if(this.viewMode === 'crystalSubstracted'){
         i = 0 ;
         var enterViewmode = true; 
         if(this.actualAtoms[0].viewModeBeen.SubtractedSolid === true ){
@@ -176,7 +178,7 @@ define([
           this.solidVoidObject.visible = false; 
         }
       }
-      else if(this.viewMode === 'SolidVoid'){   
+      else if(this.viewMode === 'crystalSolidVoid'){   
 
         var found = false;
   
@@ -230,7 +232,7 @@ define([
         } 
 
       }
-      else if(this.viewMode === 'gradeLimited'){ 
+      else if(this.viewMode === 'crystalGradeLimited'){ 
 
         var found = false, objectSolidVoid;
     
@@ -247,7 +249,7 @@ define([
         } 
 
         var g2 = g.clone() ; 
-        box.scale.set(1.1,1.1,1.1); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
+        box.scale.set(1.2,1.2,1.2); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
         box.visible = false;
         var FNHbox = new THREE.FaceNormalsHelper( box ) ; // not sure why it is needed, maybe for calculating the normals 
 
@@ -300,7 +302,7 @@ define([
           i++;   
         }  
       }
-      else if(this.viewMode === 'Classic'){ 
+      else if(this.viewMode === 'crystalClassic'){ 
         var found = false, objectSolidVoid;
     
         var objectSolidVoid = scene.getObjectByName('solidvoid');

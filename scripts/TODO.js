@@ -9,7 +9,7 @@ hexagonal
 5. fps drop in unit cell renderern motif renderer
   6. suggest merge in crystal because atoms do not move.
 7. kleidwma geometriwn gia performance
-
+8. share material by atom for better perf
  small todo : 
  /* allages se updateDirectionList kai na kaleitai mono auti kai selectDirection
     setPlaneEntryVisibility

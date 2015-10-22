@@ -592,15 +592,31 @@ require([
   });
   menu.onUnitCellViewport(function(message, arg) { 
     if(arg.unitCellViewport === true){ 
+      sceneResizer.ucViewPortActive = true;
       sceneResizer.showViewport({'viewport' : 'unitCell', 'active' : true});
       unitCellRenderer.startAnimation();
+
+      var cellCamera = unitCellRenderer.getMainCamera();
+      var crystalCamera = crystalRenderer.getMainCamera();
+     
+      cellCamera.position.set( crystalCamera.position.x, crystalCamera.position.y, crystalCamera.position.z );   
+      orbitUnitCell.control.target = orbitCrystal.control.target.clone();
+      orbitCrystal.syncCams(true);
+      orbitUnitCell.syncCams(true); 
+       
     }
     else{ 
+      sceneResizer.ucViewPortActive = false;
       sceneResizer.showViewport({'viewport' : 'unitCell', 'active' : false});
       unitCellRenderer.stopAtomAnimation();
+ 
+      orbitUnitCell.control.target = new THREE.Vector3(0,0,0);
+      orbitCrystal.syncCams(false);
+      orbitUnitCell.syncCams(false);
+       
     }
      
-    //unitCellRenderer.setUCviewport(arg);
+    unitCellRenderer.setUCviewport(arg.unitCellViewport);
   });
   menu.onRendModeChange(function(message, arg) { 
 
