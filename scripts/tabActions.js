@@ -41,7 +41,8 @@ define([
         $(".hexagonalMiller").css('display','none'); 
       }  
     }  
-    if( (tabId === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && this.lattice.viewMode === 'Classic' && this.gearTour.state === 5){     
+
+    if( (tabId === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && this.gearTour.state === 5){     
       
       this.dollEditor.setVisibility(false); 
       this.hudCube.setVisibility(false);
@@ -76,7 +77,7 @@ define([
        
       this.crystalRenderer.changeContainerDimensions(width,height); 
       this.motifRenderer.changeContainerDimensions(0, 0);
- 
+
       if(this.unitCellRenderer.ucViewport === false){
         this.unitCellRenderer.changeContainerDimensions(0,0);
         this.unitCellRenderer.stopAnimation();

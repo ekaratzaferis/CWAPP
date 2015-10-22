@@ -1,6 +1,5 @@
- 
-hexagonal
-  
+crystal grade limited
+ME tab problem
 
  performance TODOs
  
