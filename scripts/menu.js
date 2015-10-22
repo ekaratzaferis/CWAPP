@@ -543,6 +543,7 @@ define([
             $progressBarWrapper.width(screen_width);
             $progressBarWrapper.height(screen_height);
             
+<<<<<<< HEAD
             // Help (Tooltips)
             // P&D Tooltip
             jQuery('.coordinates-pnd-blocks-container').tooltip({
@@ -552,6 +553,9 @@ define([
             });
             
         
+=======
+            
+>>>>>>> f8e3cca2b98daddd6953cd5461ec884e3f5b8f13
         /* ------
            Inputs
            ------ */
@@ -893,13 +897,7 @@ define([
            On Click Handlers
            ----------------- */
 
-            /* [Menu] */
-            $motifMEButton.tooltip({
-                container : 'body',
-                trigger: 'manual',
-                placement: 'left',
-                title: 'You have to choose a Lattice before opening the Motif Tab'
-            }); 
+            /* [Menu] */ 
             _.each(toggles, function($parameter, k){
                 var title;
                 switch(k){
@@ -1094,10 +1092,11 @@ define([
                     if (jQuery(this).attr('id') === 'motifLI'){
                         if ($motifMEButton.hasClass('blocked')) {
                             if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) {
-                                $motifMEButton.tooltip('show');
-                                setTimeout(function(){
-                                    $motifMEButton.tooltip('hide');
-                                }, 2500);
+                                _this.showTooltip({
+                                    'element': 'motifLI',
+                                    'placement': 'left',
+                                    'message': 'You have to choose a Lattice before opening the Motif Tab'
+                                });
                             }
                             else {
                                 $motifMEButton.removeClass('disabled');
@@ -1125,10 +1124,15 @@ define([
                         argument = {};
                         argument["button"]=this.id;
                         _.each(directionParameters, function($param, a ) {
-                            if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
-                            else argument[a] = $param.val();
+                            if (a == 'directionColor') {
+                                argument[a] = $param.spectrum("get").toHex();
+                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
+                            }
+                            else if (inputErrorHandler($param.val()) !== false) {
+                                argument[a] = inputErrorHandler($param.val());
+                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
+                            }
                         });
-                        PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
                     }
                 });
             });
@@ -1138,11 +1142,15 @@ define([
                         argument = {};
                         argument["button"] = k;
                         _.each(planeParameters, function($param, a ) {
-                            if (a == 'planeColor') argument[a] = $param.spectrum("get").toHex();
-                            else argument[a] = $param.val();
+                            if (a == 'planeColor') {
+                                argument[a] = $param.spectrum("get").toHex();
+                                PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
+                            }
+                            else if (inputErrorHandler($param.val()) !== false) {
+                                argument[a] = inputErrorHandler($param.val());
+                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
+                            }
                         });
-                        PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
-                        return false;
                     }
                 });
             });
@@ -1530,7 +1538,8 @@ define([
                     $elementContainer.find('a').html(selected.html());
                 }
             });
-        
+            
+            
     /*$
     
     _.each(fixedDimensions, function($parameter, k) {
@@ -1555,7 +1564,59 @@ define([
     /* --------------------
        Prototypes - Editors
        -------------------- */
+<<<<<<< HEAD
     
+=======
+        Menu.prototype.moveLabel = function(argument){
+            var x = argument['xCoord'] - ( parseFloat($xLabel.css('width')) / 2);
+            var y = argument['yCoord'] - ( parseFloat($xLabel.css('height')) / 2);
+            switch(argument['label']){
+                case 'x':
+                    $xLabel.css('left',x);
+                    $xLabel.css('top',y);
+                    break;
+                case 'y':
+                    $yLabel.css('left',x);
+                    $yLabel.css('top',y);
+                    break;
+                case 'z':
+                    $zLabel.css('left',x);
+                    $zLabel.css('top',y);
+                    break;
+                case 'a':
+                    $aLabel.css('left',x);
+                    $aLabel.css('top',y);
+                    break;
+                case 'b':
+                    $bLabel.css('left',x);
+                    $bLabel.css('top',y);
+                    break;
+                case 'c':
+                    $cLabel.css('left',x);
+                    $cLabel.css('top',y);
+                    break;
+            }
+        };
+        Menu.prototype.switchTab = function(tab){
+            switch(tab){
+                case 'latticeTab': 
+                    jQuery('#latticeTab').find('a').trigger('click');
+                    break;        
+                case 'millerPI': 
+                    jQuery('#millerPI').find('a').trigger('click'); 
+                    break;
+                case 'motifLI': 
+                    jQuery('#motifLI').find('a').trigger('click'); 
+                    break;
+                case 'visualTab': 
+                    jQuery('#visualTab').find('a').trigger('click'); 
+                    break;
+                case 'publicTab': 
+                    jQuery('#publicTab').find('a').trigger('click');
+                    break;
+            }
+        }
+>>>>>>> f8e3cca2b98daddd6953cd5461ec884e3f5b8f13
         Menu.prototype.setTabDisable = function(argument){
             _.each(argument, function($parameter, k){
                 if ($parameter === true) {
@@ -1595,10 +1656,17 @@ define([
             }
         };
         Menu.prototype.showTooltip = function(argument){
-            jQuery('#'+argument['id']).attr('data-original-title', argument['title']).tooltip('fixTitle');
-            jQuery('#'+argument['id']).tooltip('show');
-            setTimeout(function() {
-                jQuery('#'+argument['id']).tooltip('hide');
+            var target = jQuery('#'+argument['element']);
+            target.attr('data-original-title', argument['message']);
+            target.tooltip({
+                container : 'body',
+                placement : argument['placement'],
+                trigger: 'manual',
+                title: argument['message']
+            });
+            target.tooltip('show');
+            setTimeout(function(){
+                target.tooltip('hide');
             }, 2500);
         };
         Menu.prototype.resetProgressBar = function(title) {
