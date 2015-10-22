@@ -1,5 +1,6 @@
 crystal grade limited
-unit cell whole
+cropped,solid,  grLimited unit cell whole - new feature
+readjust cell not done well
 
  performance TODOs
  

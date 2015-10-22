@@ -49,7 +49,6 @@ function rStats( settings ) {
     var _settings = settings || {},
         _colours = [ '#850700', '#c74900', '#fcb300', '#284280', '#4c7c0c' ];
     
-    importCSS( 'http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' );
     importCSS( ( _settings.CSSPath?_settings.CSSPath:'' ) + 'styles/rStats.css' );
 
     if( !_settings.values ) _settings.values = {};
