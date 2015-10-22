@@ -20,8 +20,6 @@ define([
 
     this.ucViewPortActive = false;
   };
-
-    var viewportStatus = false;
     
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
@@ -141,7 +139,7 @@ define([
       $('#crystalRendererCaption').height(0);
 
       if (!$('#unitCellRenderer').hasClass('viewport')){
-          if (viewportStatus === true) {
+          if (this.ucViewPortActive === true) {
                 $('#unitCellRenderer').addClass('viewport');
                 $('#unitCellRendererMouse').addClass('viewport');
                 $('#unitCellRenderer').width(width/5);
@@ -196,7 +194,7 @@ define([
     var height = $(window).height() ;
     if(arg.viewport === 'unitCell'){
       if(arg.active === true){
-        viewportStatus = true;
+        this.ucViewPortActive = true;
         $('#unitCellRenderer').addClass('viewport');
         $('#unitCellRendererMouse').addClass('viewport');
         $('#unitCellRenderer').width(width/5);
@@ -206,7 +204,7 @@ define([
         this.unitCellRenderer.changeContainerDimensions(width/5, height/5);
       }
       else if(arg.active === false){
-        viewportStatus = false;
+        this.ucViewPortActive = false;
         $('#unitCellRenderer').removeClass('viewport');
         $('#unitCellRendererMouse').removeClass('viewport');
         $('#unitCellRenderer').width(0);

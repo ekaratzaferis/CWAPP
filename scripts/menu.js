@@ -46,6 +46,9 @@ define([
         var $menuWidthOpen = 520;
         var $menuWidthClose = 103;
     
+        // Viewport state
+        var $viewport = false;
+    
     
     
     /* --------------
@@ -551,6 +554,13 @@ define([
                 $parameter.css('width',screen_width*0.015); 
                 $parameter.css('height',screen_width*0.015); 
             });
+            
+            if ($viewport === true) {
+                $('#unitCellRenderer').width($appContainer.width()/5);
+                $('#unitCellRendererMouse').width($appContainer.width()/5);
+                $('#unitCellRenderer').height(screen_height/5);
+                $('#unitCellRendererMouse').height(screen_height/5);
+            }
         };
 
         function init_dimensions(){
@@ -668,6 +678,7 @@ define([
                         argument ={};
                         argument[name] = true;
                         PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
+                        $viewport = true;
                         break;
                 }
             });
@@ -706,6 +717,7 @@ define([
                         argument ={};
                         argument[name] = false;
                         PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
+                        $viewport = false;
                         break;
                 }
             });
@@ -1748,8 +1760,6 @@ define([
     this.restrictionEvents = []; */
      
   };
-    
-    
     
     /* --------------------
        Prototypes - Editors
