@@ -185,7 +185,7 @@ define([
         if(this.solidVoidObject !== undefined){
           this.solidVoidObject.visible = true; 
           found = true;
-          this.objectSolidVoid.visible = true;
+          this.objectSolidVoid.visible = true; //todo 2 idia
           while(i < this.actualAtoms.length ) {  
             this.actualAtoms[i].object3d.visible = false;  
             if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
