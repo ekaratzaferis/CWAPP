@@ -155,7 +155,7 @@ define([
         i++; 
       }  
       var g = this.customBox(this.viewBox);
-      var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, color:"#FF0000" }) );
+      var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
        
       if(this.viewMode === 'crystalSubstracted'){
         i = 0 ;
@@ -249,27 +249,34 @@ define([
         } 
 
         var g2 = g.clone() ; 
-        box.scale.set(1.2,1.2,1.2); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
+        box.scale.set(1.1,1.1,1.1); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
+        box.position.x -= 0.1;
+        box.position.y -= 0.1;
+        box.position.z -= 0.1;
         box.visible = false;
-        var FNHbox = new THREE.FaceNormalsHelper( box ) ; // not sure why it is needed, maybe for calculating the normals 
-
+ 
+        var FNHbox = new THREE.FaceNormalsHelper( box , 2, 0x00ff00, 1 ) ; // not sure why it is needed, maybe for calculating the normals 
+        console.log(FNHbox);
         scene.add(  box  ); 
+        scene.add(  FNHbox  ); 
 
         var collidableMeshList = [] ;
         collidableMeshList.push(box); 
 
-        var i=0;
+        i=0;
    
-        while(i < _this.actualAtoms.length ) {    
+        while(i < this.actualAtoms.length ) {    
 
-          var originPointF = _this.actualAtoms[i].object3d.position.clone();
+          var originPointF = this.actualAtoms[i].object3d.position.clone();
           var dir = new THREE.Vector3(1,10,1);  
+          this.lineHelper(originPointF.clone(), dir.clone(), 0xff0000, this.actualAtoms.length);
           var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
           var collisionResultsF = rayF.intersectObjects( collidableMeshList );
 
           var touches = true ;
-          var radius = _this.actualAtoms[i].getRadius() ;
-       
+          var radius = this.actualAtoms[i].getRadius() ;
+        
+        console.log(collisionResultsF.length);
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
 
             var box2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
@@ -277,12 +284,12 @@ define([
             collidableMeshList.pop();
             collidableMeshList.push(box2);
 
-            var vertexIndex = _this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
+            var vertexIndex = this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
             
             while( vertexIndex >= 0 )
             {     
-              var localVertex = _this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
-              var globalVertex = localVertex.applyMatrix4(_this.actualAtoms[i].object3d.matrixWorld);
+              var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(this.actualAtoms[i].object3d.matrixWorld);
               var directionVector = globalVertex.sub( originPointF );     
               
               var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
@@ -298,7 +305,7 @@ define([
             }  
             if(!touches) _this.actualAtoms[i].object3d.visible = false ;
           } 
-          _this.actualAtoms[i].GradeLimited();
+          this.actualAtoms[i].GradeLimited();
           i++;   
         }  
       }
@@ -335,6 +342,31 @@ define([
     } 
     this.menu.progressBarFinish();   
   };
+  var bbHelper = [];
+  Lattice.prototype.lineHelper = function(a,b, color, pass){
+     
+    var material = [ new THREE.LineBasicMaterial({ color: color  }) ];
+    var geometry = new THREE.Geometry();
+    
+    var scene = Explorer.getInstance().object3d;
+    
+     
+    var g=0;
+    if(pass === 8) {  
+      while(g<bbHelper.length) {   
+        scene.remove(bbHelper[g] );
+        g++;
+      }
+      bbHelper.splice(0);
+    } 
+     
+
+    geometry.vertices.push( a, b );
+     
+    var mesh = new THREE.Line(geometry, material[0]);
+    bbHelper.push(mesh);
+    scene.add(mesh); 
+  }
   Lattice.prototype.toggleRadius = function(arg) {
     
     arg = arg.atomRadius;

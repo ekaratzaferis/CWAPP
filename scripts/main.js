@@ -460,10 +460,7 @@ require([
   });
   menu.onAtomPositionChange(function(message, param) {  
     motifEditor.setAtomsPosition(param);
-  });
-  menu.onManuallyCellDimsChange(function(message, param) { 
-    motifEditor.setManuallyCellLengths(param);
-  });
+  }); 
   menu.onManuallyCellVolumeChange(function(message, param) { 
     motifEditor.setManuallyCellVolume(param);
   });

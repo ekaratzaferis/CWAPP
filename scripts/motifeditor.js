@@ -4508,6 +4508,7 @@ define([
         
       var FNHbox = new THREE.FaceNormalsHelper( box ) ; // not sure why it is needed, maybe for calculating the normals 
 
+      UnitCellExplorer.add({'object3d' : FNHbox }); 
       UnitCellExplorer.add({'object3d' : box }); 
 
       var collidableMeshList = [] ;
@@ -4528,6 +4529,8 @@ define([
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
 
           var box2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
+                var FNHbox2 = new THREE.FaceNormalsHelper( box2 ) ; // not sure why it is needed, maybe for calculating the normals 
+                UnitCellExplorer.add({'object3d' : FNHbox2 }); 
           box2.visible = false; // i have to delete the helper boxes
           collidableMeshList.pop();
           collidableMeshList.push(box2);
