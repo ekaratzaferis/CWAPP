@@ -44,7 +44,21 @@
         
         <!-- Progress Bar Element -->
         <div id="progressBarWrapper">
-            <div id="loaderWrapper"><div class="loader">Loading...</div></div>
+            <div id="loaderWrapper">
+                <div class="sk-cube-grid">
+                   <div id="loaderCircle">
+                        <div class="sk-cube sk-cube1"></div>
+                        <div class="sk-cube sk-cube2"></div>
+                        <div class="sk-cube sk-cube3"></div>
+                        <div class="sk-cube sk-cube4"></div>
+                        <div class="sk-cube sk-cube5"></div>
+                        <div class="sk-cube sk-cube6"></div>
+                        <div class="sk-cube sk-cube7"></div>
+                        <div class="sk-cube sk-cube8"></div>
+                        <div class="sk-cube sk-cube9"></div>
+                    </div>
+                </div>
+            </div>
             <div class="progressLabel">LOADING 3D SCENES...</div>
         </div>
     
@@ -838,189 +852,97 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-															
-															<div class="tab-box lattice-parameters-box">
-																<div class="box-body">
+                                                            
+                                                            <div class="tab-box lattice-parameters-box" id="parametersBox">
+                                                                <div class="box-body">
 																	<div class="row row-nopad">
-																		
-																		<div class="col col-sm-2">
-																			<div id="motifPadlock" class="lock-icon-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
-																				<a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
-																			</div>
-																		</div>
-																		<div class="col col-sm-10">
+                                                                        <div class="col col-sm-12">
 																			<div class="slider-blocks-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
-																				<div class="slider-block">
-																					<div class="block-title">
-																						<h3>Lattice Length</h3>
-																					</div>
-																					<div class="block-content">
-																						<div class="sliders-container">
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_length_a_02">a</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="Aa" type="text" name="txt_lattice_length_a_02" id="txt_lattice_length_a_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="AaSlider" class="slider"></div>
-																										</div>
-																									</div>
+                                                                                <div class="slider-block">
+                                                                                    <div class="block-title small">
+                                                                                        <h3>Lattice Length</h3>
+                                                                                    </div>
+                                                                                    <div class="block-content">
+                                                                                        <div class="sliders-container">
+                                                                                            <div class="slider-group form-group theme-light">
+                                                                                                <div class="row row-12">
 
-																								</div>
-																							</div>
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_length_b_02">b</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="Ab" type="text" name="txt_lattice_length_b_02" id="txt_lattice_length_b_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>a :&nbsp;</label><label id="meLengthA">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>b :&nbsp;</label><label id="meLengthB">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>c :&nbsp;</label><label id="meLengthC">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="box-body">
+																	<div class="row row-nopad">
+                                                                        <div class="col col-sm-12">
+																			<div class="slider-blocks-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
+                                                                                <div class="slider-block">
+                                                                                    <div class="block-title small">
+                                                                                        <h3>Lattice Angle</h3>
+                                                                                    </div>
+                                                                                    <div class="block-content">
+                                                                                        <div class="sliders-container">
+                                                                                            <div class="slider-group form-group theme-light">
+                                                                                                <div class="row row-12">
 
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="AbSlider" class="slider"></div>
-																										</div>
-																									</div>
-
-																								</div>
-																							</div>
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_length_c_02">c</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="Ac" type="text" name="txt_lattice_length_c_02" id="txt_lattice_length_c_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="AcSlider" class="slider"></div>
-																										</div>
-																									</div>
-
-																								</div>
-																							</div>
-																						</div>
-																					</div>
-																				</div>
-																				<div class="slider-block">
-																					<div class="block-title">
-																						<h3>Lattice Angle</h3>
-																					</div>
-																					<div class="block-content">
-																						<div class="sliders-container">
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_angle_alpha_02">&alpha;</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="cellGamma" type="text" name="txt_lattice_angle_alpha_02" id="txt_lattice_angle_alpha_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="cellGammaSlider" class="slider" id="sldr_lattice_angle_alpha_02"></div>
-																										</div>
-																									</div>
-
-																								</div>
-																							</div>
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_angle_beta_02">&beta;</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="cellAlpha" type="text" name="txt_lattice_angle_beta_02" id="txt_lattice_angle_beta_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
-
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="cellAlphaSlider" class="slider" id="sldr_lattice_angle_beta_02"></div>
-																										</div>
-																									</div>
-
-																								</div>
-																							</div>
-																							<div class="slider-group form-group theme-light">
-																								<div class="row row-10">
-																									
-																									<div class="col col-sm-5">
-																										<div class="slider-detail">
-																											<div class="slider-label form-group-label">
-																												<label for="txt_lattice_angle_gamma_02">&gamma;</label>
-																											</div>
-																											<div class="slider-input form-group-input">
-																												<input id="cellBeta" type="text" name="txt_lattice_angle_gamma_02" id="txt_lattice_angle_gamma_02" class="form-control"/>
-																											</div>
-																										</div>
-																									</div>
-																									<div class="col col-sm-7">
-																										<div class="slider-control slider-control-sm">
-																											<div id="cellBetaSlider" class="slider" id="sldr_lattice_angle_gamma_02"></div>
-																										</div>
-																									</div>
-
-																								</div>
-																							</div>
-																						</div>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-
-																	</div>
-																</div>
-																<div class="box-footer">
-																	<div class="motif-bottom-action-bar-container bottom-action-bar-container">
-																		<div class="row row-1">
-																			
-																			<div class="col col-sm-6">
-																				<div class="action action-toggle-visiblity previewAtomChanges">
-																					<a><img src="Images/refresh.png" class="img-responsive" alt=""/></a>
-																				</div>
-																			</div>
-																			<div class="col col-sm-6">
-																				<div class="action action-save saveAtomChanges">
-																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
-																				</div>
-																			</div>
-
-																		</div>
-																	</div>
-																</div>
-															</div>
-
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>a :&nbsp;</label><label id="meAngleA">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>b :&nbsp;</label><label id="meAngleB">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col col-sm-4 latticeLabel">
+                                                                                                        <div class="slider-detail">
+                                                                                                            <div class="slider-label form-group-label">
+                                                                                                                <label>g :&nbsp;</label><label id="meAngleG">-</label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            
 														</div>
 													</div>
 												</div>
