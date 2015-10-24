@@ -18,23 +18,22 @@ define(function() {
     },
     restrictions: {
       'scaleX': {
-        'scaleZ': '≠'
+        'scaleZ': '='
       },
-      'scaleZ': {
-        'scaleY': '≠',
-        'scaleX': '≠'
+      'scaleY': {
+        'scaleZ': '≠'
       },
       'scaleY': {
         'scaleX': '='
       }, 
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '90': '='
       }
     },
     gridPoints: {

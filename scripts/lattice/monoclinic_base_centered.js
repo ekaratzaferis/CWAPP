@@ -29,15 +29,15 @@ define(function() {
       'scaleZ': {
         'scaleX': '≠',
         'scaleY': '≠'
-      }, 
+      },
+      'alpha': {
+        '90': '='
+      },
       'beta': {
         '90': '≠'
       },
-      'alpha': {
-        'alpha': '='
-      },
       'gamma': {
-        'gamma': '='
+        '90': '='
       }
     },
     gridPoints: {

@@ -31,13 +31,13 @@ define(function() {
         'scaleY': '≠'
       }, 
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '90': '='
       } 
     },
     gridPoints: { 

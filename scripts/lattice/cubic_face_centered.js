@@ -21,22 +21,22 @@ define(function() {
 
     },
     restrictions: {
-      'scaleY': {
-        'scaleX': '='
+      'scaleX': {
+        'scaleZ': '='
       },
-      'scaleZ': {
-        'scaleY': '='
+      'scaleY': {
+        'scaleZ': '='
       }, 
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '90': '='
       }
-    }, 
+    },
     gridPoints: { 
       'first' : [0,0,0],
       'left'  : [1,1,0],
