@@ -118,13 +118,13 @@ define([
         var $rotAnglePhi = jQuery('#rotAnglePhi'); 
     
         // Lattice Parameters [Motif Tab]
-        var $Aa = jQuery('#Aa');
-        var $Ab = jQuery('#Ab');
-        var $Ac = jQuery('#Ac');
-        var $cellAlpha = jQuery('#cellAlpha');
-        var $cellBeta = jQuery('#cellBeta');
-        var $cellGamma = jQuery('#cellGamma');
         var $cellVolume = jQuery('#cellVolume');
+        var $meLengthA = jQuery('#meLengthA');
+        var $meLengthB = jQuery('#meLengthB');
+        var $meLengthC = jQuery('#meLengthC');
+        var $meAngleA = jQuery('#meAngleA');
+        var $meAngleB = jQuery('#meAngleB');
+        var $meAngleG = jQuery('#meAngleG');
     
         // [Visualization Tab]
         var $fogColor = jQuery('#fogColor');
@@ -208,7 +208,6 @@ define([
     
         /* Padlocks */
         var $latticePadlock = jQuery('#latticePadlock');
-        var $motifPadlock = jQuery('#motifPadlock');
     
         /* Sync Cameras */
         var $syncCameras = jQuery('#syncCameras');
@@ -356,6 +355,14 @@ define([
             'deleteDirection': $deleteDirection,
             'newDirection': $newDirection
         };
+        var latticeLabels = {
+            'scaleX' : $meLengthA,
+            'scaleY' : $meLengthB,
+            'scaleZ' : $meLengthC,
+            'alpha' : $meAngleA,
+            'beta' : $meAngleB,
+            'gamma' : $meAngleG
+        };
     
         // [Motif Tab]
         var $atomButtons = {
@@ -365,18 +372,6 @@ define([
             'deleteAtom': $deleteAtom
         };
         var motifSliders = ['atomPosX', 'atomPosY', 'atomPosZ'];
-        var cellManDimensions = {  
-            'Aa' : $Aa,
-            'Ab' : $Ab,
-            'Ac' : $Ac
-        };
-        var cellManAngles = {  
-            'cellAlpha' : $cellAlpha,
-            'cellBeta' : $cellBeta,
-            'cellGamma' : $cellGamma
-        };
-        var cellManDimensionsSliders = ['Aa', 'Ab', 'Ac'];
-        var cellManAnglesSliders = ['cellAlpha', 'cellBeta', 'cellGamma'];
         var atomParameters = {
             'atomColor': $atomColor,
             'atomOpacity': $atomOpacity,
@@ -476,9 +471,7 @@ define([
             DRAG_ATOM: 'menu.drag_atom',
             SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
             AXIS_MODE: 'menu.axis_mode',
-            AXYZ_CHANGE: 'menu.axyz_change',
             CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
-            MAN_ANGLE_CHANGE: 'menu.man_angle_change',
             MANUAL_SET_DIMS: 'menu.manual_set_dims',
             MANUAL_SET_ANGLES: 'menu.manual_set_angles',
             CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
@@ -758,25 +751,39 @@ define([
                 }
             });
             _.each(latticeParameters, function($parameter, k) {
-                if ( ($parameter.attr('id') == 'alpha')|($parameter.attr('id') == 'beta')|($parameter.attr('id') == 'gamma')) $parameter.val(90);
-                else if ( ($parameter.attr('id') == 'scaleX')|($parameter.attr('id') == 'scaleY')|($parameter.attr('id') == 'scaleZ')) $parameter.val(3);
-                else $parameter.val(1);
-
-                if ( ($parameter.attr('id') !== 'repeatX')&&($parameter.attr('id') !== 'repeatY')&&($parameter.attr('id') !== 'repeatZ')){
+                if ((k === 'repeatX')||(k === 'repeatY')||(k === 'repeatZ')){
+                    $parameter.on('change',function(){
+                        $parameter.val(1);
+                        argument = {};
+                        if (inputErrorHandler($parameter.val()) !== false) {
+                            argument[k] = inputErrorHandler($parameter.val());
+                            LastLatticeParameters[k] = argument[k];
+                            PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                        }
+                    });
+                }
+                else if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')){
+                    $parameter.val(90.000);
+                    latticeLabels[k].text(90.000);
                     $parameter.on('change', function() {
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
                             jQuery('#'+k+'Slider').slider('value',argument[k]);
+                            latticeLabels[k].text(argument[k]);
                             PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
                         }
                     });
                 }
-                else{
-                    $parameter.on('change',function(){
+                else {
+                    $parameter.val(1.000);
+                    latticeLabels[k].text(1.000);
+                    $parameter.on('change', function() {
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
+                            jQuery('#'+k+'Slider').slider('value',argument[k]);
+                            latticeLabels[k].text(argument[k]);
                             PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
                         }
                     });
@@ -929,36 +936,6 @@ define([
                             break;
                     }
                 }); 
-            });
-            _.each(cellManDimensions, function($parameter, k) {
-                $parameter.prop('disabled',true);
-                $parameter.on('change', function() {
-                    argument = {};
-                    if (inputErrorHandler($parameter.val()) !== false) {
-                        argument[k] = inputErrorHandler($parameter.val()); 
-                        jQuery('#'+k+'Slider').slider('value',argument[k]); 
-                        PubSub.publish(events.AXYZ_CHANGE, argument);
-                    }
-                });
-            });
-            _.each(cellManAngles, function($parameter, k) {
-                $parameter.prop('disabled',true);
-                $parameter.on('change', function() {
-                    argument = {};
-                    if (inputErrorHandler($parameter.val()) !== false) {
-                        argument[k] = inputErrorHandler($parameter.val()); 
-                        jQuery('#'+k+'Slider').slider('value',argument[k]); 
-                        PubSub.publish(events.MAN_ANGLE_CHANGE, argument);
-                    }
-                });
-            });
-            _.each(cellManDimensionsSliders, function(name) {  
-                _this.setSlider(name,0.53,0.53,10.000,0.001,events.AXYZ_CHANGE);
-                _this.setOnOffSlider(name,true);
-            }); 
-            _.each(cellManAnglesSliders, function(name) { 
-                _this.setSlider(name,90,2,178,0.1, events.MAN_ANGLE_CHANGE); 
-                _this.setOnOffSlider(name,true);
             });
             _.each(motifInputs, function($parameter, k) {
                 $parameter.prop('disabled',true);
@@ -1269,24 +1246,6 @@ define([
 
             
             /* [Motif Tab] */
-            $motifPadlock.on('click', function() {
-                if ( !($motifPadlock.hasClass('disabled')) ){
-                    var argument = {};
-                    if ($motifPadlock.children().hasClass('active')) {
-                        argument["padlock"] = true;
-                        argument["manualSetCellDims"] = true;
-                        argument["manualSetCellAngles"] = true;
-                    }
-                    else{ 
-                        argument["padlock"] = false;
-                        argument["manualSetCellDims"] = false;
-                        argument["manualSetCellAngles"] = false;
-                    }
-                    PubSub.publish(events.SET_PADLOCK, argument);
-                    PubSub.publish(events.MANUAL_SET_DIMS, argument);
-                    PubSub.publish(events.MANUAL_SET_ANGLES, argument);
-                }
-            });
             $tangency.on('click',function(){
                 if ( !($tangency.parent().hasClass('disabled')) ){
                     argument = {};
@@ -1430,6 +1389,11 @@ define([
                 }
                 $lockCameras.toggleClass('active');
                 PubSub.publish(events.MOTIF_CAMERASYNC_CHANGE, argument);           
+            });
+            _.each(latticeLabels, function($parameter, k){
+                $parameter.parent().parent().on('click', function(){
+                    _this.switchTab('latticeTab');  
+                });
             });
 
             /* [Visualization Tab] */
@@ -1876,7 +1840,6 @@ define([
             var parameters = {};
             _.each(latticeParameters, function($latticeParameter, k) {
                 parameters[k] = $latticeParameter.val();
-                LastLatticeParameters[k] = parameters[k];
             });
             return parameters;
         };
@@ -1888,13 +1851,18 @@ define([
             /*jshint unused:false*/
             _.each(latticeParameters, function($latticeParameter, k) {
                 if (_.isUndefined(parameters[k]) === false) {
-                    //$latticeParameter.val(parameters[k]); 
+                    $latticeParameter.val(parameters[k]); 
                 }
             });
             _.each(angleSliders, function(name) {
                 _this.setSliderValue(name,parameters[name]);
             });
             PubSub.publish(events.LATTICE_PARAMETER_CHANGE, this.getLatticeParameters());
+        };
+        Menu.prototype.disableLatticeParameters = function(argument){
+            _.each(latticeParameters, function($parameter, k) {
+                if (argument[k] !== undefined) $parameter.prop('disabled', argument[k]);
+            });
         };
         Menu.prototype.setOnOffSlider = function(name, action) {
             var sliderName = name+'Slider';
@@ -1935,6 +1903,9 @@ define([
                     argument[inputName] = ui.value;
                     PubSub.publish(eventIn, argument);
                     jQuery('#'+inputName).val(ui.value);
+                    _.each(latticeLabels, function($parameter,k){
+                        if (inputName === k) $parameter.text(ui.value);
+                    });
                 }
             });
         };
@@ -2517,18 +2488,6 @@ define([
                     $parameter.text(argument[k]);
                 }
             });
-            _.each(cellManDimensions, function($parameter, k) {
-                if (argument[k] !== undefined){
-                    $parameter.val(argument[k]);
-                    $('#'+k+'Slider').slider('value',argument[k]);
-                }
-            });
-            _.each(cellManAngles, function($parameter, k) {
-                if (argument[k] !== undefined){
-                    $parameter.val(argument[k]);
-                    $('#'+k+'Slider').slider('value',argument[k]);
-                }
-            });
             if (argument['cellVolume'] !== undefined){
                 $cellVolume.val(argument['cellVolume']);
                 $('#cellVolumeSlider').slider('value',argument['cellVolume']);
@@ -2573,16 +2532,6 @@ define([
                     }
                 }
             }
-            if (argument['padlock'] !== undefined){
-                if (argument['padlock'] === true) {
-                    $motifPadlock.find('a').removeClass('active');
-                    $motifPadlock.find('a').attr('aria-pressed','false');
-                }
-                else {
-                    $motifPadlock.find('a').addClass('active');
-                    $motifPadlock.find('a').attr('aria-pressed','true');
-                }
-            }
             if (argument['tangency'] !== undefined){
                 if (argument['tangency'] === true) $tangency.parent().addClass('purpleThemeActive');
                 else $tangency.parent().removeClass('purpleThemeActive');
@@ -2622,12 +2571,6 @@ define([
             _.each(rotLables, function($parameter, k) {
                 if (inputName === k) return $parameter.text();
             });
-            _.each(cellManDimensions, function($parameter, k) {
-                if (inputName === k) return $parameter.val();
-            });
-             _.each(cellManAngles, function($parameter, k) {
-                if (inputName === k) return $parameter.val();
-            });
             if (inputName === 'cellVolume'){ return $cellVolume.val(); }
             if (inputName === 'atomPositioningXYZ'){
                 if ($atomPositioningXYZ.hasClass('buttonPressed')) return true;
@@ -2635,10 +2578,6 @@ define([
             }
             if (inputName === 'atomPositioningABC'){
                 if ($atomPositioningABC.hasClass('buttonPressed')) return true;
-                else return false;
-            }
-            if (inputName === 'padlock'){
-                if ($motifPadlock.find('a').hasClass('active')) return true;
                 else return false;
             }
             if (inputName === 'tangency'){
@@ -2683,18 +2622,6 @@ define([
                     $parameter.prop('disabled', argument[k]);
                 }
             });
-            _.each(cellManDimensions, function($parameter, k) {
-                if (argument[k] !== undefined){
-                    $parameter.prop('disabled', argument[k]);
-                    $('#'+k+'Slider').slider('option','disabled',argument[k]);
-                }
-            });
-            _.each(cellManAngles, function($parameter, k) {
-                if (argument[k] !== undefined){
-                    $parameter.prop('disabled', argument[k]);
-                    $('#'+k+'Slider').slider('option','disabled',argument[k]);
-                }
-            });
             if (argument['cellVolume'] !== undefined){
                 $cellVolume.prop('disabled', argument['cellVolume']);
                 $('#cellVolumeSlider').slider('option','disabled',argument['cellVolume']);
@@ -2721,26 +2648,6 @@ define([
             }
             if (argument['tangency'] !== undefined){
                 $tangency.parent().toggleClass('disabled');
-            }
-            if (argument['padlock'] !== undefined){
-                if (argument['padlock'] === true) {
-                    $motifPadlock.children().css('cursor','not-allowed');
-                    $motifPadlock.children().hover(
-                        function(){},
-                        function(){}
-                    );
-                    $motifPadlock.addClass('disabled');
-                    $motifPadlock.find('a').removeAttr('data-toggle');
-                }
-                else {
-                    $motifPadlock.children().css('background','#15171b');
-                    $motifPadlock.children().hover(
-                        function(){$motifPadlock.children().css('background','#08090b');},
-                        function(){$motifPadlock.children().css('background','#15171b');}
-                    );
-                    $motifPadlock.removeClass('disabled');
-                    $motifPadlock.find('a').css('cursor','auto');
-                }
             }
             $tangentR.prop('disabled', argument['tangentR']);
         };
@@ -2876,9 +2783,78 @@ define([
                     break;
             }
         };
+        Menu.prototype.setLatticeRestrictions = function(restrictions) {
+
+            // Return is restrictions is not an object
+            if (_.isObject(restrictions) === false) {
+                return;
+            }
+
+            var left = {};
+            var right = {};
+            var _this = this;
+            var rightValue;
+
+            // For each lattice input
+            _.each(latticeParameters, function($parameter, pk) {
+
+                // If there's a restriction for this input
+                if (_.isUndefined(restrictions[pk]) === false) {
+
+                    // Left side of expression
+                    left[pk] = $parameter;
+
+                    // For each restriction of the input
+                    _.each(restrictions[pk], function(operator, rk) {
+
+                        // Right side of expression
+                        right[rk] = latticeParameters[rk];
+
+                        if (operator === '=') {
+
+                            // Disable Input
+                            _this.disableLatticeParameters({pk:true});
+
+                            // Attach New Event listener
+                            right[rk].on('change.restrictions',function(){
+                                // Reflect to left side expression
+                                left[pk].val(right[rk].val());
+                                left[pk].trigger('change'); 
+                            });
+
+                        } 
+                        else if (operator === '≠') {
+
+                            // Attach New Event listener
+                            left[pk].on('change.restrictions',function(){
+                                // Sometimes right value may be bounded to a number instead of an input
+                                rightValue = _.isUndefined(right[rk]) ? parseFloat(rk) : right[rk].val();
+
+                                if (parseFloat(left[pk].val()) == rightValue) {
+                                    _this.showTooltip({
+                                        'element': left[pk].attr('id'),
+                                        'placement': 'top',
+                                        'message': 'Invalid Input'
+                                    });
+                                    left[pk].val(LastLatticeParameters[pk]);
+                                    left[pk].trigger('change'); 
+                                } 
+                            });
+                        }
+                    });
+                }
+                // Assign Defaul Hander
+                else {
+                    // Renable input and unbind any restriction events
+                    _this.disableLatticeParameters({pk:false});
+                    $parameter.unbind( "change.restrictions" );
+                }
+
+            }); 
+        };
         String.prototype.capitalizeFirstLetter = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
-        }
+        };
    
     /* ------------------------
        Prototypes - Subscribers
@@ -2946,15 +2922,9 @@ define([
         };
         Menu.prototype.onAtomPositionChange = function(callback) {
             PubSub.subscribe(events.ATOM_POSITION_CHANGE, callback);
-        }; 
-        Menu.prototype.onManuallyCellDimsChange = function(callback) {
-            PubSub.subscribe(events.AXYZ_CHANGE, callback);
         };
         Menu.prototype.onManuallyCellVolumeChange = function(callback) {
             PubSub.subscribe(events.CELL_VOLUME_CHANGE, callback);
-        };
-        Menu.prototype.onManuallyCellAnglesChange = function(callback) {
-            PubSub.subscribe(events.MAN_ANGLE_CHANGE, callback);
         };
         Menu.prototype.onAtomTangencyChange = function(callback) {
             PubSub.subscribe(events.ATOM_TANGENCY_CHANGE, callback);
@@ -3061,96 +3031,6 @@ define([
         Menu.prototype.onCrystalChange = function(callback){
             PubSub.subscribe(events.CHANGE_CRYSTAL_MODE, callback);
         };
-    
-  /*Menu.prototype.setLatticeRestrictions = function(restrictions) {
-    var $body = jQuery('body');
-
-    _.each(this.restrictionEvents, function(restriction) {
-      $body.off('change', '#' + restriction.id, restriction.ev);
-    });
-
-    //jshint unused:false
-    _.each(latticeParameters, function($parameter, pk) {
-      $parameter.removeAttr('disabled');
-    });
-
-    if (_.isObject(restrictions) === false) {
-      return;
-    }
-
-    var left = {};
-    var right = {};
-    var id;
-    var restrictionEvent;
-    var _this = this;
-    var rightValue;
-
-    _.each(latticeParameters, function($parameter, pk) {
-
-      if (_.isUndefined(restrictions[pk]) === false) {
-          
-          left[pk] = $parameter;
-
-          _.each(restrictions[pk], function(operator, rk) {
-
-              right[rk] = latticeParameters[rk];
- 
-              if (operator === '=') {
-
-                  left[pk].attr('disabled', 'disabled');
-
-                  restrictionEvent = function() {
-
-                      left[pk].val(right[rk].val());
-                      left[pk].trigger('change');       
-
-                  };
-                  id = right[rk].attr('id');
-                  _this.restrictionEvents.push({
-
-                      ev: restrictionEvent,
-                      id: id
-
-                  });
-
-                  //$body.on('change', '#' + id, restrictionEvent);
-
-              } 
-              else if (operator === '≠') {
-
-                  restrictionEvent = function() {
-
-                      // sometimes right value may be bounded to a number instead of an input
-                      rightValue = _.isUndefined(right[rk]) ? parseFloat(rk) : right[rk].val();
-
-                      if (parseFloat(left[pk].val()) == rightValue) {
-                          
-                          
-                          //alert("The value "+rightValue+" you entered for "+pk+" is not valid.");
-                          //left[pk].val(LastLatticeParameters[pk]);
-                          //left[pk].trigger('change');   
-                                
-                                     
-                      } 
-
-                  };
-
-                  id = left[pk].attr('id');
-                  _this.restrictionEvents.push({
-
-                      ev: restrictionEvent,
-                      id: id
-
-                  });
-
-                 // $body.on('change', '#' + id, restrictionEvent);
-
-              }
-          });
-      }
-
-    }); 
-  };*/
 
   return Menu;
 });
