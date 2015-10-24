@@ -18,8 +18,8 @@ define(function() {
     },
     restrictions: {
       'scaleX': {
+        'scaleY': '≠',
         'scaleZ': '≠',
-        'scaleY': '≠'
       },
       'scaleY': {
         'scaleZ': '≠',
@@ -28,15 +28,15 @@ define(function() {
       'scaleZ': {
         'scaleX': '≠',
         'scaleY': '≠'
-      }, 
-      'beta': {
-         '90': '≠', 
       },
       'alpha': {
-        'alpha': '='
+        '90': '='
+      },
+      'beta': {
+        '90': '≠'
       },
       'gamma': {
-        'gamma': '='
+        '90': '='
       }
     },
     gridPoints: {

@@ -17,20 +17,20 @@ define(function() {
       'gamma': 90
     },
     restrictions: {
-      'scaleY': {
-        'scaleX': '='
+      'scaleX': {
+        'scaleZ': '='
       },
-      'scaleZ': {
-        'scaleY': '='
+      'scaleY': {
+        'scaleZ': '='
       }, 
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '90': '='
       }
     },
 

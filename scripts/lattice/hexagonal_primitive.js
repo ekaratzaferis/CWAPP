@@ -17,14 +17,20 @@ define(function() {
       'alpha': 90
     },
     restrictions: {
+      'scaleX': {
+        'scaleZ': '='  
+      },
+      'scaleY': {
+        'scaleZ': '≠'  
+      },
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '120': '='
       }
     },
     gridPoints: { 

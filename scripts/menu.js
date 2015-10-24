@@ -752,8 +752,8 @@ define([
             });
             _.each(latticeParameters, function($parameter, k) {
                 if ((k === 'repeatX')||(k === 'repeatY')||(k === 'repeatZ')){
+                    $parameter.val(1);
                     $parameter.on('change',function(){
-                        $parameter.val(1);
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
@@ -1177,11 +1177,6 @@ define([
                                     'message': 'You have to choose a Lattice before opening the Motif Tab'
                                 });
                             }
-                            else {
-                                $motifMEButton.removeClass('disabled');
-                                $motifMEButton.removeClass('blocked');
-                                _this.disableLatticeChoice(true);
-                            }
                         }
                     }
                     return false;
@@ -1197,6 +1192,9 @@ define([
                     argument["manualSetCellAngles"] = true;
                 }
                 else {
+                    if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
+                        jQuery('#selected_lattice').html('N/A');
+                    }
                     argument["padlock"] = false;
                     argument["manualSetCellDims"] = false;
                     argument["manualSetCellAngles"] = false;
@@ -1611,6 +1609,7 @@ define([
                     $motifMEButton.find('a').attr('href','#scrn_motif');
                     $motifMEButton.removeClass('disabled');
                     $motifMEButton.removeClass('blocked');
+                    _this.disableLatticeChoice(true);
                 }
             });   
             $periodicModal.on('click',function(){

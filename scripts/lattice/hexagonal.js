@@ -19,14 +19,20 @@ define(function() {
     gridPoints: {  
     },
     restrictions: {
+      'scaleX': {
+        'scaleZ': '='  
+      },
+      'scaleY': {
+        'scaleZ': '≠'  
+      },
       'alpha': {
-        'alpha': '='
+        '90': '='
       },
       'beta': {
-        'beta': '='
+        '90': '='
       },
       'gamma': {
-        'gamma': '='
+        '120': '='
       }
     } 
   };
