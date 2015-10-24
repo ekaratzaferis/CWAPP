@@ -446,8 +446,7 @@ require([
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
-    }
-    
+    } 
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -666,7 +665,7 @@ require([
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults);  
-      //menu.setLatticeRestrictions(lattice.restrictions);   
+      menu.setLatticeRestrictions(lattice.restrictions);   
     }
   });
   
