@@ -463,10 +463,7 @@ require([
   }); 
   menu.onManuallyCellVolumeChange(function(message, param) { 
     motifEditor.setManuallyCellVolume(param);
-  });
-  menu.onManuallyCellAnglesChange(function(message, param) { 
-    motifEditor.setManuallyCellAngles(param);
-  });
+  }); 
   menu.onAtomTangencyChange(function(message, param) { 
     motifEditor.setAtomsTangency(param);
   });
