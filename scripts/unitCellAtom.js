@@ -210,7 +210,7 @@ define([
 
     UnitCellExplorer.remove({'object3d':_this.object3d}); 
      
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);
@@ -224,13 +224,12 @@ define([
     sphereCut.children[0].receiveShadow = true; 
     sphereCut.children[0].castShadow = true; 
 
-    _this.object3d = sphereCut; 
+    this.object3d = sphereCut; 
     UnitCellExplorer.add(_this);
-    _this.helperPos.x = pos.x ;
-    _this.helperPos.y = pos.y ;
-    _this.helperPos.z = pos.z ;
-    _this.viewMode = 'SubtractedSolid';
-
+    this.helperPos.x = pos.x ;
+    this.helperPos.y = pos.y ;
+    this.helperPos.z = pos.z ;
+    this.viewMode = 'SubtractedSolid'; 
   };
   UnitCellAtom.prototype.SolidVoid = function( pos) {
     var _this = this; 
@@ -304,7 +303,8 @@ define([
 
   }; 
   UnitCellAtom.prototype.changeColor = function(color, forTime, renderingMode) { 
-
+    // to change : no need to change material, just change color
+    
     if(this.renderingMode === 'wireframe'){
       return;
     }

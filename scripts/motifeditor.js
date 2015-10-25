@@ -1187,7 +1187,8 @@ define([
   }
 
   Motifeditor.prototype.lineHelper = function(a,b, color){
-     
+    
+    if(!color) color = 0xff0000;
     var material = [ new THREE.LineBasicMaterial({ color: color  }) ];
     var geometry = new THREE.Geometry();
     
@@ -1195,9 +1196,9 @@ define([
     
      
     var g=0;
-    if(bbHelper.length > 1) {  
+    if(bbHelper.length > 50) {  
       while(g<bbHelper.length) {   
-        scene.remove(bbHelper[g] );
+        //scene.remove(bbHelper[g] );
         g++;
       }
       bbHelper.splice(0);
@@ -1531,12 +1532,12 @@ define([
       this.unitCellAtomsOpacity(this.newSphere.getID(),param.atomOpacity);
     }
     else if(!_.isUndefined(param.atomColor)){  
-      this.newSphere.setMaterial("#"+param.atomColor);
+      this.newSphere.setColorMaterial("#"+param.atomColor);
       this.colorUnitCellAtoms(this.newSphere.getID(), "#"+param.atomColor);
     }
     else if(!_.isUndefined(param.atomTexture)){
       // deprecated 
-      this.newSphere.setMaterialTexture(param.atomTexture);
+      this.newSphere.setColorMaterial(param.atomTexture);
       this.unitCellAtomsTexture(this.newSphere.getID(), param.atomTexture);
     } 
     else if(!_.isUndefined(param.wireframe)){ 
@@ -4264,7 +4265,9 @@ define([
     return (sign*offset);
   };
   Motifeditor.prototype.customBox = function(points) { 
-
+    if(this.unitCellAtoms.length === 0){
+      return;
+    }
     var vertices = [];
     var faces = [];
     var _this = this ;
@@ -4349,7 +4352,7 @@ define([
   function customBox2(points) { 
     var vertices = [];
     var faces = []; 
- 
+    
     vertices.push(points['_111'].position); // 0
     vertices.push(points['_110'].position); // 1
     vertices.push(points['_101'].position); // 2 
@@ -4450,21 +4453,137 @@ define([
       }
     }
   };
+  Motifeditor.prototype.offsetMotifsForViews = function(mode){
+    var atoms = [], j =0;
+    if(mode === 'cellClassic'){
+      return atoms;
+    }
+    var i=0;
+
+    var globMat;
+     
+    if(this.latticeType === 'face'){
+      var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
+      var halfX = this.cellParameters.scaleX * 0.5;
+      var halfY = this.cellParameters.scaleY * 0.5;
+      var halfZ = this.cellParameters.scaleZ * 0.5;
+
+      var leftPos = new THREE.Vector3(0, halfY, halfZ);
+      var rightPos = new THREE.Vector3(this.cellParameters.scaleX, halfY, halfZ);
+      var frontPos = new THREE.Vector3(halfX, halfY, this.cellParameters.scaleZ);
+      var backPos = new THREE.Vector3(halfX, halfY, 0);
+      var upPos = new THREE.Vector3(halfX, this.cellParameters.scaleY, halfZ);
+      var downPos = new THREE.Vector3(halfX, 0, halfZ);
+
+      while(j <this.motifsAtoms.length) {
+        var p = this.motifsAtoms[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
+        }  
+
+        var radius = this.motifsAtoms[j].radius;
+        console.log(radius);
+        for ( i = 0; i < 4; i ++ ) {
+          var replicaAtomLeft = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomLeft.position.set(p.x + leftPos.x,p.y + leftPos.y,p.z + leftPos.z); 
+          replicaAtomLeft.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomLeft.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
+          atoms.push(replicaAtomLeft);
+          
+          var replicaAtomRight = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomRight.position.set(p.x + rightPos.x,p.y + rightPos.y,p.z + rightPos.z);
+          replicaAtomRight.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomRight.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
+          atoms.push(replicaAtomRight);
+
+          var replicaAtomFront = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomFront.position.set(p.x + frontPos.x,p.y + frontPos.y,p.z + frontPos.z);
+          replicaAtomFront.position.x += ( arr[i].a * this.cellParameters.scaleX );
+          replicaAtomFront.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
+          atoms.push(replicaAtomFront);
+
+          var replicaAtomBack = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomBack.position.set(p.x + backPos.x,p.y + backPos.y,p.z + backPos.z);
+          replicaAtomBack.position.x += ( arr[i].a * this.cellParameters.scaleX );
+          replicaAtomBack.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
+          atoms.push(replicaAtomBack);
+
+          var replicaAtomUp = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
+          replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
+          atoms.push(replicaAtomUp);
+
+          var replicaAtomDown = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
+          replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
+          atoms.push(replicaAtomDown);
+
+        }
+        j++;
+      }
+      
+    }
+    else if(this.latticeType === 'base'){
+
+    }
+    else if(this.latticeType === 'body'){
+
+    }
+    console.log(atoms);
+    return atoms;
+ 
+  }; 
+  Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
+    var _this = this; 
+ 
+    var cube = THREE.CSG.toCSG(box);
+    cube = cube.inverse();
+    var sphere = THREE.CSG.toCSG(mesh);
+    var geometry = sphere.intersect(cube);
+    var geom = THREE.CSG.fromCSG(geometry);
+    var finalGeom = assignUVs(geom);
+    
+    var sphereCut = new THREE.Mesh( finalGeom, mesh.material.clone()); 
+    sphereCut.receiveShadow = true; 
+    sphereCut.castShadow = true; 
+    
+    return sphereCut;
+
+  };
   Motifeditor.prototype.setCSGmode = function(arg){ 
     var _this = this, i = 0;
      
     this.viewState = arg.mode;
  
-    var g = this.customBox(_this.unitCellPositions, _this.latticeName);
+    var g = this.customBox(this.unitCellPositions, this.latticeName);
 
-    var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"} ) );
+    var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"}) );
     var scene = UnitCellExplorer.getInstance().object3d;
-  
+    var helperMotifs = this.offsetMotifsForViews(this.viewState);
+
     if(this.viewState === 'cellSubstracted'){
-      while(i < _this.unitCellAtoms.length ) {
-        _this.unitCellAtoms[i].object3d.visible = true; 
-        _this.unitCellAtoms[i].subtractedSolidView(box, _this.unitCellAtoms[i].object3d.position); 
-        //i += ret;
+      while(i < this.unitCellAtoms.length ) {
+        this.unitCellAtoms[i].object3d.visible = true; 
+        this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position); 
+    
+        i++;
+      } 
+       
+      i =0;
+
+      while(i < helperMotifs.length ) {
+         
+        var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+        mesh_.name = 'cellSubstracted'; 
+        scene.add(mesh_); 
         i++;
       } 
       
@@ -4500,76 +4619,82 @@ define([
       PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
     }
     else if(this.viewState === 'cellGradeLimited'){ 
-      var g = customBox2(_this.unitCellPositions) ; 
-      var g2 = g.clone() ; 
+       
       var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
       box.visible = false;
-      box.scale.set(1.3,1.3,1.3); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
-        
-      var FNHbox = new THREE.FaceNormalsHelper( box ) ; // not sure why it is needed, maybe for calculating the normals 
-
-      UnitCellExplorer.add({'object3d' : FNHbox }); 
+      
+      // find geometry's center
+      var centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+       
       UnitCellExplorer.add({'object3d' : box }); 
 
       var collidableMeshList = [] ;
       collidableMeshList.push(box);
         
       i=0;
- 
-      while(i < _this.unitCellAtoms.length ) {    
+       
 
-        var originPointF = _this.unitCellAtoms[i].object3d.position.clone();
-        var dir = new THREE.Vector3(1,10,1);  
+      while(i < this.unitCellAtoms.length ) {    
+
+        // workaround for points that are exactly on the grade (faces, cell points)
+        var smartOffset = centroid.clone().sub(this.unitCellAtoms[i].object3d.position.clone());
+        smartOffset.setLength(0.01);
+        var originPointF = this.unitCellAtoms[i].object3d.position.clone().add(smartOffset);
+        //
+
+        var dir = new THREE.Vector3(1,1000000,1);  
         var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
-
+ 
         var touches = true ;
-        var radius = _this.unitCellAtoms[i].getRadius() ;
-     
+        var radius = this.unitCellAtoms[i].getRadius() ; 
+
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
+  
+          var vertexIndex = this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length-1;
+          var atomCentre = this.unitCellAtoms[i].object3d.position.clone();
 
-          var box2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
-                var FNHbox2 = new THREE.FaceNormalsHelper( box2 ) ; // not sure why it is needed, maybe for calculating the normals 
-                UnitCellExplorer.add({'object3d' : FNHbox2 }); 
-          box2.visible = false; // i have to delete the helper boxes
-          collidableMeshList.pop();
-          collidableMeshList.push(box2);
-
-          var vertexIndex = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices.length-1;
-          
           while( vertexIndex >= 0 )
           {     
-            var localVertex = _this.unitCellAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
-            var globalVertex = localVertex.applyMatrix4(_this.unitCellAtoms[i].object3d.matrixWorld);
+            var localVertex = this.unitCellAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(this.unitCellAtoms[i].object3d.matrixWorld);
             var directionVector = globalVertex.sub( originPointF );     
             
             var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
-  
+            
             var collisionResults = ray.intersectObjects( collidableMeshList );
                
             if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
-              vertexIndex = -2; 
-              
+              vertexIndex = -2;   
             }
             vertexIndex--;
             if(vertexIndex === -1) touches = false;
           }  
-          if(!touches) _this.unitCellAtoms[i].object3d.visible = false ;
+          if(!touches) {
+            this.unitCellAtoms[i].object3d.visible = false ;
+          }
         } 
-        _this.unitCellAtoms[i].GradeLimited();
+        this.unitCellAtoms[i].GradeLimited();
         i++;   
       } 
+      UnitCellExplorer.remove({'object3d' : box }); 
 
       PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
     }
     else if(this.viewState === 'cellClassic'){ 
-      while(i < _this.unitCellAtoms.length ) { 
-        _this.unitCellAtoms[i].object3d.visible = true;
-        _this.unitCellAtoms[i].classicView(); 
+      while(i < this.unitCellAtoms.length ) { 
+        this.unitCellAtoms[i].object3d.visible = true;
+        this.unitCellAtoms[i].classicView(); 
         i++;
       }  
       var object = scene.getObjectByName('solidvoid');
-      if(!_.isUndefined(object)) scene.remove(object);
+      if(!_.isUndefined(object)) {
+        scene.remove(object);
+      }
       PubSub.publish(events.VIEW_STATE,"Classic");
     };
   };

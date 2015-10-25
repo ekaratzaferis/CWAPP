@@ -95,24 +95,20 @@ define([
     var _this = this ;
     return _this.radius ;
   }; 
-  AtomSphere.prototype.setMaterial = function(color) {
+  AtomSphere.prototype.setColorMaterial = function(color) {
     var _this = this;
     this.color = color ; 
-   
-    this.colorMaterial = new THREE.MeshBasicMaterial({ color:color  });
-    this.object3d.children[0].material  = new THREE.MeshBasicMaterial({ color:color , transparent: true, opacity : this.opacity });
-    this.object3d.children[0].material.needsUpdate = true;
+    
+    this.object3d.children[0].material.color = new THREE.Color( this.color );
 
   };   
   AtomSphere.prototype.changeColor = function(color, forTime) { 
-    var _this = this;
-    this.color = color ;
-     
-    _this.object3d.children[0].material = new THREE.MeshBasicMaterial({ color: color  });
-    _this.object3d.children[0].material.needsUpdate = true;
+    var _this = this; 
+
+    this.object3d.children[0].material.color = new THREE.Color( color );
+
     setTimeout(function() { 
-      _this.object3d.children[0].material = _this.colorMaterial;
-      _this.object3d.children[0].material.needsUpdate = true; 
+      _this.object3d.children[0].material.color = new THREE.Color( _this.color );
     }, 250);
   };
   AtomSphere.prototype.getTangency = function() {
@@ -129,17 +125,15 @@ define([
   AtomSphere.prototype.blinkMode = function(bool, color) {
     var _this = this; 
     this.blinkingMode = bool;
-
+ 
     if(bool){
       this.blinking = setInterval(function() { 
         _this.changeColor(color);
-
       }, 500);
     }
     else{
       clearInterval(this.blinking);
-      _this.object3d.children[0].material = _this.colorMaterial;
-      _this.object3d.children[0].material.needsUpdate = true;
+      this.object3d.children[0].material.color = new THREE.Color( this.color );
     } 
   };
   return AtomSphere;

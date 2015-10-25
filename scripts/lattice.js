@@ -247,45 +247,43 @@ define([
           }
           i++; 
         } 
-
-        var g2 = g.clone() ; 
-        box.scale.set(1.1,1.1,1.1); // trick to include cases in wich the center is exactly on the grade limits (faces, grid) 
-        box.position.x -= 0.1;
-        box.position.y -= 0.1;
-        box.position.z -= 0.1;
-        box.visible = false;
  
-        var FNHbox = new THREE.FaceNormalsHelper( box , 2, 0x00ff00, 1 ) ; // not sure why it is needed, maybe for calculating the normals 
-        console.log(FNHbox);
-        scene.add(  box  ); 
-        scene.add(  FNHbox  ); 
+
+        scene.add(  box  );  
 
         var collidableMeshList = [] ;
         collidableMeshList.push(box); 
+ 
+        // find geometry's center
+        var centroid = new THREE.Vector3(); 
+        for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+          centroid.add( g.vertices[ z ] ); 
+        }  
+        centroid.divideScalar( g.vertices.length );
+          
 
         i=0;
    
         while(i < this.actualAtoms.length ) {    
 
-          var originPointF = this.actualAtoms[i].object3d.position.clone();
-          var dir = new THREE.Vector3(1,10,1);  
-          this.lineHelper(originPointF.clone(), dir.clone(), 0xff0000, this.actualAtoms.length);
-          var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
+          // workaround for points that are exactly on the grade (faces, cell points)
+          var smartOffset = centroid.clone().sub(this.actualAtoms[i].object3d.position.clone());
+          smartOffset.setLength(0.01);
+          var originPointF = this.actualAtoms[i].object3d.position.clone().add(smartOffset);
+          //
+ 
+          var dir = new THREE.Vector3(1,100000,1); // don't care about it 
+          var rayF = new THREE.Raycaster( originPointF,dir.clone().normalize() );
           var collisionResultsF = rayF.intersectObjects( collidableMeshList );
-
+  
           var touches = true ;
           var radius = this.actualAtoms[i].getRadius() ;
-        
-        console.log(collisionResultsF.length);
+         
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
-
-            var box2 = new THREE.Mesh(g2, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
-            box2.visible = false; // i have to delete the helper boxes
-            collidableMeshList.pop();
-            collidableMeshList.push(box2);
-
+ 
             var vertexIndex = this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
-            
+            var atomCentre = this.actualAtoms[i].object3d.position.clone();
+
             while( vertexIndex >= 0 )
             {     
               var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
@@ -301,13 +299,18 @@ define([
                 
               }
               vertexIndex--;
-              if(vertexIndex === -1) touches = false;
+              if(vertexIndex === -1) {
+                touches = false;
+              }
             }  
-            if(!touches) _this.actualAtoms[i].object3d.visible = false ;
+            if(!touches) {
+              this.actualAtoms[i].object3d.visible = false ;
+            }
           } 
           this.actualAtoms[i].GradeLimited();
           i++;   
         }  
+        Explorer.remove({'object3d' : box }); 
       }
       else if(this.viewMode === 'crystalClassic'){ 
         var found = false, objectSolidVoid;
@@ -452,6 +455,7 @@ define([
           color = atom.color;
           a = atom.object3d.position.clone(); 
         }
+         
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
