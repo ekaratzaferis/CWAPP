@@ -9,9 +9,9 @@ define(function() {
     latticeSystem: "hexagonal",
     vector: { x: 1, y: 1, z: 1 },
     defaults: {
-      'scaleX': 1.000,
+      'scaleX': 1.500,
       'scaleY': 1.000,
-      'scaleZ': 1.000,
+      'scaleZ': 1.500,
       'gamma': 120,
       'beta': 90,
       'alpha': 90

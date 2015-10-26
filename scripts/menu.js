@@ -1837,6 +1837,8 @@ define([
                     $elementContainer.find('a').attr('class',selected.attr('class'));
                     if ( (argument['ionicIndex']) !== '0' && (argument['ionicIndex'] !== '3b')) $elementContainer.find('a').html('<span style="font-size:17px;">'+selected.html()+'<sup>'+argument['ionicIndex']+'</sup></span>');
                     else $elementContainer.find('a').html(selected.html());
+                    $latticePadlock.find('a').prop('disabled', true);
+                    $latticePadlock.addClass('disabled');
                 }
             });
             $ionicValues.click(function(){
