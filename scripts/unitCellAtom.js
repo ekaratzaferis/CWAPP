@@ -169,7 +169,7 @@ define([
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true;  
-    
+    sphere.name = 'atom';
     this.object3d = sphere;
     this.object3d.position.fromArray(position.toArray()); 
     UnitCellExplorer.add(this);  

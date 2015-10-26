@@ -4466,6 +4466,10 @@ define([
 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
 
+    if(this.newSphere !== undefined){
+      this.motifsAtoms.push(this.newSphere);
+    }
+
     if(this.latticeType === 'face'){ 
       while(j <this.motifsAtoms.length) {
         var p = this.motifsAtoms[j].object3d.position.clone();
@@ -4594,7 +4598,10 @@ define([
         j++;
       }
     } 
-   
+    
+    if(this.newSphere !== undefined){
+      this.motifsAtoms.pop();
+    }
     return atoms;
  
   }; 
@@ -4688,7 +4695,8 @@ define([
     else if(this.viewState === 'cellSolidVoid'){  
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       var f = this.editObjectsInScene('cellSolidVoid', 'visibility', true);
-      while(i < helperMotifs.length ) { 
+      i = 0;
+      while(i < this.unitCellAtoms.length ) { 
         this.unitCellAtoms[i].object3d.visible = false;     
         if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
@@ -4698,8 +4706,10 @@ define([
       if(f === true){  
         return;
       }
-      var geometry = new THREE.Geometry();  
+      var geometry = new THREE.Geometry(); 
+
       i =0;
+
       while(i < this.unitCellAtoms.length ) {  
         this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
