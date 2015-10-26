@@ -32,7 +32,7 @@ define(function() {
       'gamma': {
         '90': '≠',
         'beta': '≠',
-        'gamma': '≠',
+        'alpha': '≠',
       },
       'beta': {
         '90': '≠',

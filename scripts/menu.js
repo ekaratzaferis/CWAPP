@@ -491,8 +491,7 @@ define([
             LEAP_MOTION: 'menu.leap_motion', 
             UC_CRYSTAL_VIEWPORT: 'menu.uc_crystal_viewport',
             LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system'
-        };    
-    
+        }; 
     
     
     /* ------------------------
@@ -516,6 +515,11 @@ define([
             triclinic_primitive: 'Triclinic Simple'
         };
 
+    
+    /* ------------
+       Restrictions
+       ------------*/
+        var restrictionList = {};
     
     
     /* ---------
@@ -579,6 +583,75 @@ define([
             }
             else result = string;
             return result;
+        };
+    
+        function translateParameter(string){
+            switch(string){
+                case 'scaleX': return 'b';
+                case 'scaleY': return 'c';
+                case 'scaleZ': return 'a';
+                case 'alpha': return 'β';
+                case 'beta': return 'γ';
+                case 'gamma': return 'α';
+                case 'scaleXSlider': return 'b';
+                case 'scaleYSlider': return 'c';
+                case 'scaleZSlider': return 'a';
+                case 'alphaSlider': return 'β';
+                case 'betaSlider': return 'γ';
+                case 'gammaSlider': return 'α';
+                default: return 'Unknown';
+            }
+        };
+    
+        function applyRestrictions(caller,value,context){
+            // Run restrictions
+            var _this = context;
+            var result = {};
+            var returnValue = 'success';
+            
+            _.each(restrictionList, function($parameter,pk){
+                result[pk] = $parameter(caller,value);
+            });
+            
+            // Evaluate Resutls
+            // ORDER [ ≠X > =X >  ≠Number,=Number]
+            _.each(result, function($param, a){
+                if ($param.action === 'undo') {
+                    _this.showTooltip({
+                        'element': $param.source.attr('id'),
+                        'placement': 'top',
+                        'message': translateParameter($param.source.attr('id'))+' should be ≠ '+translateParameter($param.target.attr('id'))
+                    });
+                    $param.source.trigger($param.action, [$param.value]);
+                    returnValue = 'abort';
+                }
+            });
+            if (returnValue !== 'abort') {
+                _.each(result, function($param, a){
+                    if ($param.action === 'reflect') {
+                        $param.source.trigger($param.action, [$param.source]);
+                        $param.target.trigger($param.action, [$param.source]);
+                        returnValue = 'reflect';
+                    }
+                });
+            }
+            if (returnValue !== 'abort') {
+                _.each(result, function($param, a){
+                    if ($param.action === 'fail') {
+                        var message;
+                        if ($param.restriction === 'equalTo') message = translateParameter($param.source.attr('id'))+' should be = '+$param.target;
+                        else message = translateParameter($param.source.attr('id'))+' should be ≠ '+$param.target;
+                        _this.showTooltip({
+                            'element': $param.source.attr('id'),
+                            'placement': 'top',
+                            'message': message
+                        });
+                        $param.source.trigger($param.action, [$param.value]);
+                        returnValue = 'fail';
+                    }
+                });
+            }
+            return returnValue;
         }
     
         function Menu() {
@@ -751,48 +824,107 @@ define([
                 }
             });
             _.each(latticeParameters, function($parameter, k) {
+                LastLatticeParameters[k] = 1;
                 if ((k === 'repeatX')||(k === 'repeatY')||(k === 'repeatZ')){
                     $parameter.val(1);
                     $parameter.on('change',function(){
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
-                            LastLatticeParameters[k] = argument[k];
                             PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
                         }
                     });
                 }
-                else if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')){
-                    $parameter.val(90.000);
-                    latticeLabels[k].text(90.000);
+                else{
+                    if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')){
+                        $parameter.val(1.000);
+                        latticeLabels[k].text(1.000);
+                        LastLatticeParameters[k] = 1;
+                    }
+                    else{
+                        $parameter.val(90.000);
+                        latticeLabels[k].text(90.000);
+                        LastLatticeParameters[k] = 90;
+                    }
                     $parameter.on('change', function() {
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
-                            jQuery('#'+k+'Slider').slider('value',argument[k]);
-                            latticeLabels[k].text(argument[k]);
-                            PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                            var restrictionsMet = applyRestrictions(k,argument[k],_this);
+                            if ( restrictionsMet === 'success' ) $parameter.trigger('success', [argument[k]]);
                         }
+                    });      
+                    $parameter.on('reflect',function(event, target) {
+                        $parameter.val(target.val());
+                        $parameter.trigger('success',[target.val()]);
                     });
-                }
-                else {
-                    $parameter.val(1.000);
-                    latticeLabels[k].text(1.000);
-                    $parameter.on('change', function() {
+                    $parameter.on('success',function(event, value) {
                         argument = {};
-                        if (inputErrorHandler($parameter.val()) !== false) {
-                            argument[k] = inputErrorHandler($parameter.val());
-                            jQuery('#'+k+'Slider').slider('value',argument[k]);
-                            latticeLabels[k].text(argument[k]);
-                            PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
-                        }
+                        argument[k] = value;
+                        LastLatticeParameters[k] = argument[k];
+                        jQuery('#'+k+'Slider').slider('value',argument[k]);
+                        latticeLabels[k].text(argument[k]);
+                        PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                    });
+                    $parameter.on('fail',function(event, value) {
+                        $parameter.val(value);
+                        LastLatticeParameters[k] = value;
+                        jQuery('#'+k+'Slider').slider('value',value);
+                        latticeLabels[k].text(value);
+                    });
+                    $parameter.on('undo',function(event, value) {
+                        $parameter.trigger('fail',[value]);
                     });
                 }
             });
             _.each(lengthSlider, function(name) {
-               _this.setSlider(name,1,1,20,0.001,events.LATTICE_PARAMETER_CHANGE); 
+                LastLatticeParameters[name] = 1;
+                jQuery('#'+name+'Slider').on('fail', function(event, value){
+                    jQuery('#'+name+'Slider').slider('value',value);
+                    jQuery('#'+name).val(value);
+                    LastLatticeParameters[name] = value;
+                    latticeLabels[name].text(value);
+                    argument = {};
+                    argument[name] = value;
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
+                jQuery('#'+name+'Slider').on('undo', function(event, value){
+                    jQuery('#'+name+'Slider').trigger('fail',[value]);
+                });
+                jQuery('#'+name+'Slider').on('reflect', function(event, target){
+                    argument = {};
+                    argument[name] = target.slider('value');
+                    LastLatticeParameters[name] = argument[name]; 
+                    jQuery('#'+name).val(target.slider('value'));
+                    jQuery('#'+name+'Slider').slider('value',argument[name]);
+                    latticeLabels[name].text(argument[name]);
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
+               _this.setSlider(name,1,1,20,0.001,events.LATTICE_PARAMETER_CHANGE);
             });
             _.each(angleSliders, function(name) {
+                LastLatticeParameters[name] = 1;
+                jQuery('#'+name+'Slider').on('fail', function(event, value){
+                    jQuery('#'+name+'Slider').slider('value',value);
+                    jQuery('#'+name).val(value);
+                    LastLatticeParameters[name] = value;
+                    latticeLabels[name].text(value);
+                    argument = {};
+                    argument[name] = value;
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
+                jQuery('#'+name+'Slider').on('undo', function(event, value){
+                    jQuery('#'+name+'Slider').trigger('fail',[value]);
+                });
+                jQuery('#'+name+'Slider').on('reflect', function(event, target){
+                    argument = {};
+                    argument[name] = target.slider('value');
+                    LastLatticeParameters[name] = argument[name]; 
+                    jQuery('#'+name).val(target.slider('value'));
+                    jQuery('#'+name+'Slider').slider('value',argument[name]);
+                    latticeLabels[name].text(argument[name]);
+                    PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
+                });
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
             });
             _.each(gradeParameters, function($parameter, k) {
@@ -976,7 +1108,7 @@ define([
                     PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
                 }
             });
-            _this.setSlider('cellVolume',100,90,400,0.1,events.CELL_VOLUME_CHANGE);
+            _this.setSlider('cellVolume',100,0,400,0.1,events.CELL_VOLUME_CHANGE);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -1184,24 +1316,32 @@ define([
              });    
 
             /* [Lattice Tab] */
+            $latticePadlock.find('a').prop('disabled', true);
+            $latticePadlock.addClass('disabled');
             $latticePadlock.on('click', function() {
-                argument = {};
-                if ($latticePadlock.children().hasClass('active')) {
-                    argument["padlock"] = true;
-                    argument["manualSetCellDims"] = true;
-                    argument["manualSetCellAngles"] = true;
-                }
-                else {
-                    if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
-                        jQuery('#selected_lattice').html('N/A');
+                if (!($latticePadlock.hasClass('disabled'))) {
+                    argument = {};
+                    if ($latticePadlock.children().hasClass('active')) {
+                        argument["padlock"] = true;
+                        argument["manualSetCellDims"] = true;
+                        argument["manualSetCellAngles"] = true;
                     }
-                    argument["padlock"] = false;
-                    argument["manualSetCellDims"] = false;
-                    argument["manualSetCellAngles"] = false;
+                    else {
+                        if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
+                            jQuery('#selected_lattice').html('User Custom Defined');
+                            $latticePadlock.find('a').button('toggle');
+                            $latticePadlock.find('a').prop('disabled', true);
+                            $latticePadlock.addClass('disabled');
+                            _this.removeLatticeRestrictions();
+                        }
+                        argument["padlock"] = false;
+                        argument["manualSetCellDims"] = false;
+                        argument["manualSetCellAngles"] = false;
+                    }
+                    PubSub.publish(events.SET_PADLOCK, argument);
+                    PubSub.publish(events.MANUAL_SET_DIMS, argument);
+                    PubSub.publish(events.MANUAL_SET_ANGLES, argument);
                 }
-                PubSub.publish(events.SET_PADLOCK, argument);
-                PubSub.publish(events.MANUAL_SET_DIMS, argument);
-                PubSub.publish(events.MANUAL_SET_ANGLES, argument);
             });
 
             /* [P&D Tab] */
@@ -1248,7 +1388,10 @@ define([
                 if ( !($tangency.parent().hasClass('disabled')) ){
                     argument = {};
                     argument["button"]=this.id;
-                    if (!($tangency.hasClass('purpleThemeActive'))) argument['tangency'] = true;
+                    if (!($tangency.parent().hasClass('purpleThemeActive'))) {
+                        _this.changeSliderValue('cellVolume',100,events.CELL_VOLUME_CHANGE);
+                        argument['tangency'] = true;
+                    }
                     else argument['tangency'] = false;
                     $tangency.parent().toggleClass('purpleThemeActive');
                     PubSub.publish(events.ATOM_TANGENCY_CHANGE, argument);
@@ -1610,6 +1753,8 @@ define([
                     $motifMEButton.removeClass('disabled');
                     $motifMEButton.removeClass('blocked');
                     _this.disableLatticeChoice(true);
+                    $latticePadlock.find('a').prop('disabled', false);
+                    $latticePadlock.removeClass('disabled');
                 }
             });   
             $periodicModal.on('click',function(){
@@ -1700,7 +1845,6 @@ define([
                     jQuery(this).addClass('selected');
                 }
             });
-            
             
     /*$
     
@@ -1851,6 +1995,7 @@ define([
             _.each(latticeParameters, function($latticeParameter, k) {
                 if (_.isUndefined(parameters[k]) === false) {
                     $latticeParameter.val(parameters[k]); 
+                    LastLatticeParameters[k] = parameters[k];
                 }
             });
             _.each(angleSliders, function(name) {
@@ -1888,6 +2033,12 @@ define([
             jQuery('#'+sliderName).slider('value',val);
             jQuery('#'+name).val(val);
         };
+        Menu.prototype.changeSliderValue = function(name, val, event) {
+            var sliderName = name+'Slider';
+            jQuery('#'+sliderName).slider('value',val);
+            jQuery('#'+name).val(val);
+            PubSub.publish(event, {sliderName,val});
+        };
         Menu.prototype.setSlider = function(inputName,value,min,max,step,eventIn) {
             var _this = this;
             var sliderName = '#'+inputName+'Slider' ;
@@ -1899,11 +2050,27 @@ define([
                 animate: true,
                 slide: function(event, ui){
                     var argument = {};
+                    if ( (inputName === 'cellVolume') && ($tangency.parent().hasClass('purpleThemeActive')) ){
+                        if (ui.value < 90) {
+                            jQuery(sliderName).slider('value',90);
+                            argument[inputName] = 90;
+                            PubSub.publish(eventIn, argument);
+                            jQuery('#'+inputName).val(90);
+                            return false;
+                        }
+                    }
                     argument[inputName] = ui.value;
                     PubSub.publish(eventIn, argument);
                     jQuery('#'+inputName).val(ui.value);
                     _.each(latticeLabels, function($parameter,k){
                         if (inputName === k) $parameter.text(ui.value);
+                    });
+                },
+                stop: function(event,ui){
+                    _.each(latticeParameters, function($parameter,k){
+                        if (k === inputName) {
+                            if (applyRestrictions(k+'Slider',ui.value.toString(),_this) === 'success') LastLatticeParameters[k] = ui.value;
+                        }
                     });
                 }
             });
@@ -2782,6 +2949,9 @@ define([
                     break;
             }
         };
+        Menu.prototype.removeLatticeRestrictions = function() {
+            restrictionList = {};
+        };
         Menu.prototype.setLatticeRestrictions = function(restrictions) {
 
             // Return is restrictions is not an object
@@ -2792,63 +2962,130 @@ define([
             var left = {};
             var right = {};
             var _this = this;
-            var rightValue;
 
-            // For each lattice input
             _.each(latticeParameters, function($parameter, pk) {
 
-                // If there's a restriction for this input
                 if (_.isUndefined(restrictions[pk]) === false) {
 
                     // Left side of expression
                     left[pk] = $parameter;
 
-                    // For each restriction of the input
                     _.each(restrictions[pk], function(operator, rk) {
 
                         // Right side of expression
                         right[rk] = latticeParameters[rk];
+                        
+                        var restrictionName = 'restriction'+Object.keys(restrictionList).length;
 
                         if (operator === '=') {
-
-                            // Disable Input
-                            _this.disableLatticeParameters({pk:true});
-
-                            // Attach New Event listener
-                            right[rk].on('change.restrictions',function(){
-                                // Reflect to left side expression
-                                left[pk].val(right[rk].val());
-                                left[pk].trigger('change'); 
-                            });
-
+                            // Add equalToNumber restriction
+                            if (_.isUndefined(right[rk])) {
+                                restrictionList[restrictionName] = function(caller,value){
+                                    if (caller === pk){
+                                        if (parseFloat(value) !== parseFloat(rk)) {
+                                            return { 
+                                                action: 'fail',
+                                                source: left[pk],
+                                                target: parseFloat(rk),
+                                                value: parseFloat(rk),
+                                                restriction: 'equalTo'
+                                            };
+                                        }
+                                    }
+                                    else if (caller === pk+'Slider'){
+                                        if (parseFloat(value) !== parseFloat(rk)) {
+                                            return { 
+                                                action: 'fail',
+                                                source: jQuery('#'+pk+'Slider'),
+                                                target: parseFloat(rk),
+                                                value: parseFloat(rk),
+                                                restriction: 'equalTo'
+                                            };
+                                        }
+                                    }
+                                    return { action: 'success' };
+                                }
+                            }
+                            // Add equalToInput restriction
+                            else {
+                                restrictionList[restrictionName] = function(caller,value){
+                                    if(caller === pk){
+                                        return {
+                                            action: 'reflect',
+                                            source: left[pk],
+                                            target: right[rk]
+                                        };
+                                    }
+                                    else if (caller === pk+'Slider'){
+                                        return {
+                                            action: 'reflect',
+                                            source: jQuery('#'+pk+'Slider'),
+                                            target: jQuery('#'+rk+'Slider')
+                                        };
+                                    }
+                                    return { action: 'success' };
+                                }
+                            }
                         } 
                         else if (operator === '≠') {
-
-                            // Attach New Event listener
-                            left[pk].on('change.restrictions',function(){
-                                // Sometimes right value may be bounded to a number instead of an input
-                                rightValue = _.isUndefined(right[rk]) ? parseFloat(rk) : right[rk].val();
-
-                                if (parseFloat(left[pk].val()) == rightValue) {
-                                    _this.showTooltip({
-                                        'element': left[pk].attr('id'),
-                                        'placement': 'top',
-                                        'message': 'Invalid Input'
-                                    });
-                                    left[pk].val(LastLatticeParameters[pk]);
-                                    left[pk].trigger('change'); 
-                                } 
-                            });
+                            
+                            // Add differentThanNumber restriction
+                            if (_.isUndefined(right[rk])) {
+                                restrictionList[restrictionName] = function(caller,value){
+                                    if (caller === pk){
+                                        if (parseFloat(value) === parseFloat(rk)) {
+                                            return { 
+                                                action: 'fail',
+                                                source: left[pk],
+                                                target: parseFloat(rk),
+                                                value: LastLatticeParameters[pk],
+                                                restriction: 'differentThan'
+                                            };
+                                        }
+                                    }
+                                    else if (caller === pk+'Slider'){
+                                        if (parseFloat(value) === parseFloat(rk)) {
+                                            return { 
+                                                action: 'fail',
+                                                source: jQuery('#'+pk+'Slider'),
+                                                target: parseFloat(rk),
+                                                value: LastLatticeParameters[pk],
+                                                restriction: 'differentThan'
+                                            };
+                                        }
+                                    }
+                                    return { action: 'success' };
+                                }
+                            }
+                            // Add differentThanInput restriction
+                            else {
+                                restrictionList[restrictionName] = function(caller,value){
+                                    if (caller === pk){
+                                        if (value === right[rk].val()) {
+                                            return { 
+                                                action: 'undo',
+                                                source: left[pk],
+                                                target: right[rk],
+                                                value: LastLatticeParameters[pk]
+                                            };
+                                        }
+                                    }
+                                    else if (caller === pk+'Slider'){
+                                        if (value === right[rk].val()) {
+                                            return { 
+                                                action: 'undo',
+                                                source: jQuery('#'+pk+'Slider'),
+                                                target: jQuery('#'+rk+'Slider'),
+                                                value: LastLatticeParameters[pk]
+                                            };
+                                        }
+                                    }
+                                    return { action: 'success' };
+                                }
+                            }
                         }
                     });
                 }
-                // Assign Defaul Hander
-                else {
-                    // Renable input and unbind any restriction events
-                    _this.disableLatticeParameters({pk:false});
-                    $parameter.unbind( "change.restrictions" );
-                }
-
             }); 
         };
         String.prototype.capitalizeFirstLetter = function() {

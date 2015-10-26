@@ -19,11 +19,17 @@ define(function() {
     gridPoints: {  
     },
     restrictions: {
+      'scaleZ': {
+        'scaleX': '=',  
+        'scaleY': '≠'  
+      },
       'scaleX': {
-        'scaleZ': '='  
+        'scaleZ': '=',
+        'scaleY': '≠'
       },
       'scaleY': {
-        'scaleZ': '≠'  
+        'scaleZ': '≠',  
+        'scaleX': '≠'  
       },
       'alpha': {
         '90': '='

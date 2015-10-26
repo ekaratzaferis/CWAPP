@@ -18,18 +18,30 @@ define(function() {
     },
     restrictions: {
       'scaleX': {
-        'scaleZ': '='
+        'scaleZ': '=',
+        'scaleY': '='
       },
       'scaleY': {
-        'scaleZ': '='
+        'scaleZ': '=',
+        'scaleX': '='
+      },
+      'scaleZ': {
+        'scaleY': '=',
+        'scaleX': '='
       }, 
       'gamma': {
-        'aplha': '='
+        'alpha': '=',
+        'beta': '=',
+        '90': '≠'
       },
       'beta': {
-        'aplha': '='
+        'alpha': '=',
+        'gamma': '=',
+        '90': '≠'
       },
       'alpha': {
+        'beta': '=',
+        'gamma': '=',
         '90': '≠'
       }
     },

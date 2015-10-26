@@ -3566,3 +3566,4 @@ input.disabled[type="text"]{ background-color: black; }
     margin-left: -60px;
     background: white;
 }
+#latticePadlock.disabled a{cursor: not-allowed;}

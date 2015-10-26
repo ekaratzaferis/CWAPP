@@ -19,13 +19,16 @@ define(function() {
     },
     restrictions: {
       'scaleX': {
-        'scaleZ': '='
+        'scaleZ': '=',
+        'scaleY': '≠',
       },
       'scaleY': {
-        'scaleZ': '≠'
+        'scaleZ': '≠',
+        'scaleX': '≠'
       },
-      'scaleY': {
-        'scaleX': '='
+      'scaleZ': {
+        'scaleX': '=',
+        'scaleY': '≠'
       }, 
       'alpha': {
         '90': '='

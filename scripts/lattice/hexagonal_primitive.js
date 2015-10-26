@@ -17,11 +17,17 @@ define(function() {
       'alpha': 90
     },
     restrictions: {
+      'scaleZ': {
+        'scaleX': '=',  
+        'scaleY': '≠'  
+      },
       'scaleX': {
-        'scaleZ': '='  
+        'scaleZ': '=',
+        'scaleY': '≠'
       },
       'scaleY': {
-        'scaleZ': '≠'  
+        'scaleZ': '≠',  
+        'scaleX': '≠'  
       },
       'alpha': {
         '90': '='

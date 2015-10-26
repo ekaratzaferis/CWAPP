@@ -22,10 +22,16 @@ define(function() {
     },
     restrictions: {
       'scaleX': {
-        'scaleZ': '='
+        'scaleZ': '=',
+        'scaleY': '='
       },
       'scaleY': {
-        'scaleZ': '='
+        'scaleZ': '=',
+        'scaleX': '='
+      }, 
+      'scaleZ': {
+        'scaleY': '=',
+        'scaleX': '='
       }, 
       'alpha': {
         '90': '='

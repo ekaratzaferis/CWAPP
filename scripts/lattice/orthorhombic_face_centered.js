@@ -20,6 +20,7 @@ define(function() {
       'gamma': 90
     },
     restrictions: {
+      restrictions: {
       'scaleX': {
         'scaleY': '≠',
         'scaleZ': '≠'
