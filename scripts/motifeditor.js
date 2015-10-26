@@ -235,7 +235,7 @@ define([
     var y = lastAtom.object3d.position.y ;
     var z = lastAtom.object3d.position.z ;
     if(!flag) { 
-      _this.newSphere = {
+      this.newSphere = {
         "object3d" : {"position" : { "x": x, "y": y, "z": z, 
         clone: function() { return (new THREE.Vector3(this.x,this.y,this.z)); } } },
         getRadius: function() { return newAtomRadius; },
@@ -246,13 +246,13 @@ define([
       } ; 
     }
     else{
-      _this.newSphere.object3d.position.set(x,y,z);
+      this.newSphere.object3d.position.set(x,y,z);
     }
-    if(_this.latticeSystem === 'cubic' && _this.motifsAtoms.length === 1 && _this.latticeType === 'primitive'){
+    if(this.latticeSystem === 'cubic' && this.motifsAtoms.length === 1 && this.latticeType === 'primitive'){
       
-      if(_this.latticeType === 'primitive'){   
-        _this.tangentToThis = _this.motifsAtoms[0] ;
-        _this.setTangentAngle(  45, 54.7354 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0]);
+      if(this.latticeType === 'primitive'){   
+        this.tangentToThis = _this.motifsAtoms[0] ;
+        this.setTangentAngle(  45, 54.7354 , parseFloat(  newAtomRadius + this.motifsAtoms[0].getRadius() ), this.motifsAtoms[0]);
     
         this.menu.editMEInputs(
           { 
@@ -263,9 +263,9 @@ define([
       } 
       
     }
-    else if(_this.latticeSystem === 'hexagonal' && _this.motifsAtoms.length === 1  ){
-      this.tangentToThis = _this.motifsAtoms[0] ;
-      this.setTangentAngle(0.0000, 35.2644 , parseFloat(  newAtomRadius + _this.motifsAtoms[0].getRadius() ), _this.motifsAtoms[0] );
+    else if(this.latticeSystem === 'hexagonal' && this.motifsAtoms.length === 1  ){
+      this.tangentToThis = this.motifsAtoms[0] ;
+      this.setTangentAngle(0.0000, 35.2644 , parseFloat(  newAtomRadius + this.motifsAtoms[0].getRadius() ), this.motifsAtoms[0] );
    
       this.menu.editMEInputs(
         { 
@@ -4489,7 +4489,7 @@ define([
           replicaAtomLeft.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomLeft);
           
-          var replicaAtomRight = new THREE.Mesh( nglobalG, globMat ); 
+          var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
           replicaAtomRight.position.set(p.x + rightPos.x,p.y + rightPos.y,p.z + rightPos.z);
           replicaAtomRight.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomRight.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
