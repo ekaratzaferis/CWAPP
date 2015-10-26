@@ -4445,11 +4445,11 @@ define([
     }
   };
   Motifeditor.prototype.offsetMotifsForViews = function(mode){
-    var atoms = [], j =0;
+    var atoms = [];
     if(mode === 'cellClassic'){
       return atoms;
     }
-    var i=0;
+    var i = 0, j = 0;
 
     var globMat;
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
@@ -4602,6 +4602,7 @@ define([
     if(this.newSphere !== undefined){
       this.motifsAtoms.pop();
     }
+
     return atoms;
  
   }; 
@@ -4693,7 +4694,9 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellSubstracted");  
     }
     else if(this.viewState === 'cellSolidVoid'){  
+
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
+
       var f = this.editObjectsInScene('cellSolidVoid', 'visibility', true);
       i = 0;
       while(i < this.unitCellAtoms.length ) { 
@@ -4701,38 +4704,41 @@ define([
         if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
         }
-        i++;
+        i++; 
       } 
       if(f === true){  
         return;
       }
       var geometry = new THREE.Geometry(); 
 
-      i =0;
+      i = 0;
 
       while(i < this.unitCellAtoms.length ) {  
         this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
         mesh.position.set( this.unitCellAtoms[i].object3d.position.x, this.unitCellAtoms[i].object3d.position.y, this.unitCellAtoms[i].object3d.position.z);
         mesh.updateMatrix();   
-        geometry.merge( mesh.geometry, mesh.matrix );
-        
+        geometry.merge( mesh.geometry, mesh.matrix ); 
         i++; 
       } 
+
       i=0;
+
       while(i < helperMotifs.length ) { 
-        mesh.updateMatrix();   
+        helperMotifs[i].updateMatrix();   
         geometry.merge( helperMotifs[i].geometry, helperMotifs[i].matrix );
-        i++;
+        i++; 
       } 
       var cube = THREE.CSG.toCSG(box); 
       cube = cube.inverse();
       var spheres = THREE.CSG.toCSG(geometry);
-      var geometryCSG = cube.subtract(spheres);
+       
+      var geometryCSG = cube.subtract(spheres); 
+
       var geom = THREE.CSG.fromCSG(geometryCSG);
       var finalGeom = assignUVs(geom);
- 
-      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16) })  );
+     
+      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#ffffff" }) );
       solidBox.name = 'cellSolidVoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
