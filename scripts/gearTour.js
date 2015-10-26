@@ -153,7 +153,7 @@ define([
       if(inTheCell){
          
         if((this.lattice.actualAtoms[j].subtractedForGear.object3d !== undefined) && !(this.crystalHasChanged)){
-          this.lattice.actualAtoms[j].subtractedForGear.object3d.visible = true;   ;
+          this.lattice.actualAtoms[j].subtractedForGear.object3d.visible = true;  
         }
         else{  
              

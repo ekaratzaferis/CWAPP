@@ -247,8 +247,7 @@ define([
           }
           i++; 
         } 
- 
-
+  
         scene.add(  box  );  
 
         var collidableMeshList = [] ;
@@ -260,8 +259,7 @@ define([
           centroid.add( g.vertices[ z ] ); 
         }  
         centroid.divideScalar( g.vertices.length );
-          
-
+           
         i=0;
    
         while(i < this.actualAtoms.length ) {    
@@ -455,7 +453,7 @@ define([
           color = atom.color;
           a = atom.object3d.position.clone(); 
         }
-         
+
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 

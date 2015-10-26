@@ -403,10 +403,7 @@ require([
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
-  });
-  motifEditor.onViewStateChange(function(message, state) {
-    motifEditor.viewState_(state);
-  });
+  }); 
   menu.onAtomSubmit(function(message, atomParam) {
  
     if(atomParam.button === 'saveChanges'){

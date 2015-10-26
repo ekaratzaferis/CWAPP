@@ -1,5 +1,7 @@
-crystal grade limited
-cropped,solid,  grLimited unit cell whole - new feature
+leftovers sta modes tou ΜΕ
+crystal view modes
+na apothikeuontai na cacharontai
+hexagonal ta idia
 readjust cell not done well
 
  performance TODOs

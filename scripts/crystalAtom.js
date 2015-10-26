@@ -32,7 +32,7 @@ define([
     this.latticeIndex = latticeIndex; 
     this.subtractedForGear = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
-    this.viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false}; 
+    this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
     this.addMaterial(color, position, opacity, renderingMode,id) ; 
   } 
   function createShaderMaterial(id) {
@@ -126,12 +126,14 @@ define([
     this.object3d.children[0].material.needsUpdate = true;    
   }; 
   CrystalAtom.prototype.GradeLimited = function() {
-    this.viewMode = 'GradeLimited' ; 
+    this.viewMode = 'crystalGradeLimited' ; 
     this.viewModeBeen.GradeLimited = true;
   };
   CrystalAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this;  
+
     this.viewModeBeen.SubtractedSolid = true;
+
     if(gear === undefined){
       Explorer.remove({'object3d':this.object3d});
     }
@@ -161,7 +163,7 @@ define([
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
 
-    this.viewMode = 'SubtractedSolid';
+    this.viewMode = 'crystalSubstracted';
   };
   CrystalAtom.prototype.removeSubtractedForGear = function() {
     Explorer.remove({'object3d' : this.subtractedForGear.object3d});  
@@ -173,7 +175,7 @@ define([
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
     
-    this.viewMode = 'SolidVoid'; 
+    this.viewMode = 'crystalSolidVoid'; 
     this.viewModeBeen.SolidVoid = true; 
   };
   CrystalAtom.prototype.hideSubtracted = function(bool) {
@@ -181,16 +183,16 @@ define([
   }; 
   CrystalAtom.prototype.classicView = function() {
     var _this = this;
-    if(this.viewMode === 'GradeLimited'){
-      this.viewMode = 'Classic'; 
+    if(this.viewMode === 'crystalGradeLimited'){
+      this.viewMode = 'crystalClassic'; 
       return;
     }
     var toDestroy = _this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ _this.colorMaterial ]);
-   
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
     sphere.scale.set(this.radius, this.radius, this.radius);
+
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     sphere.name = 'atom';

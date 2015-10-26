@@ -28,10 +28,13 @@ define([
     this.myID = id; 
     this.elementName = elementName; 
     this.viewMode = 'Classic'; 
+    this.subtractedForCache = { 'object3d': undefined} ; 
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  
+    this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
+
     this.addMaterial(color, position, opacity, renderingMode) ;
-       
+     
   };
   THREE.ShaderTypes = { 
     'phongDiffuse' : {
@@ -129,6 +132,9 @@ define([
     this.object3d.children[0].material = phongMaterial ;
     this.object3d.children[0].material.needsUpdate = true; 
   } 
+  UnitCellAtom.prototype.hideSubtracted = function(bool) {
+    this.subtractedForCache.object3d.visible = bool;
+  }; 
   UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode) {
     var _this = this ;
     var wireMat;
@@ -205,11 +211,13 @@ define([
     this.object3d.children[0].material.needsUpdate = true;  
     this.object3d.children[1].material.needsUpdate = true;  
   };
-  UnitCellAtom.prototype.subtractedSolidView = function(box, pos) {
+  UnitCellAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this; 
-
-    UnitCellExplorer.remove({'object3d':_this.object3d}); 
-     
+    this.viewModeBeen.SubtractedSolid = true;
+    
+    if(gear === undefined){
+      UnitCellExplorer.remove({'object3d':this.object3d});
+    }
     var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
@@ -223,31 +231,44 @@ define([
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [this.colorMaterial ]); 
     sphereCut.children[0].receiveShadow = true; 
     sphereCut.children[0].castShadow = true; 
+ 
+    if(gear !== undefined){
+      this.subtractedForCache.object3d  = sphereCut ;
+      UnitCellExplorer.add(this.subtractedForCache);
+    }
+    else{
+      this.object3d = sphereCut; 
+      UnitCellExplorer.add(this); 
+    }
 
-    this.object3d = sphereCut; 
-    UnitCellExplorer.add(_this);
     this.helperPos.x = pos.x ;
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
-    this.viewMode = 'SubtractedSolid'; 
+    this.viewMode = 'cellSubstracted'; 
+  };
+  UnitCellAtom.prototype.removesubtractedForCache = function() {
+    UnitCellExplorer.remove({'object3d' : this.subtractedForCache.object3d});  
+    this.subtractedForCache.object3d = undefined;
   };
   UnitCellAtom.prototype.SolidVoid = function( pos) {
     var _this = this; 
-    _this.helperPos.x = pos.x ;
-    _this.helperPos.y = pos.y ;
-    _this.helperPos.z = pos.z ;
-    _this.viewMode = 'SolidVoid'; 
+    this.helperPos.x = pos.x ;
+    this.helperPos.y = pos.y ;
+    this.helperPos.z = pos.z ;
+    this.viewMode = 'cellSolidVoid'; 
+    this.viewModeBeen.SolidVoid = true;
   };
   UnitCellAtom.prototype.GradeLimited = function() {
-    this.viewMode = 'GradeLimited' ; 
+    this.viewMode = 'cellGradeLimited' ; 
+    this.viewModeBeen.GradeLimited = true;
   };
   UnitCellAtom.prototype.classicView = function() {
     var _this = this;
-    if(_this.viewMode === 'GradeLimited'){
-      this.viewMode = 'Classic'; 
+    if(this.viewMode === 'cellGradeLimited'){
+      this.viewMode = 'cellClassic'; 
       return;
     }
-    var toDestroy = _this.object3d;
+    var toDestroy = this.object3d;
     var pos = new THREE.Vector3(this.object3d.position.x, this.object3d.position.y, this.object3d.position.z  ); 
   
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [ this.colorMaterial ]);
@@ -255,16 +276,18 @@ define([
 
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
+    sphere.name = 'atom';
     this.object3d = sphere;
     this.object3d.position.x = this.helperPos.x ;
     this.object3d.position.y = this.helperPos.y ;
     this.object3d.position.z = this.helperPos.z ;
+
     UnitCellExplorer.add(this); 
     UnitCellExplorer.remove({'object3d':toDestroy}); 
   };
   UnitCellAtom.prototype.getUserOffset = function() {
     var _this = this ;
-    return _this.userOffset ;
+    return this.userOffset ;
   };
   UnitCellAtom.prototype.setUserOffset = function(axes, val) {
     var _this = this ;
@@ -273,19 +296,19 @@ define([
  
   UnitCellAtom.prototype.getID = function() {
     var _this = this ;
-    return _this.myID ;
+    return this.myID ;
   };  
   UnitCellAtom.prototype.getName = function() {
     var _this = this ;
-    return _this.elementName ;
+    return this.elementName ;
   };
   UnitCellAtom.prototype.setName = function(name) {
     var _this = this ;
-    _this.elementName = name ;
+    this.elementName = name ;
   };
   UnitCellAtom.prototype.getRadius = function() {
     var _this = this ;
-    return _this.radius ;
+    return this.radius ;
   }; 
   UnitCellAtom.prototype.setMaterial = function(color, renderingMode) {
     var _this = this;
@@ -323,7 +346,7 @@ define([
   };
   UnitCellAtom.prototype.setTangency = function(tangency) {
     var _this = this; 
-    _this.tangency = tangency ;
+    this.tangency = tangency ;
   };
   UnitCellAtom.prototype.destroy = function() {
     UnitCellExplorer.remove(this);

@@ -67,6 +67,7 @@ define([
 
     // rendering mode
     this.renderingMode = 'realistic'; // todo change that to realistic
+    this.cellHasChanged = false;
 
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
@@ -1894,17 +1895,7 @@ define([
         );  
         break;
     }
-  };
-  Motifeditor.prototype.viewState_ = function (state){
-    var _this = this ; 
-     
-    if(state !== "Classic") {  
-      $("disableME").prop("disabled",true);
-    }
-    else{
-      $("disableME").prop("disabled",false); 
-    }
-  };
+  }; 
   Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
 
     var _this = this ;  
@@ -4461,20 +4452,21 @@ define([
     var i=0;
 
     var globMat;
-     
-    if(this.latticeType === 'face'){
-      var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
-      var halfX = this.cellParameters.scaleX * 0.5;
-      var halfY = this.cellParameters.scaleY * 0.5;
-      var halfZ = this.cellParameters.scaleZ * 0.5;
+    var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
+    var halfX = this.cellParameters.scaleX * 0.5;
+    var halfY = this.cellParameters.scaleY * 0.5;
+    var halfZ = this.cellParameters.scaleZ * 0.5;
 
-      var leftPos = new THREE.Vector3(0, halfY, halfZ);
-      var rightPos = new THREE.Vector3(this.cellParameters.scaleX, halfY, halfZ);
-      var frontPos = new THREE.Vector3(halfX, halfY, this.cellParameters.scaleZ);
-      var backPos = new THREE.Vector3(halfX, halfY, 0);
-      var upPos = new THREE.Vector3(halfX, this.cellParameters.scaleY, halfZ);
-      var downPos = new THREE.Vector3(halfX, 0, halfZ);
+    var leftPos = new THREE.Vector3(0, halfY, halfZ);
+    var rightPos = new THREE.Vector3(this.cellParameters.scaleX, halfY, halfZ);
+    var frontPos = new THREE.Vector3(halfX, halfY, this.cellParameters.scaleZ);
+    var backPos = new THREE.Vector3(halfX, halfY, 0);
+    var upPos = new THREE.Vector3(halfX, this.cellParameters.scaleY, halfZ);
+    var downPos = new THREE.Vector3(halfX, 0, halfZ);
 
+    var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
+
+    if(this.latticeType === 'face'){ 
       while(j <this.motifsAtoms.length) {
         var p = this.motifsAtoms[j].object3d.position.clone();
         if(this.renderingMode === 'wireframe') { 
@@ -4488,39 +4480,74 @@ define([
         }  
 
         var radius = this.motifsAtoms[j].radius;
-        console.log(radius);
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+         
         for ( i = 0; i < 4; i ++ ) {
-          var replicaAtomLeft = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
           replicaAtomLeft.position.set(p.x + leftPos.x,p.y + leftPos.y,p.z + leftPos.z); 
           replicaAtomLeft.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomLeft.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomLeft);
           
-          var replicaAtomRight = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomRight = new THREE.Mesh( nglobalG, globMat ); 
           replicaAtomRight.position.set(p.x + rightPos.x,p.y + rightPos.y,p.z + rightPos.z);
           replicaAtomRight.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomRight.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomRight);
 
-          var replicaAtomFront = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
           replicaAtomFront.position.set(p.x + frontPos.x,p.y + frontPos.y,p.z + frontPos.z);
           replicaAtomFront.position.x += ( arr[i].a * this.cellParameters.scaleX );
           replicaAtomFront.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomFront);
 
-          var replicaAtomBack = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
           replicaAtomBack.position.set(p.x + backPos.x,p.y + backPos.y,p.z + backPos.z);
           replicaAtomBack.position.x += ( arr[i].a * this.cellParameters.scaleX );
           replicaAtomBack.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomBack);
 
-          var replicaAtomUp = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
           replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
           replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
           atoms.push(replicaAtomUp);
 
-          var replicaAtomDown = new THREE.Mesh( new THREE.SphereGeometry(radius,32, 32), globMat ); 
+          var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
+          replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
+          replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
+          atoms.push(replicaAtomDown);
+
+        }
+        j++;
+      } 
+    }
+    else if(this.latticeType === 'base'){
+      while(j <this.motifsAtoms.length) {
+        var p = this.motifsAtoms[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
+        }  
+
+        var radius = this.motifsAtoms[j].radius;
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+
+        for ( i = 0; i < 4; i ++ ) {
+            
+          var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
+          replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
+          replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
+          atoms.push(replicaAtomUp);
+
+          var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
           replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
           replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
@@ -4529,15 +4556,45 @@ define([
         }
         j++;
       }
-      
-    }
-    else if(this.latticeType === 'base'){
-
-    }
+    } 
     else if(this.latticeType === 'body'){
+      while(j <this.motifsAtoms.length) {
+        var p = this.motifsAtoms[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
+        }  
 
-    }
-    console.log(atoms);
+        var radius = this.motifsAtoms[j].radius;
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+
+        for ( i = 0; i < 4; i ++ ) {
+            
+          var replicaAtomC = new THREE.Mesh( globalG, globMat ); 
+          replicaAtomC.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
+          replicaAtomC.position.z += ( arr[i].a * this.cellParameters.scaleZ );
+          replicaAtomC.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
+          atoms.push(replicaAtomC);
+ 
+        }
+        var replicaAtomC3 = new THREE.Mesh( globalG, globMat ); 
+        replicaAtomC3.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
+        replicaAtomC3.position.x += -1*this.cellParameters.scaleX ; 
+        atoms.push(replicaAtomC3);
+
+        var replicaAtomC4 = new THREE.Mesh( globalG, globMat ); 
+        replicaAtomC4.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z); 
+        replicaAtomC4.position.x += -1*this.cellParameters.scaleX ; 
+        atoms.push(replicaAtomC4);
+        j++;
+      }
+    } 
+   
     return atoms;
  
   }; 
@@ -4558,6 +4615,29 @@ define([
     return sphereCut;
 
   };
+  Motifeditor.prototype.editObjectsInScene = function(name, action, visible){ 
+    var finished = false, found = false;
+    var scene = UnitCellExplorer.getInstance().object3d;
+    scene.traverse (function (object)
+    {
+      if (object instanceof THREE.Mesh)
+      {   
+
+        if (object.name === name){
+          
+          found = true;
+          if(action === 'remove'){ 
+            scene.remove(object);
+          }
+          else if(action === 'visibility'){  
+            object.visible = visible;
+          }
+        } 
+      }
+    });
+  
+    return found;
+  };
   Motifeditor.prototype.setCSGmode = function(arg){ 
     var _this = this, i = 0;
      
@@ -4570,42 +4650,71 @@ define([
     var helperMotifs = this.offsetMotifsForViews(this.viewState);
 
     if(this.viewState === 'cellSubstracted'){
-      while(i < this.unitCellAtoms.length ) {
-        this.unitCellAtoms[i].object3d.visible = true; 
-        this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position); 
-    
-        i++;
-      } 
-       
-      i =0;
 
-      while(i < helperMotifs.length ) {
-         
-        var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
-        mesh_.name = 'cellSubstracted'; 
-        scene.add(mesh_); 
-        i++;
+      var f = this.editObjectsInScene('cellSubstracted', 'visibility', true);
+
+      if(f === true && !(this.cellHasChanged)){ 
+        
+        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+        while(i < this.unitCellAtoms.length ){ 
+          this.unitCellAtoms[i].object3d.visible = false; 
+          this.unitCellAtoms[i].subtractedForCache.object3d.visible = true;  
+          i++;
+        }
+        return;
       } 
+      else{ 
+        while(i < this.unitCellAtoms.length ) {
+          this.unitCellAtoms[i].object3d.visible = false; 
+          this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position, true); 
       
-      var object = scene.getObjectByName('solidvoid');
-      if(!_.isUndefined(object)) scene.remove(object);
-      PubSub.publish(events.VIEW_STATE,"Subtracted");  
+          i++;
+        } 
+         
+        i =0;
+
+        while(i < helperMotifs.length ) { 
+          var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+          mesh_.name = 'cellSubstracted'; 
+          scene.add(mesh_); 
+          i++;
+        } 
+      }
+      
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+
+      PubSub.publish(events.VIEW_STATE,"cellSubstracted");  
     }
     else if(this.viewState === 'cellSolidVoid'){  
-
+      this.editObjectsInScene('cellSubstracted', 'visibility', false);
+      var f = this.editObjectsInScene('cellSolidVoid', 'visibility', true);
+      while(i < helperMotifs.length ) { 
+        this.unitCellAtoms[i].object3d.visible = false;     
+        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
+        }
+        i++;
+      } 
+      if(f === true){  
+        return;
+      }
       var geometry = new THREE.Geometry();  
-  
-      while(i < _this.unitCellAtoms.length ) {  
-        _this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
-        var mesh = new THREE.Mesh(new THREE.SphereGeometry(_this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
-        mesh.position.set( _this.unitCellAtoms[i].object3d.position.x, _this.unitCellAtoms[i].object3d.position.y, _this.unitCellAtoms[i].object3d.position.z);
+      i =0;
+      while(i < this.unitCellAtoms.length ) {  
+        this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
+        var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
+        mesh.position.set( this.unitCellAtoms[i].object3d.position.x, this.unitCellAtoms[i].object3d.position.y, this.unitCellAtoms[i].object3d.position.z);
         mesh.updateMatrix();   
         geometry.merge( mesh.geometry, mesh.matrix );
-        _this.unitCellAtoms[i].object3d.visible = false;   
-
+        
         i++; 
       } 
-
+      i=0;
+      while(i < helperMotifs.length ) { 
+        mesh.updateMatrix();   
+        geometry.merge( helperMotifs[i].geometry, helperMotifs[i].matrix );
+        i++;
+      } 
       var cube = THREE.CSG.toCSG(box); 
       cube = cube.inverse();
       var spheres = THREE.CSG.toCSG(geometry);
@@ -4614,12 +4723,15 @@ define([
       var finalGeom = assignUVs(geom);
  
       var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16) })  );
-      solidBox.name = 'solidvoid';
+      solidBox.name = 'cellSolidVoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
-      PubSub.publish(events.VIEW_STATE,"SolidVoid"); 
+      PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
     }
     else if(this.viewState === 'cellGradeLimited'){ 
-       
+      
+      this.editObjectsInScene('cellSubstracted', 'visibility', false);
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+
       var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
       box.visible = false;
       
@@ -4636,10 +4748,11 @@ define([
       collidableMeshList.push(box);
         
       i=0;
-       
-
+        
       while(i < this.unitCellAtoms.length ) {    
-
+         
+        this.unitCellAtoms[i].object3d.visible = true;  
+           
         // workaround for points that are exactly on the grade (faces, cell points)
         var smartOffset = centroid.clone().sub(this.unitCellAtoms[i].object3d.position.clone());
         smartOffset.setLength(0.01);
@@ -4678,24 +4791,84 @@ define([
             this.unitCellAtoms[i].object3d.visible = false ;
           }
         } 
-        this.unitCellAtoms[i].GradeLimited();
+        this.unitCellAtoms[i].GradeLimited(); 
+        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
+        }
+            
         i++;   
+      } 
+
+      i=0;
+
+      while(i < helperMotifs.length ) { 
+       
+        // workaround for points that are exactly on the grade (faces, cell points)
+        var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
+        smartOffset.setLength(0.01);
+        var originPointF = helperMotifs[i].position.clone().add(smartOffset);
+        //
+
+        var dir = new THREE.Vector3(1,1000000,1);  
+        var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
+        var collisionResultsF = rayF.intersectObjects( collidableMeshList );
+ 
+        var touches = true ;
+        var radius = helperMotifs[i].radius ; 
+
+        if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
+  
+          var vertexIndex = helperMotifs[i].geometry.vertices.length-1;
+          var atomCentre = helperMotifs[i].position.clone();
+
+          while( vertexIndex >= 0 )
+          {     
+            var localVertex = helperMotifs[i].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(helperMotifs[i].matrixWorld);
+            var directionVector = globalVertex.sub( originPointF );     
+            
+            var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
+            
+            var collisionResults = ray.intersectObjects( collidableMeshList );
+               
+            if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
+              vertexIndex = -2;   
+            }
+            vertexIndex--;
+            if(vertexIndex === -1) touches = false;
+          }  
+          if(!touches) {
+            helperMotifs[i].visible = false ;
+          }
+        }  
+            
+        i++;
       } 
       UnitCellExplorer.remove({'object3d' : box }); 
 
-      PubSub.publish(events.VIEW_STATE,"GradeLimited"); 
+      PubSub.publish(events.VIEW_STATE,"cellGradeLimited"); 
     }
     else if(this.viewState === 'cellClassic'){ 
+
+      this.editObjectsInScene('cellSubstracted', 'visibility', false);
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+  
       while(i < this.unitCellAtoms.length ) { 
         this.unitCellAtoms[i].object3d.visible = true;
-        this.unitCellAtoms[i].classicView(); 
+        if(false){
+          this.unitCellAtoms[i].viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false};
+        }
+       
+        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false; 
+          if(false){ 
+            this.unitCellAtoms[i].removesubtractedForCache();
+          } 
+        }
         i++;
-      }  
-      var object = scene.getObjectByName('solidvoid');
-      if(!_.isUndefined(object)) {
-        scene.remove(object);
-      }
-      PubSub.publish(events.VIEW_STATE,"Classic");
+      }   
+
+      PubSub.publish(events.VIEW_STATE,"cellClassic");
     };
   };
 
