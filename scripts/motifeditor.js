@@ -4444,7 +4444,7 @@ define([
       }
     }
   };
-  Motifeditor.prototype.offsetMotifsForViews = function(mode){
+  Motifeditor.prototype.offsetMotifsForViews = function(mode, objName){
     var atoms = [];
     if(mode === 'cellClassic'){
       return atoms;
@@ -4488,36 +4488,42 @@ define([
          
         for ( i = 0; i < 4; i ++ ) {
           var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomLeft.name = objName;
           replicaAtomLeft.position.set(p.x + leftPos.x,p.y + leftPos.y,p.z + leftPos.z); 
           replicaAtomLeft.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomLeft.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomLeft);
           
           var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomRight.name = objName;
           replicaAtomRight.position.set(p.x + rightPos.x,p.y + rightPos.y,p.z + rightPos.z);
           replicaAtomRight.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomRight.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomRight);
 
           var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomFront.name = objName;
           replicaAtomFront.position.set(p.x + frontPos.x,p.y + frontPos.y,p.z + frontPos.z);
           replicaAtomFront.position.x += ( arr[i].a * this.cellParameters.scaleX );
           replicaAtomFront.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomFront);
 
           var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomBack.name = objName;
           replicaAtomBack.position.set(p.x + backPos.x,p.y + backPos.y,p.z + backPos.z);
           replicaAtomBack.position.x += ( arr[i].a * this.cellParameters.scaleX );
           replicaAtomBack.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
           atoms.push(replicaAtomBack);
 
           var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomUp.name = objName;
           replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
           replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
           atoms.push(replicaAtomUp);
 
           var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomDown.name = objName;
           replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
           replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
@@ -4546,12 +4552,14 @@ define([
         for ( i = 0; i < 4; i ++ ) {
             
           var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomUp.name = objName;
           replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
           replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
           atoms.push(replicaAtomUp);
 
           var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
+          if(objName !== undefined) replicaAtomDown.name = objName;
           replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
           replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
@@ -4580,6 +4588,7 @@ define([
         for ( i = 0; i < 4; i ++ ) {
             
           var replicaAtomC = new THREE.Mesh( globalG, globMat ); 
+          if(replicaAtomC !== undefined) replicaAtomLeft.name = objName;
           replicaAtomC.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
           replicaAtomC.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomC.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
@@ -4587,11 +4596,13 @@ define([
  
         }
         var replicaAtomC3 = new THREE.Mesh( globalG, globMat ); 
+        if(objName !== undefined) replicaAtomC3.name = objName;
         replicaAtomC3.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
         replicaAtomC3.position.x += -1*this.cellParameters.scaleX ; 
         atoms.push(replicaAtomC3);
 
         var replicaAtomC4 = new THREE.Mesh( globalG, globMat ); 
+        if(objName !== undefined) replicaAtomC4.name = objName;
         replicaAtomC4.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z); 
         replicaAtomC4.position.x += -1*this.cellParameters.scaleX ; 
         atoms.push(replicaAtomC4);
@@ -4627,21 +4638,17 @@ define([
     var finished = false, found = false;
     var scene = UnitCellExplorer.getInstance().object3d;
     scene.traverse (function (object)
-    {
-      if (object instanceof THREE.Mesh)
-      {   
-
-        if (object.name === name){
-          
-          found = true;
-          if(action === 'remove'){ 
-            scene.remove(object);
-          }
-          else if(action === 'visibility'){  
-            object.visible = visible;
-          }
-        } 
-      }
+    { 
+      if (object.name === name){
+        
+        found = true;
+        if(action === 'remove'){ 
+          scene.remove(object);
+        }
+        else if(action === 'visibility'){  
+          object.visible = visible;
+        }
+      }  
     });
   
     return found;
@@ -4655,15 +4662,18 @@ define([
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"}) );
     var scene = UnitCellExplorer.getInstance().object3d;
-    var helperMotifs = this.offsetMotifsForViews(this.viewState);
+    var helperMotifs;
 
     if(this.viewState === 'cellSubstracted'){
+      helperMotifs = this.offsetMotifsForViews(this.viewState);
+
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
 
       var f = this.editObjectsInScene('cellSubstracted', 'visibility', true);
 
       if(f === true && !(this.cellHasChanged)){ 
-        
-        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+         
         while(i < this.unitCellAtoms.length ){ 
           this.unitCellAtoms[i].object3d.visible = false; 
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = true;  
@@ -4688,16 +4698,17 @@ define([
           i++;
         } 
       }
-      
-      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-
+       
       PubSub.publish(events.VIEW_STATE,"cellSubstracted");  
     }
     else if(this.viewState === 'cellSolidVoid'){  
+      helperMotifs = this.offsetMotifsForViews(this.viewState);
 
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
+      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
 
       var f = this.editObjectsInScene('cellSolidVoid', 'visibility', true);
+ 
       i = 0;
       while(i < this.unitCellAtoms.length ) { 
         this.unitCellAtoms[i].object3d.visible = false;     
@@ -4714,7 +4725,7 @@ define([
       i = 0;
 
       while(i < this.unitCellAtoms.length ) {  
-        this.unitCellAtoms[i].SolidVoid(_this.unitCellAtoms[i].object3d.position);  
+        this.unitCellAtoms[i].SolidVoid(this.unitCellAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
         mesh.position.set( this.unitCellAtoms[i].object3d.position.x, this.unitCellAtoms[i].object3d.position.y, this.unitCellAtoms[i].object3d.position.z);
         mesh.updateMatrix();   
@@ -4744,7 +4755,7 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
     }
     else if(this.viewState === 'cellGradeLimited'){ 
-      
+      helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
 
@@ -4818,7 +4829,7 @@ define([
       i=0;
 
       while(i < helperMotifs.length ) { 
-       
+        
         // workaround for points that are exactly on the grade (faces, cell points)
         var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
         smartOffset.setLength(0.01);
@@ -4851,13 +4862,18 @@ define([
               vertexIndex = -2;   
             }
             vertexIndex--;
-            if(vertexIndex === -1) touches = false;
+            if(vertexIndex === -1) {
+              touches = false;
+            }
           }  
-          if(!touches) {
-            helperMotifs[i].visible = false ;
+
+          if(touches === true) { 
+            UnitCellExplorer.add({'object3d' : helperMotifs[i] });
           }
-        }  
-            
+        }
+        else{ 
+          UnitCellExplorer.add({'object3d' : helperMotifs[i] });
+        }
         i++;
       } 
       UnitCellExplorer.remove({'object3d' : box }); 
@@ -4868,6 +4884,7 @@ define([
 
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
   
       while(i < this.unitCellAtoms.length ) { 
         this.unitCellAtoms[i].object3d.visible = true;

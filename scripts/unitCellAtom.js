@@ -149,7 +149,7 @@ define([
     }
     else if(renderingMode === 'flat'){
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshLambertMaterial({  color: color, transparent:true, opacity:opacity }) ; 
+      this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
     }
     else if(renderingMode === 'toon'){ 
       var phongMaterial = createShaderMaterial("phongDiffuse");
@@ -164,8 +164,7 @@ define([
       wireMat
     ];
   
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials);
-   
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true;  
