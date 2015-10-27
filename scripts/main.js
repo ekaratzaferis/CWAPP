@@ -662,7 +662,7 @@ require([
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults);  
-      //menu.setLatticeRestrictions(lattice.restrictions);   
+      menu.setLatticeRestrictions(lattice.restrictions);   
     }
   });
   
