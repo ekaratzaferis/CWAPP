@@ -4588,7 +4588,7 @@ define([
         for ( i = 0; i < 4; i ++ ) {
             
           var replicaAtomC = new THREE.Mesh( globalG, globMat ); 
-          if(replicaAtomC !== undefined) replicaAtomLeft.name = objName;
+          if(replicaAtomC !== undefined) replicaAtomC.name = objName;
           replicaAtomC.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
           replicaAtomC.position.z += ( arr[i].a * this.cellParameters.scaleZ );
           replicaAtomC.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
@@ -4749,7 +4749,7 @@ define([
       var geom = THREE.CSG.fromCSG(geometryCSG);
       var finalGeom = assignUVs(geom);
      
-      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#ffffff" }) );
+      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#9A2EFE" }) );
       solidBox.name = 'cellSolidVoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
@@ -4829,20 +4829,20 @@ define([
       i=0;
 
       while(i < helperMotifs.length ) { 
-        
+         
         // workaround for points that are exactly on the grade (faces, cell points)
         var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
         smartOffset.setLength(0.01);
         var originPointF = helperMotifs[i].position.clone().add(smartOffset);
         //
-
+ 
         var dir = new THREE.Vector3(1,1000000,1);  
         var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
- 
+  
         var touches = true ;
-        var radius = helperMotifs[i].radius ; 
-
+        var radius = helperMotifs[i].geometry.boundingSphere.radius ; 
+       
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
   
           var vertexIndex = helperMotifs[i].geometry.vertices.length-1;
@@ -4856,8 +4856,7 @@ define([
             
             var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
             
-            var collisionResults = ray.intersectObjects( collidableMeshList );
-               
+            var collisionResults = ray.intersectObjects( collidableMeshList ); 
             if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
               vertexIndex = -2;   
             }
@@ -4867,11 +4866,11 @@ define([
             }
           }  
 
-          if(touches === true) { 
+          if(touches === true) {  
             UnitCellExplorer.add({'object3d' : helperMotifs[i] });
           }
         }
-        else{ 
+        else{  
           UnitCellExplorer.add({'object3d' : helperMotifs[i] });
         }
         i++;

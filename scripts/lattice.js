@@ -121,6 +121,287 @@ define([
       }
     }
   };
+  Lattice.prototype.offsetMotifsForViews = function(mode, objName){
+    var atoms = [];
+    if(mode === 'cellClassic'){
+      return atoms;
+    }
+    var i = 0, j = 0;
+
+    var globMat;
+    var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
+    var halfX = this.parameters.scaleX * 0.5;
+    var halfY = this.parameters.scaleY * 0.5;
+    var halfZ = this.parameters.scaleZ * 0.5;
+
+    var leftPos = new THREE.Vector3(0, halfY, halfZ);
+    var rightPos = new THREE.Vector3(this.parameters.scaleX, halfY, halfZ);
+    var frontPos = new THREE.Vector3(halfX, halfY, this.parameters.scaleZ);
+    var backPos = new THREE.Vector3(halfX, halfY, 0);
+    var upPos = new THREE.Vector3(halfX, this.parameters.scaleY, halfZ);
+    var downPos = new THREE.Vector3(halfX, 0, halfZ);
+
+    var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
+ 
+    if(this.latticeType === 'face'){ 
+      while(j <this.currentMotif.length) {
+        var p = this.currentMotif[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
+        }  
+
+        var radius = this.currentMotif[j].radius;
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+        
+        ///
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft.name = objName;
+            replicaAtomLeft.position.set(p.x - halfX, p.y + y*this.parameters.scaleY, p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft);
+ 
+          };
+        };
+        for (var z = 0; z <= this.parameters.repeatZ; z++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var replicaAtomLeft2 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft2.name = objName;
+            replicaAtomLeft2.position.set(p.x - halfX, p.y + y*this.parameters.scaleY +halfY, p.z + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft2); 
+          };
+        };
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft3.name = objName;
+            replicaAtomLeft3.position.set(p.x - halfX, p.y + y*this.parameters.scaleY, p.z + z*this.parameters.scaleZ+halfZ); 
+            atoms.push(replicaAtomLeft3); 
+          };
+        };
+        ///
+
+        ///
+         
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomBack.name = objName;
+            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY, p.z - halfZ ); 
+            atoms.push(replicaAtomBack);
+          };
+        };
+        for (var x = 0; x <= this.parameters.repeatX; x++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+            var replicaAtomBack2 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomBack2.name = objName;
+            replicaAtomBack2.position.set(p.x + x*this.parameters.scaleX , p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
+            atoms.push(replicaAtomBack2);
+          };
+        };
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomBack3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomBack3.name = objName;
+            replicaAtomBack3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY,p.z - halfZ ); 
+            atoms.push(replicaAtomBack3);
+          };
+        };
+        ///
+
+        var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
+
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomRight.name = objName;
+            replicaAtomRight.position.set(p.x + farX, p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomRight);
+          };
+        };
+        for (var z = 0; z <= this.parameters.repeatZ; z++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var replicaAtomRight2 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomRight2.name = objName;
+            replicaAtomRight2.position.set(p.x + farX + halfX, p.y + y*this.parameters.scaleY + halfY,p.z + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomRight2);
+          };
+        };
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var replicaAtomRight3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomRight3.name = objName;
+            replicaAtomRight3.position.set(p.x + farX + halfX, p.y + y*this.parameters.scaleY ,p.z + z*this.parameters.scaleZ+ halfZ); 
+            atoms.push(replicaAtomRight3);
+          };
+        };
+        //
+
+        var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomFront.name = objName;
+            replicaAtomFront.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY,p.z + farZ); 
+            atoms.push(replicaAtomFront);
+          };
+        };
+        for (var x = 0; x <= this.parameters.repeatX; x++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+            var replicaAtomFront2 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomFront2.name = objName;
+            replicaAtomFront2.position.set(p.x + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY, p.z + farZ + halfZ); 
+            atoms.push(replicaAtomFront2);
+          };
+        };
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomFront3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomFront3.name = objName;
+            replicaAtomFront3.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY , p.z + farZ + halfZ); 
+            atoms.push(replicaAtomFront3);
+          };
+        };
+         
+        j++;
+      } 
+    }
+    else if(this.latticeType === 'base'){
+      while(j <this.currentMotif.length) {
+        var p = this.currentMotif[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
+        }  
+
+        var radius = this.currentMotif[j].radius;
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+   
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft.name = objName;
+            replicaAtomLeft.position.set(p.x - halfX,p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft);
+          };
+        };
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomBack.name = objName;
+            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY, p.z - halfZ ); 
+            atoms.push(replicaAtomBack);
+          };
+        };
+
+        var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
+
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomRight.name = objName;
+            replicaAtomRight.position.set(p.x + farX,p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomRight);
+          };
+        };
+
+        var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y <= this.parameters.repeatY; y++) {
+            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomFront.name = objName;
+            replicaAtomFront.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY,p.z + farZ); 
+            atoms.push(replicaAtomFront);
+          };
+        };
+        
+
+        j++;
+      }
+    } 
+    else if(this.latticeType === 'body'){
+      while(j <this.currentMotif.length) {
+        var p = this.currentMotif[j].object3d.position.clone();
+        if(this.renderingMode === 'wireframe') { 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
+        }
+        else if(this.renderingMode === 'realistic'){ 
+          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
+        }
+        else{ 
+          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
+        }  
+
+        var radius = this.currentMotif[j].radius;
+        var globalG = new THREE.SphereGeometry(radius,32, 32);
+   
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft.name = objName;
+            replicaAtomLeft.position.set(p.x - halfX,p.y + y*this.parameters.scaleY + halfY,p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft);
+          };
+        };
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomBack.name = objName;
+            replicaAtomBack.position.set(p.x  + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
+            atoms.push(replicaAtomBack);
+          };
+        };
+
+        var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
+
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+
+            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomRight.name = objName;
+            replicaAtomRight.position.set(p.x + farX,p.y + y*this.parameters.scaleY + halfY,p.z + halfZ + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomRight);
+          };
+        };
+
+        var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var y = 0; y < this.parameters.repeatY; y++) {
+            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomFront.name = objName;
+            replicaAtomFront.position.set(p.x  + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY,p.z + farZ); 
+            atoms.push(replicaAtomFront);
+          };
+        };
+        
+
+        j++;
+      }
+    } 
+    
+
+   /* for (var i = atoms.length - 1; i >= 0; i--) {
+      Explorer.add({'object3d' : atoms[i] }); 
+    };*/
+    return atoms;
+ 
+  }; 
   Lattice.prototype.setCSGmode = function(arg) {
      
     var _this = this, i = 0;
@@ -159,6 +440,7 @@ define([
        
       if(this.viewMode === 'crystalSubstracted'){
         i = 0 ;
+        var helperMotifs = this.offsetMotifsForViews(this.viewMode);
         var enterViewmode = true; 
         if(this.actualAtoms[0].viewModeBeen.SubtractedSolid === true ){
           enterViewmode = false;
@@ -174,6 +456,16 @@ define([
           }
           i++;
         } 
+
+        i = 0;
+
+        while(i < helperMotifs.length ) { 
+          var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+          mesh_.name = 'cellSubstracted'; 
+          scene.add(mesh_); 
+          i++;
+        } 
+
         if(this.solidVoidObject !== undefined){ 
           this.solidVoidObject.visible = false; 
         }
@@ -181,7 +473,7 @@ define([
       else if(this.viewMode === 'crystalSolidVoid'){   
 
         var found = false;
-  
+        var helperMotifs = this.offsetMotifsForViews(this.viewState);
         if(this.solidVoidObject !== undefined){
           this.solidVoidObject.visible = true; 
           found = true;
@@ -208,7 +500,15 @@ define([
 
           i++; 
         } 
-      
+        
+        i=0;
+
+        while(i < helperMotifs.length ) { 
+          helperMotifs[i].updateMatrix();   
+          geometry.merge( helperMotifs[i].geometry, helperMotifs[i].matrix );
+          i++; 
+        } 
+
         var cube = THREE.CSG.toCSG(box); 
         cube = cube.inverse();
         var spheres = THREE.CSG.toCSG(geometry);
@@ -235,7 +535,7 @@ define([
       else if(this.viewMode === 'crystalGradeLimited'){ 
 
         var found = false, objectSolidVoid;
-    
+        helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
         if(this.solidVoidObject !== undefined){ 
           this.solidVoidObject.visible = false; 
         } 
@@ -307,7 +607,58 @@ define([
           } 
           this.actualAtoms[i].GradeLimited();
           i++;   
-        }  
+        } 
+
+        i=0;
+
+        while(i < helperMotifs.length ) { 
+            // Explorer.add({'object3d' : helperMotifs[i] });
+          // workaround for points that are exactly on the grade (faces, cell points)
+          var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
+          smartOffset.setLength(0.01);
+          var originPointF = helperMotifs[i].position.clone().add(smartOffset);
+          //
+
+          var dir = new THREE.Vector3(1,1000000,1);  
+          var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
+          var collisionResultsF = rayF.intersectObjects( collidableMeshList );
+   
+          var touches = true ;
+          var radius = helperMotifs[i].geometry.boundingSphere.radius ;  
+
+          if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
+    
+            var vertexIndex = helperMotifs[i].geometry.vertices.length-1;
+            var atomCentre = helperMotifs[i].position.clone();
+
+            while( vertexIndex >= 0 )
+            {     
+              var localVertex = helperMotifs[i].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(helperMotifs[i].matrixWorld);
+              var directionVector = globalVertex.sub( originPointF );     
+              
+              var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
+              
+              var collisionResults = ray.intersectObjects( collidableMeshList );
+                 
+              if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
+                vertexIndex = -2;   
+              }
+              vertexIndex--;
+              if(vertexIndex === -1) {
+                touches = false;
+              }
+            }  
+
+            if(touches === true) { 
+              Explorer.add({'object3d' : helperMotifs[i] });
+            }
+          }
+          else{ 
+            Explorer.add({'object3d' : helperMotifs[i] });
+          }
+          i++;
+        } 
         Explorer.remove({'object3d' : box }); 
       }
       else if(this.viewMode === 'crystalClassic'){ 
@@ -342,6 +693,23 @@ define([
       } 
     } 
     this.menu.progressBarFinish();   
+  };
+  Lattice.prototype.subtractedSolidView = function(box, mesh) {
+    var _this = this; 
+ 
+    var cube = THREE.CSG.toCSG(box);
+    cube = cube.inverse();
+    var sphere = THREE.CSG.toCSG(mesh);
+    var geometry = sphere.intersect(cube);
+    var geom = THREE.CSG.fromCSG(geometry);
+    var finalGeom = assignUVs(geom);
+    
+    var sphereCut = new THREE.Mesh( finalGeom, mesh.material.clone()); 
+    sphereCut.receiveShadow = true; 
+    sphereCut.castShadow = true; 
+    
+    return sphereCut;
+
   };
   var bbHelper = [];
   Lattice.prototype.lineHelper = function(a,b, color, pass){
