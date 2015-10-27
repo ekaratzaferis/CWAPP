@@ -4604,7 +4604,7 @@ define([
         var replicaAtomC4 = new THREE.Mesh( globalG, globMat ); 
         if(objName !== undefined) replicaAtomC4.name = objName;
         replicaAtomC4.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z); 
-        replicaAtomC4.position.x += -1*this.cellParameters.scaleX ; 
+        replicaAtomC4.position.x += 1*this.cellParameters.scaleX ; 
         atoms.push(replicaAtomC4);
         j++;
       }
@@ -4613,6 +4613,34 @@ define([
     if(this.newSphere !== undefined){
       this.motifsAtoms.pop();
     }
+    if (this.cellParameters.alpha !== 90) {  
+      var matrix = transformationMatrix({alpha : this.cellParameters.alpha});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
+    if (this.cellParameters.beta !== 90) {  
+      var matrix = transformationMatrix({beta : this.cellParameters.beta});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
+    if (this.cellParameters.gamma !== 90) {  
+      var matrix = transformationMatrix({gamma : this.cellParameters.gamma});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
+    
+    /*
+    i=0;
+    while(i < atoms.length ){  
+      atoms[i].material.color = new THREE.Color(0xff0000); 
+      UnitCellExplorer.add({'object3d' : atoms[i]});  
+      i++;
+    }
+    console.log(i);
+    */
 
     return atoms;
  

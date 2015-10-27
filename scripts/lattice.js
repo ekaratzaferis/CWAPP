@@ -176,19 +176,10 @@ define([
             replicaAtomLeft2.position.set(p.x - halfX, p.y + y*this.parameters.scaleY +halfY, p.z + z*this.parameters.scaleZ); 
             atoms.push(replicaAtomLeft2); 
           };
-        };
-        for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) { 
-            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft3.name = objName;
-            replicaAtomLeft3.position.set(p.x - halfX, p.y + y*this.parameters.scaleY, p.z + z*this.parameters.scaleZ+halfZ); 
-            atoms.push(replicaAtomLeft3); 
-          };
-        };
+        }; 
         ///
 
-        ///
-         
+        /// 
         for (var x = 0; x < this.parameters.repeatX; x++) {
           for (var y = 0; y <= this.parameters.repeatY; y++) {
             var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
@@ -204,15 +195,7 @@ define([
             replicaAtomBack2.position.set(p.x + x*this.parameters.scaleX , p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
             atoms.push(replicaAtomBack2);
           };
-        };
-        for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomBack3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomBack3.name = objName;
-            replicaAtomBack3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY,p.z - halfZ ); 
-            atoms.push(replicaAtomBack3);
-          };
-        };
+        };  
         ///
 
         var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
@@ -229,20 +212,12 @@ define([
           for (var y = 0; y < this.parameters.repeatY; y++) { 
             var replicaAtomRight2 = new THREE.Mesh( globalG, globMat ); 
             if(objName !== undefined) replicaAtomRight2.name = objName;
-            replicaAtomRight2.position.set(p.x + farX + halfX, p.y + y*this.parameters.scaleY + halfY,p.z + z*this.parameters.scaleZ); 
+            replicaAtomRight2.position.set(p.x + farX, p.y + y*this.parameters.scaleY + halfY,p.z + z*this.parameters.scaleZ); 
             atoms.push(replicaAtomRight2);
           };
-        };
-        for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) { 
-            var replicaAtomRight3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomRight3.name = objName;
-            replicaAtomRight3.position.set(p.x + farX + halfX, p.y + y*this.parameters.scaleY ,p.z + z*this.parameters.scaleZ+ halfZ); 
-            atoms.push(replicaAtomRight3);
-          };
-        };
+        }; 
         //
-
+        
         var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
@@ -253,23 +228,51 @@ define([
             atoms.push(replicaAtomFront);
           };
         };
+       
         for (var x = 0; x <= this.parameters.repeatX; x++) {
           for (var y = 0; y < this.parameters.repeatY; y++) {
             var replicaAtomFront2 = new THREE.Mesh( globalG, globMat ); 
             if(objName !== undefined) replicaAtomFront2.name = objName;
-            replicaAtomFront2.position.set(p.x + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY, p.z + farZ + halfZ); 
+            replicaAtomFront2.position.set(p.x + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY , p.z + farZ ); 
             atoms.push(replicaAtomFront2);
           };
         };
-        for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomFront3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomFront3.name = objName;
-            replicaAtomFront3.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY , p.z + farZ + halfZ); 
-            atoms.push(replicaAtomFront3);
+        
+        //
+        var farY = halfY + this.parameters.scaleY*this.parameters.repeatY ;
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var x = 0; x <= this.parameters.repeatX; x++) { 
+            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft3.name = objName;
+            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX, p.y + farY, p.z + z*this.parameters.scaleZ+halfZ); 
+            atoms.push(replicaAtomLeft3); 
           };
         };
-         
+        for (var z = 0; z <= this.parameters.repeatZ; z++) {
+          for (var x = 0; x < this.parameters.repeatX; x++) { 
+            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft3.name = objName;
+            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + farY, p.z + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft3); 
+          };
+        };
+        for (var z = 0; z < this.parameters.repeatZ; z++) {
+          for (var x = 0; x <= this.parameters.repeatX; x++) { 
+            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft3.name = objName;
+            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX, p.y - halfY, p.z + z*this.parameters.scaleZ+halfZ); 
+            atoms.push(replicaAtomLeft3); 
+          };
+        };
+        for (var z = 0; z <= this.parameters.repeatZ; z++) {
+          for (var x = 0; x < this.parameters.repeatX; x++) { 
+            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomLeft3.name = objName;
+            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y - halfY, p.z + z*this.parameters.scaleZ); 
+            atoms.push(replicaAtomLeft3); 
+          };
+        };
+
         j++;
       } 
     }
@@ -328,7 +331,7 @@ define([
             atoms.push(replicaAtomFront);
           };
         };
-        
+
 
         j++;
       }
@@ -362,7 +365,7 @@ define([
           for (var y = 0; y < this.parameters.repeatY; y++) {
             var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
             if(objName !== undefined) replicaAtomBack.name = objName;
-            replicaAtomBack.position.set(p.x  + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
+            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
             atoms.push(replicaAtomBack);
           };
         };
@@ -385,20 +388,66 @@ define([
           for (var y = 0; y < this.parameters.repeatY; y++) {
             var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
             if(objName !== undefined) replicaAtomFront.name = objName;
-            replicaAtomFront.position.set(p.x  + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY,p.z + farZ); 
+            replicaAtomFront.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY + halfY,p.z + farZ); 
             atoms.push(replicaAtomFront);
           };
         };
         
 
+        var farY = halfY + this.parameters.scaleY*this.parameters.repeatY ;
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var z = 0; z < this.parameters.repeatZ; z++) {
+            var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomUp.name = objName;
+            replicaAtomUp.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y + farY,p.z + z*this.parameters.scaleZ + halfZ); 
+            atoms.push(replicaAtomUp);
+          };
+        };
+
+        for (var x = 0; x < this.parameters.repeatX; x++) {
+          for (var z = 0; z < this.parameters.repeatZ; z++) {
+            var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
+            if(objName !== undefined) replicaAtomDown.name = objName;
+            replicaAtomDown.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y - halfY ,p.z + z*this.parameters.scaleZ + halfZ); 
+            atoms.push(replicaAtomDown);
+          };
+        };
+
         j++;
       }
     } 
     
+    i=0;
+     
+    /////////////////////////////////// 
+ 
+    if (this.parameters.alpha !== 90) {  
+      var matrix = transformationMatrix({alpha : this.parameters.alpha});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
+    if (this.parameters.beta !== 90) {  
+      var matrix = transformationMatrix({beta : this.parameters.beta});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
+    if (this.parameters.gamma !== 90) {  
+      var matrix = transformationMatrix({gamma : this.parameters.gamma});  
+      _.each(atoms, function(atom) { 
+        atom.position.applyMatrix4(matrix);    
+      }); 
+    }
 
-   /* for (var i = atoms.length - 1; i >= 0; i--) {
-      Explorer.add({'object3d' : atoms[i] }); 
-    };*/
+    /*
+    while(i < atoms.length ){  
+      atoms[i].material.color = new THREE.Color(0xff0000); 
+      Explorer.add({'object3d' : atoms[i]});  
+      i++;
+    } 
+    */
     return atoms;
  
   }; 
