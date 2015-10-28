@@ -591,19 +591,19 @@ define([
                 case 'scaleY': return 'c';
                 case 'scaleZ': return 'a';
                 case 'alpha': return 'β';
-                case 'beta': return 'γ';
-                case 'gamma': return 'α';
+                case 'beta': return 'α';
+                case 'gamma': return 'υ';
                 case 'scaleXSlider': return 'b';
                 case 'scaleYSlider': return 'c';
                 case 'scaleZSlider': return 'a';
                 case 'alphaSlider': return 'β';
-                case 'betaSlider': return 'γ';
-                case 'gammaSlider': return 'α';
+                case 'betaSlider': return 'α';
+                case 'gammaSlider': return 'γ';
                 default: return 'Unknown';
             }
         };
     
-        function applyRestrictions(caller,value,context){
+        function applyRestrictions(caller,value,context,noTooltips){
             // Run restrictions
             var _this = context;
             var result = {};
@@ -617,20 +617,22 @@ define([
             // ORDER [ ≠X > =X >  ≠Number,=Number]
             _.each(result, function($param, a){
                 if ($param.action === 'undo') {
-                    _this.showTooltip({
-                        'element': $param.source.attr('id'),
-                        'placement': 'top',
-                        'message': translateParameter($param.source.attr('id'))+' should be ≠ '+translateParameter($param.target.attr('id'))
-                    });
-                    $param.source.trigger($param.action, [$param.value]);
-                    returnValue = 'abort';
+                    if (noTooltips !== true){
+                        _this.showTooltip({
+                            'element': $param.source.attr('id'),
+                            'placement': 'top',
+                            'message': translateParameter($param.source.attr('id'))+' should be ≠ '+translateParameter($param.target.attr('id'))
+                        });
+                        $param.source.trigger($param.action, [$param.value]);
+                        returnValue = 'abort';
+                    }
                 }
             });
             if (returnValue !== 'abort') {
                 _.each(result, function($param, a){
                     if ($param.action === 'reflect') {
-                        $param.source.trigger($param.action, [$param.source]);
-                        $param.target.trigger($param.action, [$param.source]);
+                        $param.source.trigger($param.action, [$param.value]);
+                        $param.target.trigger($param.action, [$param.value]);
                         returnValue = 'reflect';
                     }
                 });
@@ -641,13 +643,15 @@ define([
                         var message;
                         if ($param.restriction === 'equalTo') message = translateParameter($param.source.attr('id'))+' should be = '+$param.target;
                         else message = translateParameter($param.source.attr('id'))+' should be ≠ '+$param.target;
-                        _this.showTooltip({
-                            'element': $param.source.attr('id'),
-                            'placement': 'top',
-                            'message': message
-                        });
-                        $param.source.trigger($param.action, [$param.value]);
-                        returnValue = 'fail';
+                        if (noTooltips !== true){
+                            _this.showTooltip({
+                                'element': $param.source.attr('id'),
+                                'placement': 'top',
+                                'message': message
+                            });
+                            $param.source.trigger($param.action, [$param.value]);
+                            returnValue = 'fail';
+                        }
                     }
                 });
             }
@@ -850,13 +854,13 @@ define([
                         argument = {};
                         if (inputErrorHandler($parameter.val()) !== false) {
                             argument[k] = inputErrorHandler($parameter.val());
-                            var restrictionsMet = applyRestrictions(k,argument[k],_this);
+                            var restrictionsMet = applyRestrictions(k,argument[k],_this,false);
                             if ( restrictionsMet === 'success' ) $parameter.trigger('success', [argument[k]]);
                         }
                     });      
-                    $parameter.on('reflect',function(event, target) {
-                        $parameter.val(target.val());
-                        $parameter.trigger('success',[target.val()]);
+                    $parameter.on('reflect',function(event, value) {
+                        $parameter.val(value);
+                        $parameter.trigger('success',[value]);
                     });
                     $parameter.on('success',function(event, value) {
                         argument = {};
@@ -891,12 +895,12 @@ define([
                 jQuery('#'+name+'Slider').on('undo', function(event, value){
                     jQuery('#'+name+'Slider').trigger('fail',[value]);
                 });
-                jQuery('#'+name+'Slider').on('reflect', function(event, target){
+                jQuery('#'+name+'Slider').on('reflect', function(event, value){
                     argument = {};
-                    argument[name] = target.slider('value');
+                    argument[name] = value;
                     LastLatticeParameters[name] = argument[name]; 
-                    jQuery('#'+name).val(target.slider('value'));
-                    jQuery('#'+name+'Slider').slider('value',argument[name]);
+                    jQuery('#'+name).val(value);
+                    jQuery('#'+name+'Slider').slider('value',value);
                     latticeLabels[name].text(argument[name]);
                     PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
                 });
@@ -916,12 +920,12 @@ define([
                 jQuery('#'+name+'Slider').on('undo', function(event, value){
                     jQuery('#'+name+'Slider').trigger('fail',[value]);
                 });
-                jQuery('#'+name+'Slider').on('reflect', function(event, target){
+                jQuery('#'+name+'Slider').on('reflect', function(event, value){
                     argument = {};
-                    argument[name] = target.slider('value');
+                    argument[name] = value;
                     LastLatticeParameters[name] = argument[name]; 
-                    jQuery('#'+name).val(target.slider('value'));
-                    jQuery('#'+name+'Slider').slider('value',argument[name]);
+                    jQuery('#'+name).val(value);
+                    jQuery('#'+name+'Slider').slider('value',value);
                     latticeLabels[name].text(argument[name]);
                     PubSub.publish(events.LATTICE_PARAMETER_CHANGE, argument);
                 });
@@ -1351,15 +1355,10 @@ define([
                         argument = {};
                         argument["button"]=this.id;
                         _.each(directionParameters, function($param, a ) {
-                            if (a == 'directionColor') {
-                                argument[a] = $param.spectrum("get").toHex();
-                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
-                            }
-                            else if (inputErrorHandler($param.val()) !== false) {
-                                argument[a] = inputErrorHandler($param.val());
-                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
-                            }
+                            if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
+                            else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
+                        PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
                     }
                 });
             });
@@ -1369,15 +1368,10 @@ define([
                         argument = {};
                         argument["button"] = k;
                         _.each(planeParameters, function($param, a ) {
-                            if (a == 'planeColor') {
-                                argument[a] = $param.spectrum("get").toHex();
-                                PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
-                            }
-                            else if (inputErrorHandler($param.val()) !== false) {
-                                argument[a] = inputErrorHandler($param.val());
-                                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
-                            }
+                            if (a == 'planeColor') argument[a] = $param.spectrum("get").toHex();
+                            else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
+                        PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
                     }
                 });
             });
@@ -1764,6 +1758,7 @@ define([
                     jQuery(this).addClass('selected');
                     var preview = jQuery('#tempSelection').find('p');
                     var caller = jQuery(this);
+                    var selected = false;
                     preview.html(caller.html());
                     preview.attr('class',caller.attr('class'));
                     _.each($ionicValues, function($parameter, k){
@@ -1771,10 +1766,7 @@ define([
                         var ionicIndex = jQuery($parameter).find('p').html();
                         if ( $atomsData[preview.html()] !== undefined ){
                             if ($atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
-                                if ( ionicIndex === '≡') {
-                                    ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
-                                    jQuery($parameter).addClass('selected');
-                                }
+                                if ( ionicIndex === '≡') ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
                                 else ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
                                 jQuery($parameter).show('fast');
                                 jQuery($parameter).removeClass('disabled');
@@ -1783,7 +1775,7 @@ define([
                             else if ( ionicIndex === '0' ){
                                 if ( $atomsData[preview.html()]['radius'] !== 0 ) {
                                     jQuery($parameter).show('fast');
-                                    jQuery($parameter).addClass('selected');
+                                    jQuery($parameter).removeClass('disabled');
                                     jQuery($parameter).find('.resolution p').html(($atomsData[preview.html()]['radius']/100).toFixed(3) + ' &Aring;');
                                 }
                                 else {
@@ -1803,6 +1795,27 @@ define([
                             jQuery($parameter).hide('fast');
                             jQuery($parameter).find('.resolution p').html('-');
                         }
+                        switch(ionicIndex)
+                        {
+                            case '0':
+                                if (!(jQuery($parameter).hasClass('disabled'))) {
+                                    jQuery($parameter).addClass('selected');
+                                    selected = true;
+                                }
+                                break;
+                            case '≡':
+                                if (!(jQuery($parameter).hasClass('disabled'))){
+                                    jQuery($parameter).addClass('selected');
+                                    selected = true;
+                                }
+                                break;
+                            default:
+                                if ( (selected === false) && !(jQuery($parameter).hasClass('disabled')) ) {
+                                    jQuery($parameter).addClass('selected');
+                                    selected = true;
+                                }
+                                break;
+                        }    
                     });
                 }
             });
@@ -1918,7 +1931,7 @@ define([
                     jQuery('#publicTab').find('a').trigger('click');
                     break;
             }
-        }
+        };
         Menu.prototype.setTabDisable = function(argument){
             _.each(argument, function($parameter, k){
                 if ($parameter === true) {
@@ -2052,6 +2065,7 @@ define([
                 animate: true,
                 slide: function(event, ui){
                     var argument = {};
+                    var result = true;
                     if ( (inputName === 'cellVolume') && ($tangency.parent().hasClass('purpleThemeActive')) ){
                         if (ui.value < 90) {
                             jQuery(sliderName).slider('value',90);
@@ -2061,17 +2075,20 @@ define([
                             return false;
                         }
                     }
+                    _.each(latticeParameters, function($parameter,k){
+                        if (k === inputName) {
+                            applyRestrictions(k+'Slider',ui.value.toString(),_this,true);
+                            latticeLabels[k].text(ui.value);
+                        }
+                    });
                     argument[inputName] = ui.value;
                     PubSub.publish(eventIn, argument);
                     jQuery('#'+inputName).val(ui.value);
-                    _.each(latticeLabels, function($parameter,k){
-                        if (inputName === k) $parameter.text(ui.value);
-                    });
                 },
                 stop: function(event,ui){
                     _.each(latticeParameters, function($parameter,k){
                         if (k === inputName) {
-                            if (applyRestrictions(k+'Slider',ui.value.toString(),_this) === 'success') LastLatticeParameters[k] = ui.value;
+                            if (applyRestrictions(k+'Slider',ui.value.toString(),_this,false) === 'success') LastLatticeParameters[k] = ui.value;
                         }
                     });
                 }
@@ -2083,7 +2100,7 @@ define([
             else if ( (choice === 't') && (action === 'block') ) jQuery('#hexTCoord').show('fast');
             else jQuery('#hexTCoord').hide('fast');
             setTimeout(function(){$.fn.matchHeight._update();},500);
-        }
+        };
         Menu.prototype.editPlaneInputs = function(argument){
             _.each(planeParameters, function($parameter, k) {
                 switch(k){
@@ -2493,7 +2510,7 @@ define([
                 level =  1 + this.getChainLevel(tangent);               
             }
             return level;
-        }
+        };
         Menu.prototype.tangent = function(id){
             var arg = {};
             var current = $atomTable.find('#'+id);
@@ -2953,6 +2970,10 @@ define([
         };
         Menu.prototype.removeLatticeRestrictions = function() {
             restrictionList = {};
+            _.each(latticeParameters, function($parameter, pk) {
+                $parameter.prop('disabled',false);
+                jQuery('#'+pk+'Slider').slider('enable');
+            });
         };
         Menu.prototype.setLatticeRestrictions = function(restrictions) {
 
@@ -2966,6 +2987,9 @@ define([
             var _this = this;
 
             _.each(latticeParameters, function($parameter, pk) {
+                
+                $parameter.prop('disabled',false);
+                jQuery('#'+pk+'Slider').slider('enable');
 
                 if (_.isUndefined(restrictions[pk]) === false) {
 
@@ -2982,6 +3006,8 @@ define([
                         if (operator === '=') {
                             // Add equalToNumber restriction
                             if (_.isUndefined(right[rk])) {
+                                left[pk].prop('disabled',true);
+                                jQuery('#'+pk+'Slider').slider('disable');
                                 restrictionList[restrictionName] = function(caller,value){
                                     if (caller === pk){
                                         if (parseFloat(value) !== parseFloat(rk)) {
@@ -3010,19 +3036,25 @@ define([
                             }
                             // Add equalToInput restriction
                             else {
+                                if (right[rk].prop('disabled') === false){
+                                    right[rk].prop('disabled',true);
+                                    jQuery('#'+rk+'Slider').slider('disable');
+                                }
                                 restrictionList[restrictionName] = function(caller,value){
                                     if(caller === pk){
                                         return {
                                             action: 'reflect',
                                             source: left[pk],
-                                            target: right[rk]
+                                            target: right[rk],
+                                            value: value
                                         };
                                     }
                                     else if (caller === pk+'Slider'){
                                         return {
                                             action: 'reflect',
                                             source: jQuery('#'+pk+'Slider'),
-                                            target: jQuery('#'+rk+'Slider')
+                                            target: jQuery('#'+rk+'Slider'),
+                                            value: value
                                         };
                                     }
                                     return { action: 'success' };
@@ -3092,6 +3124,11 @@ define([
         };
         String.prototype.capitalizeFirstLetter = function() {
             return this.charAt(0).toUpperCase() + this.slice(1);
+        };
+        Menu.prototype.updateLatticeLabel = function(argument){
+            _.each(latticeParameters, function($parameter, k){
+                 if (k === argument['label']) $parameter.val(argument['value']);
+            });
         };
    
     /* ------------------------
