@@ -650,13 +650,21 @@ require([
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
     }
-    else{
-      var params = lattice.getParameters() ;
-      var x = params.scaleX * params.repeatX/2 ;
-      var y = params.scaleY * params.repeatY /2;
-      var z = params.scaleZ * params.repeatZ/2 ;
-      var target = new THREE.Vector3(x,y,z) ;
-      orbitCrystal.control.target = target ;
+    else{ 
+
+      var g = lattice.customBox(lattice.viewBox);
+      var centroid = new THREE.Vector3(0,0,0);
+
+      if(g !== undefined){ 
+        centroid = new THREE.Vector3(); 
+        for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+          centroid.add( g.vertices[ z ] ); 
+        }  
+        centroid.divideScalar( g.vertices.length );
+      }
+
+
+      orbitCrystal.control.target = centroid ;
     } 
   });
   lattice.onLoad(function(message, lattice) {

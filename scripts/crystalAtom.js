@@ -139,8 +139,7 @@ define([
     }
         
     var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
-    atomMesh.position.set(pos.x, pos.y, pos.z);
-    atomMesh.scale.set(this.radius, this.radius, this.radius);
+    atomMesh.position.set(pos.x, pos.y, pos.z); 
 
     var cube = THREE.CSG.toCSG(box); 
     cube = cube.inverse();

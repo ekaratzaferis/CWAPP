@@ -474,35 +474,11 @@ define([
      
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
-       
-    /*
-    if(this.viewMode !== 'Classic'){
-      this.menu.setTabDisable({
-        'latticeTab': true,
-        'motifLI':true,
-        'publicTab':true
-      });
-    }
-    else{
-      this.menu.setTabDisable({
-        'latticeTab': false, 
-        'motifLI':false,
-        'publicTab':false 
-      });
-    }*/
-
+      
     if(this.actualAtoms.length!==0){
   
       var scene = Explorer.getInstance().object3d;
-
-      /*
-      var geometry = new THREE.Geometry();
-      while(i < this.viewBox.length ) {  
-        this.viewBox[i].object3d.updateMatrix();  
-        geometry.merge( this.viewBox[i].object3d.geometry, this.viewBox[i].object3d.matrix ); 
-        i++; 
-      }  */
-
+  
       var g = this.customBox(this.viewBox);
       var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
        
@@ -3822,6 +3798,8 @@ define([
     var vertices = [];
     var faces = [];
     var _this = this ;
+    
+    if(points['_000'] === undefined) return undefined;
 
     if(this.latticeName !== 'hexagonal'){
       vertices.push(points['_000'].position); // 0
