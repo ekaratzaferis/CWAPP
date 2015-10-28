@@ -376,13 +376,12 @@ define([
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
         
-    var x = $('#Ab').val() ;
-    var y = $('#Ac').val() ;
-    var z = $('#Aa').val() ;
+    var x = this.cellParameters.scaleX;
+    var y = this.cellParameters.scaleY;
+    var z = this.cellParameters.scaleZ;
  
     this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
- 
- 
+  
     if(this.editorState.atomPosMode === 'relative'){ 
 
       var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
@@ -397,7 +396,7 @@ define([
       );
 
       this.setAtomsTangency({tangency : false});
-
+   
       this.menu.setSliderMin('atomPosX', 0);
       this.menu.setSliderMax('atomPosX', 1); 
       this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
@@ -494,9 +493,9 @@ define([
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
-      xFactor = parseFloat($("#Ab").val()) ;
-      yFactor = parseFloat($("#Ac").val()) ;
-      zFactor = parseFloat($("#Aa").val()) ; 
+      xFactor = this.cellParameters.scaleX;
+      yFactor = this.cellParameters.scaleY;
+      zFactor = this.cellParameters.scaleZ;
     }
  
     var sliderXVal, sliderYVal, sliderZVal ;
@@ -509,7 +508,7 @@ define([
     else{
       sliderXVal = xFactor * parseFloat($('#atomPosX').val() ); 
       sliderYVal = yFactor * parseFloat($('#atomPosY').val() );
-      sliderZVal = zFactor * parseFloat($('#atomPosZ').val() );
+      sliderZVal = zFactor * parseFloat($('#atomPosZ').val() ); 
     }  
 
     if(this.editorState.atomPosMode === 'relative'){ 
@@ -1802,9 +1801,9 @@ define([
         break;
       case "creating":
         if(this.editorState.atomPosMode === 'relative'){
-          arg.atomPos.x = arg.atomPos.x/ parseFloat($('#Ab').val());
-          arg.atomPos.y = arg.atomPos.y/ parseFloat($('#Ac').val());
-          arg.atomPos.z = arg.atomPos.z/ parseFloat($('#Aa').val());
+          arg.atomPos.x = arg.atomPos.x/ parseFloat(this.cellParameters.scaleX);
+          arg.atomPos.y = arg.atomPos.y/ parseFloat(this.cellParameters.scaleY);
+          arg.atomPos.z = arg.atomPos.z/ parseFloat(this.cellParameters.scaleZ);
         } 
         this.menu.disableMEButtons(
           {
@@ -1854,9 +1853,9 @@ define([
         break;
       case "editing": 
         if(this.editorState.atomPosMode === 'relative'){
-          arg.atomPos.x = arg.atomPos.x/ parseFloat($('#Ab').val());
-          arg.atomPos.y = arg.atomPos.y/ parseFloat($('#Ac').val());
-          arg.atomPos.z = arg.atomPos.z/ parseFloat($('#Aa').val());
+          arg.atomPos.x = arg.atomPos.x/ parseFloat(this.cellParameters.scaleX);
+          arg.atomPos.y = arg.atomPos.y/ parseFloat(this.cellParameters.scaleY);
+          arg.atomPos.z = arg.atomPos.z/ parseFloat(this.cellParameters.scaleZ);
         } 
         this.menu.disableMEButtons(
           {
@@ -1916,9 +1915,9 @@ define([
       var atomPos;
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
-        var x = parseFloat($('#Ab').val()) ;
-        var y = parseFloat($('#Ac').val()) ;
-        var z = parseFloat($('#Aa').val()) ;
+        var x = parseFloat(this.cellParameters.scaleX) ;
+        var y = parseFloat(this.cellParameters.scaleY) ;
+        var z = parseFloat(this.cellParameters.scaleZ) ;
         atomPos = '('+(pos.z/z).toFixed(1)+','+(pos.x/x).toFixed(1)+','+(pos.y/y).toFixed(1)+')';
       }  
       else{
@@ -2262,9 +2261,9 @@ define([
   Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState){ 
     var _this = this;
     var doNotDestroy = false;
-    var x = $('#Ab').val() ;
-    var y = $('#Ac').val() ;
-    var z = $('#Aa').val() ;
+    var x = this.cellParameters.scaleX ;
+    var y = this.cellParameters.scaleY;
+    var z = this.cellParameters.scaleZ;
 
     this.menu.disableMEInputs(
     { 
@@ -4451,7 +4450,7 @@ define([
       }
     }
   };
-  Motifeditor.prototype.offsetMotifsForViews = function(){
+  Motifeditor.prototype.offsetMotifsForViews = function(recreate){
     var atoms = this.cachedAtoms;
     var objName = 'cellGradeLimited';
     for (var d = atoms.length - 1; d >= 0; d--) { 
@@ -4647,9 +4646,7 @@ define([
       atoms[i].visible = false;
       UnitCellExplorer.add({'object3d' : atoms[i]});  
       i++;
-    } 
-     
- 
+    }  
   }; 
   Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 

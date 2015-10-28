@@ -4,7 +4,7 @@
 hexagonal ta idia
 readjust cell not done well
 planes dirs 1/4
- performance TODOs
+  
  
  3. na dw ti paizei me grids faces.
  4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika

@@ -3024,7 +3024,7 @@ define([
     } 
     
     var found = (action === 'edit') ? _.find(_this.planeList, function(plane){ return plane.id === id; }) : undefined; 
-     
+   
     if( found === undefined){ 
       if(millerParameters !== undefined){ 
         this.menu.editSavedPlane(
@@ -3543,7 +3543,7 @@ define([
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
-    
+      console.log(9);
     if( oldId !== undefined){ 
       _.each(_this.directionalList, function(x, reference) {
         if(x.id === oldId) {
@@ -3798,7 +3798,7 @@ define([
     var vertices = [];
     var faces = [];
     var _this = this ;
-    
+
     if(points['_000'] === undefined) return undefined;
 
     if(this.latticeName !== 'hexagonal'){
