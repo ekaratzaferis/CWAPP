@@ -1,6 +1,6 @@
  
  
-na apothikeuontai na cacharontai. unit cell atoms global geom
+ unit cell atoms global geom
 hexagonal ta idia
 readjust cell not done well
 planes dirs 1/4

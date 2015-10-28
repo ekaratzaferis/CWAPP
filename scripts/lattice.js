@@ -72,7 +72,7 @@ define([
     this.viewBox = [];
     this.viewMode = 'crystalClassic'; 
     this.crystalIsDirty = false;
-
+    this.cachedAtoms = [];
     // visualization
     this.renderingMode = 'realistic';
   }; 
@@ -121,11 +121,13 @@ define([
       }
     }
   };
-  Lattice.prototype.offsetMotifsForViews = function(mode, objName){
-    var atoms = [];
-    if(mode === 'crystalClassic'){
-      return atoms;
-    }
+  Lattice.prototype.offsetMotifsForViews = function(){
+    var objName = 'crystalGradeLimited';
+    var atoms = this.cachedAtoms; 
+    for (var d = atoms.length - 1; d >= 0; d--) { 
+      Explorer.remove({'object3d' : atoms[d]}); 
+    };
+    atoms.splice(0);
     var i = 0, j = 0;
 
     var globMat;
@@ -440,15 +442,13 @@ define([
         atom.position.applyMatrix4(matrix);    
       }); 
     }
-
-    /*
+    
+    i = 0;
     while(i < atoms.length ){  
-      atoms[i].material.color = new THREE.Color(0xff0000); 
+      atoms[i].visible = false; 
       Explorer.add({'object3d' : atoms[i]});  
       i++;
-    } 
-    */
-    return atoms;
+    }  
  
   }; 
   Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
@@ -507,8 +507,7 @@ define([
       var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
        
       if(this.viewMode === 'crystalSubstracted'){
-        
-        var helperMotifs = this.offsetMotifsForViews(this.viewMode);
+         
         this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
         this.editObjectsInScene('crystalGradeLimited', 'visibility', false);  
 
@@ -533,8 +532,8 @@ define([
            
           i =0;
 
-          while(i < helperMotifs.length ) { console.log(3);
-            var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+          while(i < this.cachedAtoms.length ) { console.log(3);
+            var mesh_ = this.subtractedSolidView(box, this.cachedAtoms[i]); 
             mesh_.name = 'crystalSubstracted'; 
             scene.add(mesh_); 
             i++;
@@ -542,9 +541,7 @@ define([
         }
       }
       else if(this.viewMode === 'crystalSolidVoid'){   
-
-        helperMotifs = this.offsetMotifsForViews(this.viewState);
-
+ 
         this.editObjectsInScene('crystalSubstracted', 'visibility', false);
         this.editObjectsInScene('crystalGradeLimited', 'visibility', false);
 
@@ -579,9 +576,9 @@ define([
 
         i=0;
 
-        while(i < helperMotifs.length ) { 
-          helperMotifs[i].updateMatrix();   
-          geometry.merge( helperMotifs[i].geometry, helperMotifs[i].matrix );
+        while(i < this.cachedAtoms.length ) { 
+          this.cachedAtoms[i].updateMatrix();   
+          geometry.merge( this.cachedAtoms[i].geometry, this.cachedAtoms[i].matrix );
           i++; 
         } 
 
@@ -608,8 +605,7 @@ define([
 
       }
       else if(this.viewMode === 'crystalGradeLimited'){ 
- 
-        helperMotifs = this.offsetMotifsForViews(this.viewState, 'crystalGradeLimited');
+  
         this.editObjectsInScene('crystalSubstracted', 'visibility', false);
         this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
         
@@ -682,12 +678,12 @@ define([
 
         i=0;
 
-        while(i < helperMotifs.length ) { 
-            // Explorer.add({'object3d' : helperMotifs[i] });
+        while(i < this.cachedAtoms.length ) { 
+            // Explorer.add({'object3d' : this.cachedAtoms[i] });
           // workaround for points that are exactly on the grade (faces, cell points)
-          var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
+          var smartOffset = centroid.clone().sub(this.cachedAtoms[i].position.clone());
           smartOffset.setLength(0.01);
-          var originPointF = helperMotifs[i].position.clone().add(smartOffset);
+          var originPointF = this.cachedAtoms[i].position.clone().add(smartOffset);
           //
 
           var dir = new THREE.Vector3(1,1000000,1);  
@@ -695,17 +691,17 @@ define([
           var collisionResultsF = rayF.intersectObjects( collidableMeshList );
    
           var touches = true ;
-          var radius = helperMotifs[i].geometry.boundingSphere.radius ;  
+          var radius = this.cachedAtoms[i].geometry.boundingSphere.radius ;  
 
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
     
-            var vertexIndex = helperMotifs[i].geometry.vertices.length-1;
-            var atomCentre = helperMotifs[i].position.clone();
+            var vertexIndex = this.cachedAtoms[i].geometry.vertices.length-1;
+            var atomCentre = this.cachedAtoms[i].position.clone();
 
             while( vertexIndex >= 0 )
             {     
-              var localVertex = helperMotifs[i].geometry.vertices[vertexIndex].clone();
-              var globalVertex = localVertex.applyMatrix4(helperMotifs[i].matrixWorld);
+              var localVertex = this.cachedAtoms[i].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].matrixWorld);
               var directionVector = globalVertex.sub( originPointF );     
               
               var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
@@ -722,11 +718,11 @@ define([
             }  
 
             if(touches === true) { 
-              Explorer.add({'object3d' : helperMotifs[i] });
+              this.cachedAtoms[i].visible = true;
             }
           }
           else{ 
-            Explorer.add({'object3d' : helperMotifs[i] });
+            this.cachedAtoms[i].visible = true;
           }
           i++;
         } 
@@ -909,7 +905,8 @@ define([
         );
       });
     });  
-
+    
+    this.offsetMotifsForViews();
     this.updateLatticeTypeRL();
      
   }; 

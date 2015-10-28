@@ -68,6 +68,7 @@ define([
     // rendering mode
     this.renderingMode = 'realistic'; // todo change that to realistic 
     this.cellIsDirty = false;
+    this.cachedAtoms = [];
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
   }; 
@@ -226,6 +227,9 @@ define([
         'atomColor' : params.atomColor
       }
     );  
+
+    this.offsetMotifsForViews();
+    
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
 
@@ -1720,6 +1724,7 @@ define([
           break; 
       }
     } 
+    this.offsetMotifsForViews();
   };
   Motifeditor.prototype.deleteTangentChild = function (id){
     // todo na feugei kai to tanngent icon apo to child kai na ginetai free
@@ -4446,12 +4451,14 @@ define([
       }
     }
   };
-  Motifeditor.prototype.offsetMotifsForViews = function(mode, objName){
-    var atoms = [];
+  Motifeditor.prototype.offsetMotifsForViews = function(){
+    var atoms = this.cachedAtoms;
+    var objName = 'cellGradeLimited';
+    for (var d = atoms.length - 1; d >= 0; d--) { 
+      UnitCellExplorer.remove({'object3d' : atoms[d]}); 
+    };
+    atoms.splice(0);
 
-    if(mode === 'cellClassic'){
-      return atoms;
-    }
     var i = 0, j = 0;
 
     var globMat;
@@ -4634,18 +4641,14 @@ define([
         atom.position.applyMatrix4(matrix);    
       }); 
     }
-    
-    /*
+     
     i=0;
-    while(i < atoms.length ){  
-      atoms[i].material.color = new THREE.Color(0xff0000); 
+    while(i < atoms.length ){   
+      atoms[i].visible = false;
       UnitCellExplorer.add({'object3d' : atoms[i]});  
       i++;
-    }
-    console.log(i);
-    */
-
-    return atoms;
+    } 
+     
  
   }; 
   Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
@@ -4693,10 +4696,8 @@ define([
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"}) );
     var scene = UnitCellExplorer.getInstance().object3d;
-    var helperMotifs;
-
-    if(this.viewState === 'cellSubstracted'){
-      helperMotifs = this.offsetMotifsForViews(this.viewState); 
+    
+    if(this.viewState === 'cellSubstracted'){ 
 
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
       this.editObjectsInScene('cellGradeLimited', 'visibility', false);
@@ -4721,8 +4722,8 @@ define([
          
         i =0;
 
-        while(i < helperMotifs.length ) { 
-          var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+        while(i < this.cachedAtoms.length ) { 
+          var mesh_ = this.subtractedSolidView(box, this.cachedAtoms[i]); 
           mesh_.name = 'cellSubstracted'; 
           scene.add(mesh_); 
           i++;
@@ -4731,8 +4732,7 @@ define([
        
       PubSub.publish(events.VIEW_STATE,"cellSubstracted");  
     }
-    else if(this.viewState === 'cellSolidVoid'){  
-      helperMotifs = this.offsetMotifsForViews(this.viewState);
+    else if(this.viewState === 'cellSolidVoid'){   
 
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       this.editObjectsInScene('cellGradeLimited', 'visibility', false);
@@ -4768,9 +4768,9 @@ define([
 
       i=0;
 
-      while(i < helperMotifs.length ) { 
-        helperMotifs[i].updateMatrix();   
-        geometry.merge( helperMotifs[i].geometry, helperMotifs[i].matrix );
+      while(i < this.cachedAtoms.length ) { 
+        this.cachedAtoms[i].updateMatrix();   
+        geometry.merge( this.cachedAtoms[i].geometry, this.cachedAtoms[i].matrix );
         i++; 
       } 
       var cube = THREE.CSG.toCSG(box); 
@@ -4788,8 +4788,7 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
     }
     else if(this.viewState === 'cellGradeLimited'){ 
-      
-      helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
+ 
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
 
@@ -4862,12 +4861,12 @@ define([
 
       i=0;
 
-      while(i < helperMotifs.length ) { 
+      while(i < this.cachedAtoms.length ) { 
          
         // workaround for points that are exactly on the grade (faces, cell points)
-        var smartOffset = centroid.clone().sub(helperMotifs[i].position.clone());
+        var smartOffset = centroid.clone().sub(this.cachedAtoms[i].position.clone());
         smartOffset.setLength(0.01);
-        var originPointF = helperMotifs[i].position.clone().add(smartOffset);
+        var originPointF = this.cachedAtoms[i].position.clone().add(smartOffset);
         //
  
         var dir = new THREE.Vector3(1,1000000,1);  
@@ -4875,17 +4874,17 @@ define([
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
   
         var touches = true ;
-        var radius = helperMotifs[i].geometry.boundingSphere.radius ; 
+        var radius = this.cachedAtoms[i].geometry.boundingSphere.radius ; 
        
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
   
-          var vertexIndex = helperMotifs[i].geometry.vertices.length-1;
-          var atomCentre = helperMotifs[i].position.clone();
+          var vertexIndex = this.cachedAtoms[i].geometry.vertices.length-1;
+          var atomCentre = this.cachedAtoms[i].position.clone();
 
           while( vertexIndex >= 0 )
           {     
-            var localVertex = helperMotifs[i].geometry.vertices[vertexIndex].clone();
-            var globalVertex = localVertex.applyMatrix4(helperMotifs[i].matrixWorld);
+            var localVertex = this.cachedAtoms[i].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].matrixWorld);
             var directionVector = globalVertex.sub( originPointF );     
             
             var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
@@ -4901,11 +4900,11 @@ define([
           }  
 
           if(touches === true) {  
-            UnitCellExplorer.add({'object3d' : helperMotifs[i] });
+            this.cachedAtoms[i].visible = true;
           }
         }
         else{  
-          UnitCellExplorer.add({'object3d' : helperMotifs[i] });
+          this.cachedAtoms[i].visible = true;
         }
         i++;
       } 
