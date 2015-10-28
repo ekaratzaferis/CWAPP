@@ -1,6 +1,6 @@
-leftovers sta modes tou ΜΕ
-crystal view modes
-na apothikeuontai na cacharontai
+ 
+ 
+na apothikeuontai na cacharontai. unit cell atoms global geom
 hexagonal ta idia
 readjust cell not done well
 

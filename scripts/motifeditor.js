@@ -309,6 +309,7 @@ define([
     var _this = this ;
     var idIs = _this.newSphere.getID();
     var tempObj = _this.newSphere ;  
+
     this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
     if(_.isUndefined(_this.newSphere) ) {
       this.newSphere = tempObj ; //in case he drags the this.newSphere already
@@ -2002,7 +2003,7 @@ define([
   };    
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
-    
+   
     if(this.dragMode === false && this.globalTangency === true){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
@@ -2013,16 +2014,18 @@ define([
       };
     }
 
-    if(this.dragMode || colAtom){ 
+    if(this.dragMode === true || colAtom !== undefined){ 
 
       if(this.soundMachine.procced) this.soundMachine.play('popOutOfAtom');
 
       var axis = this.rotAxis;
       var movingAtom = this.newSphere;
+
       var stillAtom = (colAtom) ? colAtom : this.tangentToThis;
+
       var movingPoint = new THREE.Vector3(movingAtom.object3d.position.x, movingAtom.object3d.position.y, movingAtom.object3d.position.z); 
       var stillPoint = new THREE.Vector3(stillAtom.object3d.position.x, stillAtom.object3d.position.y, stillAtom.object3d.position.z);
-      var tangentDistance = this.newSphere.tangentR ; 
+      var tangentDistance = movingAtom.getRadius() + stillAtom.getRadius() ; 
       var angle = _angle;
 
       if(axis === 'x'){
@@ -2042,7 +2045,7 @@ define([
         this.newSphere.object3d.position.x = position.x ;   
         this.translateCellAtoms("y",  position.y , this.newSphere.getID());
         this.translateCellAtoms("x",  position.x , this.newSphere.getID());
- 
+    
         this.menu.editMEInputs(
           {  
             'rotAngleX' : angle.toFixed(0) 
@@ -4752,9 +4755,12 @@ define([
 
       i = 0;
 
+      var globalG = new THREE.SphereGeometry(1, 32, 32);
+
       while(i < this.unitCellAtoms.length ) {  
         this.unitCellAtoms[i].SolidVoid(this.unitCellAtoms[i].object3d.position);  
-        var mesh = new THREE.Mesh(new THREE.SphereGeometry(this.unitCellAtoms[i].getRadius(), 32, 32), new THREE.MeshBasicMaterial() );
+        var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
+        mesh.scale.set(this.unitCellAtoms[i].getRadius(), this.unitCellAtoms[i].getRadius(), this.unitCellAtoms[i].getRadius());
         mesh.position.set( this.unitCellAtoms[i].object3d.position.x, this.unitCellAtoms[i].object3d.position.y, this.unitCellAtoms[i].object3d.position.z);
         mesh.updateMatrix();   
         geometry.merge( mesh.geometry, mesh.matrix ); 

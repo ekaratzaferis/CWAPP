@@ -451,6 +451,25 @@ define([
     return atoms;
  
   }; 
+  Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
+    var finished = false, found = false;
+    var scene = Explorer.getInstance().object3d;
+    scene.traverse (function (object)
+    { 
+      if (object.name === name){
+        
+        found = true;
+        if(action === 'remove'){ 
+          scene.remove(object);
+        }
+        else if(action === 'visibility'){  
+          object.visible = visible;
+        }
+      }  
+    });
+  
+    return found;
+  };
   Lattice.prototype.setCSGmode = function(arg) {
      
     var _this = this, i = 0;
@@ -475,25 +494,31 @@ define([
     }*/
 
     if(this.actualAtoms.length!==0){
-
-      var geometry = new THREE.Geometry();  
+  
       var scene = Explorer.getInstance().object3d;
 
+      /*
+      var geometry = new THREE.Geometry();
       while(i < this.viewBox.length ) {  
         this.viewBox[i].object3d.updateMatrix();  
         geometry.merge( this.viewBox[i].object3d.geometry, this.viewBox[i].object3d.matrix ); 
         i++; 
-      }  
+      }  */
+
       var g = this.customBox(this.viewBox);
       var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
        
       if(this.viewMode === 'crystalSubstracted'){
-        i = 0 ;
+        
         var helperMotifs = this.offsetMotifsForViews(this.viewMode);
+        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+        this.editObjectsInScene('cellGradeLimited', 'visibility', false); 
+        this.editObjectsInScene('cellSubstracted', 'visibility', true);
         var enterViewmode = true; 
         if(this.actualAtoms[0].viewModeBeen.SubtractedSolid === true ){
           enterViewmode = false;
         }
+        i = 0 ;
         while(i < this.actualAtoms.length ) {
           this.actualAtoms[i].object3d.visible = false; 
           
@@ -523,6 +548,9 @@ define([
 
         var found = false;
         var helperMotifs = this.offsetMotifsForViews(this.viewState);
+        this.editObjectsInScene('cellSubstracted', 'visibility', false);
+        this.editObjectsInScene('cellGradeLimited', 'visibility', false);
+
         if(this.solidVoidObject !== undefined){
           this.solidVoidObject.visible = true; 
           found = true;
@@ -538,18 +566,20 @@ define([
         }
          
         var geometry = new THREE.Geometry();  
-         
+
+        var globalG = new THREE.SphereGeometry(1, 32, 32);
+
+        i =0 ;
         while(i < this.actualAtoms.length ) {  
           this.actualAtoms[i].SolidVoid(this.actualAtoms[i].object3d.position);  
-          var mesh = this.actualAtoms[i].object3d.children[0].clone();
-          mesh.position.set( this.actualAtoms[i].object3d.position.x, this.actualAtoms[i].object3d.position.y, this.actualAtoms[i].object3d.position.z); 
-          mesh.updateMatrix();  
-         
-          geometry.merge( mesh.geometry, mesh.matrix );  
-
+          var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
+          mesh.scale.set(this.actualAtoms[i].getRadius(), this.actualAtoms[i].getRadius(), this.actualAtoms[i].getRadius());
+          mesh.position.set( this.actualAtoms[i].object3d.position.x, this.actualAtoms[i].object3d.position.y, this.actualAtoms[i].object3d.position.z);
+          mesh.updateMatrix();   
+          geometry.merge( mesh.geometry, mesh.matrix ); 
           i++; 
         } 
-        
+
         i=0;
 
         while(i < helperMotifs.length ) { 
@@ -565,7 +595,7 @@ define([
         var geom = THREE.CSG.fromCSG(geometryCSG);
         var finalGeom = assignUVs(geom);
    
-        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: '#ffffff' }) );
+        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: '#9A2EFE' }) );
         solidBox.name = 'solidvoid';
         this.solidVoidObject = solidBox;
         Explorer.add({'object3d' : solidBox}); 
@@ -585,6 +615,9 @@ define([
 
         var found = false, objectSolidVoid;
         helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
+        this.editObjectsInScene('cellSubstracted', 'visibility', false);
+        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+
         if(this.solidVoidObject !== undefined){ 
           this.solidVoidObject.visible = false; 
         } 

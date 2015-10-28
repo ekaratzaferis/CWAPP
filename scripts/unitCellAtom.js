@@ -217,7 +217,8 @@ define([
     if(gear === undefined){
       UnitCellExplorer.remove({'object3d':this.object3d});
     }
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(globGeometry, 32, 32), new THREE.MeshPhongMaterial() ); 
+    atomMesh.scale.set(this.radius, this.radius, this.radius); 
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);

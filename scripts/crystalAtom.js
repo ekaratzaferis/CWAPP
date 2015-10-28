@@ -137,10 +137,11 @@ define([
     if(gear === undefined){
       Explorer.remove({'object3d':this.object3d});
     }
-      
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(_this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+        
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(globGeometry, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
-    
+    atomMesh.scale.set(this.radius, this.radius, this.radius);
+
     var cube = THREE.CSG.toCSG(box); 
     cube = cube.inverse();
     var sphere = THREE.CSG.toCSG(atomMesh); 
