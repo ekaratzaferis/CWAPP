@@ -42,7 +42,7 @@ define([
     this.motifsAtoms = [];
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
-    this.viewState = 'Classic';
+    this.viewState = 'cellClassic';
     this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute', updated : false } ; 
     this.isEmpty = true ;
     this.latticeName = 'none';
@@ -66,9 +66,8 @@ define([
 
 
     // rendering mode
-    this.renderingMode = 'realistic'; // todo change that to realistic
-    this.cellHasChanged = false;
-
+    this.renderingMode = 'realistic'; // todo change that to realistic 
+    this.cellIsDirty = false;
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
   }; 
@@ -4449,6 +4448,7 @@ define([
   };
   Motifeditor.prototype.offsetMotifsForViews = function(mode, objName){
     var atoms = [];
+
     if(mode === 'cellClassic'){
       return atoms;
     }
@@ -4696,15 +4696,15 @@ define([
     var helperMotifs;
 
     if(this.viewState === 'cellSubstracted'){
-      helperMotifs = this.offsetMotifsForViews(this.viewState);
+      helperMotifs = this.offsetMotifsForViews(this.viewState); 
 
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
       this.editObjectsInScene('cellGradeLimited', 'visibility', false);
 
       var f = this.editObjectsInScene('cellSubstracted', 'visibility', true);
 
-      if(f === true && !(this.cellHasChanged)){ 
-         
+      if(f === true ){ 
+          
         while(i < this.unitCellAtoms.length ){ 
           this.unitCellAtoms[i].object3d.visible = false; 
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = true;  
@@ -4712,11 +4712,10 @@ define([
         }
         return;
       } 
-      else{ 
+      else{  
         while(i < this.unitCellAtoms.length ) {
           this.unitCellAtoms[i].object3d.visible = false; 
-          this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position, true); 
-      
+          this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position, true);  
           i++;
         } 
          
@@ -4789,6 +4788,7 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
     }
     else if(this.viewState === 'cellGradeLimited'){ 
+      
       helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
       this.editObjectsInScene('cellSubstracted', 'visibility', false);
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
@@ -4914,25 +4914,33 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellGradeLimited"); 
     }
     else if(this.viewState === 'cellClassic'){ 
+ 
+      if(this.cellIsDirty === true){
 
-      this.editObjectsInScene('cellSubstracted', 'visibility', false);
-      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
-  
-      while(i < this.unitCellAtoms.length ) { 
-        this.unitCellAtoms[i].object3d.visible = true;
-        if(false){
+        this.editObjectsInScene('cellSubstracted', 'remove', true);
+        this.editObjectsInScene('cellSolidVoid', 'remove', true);
+        this.editObjectsInScene('cellGradeLimited', 'remove', true);
+
+        while(i < this.unitCellAtoms.length ) { 
           this.unitCellAtoms[i].viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false};
+          this.unitCellAtoms[i].removesubtractedForCache();
         }
-       
-        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
-          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false; 
-          if(false){ 
-            this.unitCellAtoms[i].removesubtractedForCache();
-          } 
-        }
-        i++;
-      }   
+      }
+      else{
+        this.editObjectsInScene('cellSubstracted', 'visibility', false);
+        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+        this.editObjectsInScene('cellGradeLimited', 'visibility', false);
+        
+        while(i < this.unitCellAtoms.length ) { 
+          this.unitCellAtoms[i].object3d.visible = true; 
+         
+          if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+            this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;   
+          }
+          i++;
+        }      
+      }
+
 
       PubSub.publish(events.VIEW_STATE,"cellClassic");
     };

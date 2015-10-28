@@ -70,8 +70,8 @@ define([
 
     //view
     this.viewBox = [];
-    this.viewMode = 'Classic';
-    this.solidVoidObject ;
+    this.viewMode = 'crystalClassic'; 
+    this.crystalIsDirty = false;
 
     // visualization
     this.renderingMode = 'realistic';
@@ -123,7 +123,7 @@ define([
   };
   Lattice.prototype.offsetMotifsForViews = function(mode, objName){
     var atoms = [];
-    if(mode === 'cellClassic'){
+    if(mode === 'crystalClassic'){
       return atoms;
     }
     var i = 0, j = 0;
@@ -455,7 +455,7 @@ define([
     var finished = false, found = false;
     var scene = Explorer.getInstance().object3d;
     scene.traverse (function (object)
-    { 
+    {  
       if (object.name === name){
         
         found = true;
@@ -474,9 +474,7 @@ define([
      
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
-     
-    this.menu.resetProgressBar( 'Processing...'); 
-
+       
     /*
     if(this.viewMode !== 'Classic'){
       this.menu.setTabDisable({
@@ -511,57 +509,56 @@ define([
       if(this.viewMode === 'crystalSubstracted'){
         
         var helperMotifs = this.offsetMotifsForViews(this.viewMode);
-        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-        this.editObjectsInScene('cellGradeLimited', 'visibility', false); 
-        this.editObjectsInScene('cellSubstracted', 'visibility', true);
-        var enterViewmode = true; 
-        if(this.actualAtoms[0].viewModeBeen.SubtractedSolid === true ){
-          enterViewmode = false;
-        }
-        i = 0 ;
-        while(i < this.actualAtoms.length ) {
-          this.actualAtoms[i].object3d.visible = false; 
-          
-          if(enterViewmode === true){
-            this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);
-          } 
-          else{
-            this.actualAtoms[i].subtractedForGear.object3d.visible = true; 
+        this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
+        this.editObjectsInScene('crystalGradeLimited', 'visibility', false);  
+
+        var f = this.editObjectsInScene('crystalSubstracted', 'visibility', true);
+         
+        if(f === true){ 
+           
+          while(i < this.actualAtoms.length ){ 
+            this.actualAtoms[i].object3d.visible = false; 
+            this.actualAtoms[i].subtractedForCache.object3d.visible = true;  
+            i++;
           }
-          i++;
+          return;
         } 
+        else{ 
+          while(i < this.actualAtoms.length ) { 
+            this.actualAtoms[i].object3d.visible = false; 
+            this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true); 
+        
+            i++;
+          } 
+           
+          i =0;
 
-        i = 0;
-
-        while(i < helperMotifs.length ) { 
-          var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
-          mesh_.name = 'cellSubstracted'; 
-          scene.add(mesh_); 
-          i++;
-        } 
-
-        if(this.solidVoidObject !== undefined){ 
-          this.solidVoidObject.visible = false; 
+          while(i < helperMotifs.length ) { console.log(3);
+            var mesh_ = this.subtractedSolidView(box, helperMotifs[i]); 
+            mesh_.name = 'crystalSubstracted'; 
+            scene.add(mesh_); 
+            i++;
+          }  
         }
       }
       else if(this.viewMode === 'crystalSolidVoid'){   
 
-        var found = false;
-        var helperMotifs = this.offsetMotifsForViews(this.viewState);
-        this.editObjectsInScene('cellSubstracted', 'visibility', false);
-        this.editObjectsInScene('cellGradeLimited', 'visibility', false);
+        helperMotifs = this.offsetMotifsForViews(this.viewState);
 
-        if(this.solidVoidObject !== undefined){
-          this.solidVoidObject.visible = true; 
-          found = true;
-          this.objectSolidVoid.visible = true; //todo 2 idia
-          while(i < this.actualAtoms.length ) {  
-            this.actualAtoms[i].object3d.visible = false;  
-            if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
-              this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
-            }
-            i++; 
-          } 
+        this.editObjectsInScene('crystalSubstracted', 'visibility', false);
+        this.editObjectsInScene('crystalGradeLimited', 'visibility', false);
+
+        var f = this.editObjectsInScene('crystalSolidVoid', 'visibility', true);
+   
+        i = 0;
+        while(i < this.actualAtoms.length ) { 
+          this.actualAtoms[i].object3d.visible = false;     
+          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
+          }
+          i++; 
+        } 
+        if(f === true){  
           return;
         }
          
@@ -596,40 +593,27 @@ define([
         var finalGeom = assignUVs(geom);
    
         var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: '#9A2EFE' }) );
-        solidBox.name = 'solidvoid';
-        this.solidVoidObject = solidBox;
+        solidBox.name = 'crystalSolidVoid'; 
         Explorer.add({'object3d' : solidBox}); 
 
         i = 0;
 
         while(i < this.actualAtoms.length ) {   
           this.actualAtoms[i].object3d.visible = false;   
-          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
-            this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
+          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
           }
           i++; 
         } 
 
       }
       else if(this.viewMode === 'crystalGradeLimited'){ 
-
-        var found = false, objectSolidVoid;
-        helperMotifs = this.offsetMotifsForViews(this.viewState, 'cellGradeLimited');
-        this.editObjectsInScene('cellSubstracted', 'visibility', false);
-        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-
-        if(this.solidVoidObject !== undefined){ 
-          this.solidVoidObject.visible = false; 
-        } 
-
-        while(i < this.actualAtoms.length ) {   
-          this.actualAtoms[i].object3d.visible = true;  
-          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
-            this.actualAtoms[i].subtractedForGear.object3d.visible = false;  
-          }
-          i++; 
-        } 
-  
+ 
+        helperMotifs = this.offsetMotifsForViews(this.viewState, 'crystalGradeLimited');
+        this.editObjectsInScene('crystalSubstracted', 'visibility', false);
+        this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
+        
+        box.visible = false;
         scene.add(  box  );  
 
         var collidableMeshList = [] ;
@@ -645,6 +629,8 @@ define([
         i=0;
    
         while(i < this.actualAtoms.length ) {    
+
+          this.actualAtoms[i].object3d.visible = true;  
 
           // workaround for points that are exactly on the grade (faces, cell points)
           var smartOffset = centroid.clone().sub(this.actualAtoms[i].object3d.position.clone());
@@ -687,7 +673,10 @@ define([
               this.actualAtoms[i].object3d.visible = false ;
             }
           } 
-          this.actualAtoms[i].GradeLimited();
+          this.actualAtoms[i].GradeLimited(); 
+          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
+          }
           i++;   
         } 
 
@@ -744,37 +733,34 @@ define([
         Explorer.remove({'object3d' : box }); 
       }
       else if(this.viewMode === 'crystalClassic'){ 
-        var found = false, objectSolidVoid;
-    
-        var objectSolidVoid = scene.getObjectByName('solidvoid');
-        if(!_.isUndefined(objectSolidVoid)) {
-          found = true;
-          objectSolidVoid.visible = false;
-          if(arg.reset !== undefined){
-            if(this.solidVoidObject !== undefined){ 
-              this.solidVoidObject = undefined;
-            }
-            scene.remove(objectSolidVoid);
-          }
-        } 
 
-        while(i < this.actualAtoms.length ) { 
-          this.actualAtoms[i].object3d.visible = true;
-          if(arg.reset === true){
-            this.actualAtoms[i].viewModeBeen = {'Classic' : false, 'SubtractedSolid' : false, 'GradeLimited' : false, 'SolidVoid' : false};
+        if(this.crystalIsDirty === true){
+
+          this.editObjectsInScene('crystalSubstracted', 'remove', true);
+          this.editObjectsInScene('crystalSolidVoid', 'remove', true);
+          this.editObjectsInScene('crystalGradeLimited', 'remove', true);
+
+          while(i < this.actualAtoms.length ) { 
+            this.actualAtoms[i].viewModeBeen = {'crystalClassic' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalSolidVoid' : false};
+            this.actualAtoms[i].removesubtractedForCache();
           }
-          //this.actualAtoms[i].classicView(); 
-          if(this.actualAtoms[i].subtractedForGear.object3d !== undefined){
-            this.actualAtoms[i].subtractedForGear.object3d.visible = false; 
-            if(arg.reset === true){ 
-              this.actualAtoms[i].removeSubtractedForGear();
-            } 
-          }
-          i++;
-        }   
+        }
+        else{
+          this.editObjectsInScene('crystalSubstracted', 'visibility', false);
+          this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
+          this.editObjectsInScene('crystalGradeLimited', 'visibility', false);
+          
+          while(i < this.actualAtoms.length ) { 
+            this.actualAtoms[i].object3d.visible = true; 
+           
+            if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+              this.actualAtoms[i].subtractedForCache.object3d.visible = false;   
+            }
+            i++;
+          }      
+        }
       } 
-    } 
-    this.menu.progressBarFinish();   
+    }   
   };
   Lattice.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 

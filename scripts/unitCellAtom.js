@@ -212,12 +212,12 @@ define([
   };
   UnitCellAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this; 
-    this.viewModeBeen.SubtractedSolid = true;
+    this.viewModeBeen.cellSubstracted = true;
     
     if(gear === undefined){
       UnitCellExplorer.remove({'object3d':this.object3d});
     }
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(globGeometry, 32, 32), new THREE.MeshPhongMaterial() ); 
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() ); 
     atomMesh.scale.set(this.radius, this.radius, this.radius); 
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
@@ -244,6 +244,7 @@ define([
     this.helperPos.x = pos.x ;
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
+
     this.viewMode = 'cellSubstracted'; 
   };
   UnitCellAtom.prototype.removesubtractedForCache = function() {
@@ -256,11 +257,11 @@ define([
     this.helperPos.y = pos.y ;
     this.helperPos.z = pos.z ;
     this.viewMode = 'cellSolidVoid'; 
-    this.viewModeBeen.SolidVoid = true;
+    this.viewModeBeen.cellSolidVoid = true;
   };
   UnitCellAtom.prototype.GradeLimited = function() {
     this.viewMode = 'cellGradeLimited' ; 
-    this.viewModeBeen.GradeLimited = true;
+    this.viewModeBeen.cellGradeLimited = true;
   };
   UnitCellAtom.prototype.classicView = function() {
     var _this = this;

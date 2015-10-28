@@ -30,7 +30,7 @@ define([
     this.helperPos = {"x":0, "y":0, "z":0};
     this.elementName = elementName; 
     this.latticeIndex = latticeIndex; 
-    this.subtractedForGear = { 'object3d': undefined} ;  
+    this.subtractedForCache = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
     this.addMaterial(color, position, opacity, renderingMode,id) ; 
@@ -127,18 +127,18 @@ define([
   }; 
   CrystalAtom.prototype.GradeLimited = function() {
     this.viewMode = 'crystalGradeLimited' ; 
-    this.viewModeBeen.GradeLimited = true;
+    this.viewModeBeen.crystalGradeLimited = true;
   };
   CrystalAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this;  
 
-    this.viewModeBeen.SubtractedSolid = true;
+    this.viewModeBeen.crystalSubstracted = true;
 
     if(gear === undefined){
       Explorer.remove({'object3d':this.object3d});
     }
         
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(globGeometry, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     atomMesh.scale.set(this.radius, this.radius, this.radius);
 
@@ -152,8 +152,8 @@ define([
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
     
     if(gear !== undefined){
-      this.subtractedForGear.object3d  = sphereCut ;
-      Explorer.add(this.subtractedForGear);
+      this.subtractedForCache.object3d  = sphereCut ;
+      Explorer.add(this.subtractedForCache);
     }
     else{
       this.object3d = sphereCut; 
@@ -166,21 +166,20 @@ define([
 
     this.viewMode = 'crystalSubstracted';
   };
-  CrystalAtom.prototype.removeSubtractedForGear = function() {
-    Explorer.remove({'object3d' : this.subtractedForGear.object3d});  
-    this.subtractedForGear.object3d = undefined;
+  CrystalAtom.prototype.removesubtractedForCache = function() {
+    Explorer.remove({'object3d' : this.subtractedForCache.object3d});  
+    this.subtractedForCache.object3d = undefined;
   };
   CrystalAtom.prototype.SolidVoid = function( pos) {
     var _this = this;   
     this.helperPos.x = pos.x ;
     this.helperPos.y = pos.y ;
-    this.helperPos.z = pos.z ;
-    
+    this.helperPos.z = pos.z ; 
     this.viewMode = 'crystalSolidVoid'; 
-    this.viewModeBeen.SolidVoid = true; 
+    this.viewModeBeen.crystalSolidVoid = true; 
   };
   CrystalAtom.prototype.hideSubtracted = function(bool) {
-    this.subtractedForGear.object3d.visible = bool;
+    this.subtractedForCache.object3d.visible = bool;
   }; 
   CrystalAtom.prototype.classicView = function() {
     var _this = this;
@@ -188,7 +187,7 @@ define([
       this.viewMode = 'crystalClassic'; 
       return;
     }
-    var toDestroy = _this.object3d;
+    var toDestroy = this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
