@@ -32,7 +32,7 @@ define([
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
-
+    
     this.addMaterial(color, position, opacity, renderingMode) ;
      
   };
@@ -139,11 +139,11 @@ define([
     var _this = this ;
     var wireMat;
 
-    if(renderingMode === 'wireframe') {
-      wireMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
+    if(renderingMode === 'wireframe') { 
+      wireMat = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
     }
-    else if(renderingMode === 'realistic'){
+    else if(renderingMode === 'realistic'){  
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
     }
@@ -163,7 +163,7 @@ define([
       this.colorMaterial, 
       wireMat
     ];
-  
+    
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
@@ -327,7 +327,7 @@ define([
   }; 
   UnitCellAtom.prototype.changeColor = function(color, forTime, renderingMode) { 
     // to change : no need to change material, just change color
-    
+   
     if(this.renderingMode === 'wireframe'){
       return;
     }

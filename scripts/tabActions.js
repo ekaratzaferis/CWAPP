@@ -58,16 +58,18 @@ define([
       this.crystalScreenEvents.state = 'motifScreen';
  
     }
-    else if(tabId !== "motifLI" ){  
-      
-      if((this.lattice.viewMode !== 'Classic' || this.gearTour.state !== 5) && ( tabId === "latticeTab" || tabId === "publicTab")){
+    else if(tabId !== "motifLI" ){   
+      if(
+        (this.lattice.viewMode !== 'crystalClassic' || this.gearTour.state !== 5) && 
+        ( tabId === "latticeTab" || tabId === "publicTab")
+      ){
         return;
       } 
 
       if(tabId === "latticeTab"){
         this.lattice.updateLatticeUI(this.motifEditor.cellParameters);
       }
- 
+        console.log(99);
       this.dollEditor.setVisibility(true);
       this.hudCube.setVisibility(true);
       this.hudArrows.setVisibility(true);

@@ -69,6 +69,7 @@ define([
     this.renderingMode = 'realistic'; // todo change that to realistic 
     this.cellIsDirty = false;
     this.cachedAtoms = [];
+    this.cachedAtomsPositions = {};
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
   
   }; 
@@ -227,8 +228,6 @@ define([
         'atomColor' : params.atomColor
       }
     );  
-
-    this.offsetMotifsForViews();
     
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
@@ -1722,8 +1721,7 @@ define([
           this.initVolumeState(); 
           break; 
       }
-    } 
-    this.offsetMotifsForViews();
+    }  
   };
   Motifeditor.prototype.deleteTangentChild = function (id){
     // todo na feugei kai to tanngent icon apo to child kai na ginetai free
@@ -2523,6 +2521,76 @@ define([
               }  
             }
           };
+          // additional atoms for view modes 
+          var j = 0;
+            
+          for ( var i = 0; i < 4; i ++ ) { 
+            while(j <_this.cachedAtoms.length) {
+              if(  _this.cachedAtoms[j].temp === undefined ){
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_1') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_1'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_1'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_1'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_2') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_2'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_2'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_2'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_3') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_3'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_3'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_3'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_4') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_4'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_4'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_4'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_5') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_5'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_5'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_5'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_6') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["face"+i+'_6'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["face"+i+'_6'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["face"+i+'_6'].position.z + offset.z 
+                    );
+                  }
+                } 
+              }
+              j++;
+            }
+          }
           break;
         case "body":  
           _.times(2 , function(_x) {
@@ -2555,8 +2623,56 @@ define([
               } 
             } 
           }  
+
+          // additional atoms for view modes 
+          var j = 0;
+            
+          for ( var i = 0; i < 4; i ++ ) { 
+            while(j <_this.cachedAtoms.length) {
+              if(  _this.cachedAtoms[j].temp === undefined ){
+                if(_this.cachedAtoms[j].latticeIndex === ("body"+i+'_1') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["body"+i+'_1'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["body"+i+'_1'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["body"+i+'_1'].position.z + offset.z 
+                    );
+                  }
+                } 
+              }
+              j++;
+            } 
+          }
+
+          j = 0;
+          while(j <_this.cachedAtoms.length) {
+            if( _this.cachedAtoms[j].temp === undefined ){
+              if(_this.cachedAtoms[j].latticeIndex === ('body_1') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions['body_1'].position.x + offset.x , 
+                    _this.cachedAtomsPositions['body_1'].position.y + offset.y , 
+                    _this.cachedAtomsPositions['body_1'].position.z + offset.z 
+                  );
+                }
+              }
+              if(_this.cachedAtoms[j].latticeIndex === ('body_2') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions['body_2'].position.x + offset.x , 
+                    _this.cachedAtomsPositions['body_2'].position.y + offset.y , 
+                    _this.cachedAtomsPositions['body_2'].position.z + offset.z 
+                  );
+                }
+              }
+            }
+            j++;
+          }
           break;
-         case "base":   
+        case "base":   
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
               _.times(2 , function(_z) {
@@ -2598,9 +2714,39 @@ define([
             }  
           }
 
+          // additional atoms for view modes 
+          var j = 0;
+            
+          for ( var i = 0; i < 4; i ++ ) { 
+            while(j <_this.cachedAtoms.length) { console.log(11);
+              if(  _this.cachedAtoms[j].temp === undefined ){
+                if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_1') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["base"+i+'_1'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["base"+i+'_1'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["base"+i+'_1'].position.z + offset.z 
+                    );
+                  }
+                }
+                if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_2') ){
+                  var offset = _this.cachedAtoms[j].getUserOffset(); 
+                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                    _this.cachedAtoms[j].object3d.position.set( 
+                      _this.cachedAtomsPositions["base"+i+'_2'].position.x + offset.x , 
+                      _this.cachedAtomsPositions["base"+i+'_2'].position.y + offset.y , 
+                      _this.cachedAtomsPositions["base"+i+'_2'].position.z + offset.z 
+                    );
+                  }
+                } 
+              }
+              j++
+            }
+          }
           break;
       }
-    }
+    } 
     else{
       var a = _this.cellParameters.scaleZ ;
       var c = _this.cellParameters.scaleY ; 
@@ -3280,6 +3426,8 @@ define([
       this.newSphere.color,
       this.newSphere.ionicIndex
     );
+
+    this.createAdditionalAtoms();
   }; 
   Motifeditor.prototype.atomVisibility = function(arg){ 
     for (var i = this.unitCellAtoms.length - 1; i >= 0; i--) { 
@@ -3518,21 +3666,40 @@ define([
   }
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
-
+    var val = parseFloat(val);
+    
     _.each(_this.unitCellAtoms, function(a, k) {  
       if(a.getID() === id ){
         switch(axes) {
           case "x":  
-            a.object3d.position.x = parseFloat(val) ;
-            a.setUserOffset("x",parseFloat(val)); 
+            a.object3d.position.x = val ;
+            a.setUserOffset("x",val); 
             break;
           case "y": 
-            a.object3d.position.y = parseFloat(val)  ;
-            a.setUserOffset("y",parseFloat(val)); 
+            a.object3d.position.y = val  ;
+            a.setUserOffset("y",val); 
             break;
           case "z": 
-            a.object3d.position.z = parseFloat(val)  ;
-            a.setUserOffset("z",parseFloat(val)); 
+            a.object3d.position.z = val  ;
+            a.setUserOffset("z",val); 
+            break;
+        } 
+      }
+    });
+    _.each(_this.cachedAtoms, function(a, k) {  
+      if(a.getID() === id ){
+        switch(axes) {
+          case "x":  
+            a.object3d.position.x = val ;
+            a.setUserOffset("x",val); 
+            break;
+          case "y": 
+            a.object3d.position.y = val ;
+            a.setUserOffset("y",val); 
+            break;
+          case "z": 
+            a.object3d.position.z = val ;
+            a.setUserOffset("z",val); 
             break;
         } 
       }
@@ -4450,17 +4617,267 @@ define([
       }
     }
   };
-  Motifeditor.prototype.offsetMotifsForViews = function(recreate){
+  Motifeditor.prototype.offsetMotifsPointsScaling = function(recreate){ 
+
     var atoms = this.cachedAtoms;
     var objName = 'cellGradeLimited';
+      
+    var i = 0, j = 0;
+     
+    var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
+    var halfX = this.cellParameters.scaleX * 0.5;
+    var halfY = this.cellParameters.scaleY * 0.5;
+    var halfZ = this.cellParameters.scaleZ * 0.5;
+
+    var leftPos = new THREE.Vector3(0, halfY, halfZ);
+    var rightPos = new THREE.Vector3(this.cellParameters.scaleX, halfY, halfZ);
+    var frontPos = new THREE.Vector3(halfX, halfY, this.cellParameters.scaleZ);
+    var backPos = new THREE.Vector3(halfX, halfY, 0);
+    var upPos = new THREE.Vector3(halfX, this.cellParameters.scaleY, halfZ);
+    var downPos = new THREE.Vector3(halfX, 0, halfZ);
+
+    var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
+    
+    if(this.newSphere !== undefined){
+      this.motifsAtoms.push(this.newSphere);
+    }
+    if(this.latticeType === 'face'){ 
+      while(j <this.motifsAtoms.length) {
+
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z};
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var identity = this.motifsAtoms[j].identity; 
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+   
+
+        for ( i = 0; i < 4; i ++ ) {
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_1'] = {
+              "position" : new THREE.Vector3( leftPos.x, leftPos.y + arr[i].b * this.cellParameters.scaleY, leftPos.z + arr[i].a * this.cellParameters.scaleZ ), 
+              "latticeIndex" : "face"+i+'_1'
+            } ;  
+          }
+          else{
+            console.log('this.cachedAtomsPos ');
+            this.cachedAtomsPositions["face"+i+'_1'].position = new THREE.Vector3( leftPos.x, leftPos.y + arr[i].b * this.cellParameters.scaleY, leftPos.z + arr[i].a * this.cellParameters.scaleZ );  
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_2'] = {
+              "position" : new THREE.Vector3( rightPos.x, rightPos.y + arr[i].b * this.cellParameters.scaleY, rightPos.z + arr[i].a * this.cellParameters.scaleZ ), 
+              "latticeIndex" : "face"+i+'_2'
+            } ;
+          }
+          else{
+            this.cachedAtomsPositions["face"+i+'_2'].position = new THREE.Vector3( rightPos.x, rightPos.y + arr[i].b * this.cellParameters.scaleY, rightPos.z + arr[i].a * this.cellParameters.scaleZ );  
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_3'] = {
+              "position" : new THREE.Vector3(frontPos.x + arr[i].a * this.cellParameters.scaleX, frontPos.y + arr[i].b * this.cellParameters.scaleY, frontPos.z), 
+              "latticeIndex" : "face"+i+'_3'
+            } ;
+          }
+          else{
+            this.cachedAtomsPositions["face"+i+'_3'].position = new THREE.Vector3(frontPos.x + arr[i].a * this.cellParameters.scaleX, frontPos.y + arr[i].b * this.cellParameters.scaleY, frontPos.z);  
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_4'] = {
+              "position" : new THREE.Vector3(backPos.x + arr[i].a * this.cellParameters.scaleX, backPos.y + arr[i].b * this.cellParameters.scaleY,backPos.z), 
+              "latticeIndex" : "face"+i+'_4'
+            } ;
+          }
+          else{
+            this.cachedAtomsPositions["face"+i+'_4'].position = new THREE.Vector3(backPos.x + arr[i].a * this.cellParameters.scaleX, backPos.y + arr[i].b * this.cellParameters.scaleY,backPos.z);  
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_5'] = {
+              "position" : new THREE.Vector3( 
+                  upPos.x + arr[i].b * this.cellParameters.scaleX,
+                  upPos.y,
+                  upPos.z + arr[i].a * this.cellParameters.scaleZ
+                ), 
+              "latticeIndex" : "face"+i+'_5'
+            } ;
+          }
+          else{
+            this.cachedAtomsPositions["face"+i+'_5'].position = new THREE.Vector3( 
+              upPos.x + arr[i].b * this.cellParameters.scaleX,
+              upPos.y,
+              upPos.z + arr[i].a * this.cellParameters.scaleZ
+            );
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["face"+i+'_6'] = {
+              "position" : new THREE.Vector3( 
+                  downPos.x + arr[i].b * this.cellParameters.scaleX,
+                  downPos.y,
+                  downPos.z + arr[i].a * this.cellParameters.scaleZ
+                ), 
+              "latticeIndex" : "face"+i+'_6'
+            } ; 
+          }
+          else{
+            this.cachedAtomsPositions["face"+i+'_6'].position = new THREE.Vector3( 
+              downPos.x + arr[i].b * this.cellParameters.scaleX,
+              downPos.y,
+              downPos.z + arr[i].a * this.cellParameters.scaleZ
+            );
+          }
+            
+        }
+        j++;
+      } 
+    }
+    else if(this.latticeType === 'base'){
+      while(j <this.motifsAtoms.length) {
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var identity = this.motifsAtoms[j].identity; 
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+
+        for ( i = 0; i < 4; i ++ ) {
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["base"+i+'_1'] = {
+              "position" : new THREE.Vector3(
+                  upPos.x + arr[i].b * this.cellParameters.scaleX,
+                  upPos.y,
+                  upPos.z + arr[i].a * this.cellParameters.scaleZ
+                ),
+              "latticeIndex" : "base"+i+'_1'
+            } ; 
+          }
+          else{
+            this.cachedAtomsPositions["base"+i+'_1'].position = new THREE.Vector3(
+              upPos.x + arr[i].b * this.cellParameters.scaleX,
+              upPos.y,
+              upPos.z + arr[i].a * this.cellParameters.scaleZ
+            );
+          }
+          
+          if(recreate === true){
+            this.cachedAtomsPositions["base"+i+'_2'] = {
+              "position" : new THREE.Vector3(
+                  downPos.x + arr[i].b * this.cellParameters.scaleX,
+                  downPos.y,
+                  downPos.z + arr[i].a * this.cellParameters.scaleZ
+                ),
+              "latticeIndex" : "base"+i+'_2'
+            } ; 
+          }
+          else{
+            this.cachedAtomsPositions["base"+i+'_2'].position = new THREE.Vector3(
+              downPos.x + arr[i].b * this.cellParameters.scaleX,
+              downPos.y,
+              downPos.z + arr[i].a * this.cellParameters.scaleZ
+            );
+          } 
+        }
+        j++;
+      }
+    } 
+    else if(this.latticeType === 'body'){
+      while(j <this.motifsAtoms.length) {
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
+
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var identity = this.motifsAtoms[j].identity; 
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+        
+        for ( i = 0; i < 4; i ++ ) {
+          if(recreate === true){
+            this.cachedAtomsPositions["body"+i+'_1'] = {
+              "position" : new THREE.Vector3(
+                  centerPos.x,
+                  centerPos.y + arr[i].b * this.cellParameters.scaleY,
+                  centerPos.z + arr[i].a * this.cellParameters.scaleZ
+                ), 
+              "latticeIndex" : "body"+i+'_1'
+            } ; 
+          }
+          else{
+            this.cachedAtomsPositions["body"+i+'_1'].position = new THREE.Vector3(
+              centerPos.x,
+              centerPos.y + arr[i].b * this.cellParameters.scaleY,
+              centerPos.z + arr[i].a * this.cellParameters.scaleZ
+            );
+          }  
+        }
+
+        if(recreate === true){
+          this.cachedAtomsPositions['body_1'] = {
+            "position" : new THREE.Vector3(
+                centerPos.x -1*this.cellParameters.scaleX,
+                centerPos.y,
+                centerPos.z
+              ),
+            "latticeIndex" : 'body_1'
+          } ; 
+        }
+        else{
+          this.cachedAtomsPositions['body_1'].position = new THREE.Vector3(
+            centerPos.x -1*this.cellParameters.scaleX,
+            centerPos.y,
+            centerPos.z
+          );
+        } 
+
+        if(recreate === true){
+          this.cachedAtomsPositions['body_2'] = {
+            "position" : new THREE.Vector3(
+                centerPos.x +1*this.cellParameters.scaleX,
+                centerPos.y,
+                centerPos.z
+              ),
+            "latticeIndex" : 'body_2'
+          } ;
+        }
+        else{
+          this.cachedAtomsPositions['body_2'].position = new THREE.Vector3(
+            centerPos.x +1*this.cellParameters.scaleX,
+            centerPos.y,
+            centerPos.z
+          );
+        } 
+
+        j++;
+      }
+    }   
+    
+    if(this.newSphere !== undefined){
+      this.motifsAtoms.pop();
+    }
+  }; 
+  Motifeditor.prototype.createAdditionalAtoms = function(){
+    var atoms = this.cachedAtoms;
+    var objName = 'cellGradeLimited';
+     
     for (var d = atoms.length - 1; d >= 0; d--) { 
-      UnitCellExplorer.remove({'object3d' : atoms[d]}); 
+     // UnitCellExplorer.remove({'object3d' : atoms[d]}); 
     };
-    atoms.splice(0);
+    //atoms.splice(0);
 
     var i = 0, j = 0;
 
-    var globMat;
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
     var halfX = this.cellParameters.scaleX * 0.5;
     var halfY = this.cellParameters.scaleY * 0.5;
@@ -4481,172 +4898,321 @@ define([
 
     if(this.latticeType === 'face'){ 
       while(j <this.motifsAtoms.length) {
-        var p = this.motifsAtoms[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
-        }  
 
-        var radius = this.motifsAtoms[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
-         
-        for ( i = 0; i < 4; i ++ ) {
-          var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomLeft.name = objName;
-          replicaAtomLeft.position.set(p.x + leftPos.x,p.y + leftPos.y,p.z + leftPos.z); 
-          replicaAtomLeft.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomLeft.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
-          atoms.push(replicaAtomLeft);
-          
-          var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomRight.name = objName;
-          replicaAtomRight.position.set(p.x + rightPos.x,p.y + rightPos.y,p.z + rightPos.z);
-          replicaAtomRight.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomRight.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
-          atoms.push(replicaAtomRight);
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z};
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName;  
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+        var identity;
 
-          var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomFront.name = objName;
-          replicaAtomFront.position.set(p.x + frontPos.x,p.y + frontPos.y,p.z + frontPos.z);
-          replicaAtomFront.position.x += ( arr[i].a * this.cellParameters.scaleX );
-          replicaAtomFront.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
-          atoms.push(replicaAtomFront);
+        for ( i = 0; i < 4; i ++ ) { 
+          identity = "face"+i+'_1';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ), 
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
 
-          var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomBack.name = objName;
-          replicaAtomBack.position.set(p.x + backPos.x,p.y + backPos.y,p.z + backPos.z);
-          replicaAtomBack.position.x += ( arr[i].a * this.cellParameters.scaleX );
-          replicaAtomBack.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
-          atoms.push(replicaAtomBack);
+          identity = "face"+i+'_2';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ),  
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
 
-          var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomUp.name = objName;
-          replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
-          replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
-          atoms.push(replicaAtomUp);
+          identity = "face"+i+'_3';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ), 
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
 
-          var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomDown.name = objName;
-          replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
-          replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
-          atoms.push(replicaAtomDown);
+          identity = "face"+i+'_4';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ), 
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
 
+          identity = "face"+i+'_5';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ),  
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          ); 
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
+
+          identity = "face"+i+'_6';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ), 
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );  
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
         }
         j++;
       } 
     }
     else if(this.latticeType === 'base'){
       while(j <this.motifsAtoms.length) {
-        var p = this.motifsAtoms[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
-        }  
-
-        var radius = this.motifsAtoms[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
-
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName;  
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+        var identity;
+ 
         for ( i = 0; i < 4; i ++ ) {
-            
-          var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomUp.name = objName;
-          replicaAtomUp.position.set(p.x + upPos.x,p.y + upPos.y,p.z + upPos.z);
-          replicaAtomUp.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomUp.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
-          atoms.push(replicaAtomUp);
+          identity = "base"+i+'_1'; 
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ),  
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          ); 
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
 
-          var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
-          if(objName !== undefined) replicaAtomDown.name = objName;
-          replicaAtomDown.position.set(p.x + downPos.x,p.y + downPos.y,p.z + downPos.z);
-          replicaAtomDown.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomDown.position.x += ( arr[i].b * this.cellParameters.scaleX ); 
-          atoms.push(replicaAtomDown);
-
+          identity = "base"+i+'_2';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ),  
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          );   
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
         }
         j++;
       }
     } 
     else if(this.latticeType === 'body'){
       while(j <this.motifsAtoms.length) {
-        var p = this.motifsAtoms[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.motifsAtoms[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.motifsAtoms[j].color, transparent:true, opacity:this.motifsAtoms[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.motifsAtoms[j].color, transparent:true, opacity: this.motifsAtoms[j].opacity }) ; 
-        }  
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
 
-        var radius = this.motifsAtoms[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
-
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].id; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName; 
+        var identity ; 
+        var opacity = this.motifsAtoms[j].opacity; 
+        var renderingMode = this.renderingMode; 
+        
         for ( i = 0; i < 4; i ++ ) {
-            
-          var replicaAtomC = new THREE.Mesh( globalG, globMat ); 
-          if(replicaAtomC !== undefined) replicaAtomC.name = objName;
-          replicaAtomC.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
-          replicaAtomC.position.z += ( arr[i].a * this.cellParameters.scaleZ );
-          replicaAtomC.position.y += ( arr[i].b * this.cellParameters.scaleY ); 
-          atoms.push(replicaAtomC);
- 
-        }
-        var replicaAtomC3 = new THREE.Mesh( globalG, globMat ); 
-        if(objName !== undefined) replicaAtomC3.name = objName;
-        replicaAtomC3.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z);
-        replicaAtomC3.position.x += -1*this.cellParameters.scaleX ; 
-        atoms.push(replicaAtomC3);
-
-        var replicaAtomC4 = new THREE.Mesh( globalG, globMat ); 
-        if(objName !== undefined) replicaAtomC4.name = objName;
-        replicaAtomC4.position.set(p.x + centerPos.x,p.y + centerPos.y,p.z + centerPos.z); 
-        replicaAtomC4.position.x += 1*this.cellParameters.scaleX ; 
-        atoms.push(replicaAtomC4);
+          identity = "body"+i+'_1';
+          this.cachedAtoms.push(
+            new UnitCellAtom( 
+              new THREE.Vector3( 
+                p.x + this.cachedAtomsPositions[identity].position.x,
+                p.y + this.cachedAtomsPositions[identity].position.y,
+                p.z + this.cachedAtomsPositions[identity].position.z 
+              ),  
+              radius, 
+              color, 
+              undefined, 
+              elementName, 
+              id, 
+              identity,
+              opacity,
+              renderingMode
+            )
+          ); 
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+          this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z ); 
+        } 
         j++;
       }
+      identity = 'body_1';
+      this.cachedAtoms.push(
+        new UnitCellAtom( 
+          new THREE.Vector3( 
+            p.x + this.cachedAtomsPositions[identity].position.x,
+            p.y + this.cachedAtomsPositions[identity].position.y,
+            p.z + this.cachedAtomsPositions[identity].position.z 
+          ),  
+          radius, 
+          color, 
+          undefined, 
+          elementName, 
+          id, 
+          identity,
+          opacity,
+          renderingMode
+        )
+      );
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
+
+      identity = 'body_2';
+      this.cachedAtoms.push(
+        new UnitCellAtom( 
+          new THREE.Vector3( 
+            p.x + this.cachedAtomsPositions[identity].position.x,
+            p.y + this.cachedAtomsPositions[identity].position.y,
+            p.z + this.cachedAtomsPositions[identity].position.z 
+          ), 
+          radius, 
+          color, 
+          undefined, 
+          elementName, 
+          id, 
+          identity,
+          opacity,
+          renderingMode
+        )
+      ); 
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
+  
     } 
-    
+
+    /*
+    var matrix = transformationMatrix({alpha : this.cellParameters.alpha});  
+    _.each(atoms, function(atom) { 
+      atom.position.applyMatrix4(matrix);    
+    });  
+    var matrix = transformationMatrix({beta : this.cellParameters.beta});  
+    _.each(atoms, function(atom) { 
+      atom.position.applyMatrix4(matrix);    
+    }); 
+  
+    var matrix = transformationMatrix({gamma : this.cellParameters.gamma});  
+    _.each(atoms, function(atom) { 
+      atom.position.applyMatrix4(matrix);    
+    }); 
     if(this.newSphere !== undefined){
       this.motifsAtoms.pop();
-    }
-    if (this.cellParameters.alpha !== 90) {  
-      var matrix = transformationMatrix({alpha : this.cellParameters.alpha});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-    if (this.cellParameters.beta !== 90) {  
-      var matrix = transformationMatrix({beta : this.cellParameters.beta});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-    if (this.cellParameters.gamma !== 90) {  
-      var matrix = transformationMatrix({gamma : this.cellParameters.gamma});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-     
+    } 
+    */
     i=0;
-    while(i < atoms.length ){   
-      atoms[i].visible = false;
-      UnitCellExplorer.add({'object3d' : atoms[i]});  
+    while(i < this.cachedAtoms.length ){   
+      //atoms[i].visible = true; 
       i++;
-    }  
+    }    
+   
   }; 
   Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 
@@ -5541,6 +6107,7 @@ define([
 
           break; 
       } 
+      this.offsetMotifsPointsScaling(recreate); 
     }
   };  
   Motifeditor.prototype.initialCellPositions = function(latticeIndex){ 
@@ -5632,6 +6199,12 @@ define([
         argument[k] = operation(parseFloat(parameters[k]));
         matrix = transformationMatrix(argument); 
         _.each(_this.unitCellPositions, function(pos, reference) {
+          if(pos.position.applyMatrix4 === undefined){
+            pos.position = new THREE.Vector3(pos.position.x, pos.position.y, pos.position.z);
+          }  
+          pos.position.applyMatrix4(matrix); 
+        });
+        _.each(_this.cachedAtomsPositions, function(pos, reference) {
           if(pos.position.applyMatrix4 === undefined){
             pos.position = new THREE.Vector3(pos.position.x, pos.position.y, pos.position.z);
           }  

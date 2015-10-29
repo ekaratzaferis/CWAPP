@@ -3543,7 +3543,7 @@ define([
   };
   Lattice.prototype.updateDirectionList = function(millerParameters, oldId, action)  {
     var _this = this ; 
-      console.log(9);
+    
     if( oldId !== undefined){ 
       _.each(_this.directionalList, function(x, reference) {
         if(x.id === oldId) {
