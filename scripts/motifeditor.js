@@ -42,7 +42,7 @@ define([
     this.motifsAtoms = [];
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
-    this.viewState = 'cellClassic';
+    this.viewMode = 'cellClassic';
     this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute', updated : false } ; 
     this.isEmpty = true ;
     this.latticeName = 'none';
@@ -67,7 +67,7 @@ define([
 
     // rendering mode
     this.renderingMode = 'realistic'; // todo change that to realistic 
-    this.cellIsDirty = false;
+    this.cellNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
     this.cachedAtoms = [];
     this.cachedAtomsPositions = {};
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
@@ -147,7 +147,7 @@ define([
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
   };
-  Motifeditor.prototype.onViewStateChange = function(callback) {
+  Motifeditor.prototype.onviewModeChange = function(callback) {
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
@@ -311,7 +311,7 @@ define([
     var _this = this ;
     var idIs = _this.newSphere.getID();
     var tempObj = _this.newSphere ;  
-
+   
     this.newSphere = _.find(_this.motifsAtoms, function(atomSphere){ return atomSphere.object3d.id === objID; });  
     if(_.isUndefined(_this.newSphere) ) {
       this.newSphere = tempObj ; //in case he drags the this.newSphere already
@@ -1726,20 +1726,10 @@ define([
   Motifeditor.prototype.deleteTangentChild = function (id){
     // todo na feugei kai to tanngent icon apo to child kai na ginetai free
     _.each(this.motifsAtoms, function(atom, r) { 
-      if(atom.getID() == id) { 
+      if(atom.tangentParent == id) { 
 
         atom.tangentParent = undefined ;
-        
-        /* 
-        this.updateAtomList(
-          atom.object3d.position.clone(), 
-          atom.getID(), 
-          atom.getRadius(),  
-          atom.elementName,
-          'edit',
-          'bg-light-gray',
-          atom.tangentParent
-        );*/
+         
       }
     });   
   };
@@ -2004,12 +1994,12 @@ define([
   };    
   Motifeditor.prototype.rotateAroundAtom = function(_angle){
     var _this = this, colAtom; 
-   
+ 
     if(this.dragMode === false && this.globalTangency === true){
       for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
         var realDist = this.motifsAtoms[i].object3d.position.distanceTo(this.newSphere.object3d.position);
         var calcDist = this.motifsAtoms[i].getRadius() + this.newSphere.getRadius();
-        if(realDist<calcDist){
+        if((realDist<calcDist) && (this.motifsAtoms[i].getID() !== this.newSphere.getID())){ 
           colAtom = this.motifsAtoms[i];
         }
       };
@@ -2041,7 +2031,7 @@ define([
         var verticalSide = correctHypotenuse * Math.sin(angle * (Math.PI/180) );
         var horizontalSide = correctHypotenuse * Math.cos(angle * (Math.PI/180) );
         var position = new THREE.Vector3(stillPoint.x + horizontalSide, stillPoint.y + verticalSide, movingPoint.z );
-
+         
         this.newSphere.object3d.position.y = position.y ;  
         this.newSphere.object3d.position.x = position.x ;   
         this.translateCellAtoms("y",  position.y , this.newSphere.getID());
@@ -2412,6 +2402,11 @@ define([
     if(this.isEmpty) {
       return; 
     }
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true};; // for view modes
+    if(this.viewMode !== 'cellClassic'){
+      this.setCSGmode({mode : 'cellClassic'});
+    }
+    
 
     var dimensions; 
 
@@ -2436,7 +2431,7 @@ define([
     //edw paizei kapoio provlima me to oti vriskei collisions sunexeia me
 
     this.cellPointsWithScaling(dimensions, true, manual); // todo fix that true  
- 
+     
     if(_this.latticeName !== 'hexagonal'){
 
       this.cellPointsWithAngles();
@@ -2523,73 +2518,73 @@ define([
           };
           // additional atoms for view modes 
           var j = 0;
-            
-          for ( var i = 0; i < 4; i ++ ) { 
-            while(j <_this.cachedAtoms.length) {
-              if(  _this.cachedAtoms[j].temp === undefined ){
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_1') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_1'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_1'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_1'].position.z + offset.z 
-                    );
-                  }
+          
+          while(j <_this.cachedAtoms.length) {
+            for ( var i = 0; i < 4; i ++ ) {  
+               
+              if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_1') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_1'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_1'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_1'].position.z + offset.z 
+                  );
                 }
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_2') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_2'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_2'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_2'].position.z + offset.z 
-                    );
-                  }
-                }
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_3') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_3'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_3'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_3'].position.z + offset.z 
-                    );
-                  }
-                }
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_4') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_4'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_4'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_4'].position.z + offset.z 
-                    );
-                  }
-                }
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_5') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_5'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_5'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_5'].position.z + offset.z 
-                    );
-                  }
-                }
-                if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_6') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["face"+i+'_6'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["face"+i+'_6'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["face"+i+'_6'].position.z + offset.z 
-                    );
-                  }
-                } 
               }
-              j++;
+              else if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_2') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_2'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_2'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_2'].position.z + offset.z 
+                  );
+                }
+              }
+              else if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_3') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_3'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_3'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_3'].position.z + offset.z 
+                  );
+                }
+              }
+              else if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_4') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_4'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_4'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_4'].position.z + offset.z 
+                  );
+                }
+              }
+              else if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_5') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_5'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_5'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_5'].position.z + offset.z 
+                  );
+                }
+              }
+              else if(_this.cachedAtoms[j].latticeIndex === ("face"+i+'_6') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["face"+i+'_6'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["face"+i+'_6'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["face"+i+'_6'].position.z + offset.z 
+                  );
+                }
+              } 
+                
             }
+            j++;
           }
           break;
         case "body":  
@@ -2626,49 +2621,42 @@ define([
 
           // additional atoms for view modes 
           var j = 0;
-            
-          for ( var i = 0; i < 4; i ++ ) { 
-            while(j <_this.cachedAtoms.length) {
-              if(  _this.cachedAtoms[j].temp === undefined ){
-                if(_this.cachedAtoms[j].latticeIndex === ("body"+i+'_1') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["body"+i+'_1'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["body"+i+'_1'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["body"+i+'_1'].position.z + offset.z 
-                    );
-                  }
-                } 
-              }
-              j++;
-            } 
-          }
-
-          j = 0;
+          
           while(j <_this.cachedAtoms.length) {
-            if( _this.cachedAtoms[j].temp === undefined ){
-              if(_this.cachedAtoms[j].latticeIndex === ('body_1') ){
+            for ( var i = 0; i < 4; i ++ ) {   
+              if(_this.cachedAtoms[j].latticeIndex === ("body"+i+'_1') ){
                 var offset = _this.cachedAtoms[j].getUserOffset(); 
                 if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
                   _this.cachedAtoms[j].object3d.position.set( 
-                    _this.cachedAtomsPositions['body_1'].position.x + offset.x , 
-                    _this.cachedAtomsPositions['body_1'].position.y + offset.y , 
-                    _this.cachedAtomsPositions['body_1'].position.z + offset.z 
+                    _this.cachedAtomsPositions["body"+i+'_1'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["body"+i+'_1'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["body"+i+'_1'].position.z + offset.z 
                   );
                 }
-              }
-              if(_this.cachedAtoms[j].latticeIndex === ('body_2') ){
-                var offset = _this.cachedAtoms[j].getUserOffset(); 
-                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                  _this.cachedAtoms[j].object3d.position.set( 
-                    _this.cachedAtomsPositions['body_2'].position.x + offset.x , 
-                    _this.cachedAtomsPositions['body_2'].position.y + offset.y , 
-                    _this.cachedAtomsPositions['body_2'].position.z + offset.z 
-                  );
-                }
+              } 
+            }  
+            
+            if(_this.cachedAtoms[j].latticeIndex === ('body_1') ){
+              var offset = _this.cachedAtoms[j].getUserOffset(); 
+              if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                _this.cachedAtoms[j].object3d.position.set( 
+                  _this.cachedAtomsPositions['body_1'].position.x + offset.x , 
+                  _this.cachedAtomsPositions['body_1'].position.y + offset.y , 
+                  _this.cachedAtomsPositions['body_1'].position.z + offset.z 
+                );
               }
             }
+            if(_this.cachedAtoms[j].latticeIndex === ('body_2') ){
+              var offset = _this.cachedAtoms[j].getUserOffset(); 
+              if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                _this.cachedAtoms[j].object3d.position.set( 
+                  _this.cachedAtomsPositions['body_2'].position.x + offset.x , 
+                  _this.cachedAtomsPositions['body_2'].position.y + offset.y , 
+                  _this.cachedAtomsPositions['body_2'].position.z + offset.z 
+                );
+              }
+            }
+             
             j++;
           }
           break;
@@ -2716,33 +2704,31 @@ define([
 
           // additional atoms for view modes 
           var j = 0;
-            
-          for ( var i = 0; i < 4; i ++ ) { 
-            while(j <_this.cachedAtoms.length) { console.log(11);
-              if(  _this.cachedAtoms[j].temp === undefined ){
-                if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_1') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["base"+i+'_1'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["base"+i+'_1'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["base"+i+'_1'].position.z + offset.z 
-                    );
-                  }
+ 
+          while(j <_this.cachedAtoms.length) { 
+            for ( var i = 0; i < 4; i ++ ) {  
+              if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_1') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["base"+i+'_1'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["base"+i+'_1'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["base"+i+'_1'].position.z + offset.z 
+                  );
                 }
-                if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_2') ){
-                  var offset = _this.cachedAtoms[j].getUserOffset(); 
-                  if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
-                    _this.cachedAtoms[j].object3d.position.set( 
-                      _this.cachedAtomsPositions["base"+i+'_2'].position.x + offset.x , 
-                      _this.cachedAtomsPositions["base"+i+'_2'].position.y + offset.y , 
-                      _this.cachedAtomsPositions["base"+i+'_2'].position.z + offset.z 
-                    );
-                  }
-                } 
               }
-              j++
+              else if(_this.cachedAtoms[j].latticeIndex === ("base"+i+'_2') ){
+                var offset = _this.cachedAtoms[j].getUserOffset(); 
+                if(!_.isUndefined(_this.cachedAtoms[j].object3d)){ 
+                  _this.cachedAtoms[j].object3d.position.set( 
+                    _this.cachedAtomsPositions["base"+i+'_2'].position.x + offset.x , 
+                    _this.cachedAtomsPositions["base"+i+'_2'].position.y + offset.y , 
+                    _this.cachedAtomsPositions["base"+i+'_2'].position.z + offset.z 
+                  );
+                }
+              }  
             }
+            j++;
           }
           break;
       }
@@ -3667,7 +3653,7 @@ define([
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
     var val = parseFloat(val);
-    
+
     _.each(_this.unitCellAtoms, function(a, k) {  
       if(a.getID() === id ){
         switch(axes) {
@@ -3686,8 +3672,10 @@ define([
         } 
       }
     });
-    _.each(_this.cachedAtoms, function(a, k) {  
-      if(a.getID() === id ){
+  
+    _.each(_this.cachedAtoms, function(a, k) { 
+      if(a.getID() === id ){  
+
         switch(axes) {
           case "x":  
             a.object3d.position.x = val ;
@@ -4637,24 +4625,10 @@ define([
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
+     
+
+    if(this.latticeType === 'face'){  
     
-    if(this.newSphere !== undefined){
-      this.motifsAtoms.push(this.newSphere);
-    }
-    if(this.latticeType === 'face'){ 
-      while(j <this.motifsAtoms.length) {
-
-        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z};
-        var radius = this.motifsAtoms[j].radius; 
-        var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var identity = this.motifsAtoms[j].identity; 
-        var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
-   
-
         for ( i = 0; i < 4; i ++ ) {
           if(recreate === true){
             this.cachedAtomsPositions["face"+i+'_1'] = {
@@ -4662,8 +4636,7 @@ define([
               "latticeIndex" : "face"+i+'_1'
             } ;  
           }
-          else{
-            console.log('this.cachedAtomsPos ');
+          else{ 
             this.cachedAtomsPositions["face"+i+'_1'].position = new THREE.Vector3( leftPos.x, leftPos.y + arr[i].b * this.cellParameters.scaleY, leftPos.z + arr[i].a * this.cellParameters.scaleZ );  
           }
           
@@ -4734,21 +4707,9 @@ define([
           }
             
         }
-        j++;
-      } 
+         
     }
     else if(this.latticeType === 'base'){
-      while(j <this.motifsAtoms.length) {
-        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
-        var radius = this.motifsAtoms[j].radius; 
-        var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var identity = this.motifsAtoms[j].identity; 
-        var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
-
         for ( i = 0; i < 4; i ++ ) {
           
           if(recreate === true){
@@ -4786,23 +4747,9 @@ define([
               downPos.z + arr[i].a * this.cellParameters.scaleZ
             );
           } 
-        }
-        j++;
-      }
+        } 
     } 
-    else if(this.latticeType === 'body'){
-      while(j <this.motifsAtoms.length) {
-        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
-
-        var radius = this.motifsAtoms[j].radius; 
-        var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var identity = this.motifsAtoms[j].identity; 
-        var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
-        
+    else if(this.latticeType === 'body'){ 
         for ( i = 0; i < 4; i ++ ) {
           if(recreate === true){
             this.cachedAtomsPositions["body"+i+'_1'] = {
@@ -4858,14 +4805,9 @@ define([
             centerPos.z
           );
         } 
-
-        j++;
-      }
+ 
     }   
-    
-    if(this.newSphere !== undefined){
-      this.motifsAtoms.pop();
-    }
+     
   }; 
   Motifeditor.prototype.createAdditionalAtoms = function(){
     var atoms = this.cachedAtoms;
@@ -4895,14 +4837,14 @@ define([
     if(this.newSphere !== undefined){
       this.motifsAtoms.push(this.newSphere);
     }
-
+     
     if(this.latticeType === 'face'){ 
       while(j <this.motifsAtoms.length) {
 
         var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z};
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
+        var id = this.motifsAtoms[j].myID; 
         var elementName = this.motifsAtoms[j].elementName; 
         var elementName = this.motifsAtoms[j].elementName;  
         var opacity = this.motifsAtoms[j].opacity; 
@@ -5050,7 +4992,7 @@ define([
         var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z}; 
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
+        var id = this.motifsAtoms[j].myID; 
         var elementName = this.motifsAtoms[j].elementName; 
         var elementName = this.motifsAtoms[j].elementName;  
         var opacity = this.motifsAtoms[j].opacity; 
@@ -5111,7 +5053,7 @@ define([
 
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
-        var id = this.motifsAtoms[j].id; 
+        var id = this.motifsAtoms[j].myID; 
         var elementName = this.motifsAtoms[j].elementName; 
         var elementName = this.motifsAtoms[j].elementName; 
         var identity ; 
@@ -5188,7 +5130,9 @@ define([
       this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
   
     } 
-
+    if(this.newSphere !== undefined){
+      this.motifsAtoms.pop();
+    }
     /*
     var matrix = transformationMatrix({alpha : this.cellParameters.alpha});  
     _.each(atoms, function(atom) { 
@@ -5216,7 +5160,7 @@ define([
   }; 
   Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 
- 
+    
     var cube = THREE.CSG.toCSG(box);
     cube = cube.inverse();
     var sphere = THREE.CSG.toCSG(mesh);
@@ -5253,53 +5197,52 @@ define([
   Motifeditor.prototype.setCSGmode = function(arg){ 
     var _this = this, i = 0;
      
-    this.viewState = arg.mode;
+    this.viewMode = arg.mode;
  
     var g = this.customBox(this.unitCellPositions, this.latticeName);
 
     var box = new THREE.Mesh( g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, color: "#FF0000"}) );
     var scene = UnitCellExplorer.getInstance().object3d;
     
-    if(this.viewState === 'cellSubstracted'){ 
+    if(this.viewMode === 'cellSubstracted'){ 
 
-      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false); 
 
-      var f = this.editObjectsInScene('cellSubstracted', 'visibility', true);
-
-      if(f === true ){ 
-          
+      if(this.cellNeedsRecalculation.cellSubstracted === false && this.unitCellAtoms[0].subtractedForCache.object3d !== undefined){
         while(i < this.unitCellAtoms.length ){ 
           this.unitCellAtoms[i].object3d.visible = false; 
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = true;  
           i++;
         }
-        return;
-      } 
-      else{  
+
+        i =0;
+        while(i < this.cachedAtoms.length ){ 
+          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].subtractedForCache.object3d.visible = true;  
+          i++;
+        }
+      }
+      else{
+        this.cellNeedsRecalculation.cellSubstracted = false;
         while(i < this.unitCellAtoms.length ) {
           this.unitCellAtoms[i].object3d.visible = false; 
           this.unitCellAtoms[i].subtractedSolidView(box, this.unitCellAtoms[i].object3d.position, true);  
           i++;
         } 
          
-        i =0;
+        i = 0;
 
-        while(i < this.cachedAtoms.length ) { 
-          var mesh_ = this.subtractedSolidView(box, this.cachedAtoms[i]); 
-          mesh_.name = 'cellSubstracted'; 
-          scene.add(mesh_); 
+        while(i < this.cachedAtoms.length ) {     
+          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].subtractedSolidView(box, this.cachedAtoms[i].object3d.position, true);
           i++;
         } 
       }
-       
+ 
       PubSub.publish(events.VIEW_STATE,"cellSubstracted");  
     }
-    else if(this.viewState === 'cellSolidVoid'){   
-
-      this.editObjectsInScene('cellSubstracted', 'visibility', false);
-      this.editObjectsInScene('cellGradeLimited', 'visibility', false);
-
+    else if(this.viewMode === 'cellSolidVoid'){   
+  
       var f = this.editObjectsInScene('cellSolidVoid', 'visibility', true);
  
       i = 0;
@@ -5309,10 +5252,22 @@ define([
           this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
         }
         i++; 
-      } 
-      if(f === true){  
-        return;
       }
+
+      i = 0;
+      while(i < this.cachedAtoms.length ) { 
+        this.cachedAtoms[i].object3d.visible = false;     
+        if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+          this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
+        }
+        i++; 
+      }
+ 
+      if(this.cellNeedsRecalculation.cellSolidVoid === false && f === true){
+         return;
+      }
+      this.cellNeedsRecalculation.cellSolidVoid = false;
+      
       var geometry = new THREE.Geometry(); 
 
       i = 0;
@@ -5330,12 +5285,17 @@ define([
       } 
 
       i=0;
-
+  
       while(i < this.cachedAtoms.length ) { 
-        this.cachedAtoms[i].updateMatrix();   
-        geometry.merge( this.cachedAtoms[i].geometry, this.cachedAtoms[i].matrix );
-        i++; 
+        this.cachedAtoms[i].SolidVoid(this.cachedAtoms[i].object3d.position);  
+        var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
+        mesh.scale.set(this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius());
+        mesh.position.set( this.cachedAtoms[i].object3d.position.x, this.cachedAtoms[i].object3d.position.y, this.cachedAtoms[i].object3d.position.z);
+        mesh.updateMatrix();   
+        geometry.merge( mesh.geometry, mesh.matrix ); 
+        i++;  
       } 
+
       var cube = THREE.CSG.toCSG(box); 
       cube = cube.inverse();
       var spheres = THREE.CSG.toCSG(geometry);
@@ -5344,15 +5304,27 @@ define([
 
       var geom = THREE.CSG.fromCSG(geometryCSG);
       var finalGeom = assignUVs(geom);
-     
-      var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: "#9A2EFE" }) );
+      
+      var opacity = 0.5;
+
+      for (var i = this.motifsAtoms.length - 1; i >= 0; i--) {
+        if(this.motifsAtoms[i].opacity === 1 ){
+          opacity = 1;
+        }
+      };
+      if(this.newSphere !== undefined && this.newSphere.opacity === 1){
+        opacity = 1;
+      }
+
+      var material = this.createMaterial("#9A2EFE", opacity);
+
+      var solidBox = new THREE.Mesh( finalGeom, material );
       solidBox.name = 'cellSolidVoid';
       UnitCellExplorer.add({'object3d' : solidBox}); 
       PubSub.publish(events.VIEW_STATE,"cellSolidVoid"); 
     }
-    else if(this.viewState === 'cellGradeLimited'){ 
- 
-      this.editObjectsInScene('cellSubstracted', 'visibility', false);
+    else if(this.viewMode === 'cellGradeLimited'){ 
+  
       this.editObjectsInScene('cellSolidVoid', 'visibility', false);
 
       var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
@@ -5371,7 +5343,9 @@ define([
       collidableMeshList.push(box);
         
       i=0;
-        
+    
+      var dir = new THREE.Vector3(1,1000000,1); 
+
       while(i < this.unitCellAtoms.length ) {    
          
         this.unitCellAtoms[i].object3d.visible = true;  
@@ -5382,7 +5356,7 @@ define([
         var originPointF = this.unitCellAtoms[i].object3d.position.clone().add(smartOffset);
         //
 
-        var dir = new THREE.Vector3(1,1000000,1);  
+         
         var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
  
@@ -5426,48 +5400,48 @@ define([
 
       while(i < this.cachedAtoms.length ) { 
          
+        this.cachedAtoms[i].object3d.visible = true;  
+           
         // workaround for points that are exactly on the grade (faces, cell points)
-        var smartOffset = centroid.clone().sub(this.cachedAtoms[i].position.clone());
+        var smartOffset = centroid.clone().sub(this.cachedAtoms[i].object3d.position.clone());
         smartOffset.setLength(0.01);
-        var originPointF = this.cachedAtoms[i].position.clone().add(smartOffset);
+        var originPointF = this.cachedAtoms[i].object3d.position.clone().add(smartOffset);
         //
- 
-        var dir = new THREE.Vector3(1,1000000,1);  
+
+         
         var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
-  
+ 
         var touches = true ;
-        var radius = this.cachedAtoms[i].geometry.boundingSphere.radius ; 
-       
+        var radius = this.cachedAtoms[i].getRadius() ; 
+
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
   
-          var vertexIndex = this.cachedAtoms[i].geometry.vertices.length-1;
-          var atomCentre = this.cachedAtoms[i].position.clone();
+          var vertexIndex = this.cachedAtoms[i].object3d.children[0].geometry.vertices.length-1;
+          var atomCentre = this.cachedAtoms[i].object3d.position.clone();
 
           while( vertexIndex >= 0 )
           {     
-            var localVertex = this.cachedAtoms[i].geometry.vertices[vertexIndex].clone();
-            var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].matrixWorld);
+            var localVertex = this.cachedAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].object3d.matrixWorld);
             var directionVector = globalVertex.sub( originPointF );     
             
             var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
             
-            var collisionResults = ray.intersectObjects( collidableMeshList ); 
+            var collisionResults = ray.intersectObjects( collidableMeshList );
+               
             if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
               vertexIndex = -2;   
             }
             vertexIndex--;
-            if(vertexIndex === -1) {
-              touches = false;
-            }
+            if(vertexIndex === -1) touches = false;
           }  
-
-          if(touches === true) {  
-            this.cachedAtoms[i].visible = true;
+          if(!touches) {
+            this.cachedAtoms[i].object3d.visible = false ;
           }
         }
         else{  
-          this.cachedAtoms[i].visible = true;
+          this.cachedAtoms[i].object3d.visible = true;
         }
         i++;
       } 
@@ -5475,39 +5449,53 @@ define([
 
       PubSub.publish(events.VIEW_STATE,"cellGradeLimited"); 
     }
-    else if(this.viewState === 'cellClassic'){ 
- 
-      if(this.cellIsDirty === true){
-
-        this.editObjectsInScene('cellSubstracted', 'remove', true);
-        this.editObjectsInScene('cellSolidVoid', 'remove', true);
-        this.editObjectsInScene('cellGradeLimited', 'remove', true);
-
-        while(i < this.unitCellAtoms.length ) { 
-          this.unitCellAtoms[i].viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false};
-          this.unitCellAtoms[i].removesubtractedForCache();
+    else if(this.viewMode === 'cellClassic'){ 
+  
+      while(i < this.unitCellAtoms.length ){ 
+        this.unitCellAtoms[i].object3d.visible = true; 
+        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
         }
-      }
-      else{
-        this.editObjectsInScene('cellSubstracted', 'visibility', false);
-        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
-        this.editObjectsInScene('cellGradeLimited', 'visibility', false);
         
-        while(i < this.unitCellAtoms.length ) { 
-          this.unitCellAtoms[i].object3d.visible = true; 
-         
-          if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
-            this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;   
-          }
-          i++;
-        }      
+        i++;
       }
 
+      i =0;
+      while(i < this.cachedAtoms.length ){ 
+        this.cachedAtoms[i].object3d.visible = false; 
+        if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+          this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
+        }  
+        i++;
+      }
+      
+      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
 
       PubSub.publish(events.VIEW_STATE,"cellClassic");
     };
   };
+  Motifeditor.prototype.createMaterial = function(color, opacity){
+    var material; 
 
+    if(this.renderingMode === 'wireframe') { 
+      material = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
+         
+    }
+    else if(this.renderingMode === 'realistic'){  
+      material = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(this.renderingMode === 'flat'){
+      material = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(this.renderingMode === 'toon'){ 
+      var phongMaterial = createShaderMaterial("phongDiffuse");
+      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color)); 
+ 
+      material = phongMaterial;
+    } 
+
+    return material;
+  }
   function assignUVs( geometry ){ 
      
     geometry.computeBoundingBox();
@@ -5728,7 +5716,7 @@ define([
 
   };
   Motifeditor.prototype.removeFromUnitCell = function( id ){  //
-    var _this = this, pos = [];  
+    var _this = this, pos = [], pos2 = [];  
 
     for (var i = 0; i<this.unitCellAtoms.length; i++) {
       if(this.unitCellAtoms[i].getID() === id ){
@@ -5737,9 +5725,18 @@ define([
       } 
     } 
     for (var i = pos.length - 1; i>= 0; i--) {
-      this.unitCellAtoms.splice(pos[i],1);;
+      this.unitCellAtoms.splice(pos[i],1);
     }   
- 
+
+    for (var i = 0; i<this.cachedAtoms.length; i++) {
+      if(this.cachedAtoms[i].getID() === id ){ 
+        this.cachedAtoms[i].destroy(); 
+        pos2.push(i); 
+      } 
+    } 
+    for (var i = pos2.length - 1; i>= 0; i--) { 
+      this.cachedAtoms.splice(pos2[i],1);
+    }     
   };  
 
   Motifeditor.prototype.colorUnitCellAtoms = function(id, color){   
@@ -6246,6 +6243,93 @@ define([
     uuid++
     return uuid;
   }
+  THREE.ShaderTypes = { 
+    'phongDiffuse' : {
 
+        uniforms: {
+
+            "uDirLightPos": { type: "v3", value: new THREE.Vector3() },
+            "uDirLightColor": { type: "c", value: new THREE.Color( 0xffffff ) },
+
+            "uMaterialColor":  { type: "c", value: new THREE.Color( 0xffffff ) },
+
+            uKd: {
+                type: "f",
+                value: 0.7
+            },
+            uBorder: {
+                type: "f",
+                value: 0.4
+            }
+        },
+
+        vertexShader: [
+
+            "varying vec3 vNormal;",
+            "varying vec3 vViewPosition;",
+
+            "void main() {",
+
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+                "vNormal = normalize( normalMatrix * normal );",
+                "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+                "vViewPosition = -mvPosition.xyz;",
+
+            "}"
+
+        ].join("\n"),
+
+        fragmentShader: [
+
+            "uniform vec3 uMaterialColor;",
+
+            "uniform vec3 uDirLightPos;",
+            "uniform vec3 uDirLightColor;",
+
+            "uniform float uKd;",
+            "uniform float uBorder;",
+
+            "varying vec3 vNormal;",
+            "varying vec3 vViewPosition;",
+
+            "void main() {",
+
+                // compute direction to light
+                "vec4 lDirection = viewMatrix * vec4( uDirLightPos, 0.0 );",
+                "vec3 lVector = normalize( lDirection.xyz );",
+
+                // diffuse: N * L. Normal must be normalized, since it's interpolated.
+                "vec3 normal = normalize( vNormal );",
+                //was: "float diffuse = max( dot( normal, lVector ), 0.0);",
+                // solution
+                "float diffuse = dot( normal, lVector );",
+                "if ( diffuse > 0.6 ) { diffuse = 1.0; }",
+                "else if ( diffuse > -0.2 ) { diffuse = 0.7; }",
+                "else { diffuse = 0.3; }",
+
+                "gl_FragColor = vec4( uKd * uMaterialColor * uDirLightColor * diffuse, 1.0 );",
+
+            "}"
+
+        ].join("\n") 
+    } 
+  };
+  function createShaderMaterial(id) {
+
+      var shader = THREE.ShaderTypes[id];
+
+      var u = THREE.UniformsUtils.clone(shader.uniforms);
+
+      var vs = shader.vertexShader;
+      var fs = shader.fragmentShader;
+
+      var material = new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs });
+
+      material.uniforms.uDirLightPos.value = new THREE.Vector3(300, 300, 60);
+      material.uniforms.uDirLightColor.value = new THREE.Color( 0xFFFFFF );
+      
+      return material;
+
+  };
   return Motifeditor;
 });

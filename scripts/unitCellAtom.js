@@ -32,7 +32,7 @@ define([
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
-    
+
     this.addMaterial(color, position, opacity, renderingMode) ;
      
   };
@@ -165,6 +165,11 @@ define([
     ];
     
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
+
+    if(this.tangency === undefined){
+      sphere.visible = false;
+    }
+
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true;  
@@ -217,6 +222,7 @@ define([
     if(gear === undefined){
       UnitCellExplorer.remove({'object3d':this.object3d});
     }
+
     var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );  
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
@@ -227,7 +233,7 @@ define([
     var geom = THREE.CSG.fromCSG(geometry);
     var finalGeom = assignUVs(geom);
     
-    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [this.colorMaterial ]); 
+    var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [this.object3d.children[0].material.clone(), this.object3d.children[1].material.clone()]); 
     sphereCut.children[0].receiveShadow = true; 
     sphereCut.children[0].castShadow = true; 
  
@@ -327,7 +333,7 @@ define([
   }; 
   UnitCellAtom.prototype.changeColor = function(color, forTime, renderingMode) { 
     // to change : no need to change material, just change color
-   
+    return;
     if(this.renderingMode === 'wireframe'){
       return;
     }
