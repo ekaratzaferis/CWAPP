@@ -2402,11 +2402,6 @@ define([
     if(this.isEmpty) {
       return; 
     }
-    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true};; // for view modes
-    if(this.viewMode !== 'cellClassic'){
-      this.setCSGmode({mode : 'cellClassic'});
-    }
-    
 
     var dimensions; 
 
@@ -2788,7 +2783,12 @@ define([
         });
       });
     } 
- 
+    
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
+    if(this.viewMode !== 'cellClassic' ){
+      this.setCSGmode({mode : 'cellClassic'});
+    } 
+
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  
@@ -5751,6 +5751,10 @@ define([
         this.cachedAtoms[i].setMaterial(color, this.renderingMode);
       }
     }
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
+    if(this.viewMode !== 'cellClassic' ){
+      this.setCSGmode({mode : 'cellClassic'});
+    }
   }; 
   Motifeditor.prototype.unitCellAtomsWireframe = function(id, bool){   
     var _this = this; 
@@ -5763,6 +5767,10 @@ define([
       if(this.cachedAtoms[i].myID === id ){ 
         this.cachedAtoms[i].wireframeMat(bool);
       }
+    }
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
+    if(this.viewMode !== 'cellClassic' ){
+      this.setCSGmode({mode : 'cellClassic'});
     }
   };
   Motifeditor.prototype.unitCellAtomsTexture = function(id, texture){   
@@ -5779,6 +5787,15 @@ define([
       if(this.unitCellAtoms[i].myID === id ){
         this.unitCellAtoms[i].setOpacity(opacity, this.renderingMode);
       }
+    }
+    for (var i = 0; i<this.cachedAtoms.length; i++) { 
+      if(this.cachedAtoms[i].myID === id ){
+        this.cachedAtoms[i].setOpacity(opacity, this.renderingMode);
+      }
+    }
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
+    if(this.viewMode !== 'cellClassic'){
+      this.setCSGmode({mode : 'cellClassic'});
     }
   }; 
   Motifeditor.prototype.checkIfTangent = function(atom1, atom2){
