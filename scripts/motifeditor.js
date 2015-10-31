@@ -5746,12 +5746,22 @@ define([
         this.unitCellAtoms[i].setMaterial(color, this.renderingMode);
       }
     }
+    for (var i = 0; i<this.cachedAtoms.length; i++) { 
+      if(this.cachedAtoms[i].myID === id ){ 
+        this.cachedAtoms[i].setMaterial(color, this.renderingMode);
+      }
+    }
   }; 
   Motifeditor.prototype.unitCellAtomsWireframe = function(id, bool){   
     var _this = this; 
     for (var i = 0; i<this.unitCellAtoms.length; i++) { 
       if(this.unitCellAtoms[i].myID === id ){ 
         this.unitCellAtoms[i].wireframeMat(bool);
+      }
+    }
+    for (var i = 0; i<this.cachedAtoms.length; i++) { 
+      if(this.cachedAtoms[i].myID === id ){ 
+        this.cachedAtoms[i].wireframeMat(bool);
       }
     }
   };
