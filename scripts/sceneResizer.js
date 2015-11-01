@@ -21,12 +21,7 @@ define([
     this.hudCube = hudCube ;  
 
     this.ucViewPortActive = false;
-      
-      jQuery('#swapBtn').on('click', function(){
-        if (jQuery('#swapBtn').hasClass('motif')) _this.resize('lattice');
-        else _this.resize('motifScreen');
-        jQuery('#swapBtn').toggleClass('motif');
-      });
+       
   };
     
   

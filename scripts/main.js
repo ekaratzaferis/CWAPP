@@ -329,6 +329,17 @@ require([
   menu.onAtomPosModeChange(function(message, arg) {   
     motifEditor.atomPosMode(arg); 
   });
+  menu.onSwapScreen(function(message, arg) {  
+    tabActionsManager.tabClick(arg.swap);
+    if(arg.swap === 'latticeTab'){ 
+      crystalScreenEvents.state = 'default';
+    }
+    else if(arg.swap === 'motifLI'){
+      crystalScreenEvents.state = 'motifScreen';
+    }
+  
+
+  });
   menu.onLightsSet(function(message, arg) { 
      
     if(arg.lights){
