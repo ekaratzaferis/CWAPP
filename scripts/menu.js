@@ -497,7 +497,8 @@ define([
             UC_CRYSTAL_VIEWPORT: 'menu.uc_crystal_viewport',
             LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system',
             AXYZ_CHANGE: 'menu.axyz_change',
-            MAN_ANGLE_CHANGE: 'menu.man_angle_change'
+            MAN_ANGLE_CHANGE: 'menu.man_angle_change',
+            SWAP_SCREEN: 'menu.swap_screen'
         }; 
     
     
@@ -1344,9 +1345,6 @@ define([
                         $parameter.text(latticeParameters[k].val()); 
                     });
                 }
-                else if (jQuery(this).attr('id') === 'latticeTab'){
-                    jQuery('#swapBtn').hide('slow');
-                }
              });
             jQuery('#swapBtn').tooltip({
                 container : 'body',
@@ -1362,11 +1360,7 @@ define([
             
             $latticePadlock.on('click', function() {
                 if (!($latticePadlock.hasClass('disabled'))) {
-                    argument = {};
-                    if ($latticePadlock.children().hasClass('active')) {
-                        argument["padlock"] = true;
-                    }
-                    else {
+                    if (!($latticePadlock.children().hasClass('active'))) {
                         if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
                             jQuery('#selected_lattice').html('User Custom Defined');
                             $latticePadlock.find('a').button('toggle');
@@ -1382,15 +1376,13 @@ define([
                                 $motifPadlock.addClass('disabled');
                             }
                         }
-                        argument["padlock"] = false;
                     }
-                    PubSub.publish(events.SET_PADLOCK, argument);
                 }
             });
             $motifPadlock.on('unlock', function(event,value){
+                $tangency.trigger('turnOff');
                 argument = {};
                 argument["padlock"] = true;
-                $tangency.trigger('turnOff');
                 _.each(latticeParameters, function($parameter,k){
                     $parameter.prop('disabled',false);
                     jQuery('#'+k+'Slider').slider('enable');
@@ -1403,12 +1395,12 @@ define([
             });
             $motifPadlock.on('click', function() {
                 if (!($motifPadlock.hasClass('disabled'))) {
-                    argument = {};
                     if (!($motifPadlock.children().hasClass('active'))) {
                         $motifPadlock.trigger('unlock');
                     }
                     else {
                         $tangency.trigger('turnOn');
+                        argument = {};
                         argument["padlock"] = false;
                         PubSub.publish(events.SET_PADLOCK, argument);
                     }
@@ -1609,8 +1601,15 @@ define([
             _.each(latticeLabels, function($parameter, k){
                 $parameter.parent().parent().on('click', function(){
                     _this.switchTab('latticeTab');
-                    jQuery('#swapBtn').show('slow');
+                    jQuery('#swapBtn').trigger('click');
                 });
+            });
+            jQuery('#swapBtn').on('click', function(){
+                argument = {};
+                if (jQuery('#swapBtn').hasClass('motif')) argument['swap'] = 'lattice';
+                else argument['swap'] = 'motif';
+                PubSub.publish(events.SWAP_SCREEN, argument);
+                jQuery('#swapBtn').toggleClass('motif');
             });
 
             /* [Visualization Tab] */
@@ -1947,6 +1946,7 @@ define([
                         });
                     }
                     latticeEvent = true;
+                    jQuery('#swapBtn').show('slow');
                 }
             });
             $ionicValues.click(function(){
@@ -3437,6 +3437,9 @@ define([
         };
         Menu.prototype.onManuallyCellAnglesChange = function(callback) {
             PubSub.subscribe(events.MAN_ANGLE_CHANGE, callback);
+        };
+        Menu.prototype.onSwapScreen = function(callback) {
+            PubSub.subscribe(events.SWAP_SCREEN, callback);
         };
 
   return Menu;
