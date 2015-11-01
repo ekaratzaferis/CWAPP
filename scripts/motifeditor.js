@@ -694,31 +694,16 @@ define([
  
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
-    var val = parseFloat(par.cellVolume);
-    
-    var newVals = {x : 1, y : 1, z : 1};
-    
-    var _perc ;
+    var val = (par.step === undefined) ? parseFloat(par.cellVolume) : parseFloat(par.step);
 
-    if(par.trigger === 'reducer'){ 
-      if((this.cellVolume.xInitVal >= this.cellVolume.yInitVal) && (this.cellVolume.xInitVal >= this.cellVolume.zInitVal)){
-        _perc = (this.cellVolume.xInitVal - (par.step * 0.5)) / this.cellVolume.xInitVal ;
-      }
-      else if((this.cellVolume.yInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.yInitVal >= this.cellVolume.zInitVal)){
-        _perc = (this.cellVolume.yInitVal - (par.step * 0.5)) / this.cellVolume.yInitVal ;
-      }
-      else if((this.cellVolume.zInitVal >= this.cellVolume.xInitVal) && (this.cellVolume.zInitVal >= this.cellVolume.yInitVal)){
-        _perc = (this.cellVolume.zInitVal - (par.step * 0.5)) / this.cellVolume.zInitVal ;
-      }
-    } 
-    else{
-      _perc = parseFloat(par.cellVolume)/100;
-    }
- 
-    newVals.x = _perc * this.cellVolume.xInitVal; 
-    newVals.y = _perc * this.cellVolume.yInitVal;
-    newVals.z = _perc * this.cellVolume.zInitVal;
- 
+    var newVals = {x : 1, y : 1, z : 1};
+  
+    val /=100;
+    
+    newVals.x = val*this.cellVolume.xInitVal; 
+    newVals.y = val*this.cellVolume.yInitVal;
+    newVals.z = val*this.cellVolume.zInitVal;
+
     this.cellVolume.aCol = undefined;
     this.cellVolume.bCol = undefined;
     this.cellVolume.cCol = undefined;
@@ -1452,7 +1437,9 @@ define([
   };
  
   Motifeditor.prototype.setAnglesManually = function(par){
-     
+    
+    // deprecated
+    
     if( par.manualSetCellAngles) { 
       $(".manualAngles").css("display", "inline"); 
       $('input[name=manualSetCellAngles]').attr('checked', true);
@@ -1470,7 +1457,8 @@ define([
   };
 
   Motifeditor.prototype.setDimsManually = function(par){
-   
+    
+    // deprecated
     if( par.manualSetCellDims) { 
       $(".manualDims").css("display", "inline"); 
       $('input[name=manualSetCellDims]').attr('checked', true);
@@ -2787,6 +2775,7 @@ define([
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
       this.setCSGmode({mode : 'cellClassic'});
+      this.menu.chooseActiveUnitCellMode('cellClassic');
     } 
 
   };
@@ -3433,13 +3422,13 @@ define([
   Motifeditor.prototype.leastVolume = function(){ 
     
     var coll = false;
-    var step = 0;   
+    var step = 100;   
     
     this.menu.resetProgressBar('Constructing cell...');
 
     while(coll === false && this.unitCellAtoms.length !== 0){ 
     
-      step += 1; 
+      step -= 0.25; 
       this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'});
       if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         coll = true;
@@ -5646,19 +5635,7 @@ define([
       } 
     }
     else {  
-
-      this.menu.disableMEInputs(
-        {
-          'tangency' : false
-        }
-      );
-
-      this.menu.editMEInputs(
-        {
-          'tangency' : true
-        }
-      );
-
+ 
       this.globalTangency = true ;
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
@@ -5750,11 +5727,12 @@ define([
       if(this.cachedAtoms[i].myID === id ){ 
         this.cachedAtoms[i].setMaterial(color, this.renderingMode);
       }
-    }
+    }  
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
       this.setCSGmode({mode : 'cellClassic'});
-    }
+      this.menu.chooseActiveUnitCellMode('cellClassic'); 
+    } 
   }; 
   Motifeditor.prototype.unitCellAtomsWireframe = function(id, bool){   
     var _this = this; 
@@ -5771,6 +5749,7 @@ define([
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
       this.setCSGmode({mode : 'cellClassic'});
+      this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   };
   Motifeditor.prototype.unitCellAtomsTexture = function(id, texture){   
@@ -5796,6 +5775,7 @@ define([
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic'){
       this.setCSGmode({mode : 'cellClassic'});
+      this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   }; 
   Motifeditor.prototype.checkIfTangent = function(atom1, atom2){

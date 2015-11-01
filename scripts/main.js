@@ -667,10 +667,16 @@ require([
       orbitCrystal.control.target = centroid ;
     } 
   });
+  menu.onManuallyCellDimsChange(function(message, param) { 
+    motifEditor.setManuallyCellLengths(param);
+  });
+  menu.onManuallyCellAnglesChange(function(message, param) { 
+    motifEditor.setManuallyCellAngles(param);
+  });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults); 
-      //menu.updateLatticeLabel(lattice.defaults); 
+      menu.updateLatticeLabel(lattice.defaults); 
       menu.setLatticeRestrictions(lattice.restrictions);   
     }
   });
