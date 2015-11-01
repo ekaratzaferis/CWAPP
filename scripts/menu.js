@@ -593,6 +593,14 @@ define([
             return result;
         };
     
+        function integerInput(string){
+            var result = false;
+            if (!(isNaN(string))) {
+                if (string.indexOf('.') === -1) result = string;
+            }
+            return result;
+        };
+    
         function translateParameter(string){
             switch(string){
                 case 'scaleX': return 'b';
@@ -683,6 +691,9 @@ define([
             $scrollBars.mCustomScrollbar();
             jQuery(window).ready(function(){
                 $progressBarWrapper.hide(2000);
+                jQuery('body').css('background-color','black');
+                jQuery('#screenWrapper').show(0);
+                jQuery('#main_controls_container').show(0);
             });
             jQuery(window).resize(function() {
               app_container();
@@ -1006,9 +1017,17 @@ define([
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
                     }
-                    else if (inputErrorHandler($parameter.val()) !== false) {
+                    else if (integerInput($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
+                    else { 
+                        _this.showTooltip({
+                            'element': $parameter.attr('id'),
+                            'placement': 'top',
+                            'message': 'insert integer'
+                        });
+                        $parameter.val('');
                     }
                 });
             });       
@@ -1048,9 +1067,17 @@ define([
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
-                    else if (inputErrorHandler($parameter.val()) !== false) {
+                    else if (integerInput($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    }
+                    else { 
+                        _this.showTooltip({
+                            'element': $parameter.attr('id'),
+                            'placement': 'top',
+                            'message': 'insert integer'
+                        });
+                        $parameter.val('');
                     }
                 });
             });
