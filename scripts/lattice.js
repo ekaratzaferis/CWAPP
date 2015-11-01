@@ -508,7 +508,7 @@ define([
            
           i =0;
 
-          while(i < this.cachedAtoms.length ) { console.log(3);
+          while(i < this.cachedAtoms.length ) {  
             var mesh_ = this.subtractedSolidView(box, this.cachedAtoms[i]); 
             mesh_.name = 'crystalSubstracted'; 
             scene.add(mesh_); 

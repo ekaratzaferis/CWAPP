@@ -466,13 +466,7 @@ require([
   menu.onAtomVisibility(function(message, param) { 
     motifEditor.atomVisibility(param); 
     lattice.atomVisibility(param); 
-  });
-  menu.setDimsManually(function(message, param) { 
-    motifEditor.setDimsManually(param);
-  });
-  menu.setAnglesManually(function(message, param) { 
-    motifEditor.setAnglesManually(param);
-  });
+  }); 
   menu.onFixedLengthChange(function(message, param) {  
     motifEditor.padlockMode(param); 
   }); 
@@ -675,8 +669,7 @@ require([
   });
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
-      menu.setLatticeParameters(lattice.defaults); 
-      menu.updateLatticeLabel(lattice.defaults); 
+      menu.setLatticeParameters(lattice.defaults);  
       menu.setLatticeRestrictions(lattice.restrictions);   
     }
   });

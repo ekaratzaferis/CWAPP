@@ -710,16 +710,16 @@ define([
 
     var newValA = newVals.z ;  
 
-    this.setManuallyCellLengths({'Aa' : newValA }, 'volume');
-    this.menu.setSliderValue("Aa", newValA); 
+    this.setManuallyCellLengths({'scaleZ' : newValA }, 'volume');
+    this.menu.setSliderValue("scaleZ", newValA); 
       
     var newValB = newVals.x ;
-    this.setManuallyCellLengths({'Ab' : newValB }, 'volume');
-    this.menu.setSliderValue("Ab", newValB);
+    this.setManuallyCellLengths({'scaleX' : newValB }, 'volume');
+    this.menu.setSliderValue("scaleX", newValB);
      
     var newValC = newVals.y ;
-    this.setManuallyCellLengths({'Ac' : newValC }, 'volume');
-    this.menu.setSliderValue("Ac", newValC); 
+    this.setManuallyCellLengths({'scaleY' : newValC }, 'volume');
+    this.menu.setSliderValue("scaleY", newValC); 
      
     if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         
@@ -739,13 +739,13 @@ define([
         
         var newZsc = this.cellVolume.zInitVal*newPercX; 
         this.cellParameters.scaleZ = newZsc;
-        this.menu.setSliderValue("Aa", newZsc);
+        this.menu.setSliderValue("scaleZ", newZsc);
        
         var newYsc = this.cellVolume.yInitVal*newPercX; 
         this.cellParameters.scaleY = newYsc;
-        this.menu.setSliderValue("Ac", newYsc);
+        this.menu.setSliderValue("scaleY", newYsc);
         
-        this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
+        this.menu.setSliderValue("scaleX", this.cellParameters.scaleX);
         
       }
       else if(this.cellVolume.cCol >= this.cellVolume.aCol && this.cellVolume.cCol >= this.cellVolume.bCol){
@@ -754,13 +754,13 @@ define([
 
         var newZsc = this.cellVolume.zInitVal*newPercY; 
         this.cellParameters.scaleZ = newZsc;
-        this.menu.setSliderValue("Aa", newZsc);
+        this.menu.setSliderValue("scaleZ", newZsc);
         
         var newXsc = this.cellVolume.xInitVal*newPercY;
         this.cellParameters.scaleX = newXsc; 
-        this.menu.setSliderValue("Ab", newXsc);
+        this.menu.setSliderValue("scaleX", newXsc);
          
-        this.menu.setSliderValue("Ac", this.cellParameters.scaleY);
+        this.menu.setSliderValue("scaleY", this.cellParameters.scaleY);
         
       }
       else if(this.cellVolume.aCol >= this.cellVolume.bCol && this.cellVolume.aCol >= this.cellVolume.cCol ){
@@ -769,13 +769,13 @@ define([
         
         var newYsc = this.cellVolume.yInitVal*newPercZ; 
         this.cellParameters.scaleY = newYsc; 
-        this.menu.setSliderValue("Ac", newYsc);
+        this.menu.setSliderValue("scaleY", newYsc);
          
         var newXsc = this.cellVolume.xInitVal*newPercZ; 
         this.cellParameters.scaleX = newXsc; 
-        this.menu.setSliderValue("Ab", newXsc);
+        this.menu.setSliderValue("scaleX", newXsc);
          
-        this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
+        this.menu.setSliderValue("scaleZ", this.cellParameters.scaleZ);
          
       }  
 
@@ -791,68 +791,75 @@ define([
   Motifeditor.prototype.scaleRelative = function(par){
 
     var _this = this;
+    var aScale = (par.Aa === undefined) ? parseFloat(par.scaleZ) : parseFloat(par.Aa) ;
+    var bScale = (par.Ab === undefined) ? parseFloat(par.scaleX) : parseFloat(par.Ab) ;
+    var cScale = (par.Ac === undefined) ? parseFloat(par.scaleY) : parseFloat(par.Ac) ;
 
-    if(par.Aa != undefined){ 
+    if(aScale != undefined){ 
 
       _.each(_this.motifsAtoms, function(atom, r) { 
         
           var ratio = atom.object3d.position.z / _this.cellParameters.scaleZ ;
-          var newPos = ratio * parseFloat(par.Aa) ;
+          var newPos = ratio * aScale ;
           atom.object3d.position.z = newPos; 
           _this.translateCellAtoms("z", newPos ,atom.getID());
 
       }); 
       if(this.newSphere !== undefined){
         var ratio = this.newSphere.object3d.position.z / this.cellParameters.scaleZ ;
-        var newPos = ratio * parseFloat(par.Aa) ;
+        var newPos = ratio * aScale ;
         this.newSphere.object3d.position.z = newPos; 
         this.translateCellAtoms("z", newPos ,this.newSphere.getID());
       }
 
-      this.cellParameters.scaleZ = parseFloat( par.Aa ); 
+      this.cellParameters.scaleZ = aScale; 
 
     }
-    else if(par.Ab != undefined){ 
+    else if(bScale != undefined){ 
 
       _.each(_this.motifsAtoms, function(atom, r) { 
         var ratio = atom.object3d.position.x / _this.cellParameters.scaleX ;
-        var newPos = ratio * parseFloat(par.Ab) ;
+        var newPos = ratio * bScale ;
         atom.object3d.position.x = newPos;
         _this.translateCellAtoms("x", newPos ,atom.getID());
       });
       if(this.newSphere !== undefined){
         var ratio = this.newSphere.object3d.position.x / this.cellParameters.scaleX ;
-        var newPos = ratio * parseFloat(par.Ab) ;
+        var newPos = ratio * bScale ;
         this.newSphere.object3d.position.x = newPos; 
         this.translateCellAtoms("x", newPos ,this.newSphere.getID());
       }
 
-      this.cellParameters.scaleX = parseFloat( par.Ab ); 
+      this.cellParameters.scaleX = bScale; 
     } 
-    else if(par.Ac != undefined){ 
+    else if(cScale != undefined){ 
 
       _.each(_this.motifsAtoms, function(atom, r) { 
         var ratio = atom.object3d.position.y / _this.cellParameters.scaleY ;
-        var newPos = ratio * parseFloat(par.Ac) ;
+        var newPos = ratio * cScale ;
         atom.object3d.position.y = newPos;
         _this.translateCellAtoms("y", newPos ,atom.getID());
       });
       if(this.newSphere !== undefined){
         var ratio = this.newSphere.object3d.position.y / this.cellParameters.scaleY ;
-        var newPos = ratio * parseFloat(par.Ac) ;
+        var newPos = ratio * cScale ;
         this.newSphere.object3d.position.y = newPos; 
         this.translateCellAtoms("y", newPos ,this.newSphere.getID());
       }
-      this.cellParameters.scaleY = parseFloat( par.Ac );  
+      this.cellParameters.scaleY = cScale;  
     }
     this.configureCellPoints();
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
-     
+      
     if(this.cellMutex === false) {
       return ;
     }
     
+    var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
+    var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
+    var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
+  
     if(this.editorState.atomPosMode === 'relative'){
       this.scaleRelative(par);
       return;
@@ -862,75 +869,69 @@ define([
     this.cellMutex = false ;
     var axis = 'none' ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
-   
+
+    console.log(aScale, bScale, cScale);
+
     while(moreCollisions === true && counterHelper < 10 ){
        
-      if(par.Aa != undefined){ 
-        this.cellParameters.scaleZ = parseFloat( par.Aa ); 
+      if(aScale != undefined){ 
+        this.cellParameters.scaleZ = aScale ; 
         // tangency check
           
         this.configureCellPoints('manual');
         
-        if(this.globalTangency ||  true){ 
-          var offset = this.checkInterMotifCollision('z', parseFloat(par.Aa) );
+        if(this.globalTangency){ 
+          var offset = this.checkInterMotifCollision('z', aScale );
           this.cellParameters.scaleZ = offset ; 
-
-          if(par.Aa != offset ) {   
-          
-            this.menu.forceToLooseEvent('Aa');
+          console.log(offset);
+          if(aScale != offset ) {   
+             
+            this.menu.forceToLooseEvent('scaleZ');
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
-            this.menu.setSliderValue("Aa", offset);
-            $("#Aa").val(offset);
+            this.menu.setSliderValue("scaleZ", offset); 
           }
-
-          if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
-            this.cellParameters.scaleX = offset ;
-            if(par.Ab != offset ) {  
-              this.menu.setSliderValue("Ab", offset); 
-            } 
-          }
+ 
         }
-        par.Aa = this.cellParameters.scaleZ ; // for recurrency of collision checks
+        aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
         
       }
-      else if(par.Ab != undefined){  
-        this.cellParameters.scaleX = parseFloat( par.Ab );
+      else if(bScale != undefined){  
+        this.cellParameters.scaleX = bScale ;
         // tangency check
 
         this.configureCellPoints('manual');   
         if(this.globalTangency){ 
-          var offset = this.checkInterMotifCollision('x', parseFloat(par.Ab) ); 
+          var offset = this.checkInterMotifCollision('x', bScale ); 
           
           this.cellParameters.scaleX = offset ;
             
-          if(par.Ab != offset ) {   
-            this.menu.forceToLooseEvent('Ab');
+          if(bScale != offset ) {   
+            this.menu.forceToLooseEvent('scaleX');
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
-            this.menu.setSliderValue("Ab", offset); 
+            this.menu.setSliderValue("scaleX", offset); 
           }
            
         }
-        par.Ab = this.cellParameters.scaleX ; // for recurrency of collision checks
+        bScale = this.cellParameters.scaleX ; // for recurrency of collision checks
 
       }
-      else if(par.Ac != undefined){ 
-        this.cellParameters.scaleY = parseFloat( par.Ac );
+      else if(cScale != undefined){ 
+        this.cellParameters.scaleY = cScale ;
         // tangency check
         this.configureCellPoints('manual');
         if(this.globalTangency){    
-          var offset = this.checkInterMotifCollision('y', parseFloat(par.Ac) ); 
+          var offset = this.checkInterMotifCollision('y', cScale ); 
           this.cellParameters.scaleY = offset ;
-          if(par.Ac != offset ) {
-            this.menu.forceToLooseEvent('Ac');
+          if(cScale != offset ) {
+            this.menu.forceToLooseEvent('scaleY');
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
-            this.menu.setSliderValue("Ac", offset);
-            $("#Ac").val(offset);
+            this.menu.setSliderValue("scaleY", offset); 
           }
         }
-        par.Ac = this.cellParameters.scaleY ; // for recurrency of collision checks
+        cScale = this.cellParameters.scaleY ; // for recurrency of collision checks
       } 
       this.configureCellPoints('manual'); //second time
       this.updateLatticeTypeRL();
@@ -959,7 +960,9 @@ define([
     $('#infoBox').text( string );
   };
   Motifeditor.prototype.checkInterMotifCollision = function(angleORaxis, val){
-    
+    console.log(angleORaxis);
+    console.log(val);
+    console.log('angleORaxis');
     // here we compare the new value from the slider to the least cell dimensions/angles we have calculated in the past or just now (depends on the lattice)
 
     var _this = this;
@@ -1375,6 +1378,7 @@ define([
        
         if(this.globalTangency){ 
           var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
+
           this.cellParameters.alpha = offset.newVal ;
 
           if(par.cellAlpha != offset.newVal ) { 
@@ -1439,7 +1443,7 @@ define([
   Motifeditor.prototype.setAnglesManually = function(par){
     
     // deprecated
-    
+
     if( par.manualSetCellAngles) { 
       $(".manualAngles").css("display", "inline"); 
       $('input[name=manualSetCellAngles]').attr('checked', true);
@@ -1462,14 +1466,10 @@ define([
     if( par.manualSetCellDims) { 
       $(".manualDims").css("display", "inline"); 
       $('input[name=manualSetCellDims]').attr('checked', true);
-        
-      $("#Aa").val(this.cellParameters.scaleZ);
-      $("#Ab").val(this.cellParameters.scaleX); 
-      $("#Ac").val(this.cellParameters.scaleY);
-
-      this.menu.setSliderValue("Aa", this.cellParameters.scaleZ);
-      this.menu.setSliderValue("Ab", this.cellParameters.scaleX);
-      this.menu.setSliderValue("Ac", this.cellParameters.scaleY); 
+          
+      this.menu.setSliderValue("scaleZ", this.cellParameters.scaleZ);
+      this.menu.setSliderValue("scaleX", this.cellParameters.scaleX);
+      this.menu.setSliderValue("scaleY", this.cellParameters.scaleY); 
       this.checkForLengthFix(); // calculate the least acceptable length for the cell
     }
      
@@ -3753,9 +3753,9 @@ define([
       this.menu.setSliderMax('atomPosY',cell.yDim);
       this.menu.setSliderMax('atomPosZ',cell.zDim); 
 
-      this.menu.setSliderMax('Aa',cell.xDim*10);
-      this.menu.setSliderMax('Ab',cell.yDim*10);
-      this.menu.setSliderMax('Ac',cell.zDim*10); 
+      this.menu.setSliderMax('scaleX',cell.xDim*10);
+      this.menu.setSliderMax('scaleY',cell.yDim*10);
+      this.menu.setSliderMax('scaleZ',cell.zDim*10); 
     }
 
     return cell; // remember these dimensions are in 2l (e.g for cubic primitive)
