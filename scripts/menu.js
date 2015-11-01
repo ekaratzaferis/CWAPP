@@ -479,8 +479,6 @@ define([
             SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
             AXIS_MODE: 'menu.axis_mode',
             CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
-            MANUAL_SET_DIMS: 'menu.manual_set_dims',
-            MANUAL_SET_ANGLES: 'menu.manual_set_angles',
             CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
             STORE_PROJECT: 'menu.store_project',
             ANAGLYPH_EFFECT: 'menu.anaglyph_effect',
@@ -497,7 +495,9 @@ define([
             UPDATE_NOTES: 'menu.update_notes',
             LEAP_MOTION: 'menu.leap_motion', 
             UC_CRYSTAL_VIEWPORT: 'menu.uc_crystal_viewport',
-            LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system'
+            LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system',
+            AXYZ_CHANGE: 'menu.axyz_change',
+            MAN_ANGLE_CHANGE: 'menu.man_angle_change'
         }; 
     
     
@@ -875,8 +875,8 @@ define([
                             pubEventAngle = events.LATTICE_PARAMETER_CHANGE;
                         }
                         else {
-                            pubEventLength = events.MANUAL_SET_DIMS;
-                            pubEventAngle = events.MANUAL_SET_ANGLES;   
+                            pubEventLength = events.AXYZ_CHANGE;
+                            pubEventAngle = events.MAN_ANGLE_CHANGE;   
                         }
                         argument = {};
                         argument[k] = value;
@@ -900,7 +900,7 @@ define([
                 jQuery('#'+name+'Slider').on('fail', function(event, value){
                     var pubEvent;
                     if (latticeEvent === false) pubEvent = events.LATTICE_PARAMETER_CHANGE;
-                    else pubEventLength = events.MANUAL_SET_DIMS;
+                    else pubEventLength = events.AXYZ_CHANGE;
                     jQuery('#'+name+'Slider').slider('value',value);
                     jQuery('#'+name).val(value);
                     LastLatticeParameters[name] = value;
@@ -914,7 +914,7 @@ define([
                 jQuery('#'+name+'Slider').on('reflect', function(event, value){
                     var pubEvent;
                     if (latticeEvent === false) pubEvent = events.LATTICE_PARAMETER_CHANGE;
-                    else pubEvent = events.MANUAL_SET_DIMS;
+                    else pubEvent = events.AXYZ_CHANGE;
                     argument = {};
                     argument[name] = value;
                     LastLatticeParameters[name] = argument[name]; 
@@ -929,7 +929,7 @@ define([
                 jQuery('#'+name+'Slider').on('fail', function(event, value){
                     var pubEvent;
                     if (latticeEvent === false) pubEvent = events.LATTICE_PARAMETER_CHANGE;
-                    else pubEvent = events.MANUAL_SET_ANGLES;
+                    else pubEvent = events.MAN_ANGLE_CHANGE;
                     jQuery('#'+name+'Slider').slider('value',value);
                     jQuery('#'+name).val(value);
                     LastLatticeParameters[name] = value;
@@ -943,7 +943,7 @@ define([
                 jQuery('#'+name+'Slider').on('reflect', function(event, value){
                     var pubEvent;
                     if (latticeEvent === false) pubEvent = events.LATTICE_PARAMETER_CHANGE;
-                    else pubEventLength = events.MANUAL_SET_ANGLES;
+                    else pubEventLength = events.MAN_ANGLE_CHANGE;
                     argument = {};
                     argument[name] = value;
                     LastLatticeParameters[name] = argument[name]; 
@@ -1365,8 +1365,6 @@ define([
                     argument = {};
                     if ($latticePadlock.children().hasClass('active')) {
                         argument["padlock"] = true;
-                        argument["manualSetCellDims"] = true;
-                        argument["manualSetCellAngles"] = true;
                     }
                     else {
                         if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
@@ -1385,19 +1383,13 @@ define([
                             }
                         }
                         argument["padlock"] = false;
-                        argument["manualSetCellDims"] = false;
-                        argument["manualSetCellAngles"] = false;
                     }
                     PubSub.publish(events.SET_PADLOCK, argument);
-                    PubSub.publish(events.MANUAL_SET_DIMS, argument);
-                    PubSub.publish(events.MANUAL_SET_ANGLES, argument);
                 }
             });
             $motifPadlock.on('unlock', function(event,value){
                 argument = {};
                 argument["padlock"] = true;
-                argument["manualSetCellDims"] = true;
-                argument["manualSetCellAngles"] = true;
                 $tangency.trigger('turnOff');
                 _.each(latticeParameters, function($parameter,k){
                     $parameter.prop('disabled',false);
@@ -1408,8 +1400,6 @@ define([
                     _this.setLatticeRestrictions(localRestrictions);
                 }
                 PubSub.publish(events.SET_PADLOCK, argument);
-                PubSub.publish(events.MANUAL_SET_DIMS, argument);
-                PubSub.publish(events.MANUAL_SET_ANGLES, argument);
             });
             $motifPadlock.on('click', function() {
                 if (!($motifPadlock.hasClass('disabled'))) {
@@ -1420,11 +1410,7 @@ define([
                     else {
                         $tangency.trigger('turnOn');
                         argument["padlock"] = false;
-                        argument["manualSetCellDims"] = false;
-                        argument["manualSetCellAngles"] = false;
                         PubSub.publish(events.SET_PADLOCK, argument);
-                        PubSub.publish(events.MANUAL_SET_DIMS, argument);
-                        PubSub.publish(events.MANUAL_SET_ANGLES, argument);
                     }
                 }
             });
@@ -1896,19 +1882,25 @@ define([
                             case '0':
                                 if (!(jQuery($parameter).hasClass('disabled'))) {
                                     jQuery($parameter).addClass('selected');
+                                    if (selected !== false) {
+                                        if (selected.hasClass('selected')) selected.removeClass('selected');
+                                    }
                                     selected = true;
                                 }
                                 break;
                             case '≡':
                                 if (!(jQuery($parameter).hasClass('disabled'))){
                                     jQuery($parameter).addClass('selected');
+                                    if (selected !== false) {
+                                        if (selected.hasClass('selected')) selected.removeClass('selected');
+                                    }
                                     selected = true;
                                 }
                                 break;
                             default:
                                 if ( (selected === false) && !(jQuery($parameter).hasClass('disabled')) ) {
                                     jQuery($parameter).addClass('selected');
-                                    selected = true;
+                                    selected = jQuery($parameter);
                                 }
                                 break;
                         }    
@@ -2010,7 +2002,7 @@ define([
                 }
             });
         };
-        Menu.prototype.chooseActiveUnitCellMode = function(argument){
+        Menu.prototype.chooseActiveUnitCellMode = function(id){
             _.each(unitCellMode, function($parameter, k) {
                 if ( k === id ){
                     if (!($parameter.hasClass('disabled'))) {
@@ -2216,8 +2208,8 @@ define([
                         if (k === inputName) {
                             applyRestrictions(k+'Slider',ui.value.toString(),_this,true);
                             if (latticeEvent !== false){
-                                if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')) eventIn = event.MANUAL_SET_DIMS;
-                                else eventIn = event.MANUAL_SET_ANGLES;
+                                if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')) eventIn = event.AXYZ_CHANGE;
+                                else eventIn = event.MAN_ANGLE_CHANGE;
                             }
                             else eventIn = event.LATTICE_PARAMETER_CHANGE;
                         }
@@ -3344,12 +3336,6 @@ define([
         Menu.prototype.onAtomTangencyChange = function(callback) {
             PubSub.subscribe(events.ATOM_TANGENCY_CHANGE, callback);
         };
-        Menu.prototype.setDimsManually = function(callback) {
-            PubSub.subscribe(events.MANUAL_SET_DIMS, callback);
-        };
-        Menu.prototype.setAnglesManually = function(callback) {
-            PubSub.subscribe(events.MANUAL_SET_ANGLES, callback);
-        };
         Menu.prototype.onFixedLengthChange = function(callback) {
             PubSub.subscribe(events.MOTIF_LENGTH_CHANGE, callback);
         };
@@ -3445,6 +3431,12 @@ define([
         };
         Menu.prototype.onCrystalChange = function(callback){
             PubSub.subscribe(events.CHANGE_CRYSTAL_MODE, callback);
+        };
+        Menu.prototype.onManuallyCellDimsChange = function(callback) {
+            PubSub.subscribe(events.AXYZ_CHANGE, callback);
+        };
+        Menu.prototype.onManuallyCellAnglesChange = function(callback) {
+            PubSub.subscribe(events.MAN_ANGLE_CHANGE, callback);
         };
 
   return Menu;
