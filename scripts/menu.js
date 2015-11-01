@@ -1601,7 +1601,7 @@ define([
             _.each(latticeLabels, function($parameter, k){
                 $parameter.parent().parent().on('click', function(){
                     _this.switchTab('latticeTab');
-                    jQuery('#swapBtn').trigger('click');
+                    if (latticeEvent !== false) jQuery('#swapBtn').trigger('click');
                 });
             });
             jQuery('#swapBtn').on('click', function(){
@@ -2208,10 +2208,10 @@ define([
                         if (k === inputName) {
                             applyRestrictions(k+'Slider',ui.value.toString(),_this,true);
                             if (latticeEvent !== false){
-                                if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')) eventIn = event.AXYZ_CHANGE;
-                                else eventIn = event.MAN_ANGLE_CHANGE;
+                                if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')) eventIn = events.AXYZ_CHANGE;
+                                else eventIn = events.MAN_ANGLE_CHANGE;
                             }
-                            else eventIn = event.LATTICE_PARAMETER_CHANGE;
+                            else eventIn = events.LATTICE_PARAMETER_CHANGE;
                         }
                     });
                     argument[inputName] = ui.value;
