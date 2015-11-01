@@ -1606,8 +1606,8 @@ define([
             });
             jQuery('#swapBtn').on('click', function(){
                 argument = {};
-                if (jQuery('#swapBtn').hasClass('motif')) argument['swap'] = 'lattice';
-                else argument['swap'] = 'motif';
+                if (jQuery('#swapBtn').hasClass('motif')) argument['swap'] = 'latticeTab';
+                else argument['swap'] = 'motifLI';
                 PubSub.publish(events.SWAP_SCREEN, argument);
                 jQuery('#swapBtn').toggleClass('motif');
             });
