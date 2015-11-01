@@ -11,6 +11,8 @@ define([
 
   function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, hudDisplayFactor, dollEditor, hudCube) {
     
+      var _this = this;
+      
     this.crystalRenderer = crystalRenderer ;
     this.unitCellRenderer = unitCellRenderer ;
     this.motifRenderer = motifRenderer ;   
@@ -19,7 +21,15 @@ define([
     this.hudCube = hudCube ;  
 
     this.ucViewPortActive = false;
+      
+      jQuery('#swapBtn').on('click', function(){
+        if (jQuery('#swapBtn').hasClass('motif')) _this.resize('lattice');
+        else _this.resize('motifScreen');
+        jQuery('#swapBtn').toggleClass('motif');
+      });
   };
+    
+  
     
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
@@ -154,7 +164,6 @@ define([
               $('#unitCellRendererMouse').height(0);
           }
       }
-      
       
       $('#unitCellRendererCaption').width(0);
       $('#unitCellRendererCaption').height(0);

@@ -3604,3 +3604,12 @@ input.disabled[type="text"]{ background-color: black; }
 #latticeContainer label{ font-size: 17px !important; }
 
 .visualization-block-content{background: #2c2e33;}
+
+#swapBtn{
+    position: absolute;
+    display: none;
+    top: 5%;
+    right: 2%;
+    z-index: 20;
+    cursor: pointer;
+}
