@@ -336,9 +336,7 @@ require([
     }
     else if(arg.swap === 'motifLI'){
       crystalScreenEvents.state = 'motifScreen';
-    }
-  
-
+    } 
   });
   menu.onLightsSet(function(message, arg) { 
      

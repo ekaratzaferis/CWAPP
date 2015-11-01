@@ -851,7 +851,7 @@ define([
     this.configureCellPoints();
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
-      
+     
     if(this.cellMutex === false) {
       return ;
     }
@@ -869,9 +869,7 @@ define([
     this.cellMutex = false ;
     var axis = 'none' ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
-
-    console.log(aScale);
-
+ 
     while(moreCollisions === true && counterHelper < 10 ){
        
       if(aScale != undefined){ 
@@ -1362,33 +1360,36 @@ define([
     var angle = 'none' ;
     var counterHelper = 0 ; // to exit from infinite loops in case of bug
 
+    var alpha = (par.alpha === undefined) ? undefined : parseFloat(par.alpha) ;
+    var beta = (par.beta === undefined) ? undefined : parseFloat(par.beta) ;
+    var gamma = (par.gamma === undefined) ? undefined : parseFloat(par.gamma) ;
+
     while(moreCollisions === true && counterHelper < 100 ){
       moreCollisions = false;
-      if(par.cellAlpha != undefined){ 
-        this.cellParameters.alpha = parseFloat( par.cellAlpha ); 
+      if(alpha != undefined){ 
+        this.cellParameters.alpha = alpha; 
         // tangency check
          
         this.configureCellPoints('manual');  
        
         if(this.globalTangency){ 
-          var offset = this.checkInterMotifCollision('alpha', parseFloat(par.cellAlpha) );
+          var offset = this.checkInterMotifCollision('alpha', alpha);
 
           this.cellParameters.alpha = offset.newVal ;
 
-          if(par.cellAlpha != offset.newVal ) { 
+          if(alpha != offset.newVal ) { 
             this.menu.forceToLooseEvent('cellAlpha');
-            this.menu.setSliderValue("cellAlpha", offset.newVal);
-            $('#cellAlpha').val(offset.newVal);
+            this.menu.setSliderValue("cellAlpha", offset.newVal); 
           } 
         } 
       }
-      else if(par.cellBeta != undefined){ 
-        this.cellParameters.beta = parseFloat( par.cellBeta ); 
+      else if(beta != undefined){ 
+        this.cellParameters.beta = beta; 
         // tangency check
          
         this.configureCellPoints('manual');  
         if(this.globalTangency ){ 
-          var offset = this.checkInterMotifCollision('beta', parseFloat(par.cellBeta) );
+          var offset = this.checkInterMotifCollision('beta', beta);
           this.cellParameters.beta = offset.newVal ;
            
           if(par.cellBeta != offset.newVal ) { 
@@ -1398,12 +1399,12 @@ define([
           } 
         } 
       }
-      else if(par.cellGamma != undefined){ 
-        this.cellParameters.gamma = parseFloat( par.cellGamma ); 
+      else if(gamma != undefined){ 
+        this.cellParameters.gamma = gamma; 
         // tangency check
         this.configureCellPoints('manual');  
         if(this.globalTangency){ 
-          var offset = this.checkInterMotifCollision('gamma', parseFloat(par.cellGamma) );
+          var offset = this.checkInterMotifCollision('gamma', gamma );
           this.cellParameters.gamma = offset.newVal ;
 
           if(par.cellGamma != offset.newVal ) { 
@@ -1420,16 +1421,7 @@ define([
       moreCollisions = false;  
       counterHelper++;
       
-    }
-    if(aAtomIndex){  
-      var s = new THREE.Vector3(
-        this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
-        this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
-        this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
-      ) ;
-     
-      this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , real distance : '+s.length());
-    }
+    } 
         
     this.cellMutex = true ; 
   };
@@ -5623,7 +5615,7 @@ define([
 
     this.setUIPadlock(arg.padlock);
      
-    if(arg.padlock === false) { 
+    if(this.padlock === false) { 
       if(restore === true){
         this.cellParameters.alpha = parseInt($("#alpha").val());
         this.cellParameters.beta  = parseInt($("#beta").val());
