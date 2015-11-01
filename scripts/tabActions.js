@@ -69,7 +69,7 @@ define([
       if(tabId === "latticeTab"){
         this.lattice.updateLatticeUI(this.motifEditor.cellParameters);
       }
-        console.log(99);
+        
       this.dollEditor.setVisibility(true);
       this.hudCube.setVisibility(true);
       this.hudArrows.setVisibility(true);

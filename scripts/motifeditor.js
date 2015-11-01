@@ -870,7 +870,7 @@ define([
     var axis = 'none' ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
 
-    console.log(aScale, bScale, cScale);
+    console.log(aScale);
 
     while(moreCollisions === true && counterHelper < 10 ){
        
@@ -883,7 +883,7 @@ define([
         if(this.globalTangency){ 
           var offset = this.checkInterMotifCollision('z', aScale );
           this.cellParameters.scaleZ = offset ; 
-          console.log(offset);
+          
           if(aScale != offset ) {   
              
             this.menu.forceToLooseEvent('scaleZ');
@@ -954,15 +954,9 @@ define([
     ///////////////////////
     this.cellMutex = true ;
     ///////////////////////   
-  };
-  Motifeditor.prototype.giveInfo = function(string) {
-    $('#infoBox').css('display', 'inline');
-    $('#infoBox').text( string );
-  };
+  }; 
   Motifeditor.prototype.checkInterMotifCollision = function(angleORaxis, val){
-    console.log(angleORaxis);
-    console.log(val);
-    console.log('angleORaxis');
+     
     // here we compare the new value from the slider to the least cell dimensions/angles we have calculated in the past or just now (depends on the lattice)
 
     var _this = this;
@@ -5622,9 +5616,11 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
-    var _this = this, i=0;   
-    
-    this.padlock = arg.padlock;
+    var _this = this, i = 0;   
+     
+    this.padlock = !(arg.padlock);
+    this.globalTangency = !(arg.padlock);
+
     this.setUIPadlock(arg.padlock);
      
     if(arg.padlock === false) { 
