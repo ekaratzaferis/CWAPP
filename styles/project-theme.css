@@ -1020,7 +1020,7 @@ width: 70px;}
     .modal .modal-dialog .modal-content .mega-header {
       border: 0;
       padding: 0;
-        max-height: 57px;
+        max-height: 45px;
       background: #303640; }
       .modal .modal-dialog .modal-content .mega-header:before, .modal .modal-dialog .modal-content .mega-header:after {
         content: " ";
@@ -1029,7 +1029,7 @@ width: 70px;}
         clear: both; }
       .modal .modal-dialog .modal-content .mega-header .modal-title-container {
         float: left;
-        padding: 20px 35px; }
+        padding: 13px 35px; }
         .modal .modal-dialog .modal-content .mega-header .modal-title-container h2 {
           font-family: "Open Sans", sans-serif;
           font-size: 24px;
@@ -1039,7 +1039,9 @@ width: 70px;}
       .modal .modal-dialog .modal-content .mega-header .btn-close {
         float: right; }
         .modal .modal-dialog .modal-content .mega-header .btn-close .btn {
-          padding: 10px; }
+          padding: 0px;
+          height: 45px; }
+.imgClose{ max-width: 60%!important; }
     .modal .modal-dialog .modal-content .modal-body {
       padding: 0;
       border: 0;
@@ -1072,8 +1074,8 @@ width: 70px;}
     padding: 30px 115px; }
     .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table thead tr th {
       border: 0;
-      width: 150px;
-      padding: 15px;
+      width: 140px;
+      padding: 10px;
       text-align: center;
       background: #6f6299;
       font-family: "Open Sans", sans-serif;
@@ -1093,14 +1095,15 @@ width: 70px;}
       -o-transition: none 0s linear;
       transition: none 0s linear; }
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block {
-        max-height: 130px;
+        max-height: 122px;
         padding: 10px;
         border: 3px solid transparent; }
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image {
           margin-bottom: 1px; }
 .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image img{
-                 height:65px !important;}
+                 height:60px !important;}
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title {
+          margin-top: 10px;
           margin-bottom: 0; }
           .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-title h4 {
             text-transform: uppercase;
@@ -1129,19 +1132,6 @@ width: 70px;}
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
         padding: 20px 60px;
         padding-bottom: 5px;} }
-  .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer {
-    background: #1f2227; }
-    .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer .btn-add:before, .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer .btn-add:after {
-      content: " ";
-      display: table; }
-    .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer .btn-add:after {
-      clear: both; }
-    .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer .btn-add .btn-wrapper {
-      max-width: 160px;
-      width: 100%;
-      float: right; }
-    .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-footer .btn-add .btn {
-      padding: 22px 15px; }
 
 /*==========  Periodic Modal  ==========*/
 .periodic-table-modal-container .periodic-table-modal {
@@ -1153,15 +1143,14 @@ width: 70px;}
     margin: 30px auto;
     padding: 0; }
     .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-body .periodic-table-container {
-      padding: 40px 80px; }
+      padding: 20px 100px; }
       .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-body .periodic-table-container table.periodic-table tbody tr td {
         border: 0;
-        height: 60px;
+        height: 47px;
         width: 60px; }
       .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-body .periodic-table-container table.periodic-table tbody tr td.ch {
         text-transform: capitalize;
-        padding: 15px 10px;
-        padding-top: 18px;
+        padding-top: 11px;
         cursor: pointer; }
         .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-body .periodic-table-container table.periodic-table tbody tr td.ch span {
           display: block;
@@ -1191,6 +1180,7 @@ width: 70px;}
           line-height: 24px;
           color: #473473; }
     .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer {
+        display: none;
       background: #1f2227; }
       .periodic-table-modal-container .periodic-table-modal .modal-dialog .modal-content .modal-pre-footer .periodic-table-type-container .periodic-table-type-wrapper {
         position: relative;
@@ -2003,7 +1993,7 @@ width: 70px;}
             .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .lattice-parameters-box .box-body .slider-blocks-container .slider-block .block-title {
               margin-bottom: 3px; }
             .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .lattice-parameters-box .box-body .slider-blocks-container .slider-block .block-content .sliders-container .slider-group .slider-detail .slider-label {
-              padding-left: 13px; }
+              padding-left: 10px; }
             .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .lattice-parameters-box .box-body .slider-blocks-container .slider-block:last-child {
               margin-bottom: 0; }
 
@@ -2032,7 +2022,7 @@ width: 70px;}
     float: left;
     text-align: center;
     padding-top: 12px; 
-    padding-left: 8px; 
+    padding-left: 5px; 
   }
   .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .slider-group .slider-detail .slider-input {
     float: right;
@@ -2070,7 +2060,7 @@ width: 70px;}
     background: url("../Images/lock-icon.png") no-repeat center center;
     background-size: auto, 100%; }
     .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .bravais-block .block-content .block-icon .btn.active {
-      background: url("../Images/lock-open-icon-dark.png") no-repeat center center;
+      background: url("../Images/lock-open-icon.png") no-repeat center center;
       -webkit-box-shadow: 0 0 0 0 rgba(71, 52, 115, 0.7);
       -moz-box-shadow: 0 0 0 0 rgba(71, 52, 115, 0.7);
       box-shadow: 0 0 0 0 rgba(71, 52, 115, 0.7);
@@ -2766,8 +2756,8 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear;
   font-family: "Open Sans", sans-serif;
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 18px;
+  font-weight: 600;
   line-height: 24px;
   color: #6a6a6e; }
   .ch:hover, .ch:active, .ch:focus {
@@ -3454,6 +3444,8 @@ input.disabled[type="text"]{ background-color: black; }
     font-size: 10px !important; 
     background: #ccd1de !important;
     height: 20px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
 }
 .conditions{ height: 20px !important; }
 .property-block {cursor: pointer;}
@@ -3568,6 +3560,12 @@ input.disabled[type="text"]{ background-color: black; }
     background: white;
 }
 #latticePadlock.disabled a{cursor: not-allowed;}
+#latticePadlock {
+    padding: 3px;
+    padding-top: 7px;
+    margin-top: 0px;
+    float: right;
+}
 
 #latticePadlock .btn:hover { background: url("../Images/lock-icon-white.png") no-repeat center center; }
 #latticePadlock .btn.active:hover { background: url("../Images/lock-open-icon-white.png") no-repeat center center; }
@@ -3603,7 +3601,6 @@ input.disabled[type="text"]{ background-color: black; }
               -webkit-box-shadow: inset 0 0 0 0 rgba(71, 52, 115, 0.7);
               -moz-box-shadow: inset 0 0 0 0 rgba(71, 52, 115, 0.7);
               box-shadow: inset 0 0 0 0 rgba(71, 52, 115, 0.7); }
-#latticeContainer{ margin-left: -20px; }
 
 #latticeContainer label{ font-size: 17px !important; }
 
