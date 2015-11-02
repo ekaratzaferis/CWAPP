@@ -80,7 +80,7 @@
             <main id="cnt_main_screen" class="main-screen-container">
                 <div id="app-container">
                     <!-- Swap Button -->
-                    <div class="" id="swapBtn" data-toggle="tooltip" data-placement="left">
+                    <div id="swapBtn" data-toggle="tooltip" data-placement="left">
                         <img src="Images/swap.png" />
                     </div>
                     <!-- Atom Radius Slider -->
@@ -265,9 +265,9 @@
 														</div>
 														<div class="block-content">
 															<div class="block-btn">
-																<a id="selected_lattice" class="btn btn-purple" data-toggle="modal" data-target="#bravais_lattice_modal">Choose a Lattice</a>
+																<a id="selected_lattice" class="btn btn-purple mh_title_box" data-toggle="modal" data-target="#bravais_lattice_modal" data-mh="mh_title_box">Choose a Lattice</a>
 															</div>
-															<div id="latticePadlock" class="block-icon">
+															<div id="latticePadlock" class="block-icon mh_title_box" data-mh="mh_title_box">
 																<a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
 															</div>
 														</div>
@@ -317,11 +317,6 @@
 													</div>
 													<div class="tab-block length-block block-pad-sm theme-light">
                                                         <div class="row">
-                                                            <div class="col col-sm-2">
-                                                                <div id="motifPadlock" class="lock-icon-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
-                                                                    <a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
-                                                                </div>
-                                                            </div>
 															<div class="col col-sm-10">
                                                                 <div id="latticeContainer" class="mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
                                                                     <div class="block-title">
@@ -465,6 +460,11 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col col-sm-2">
+                                                                <div id="motifPadlock" class="lock-icon-container mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
+                                                                    <a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1860,7 +1860,7 @@
 								</div>
 								<div class="btn-close">
 									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="img-responsive" alt=""/></span>
+										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
 									</button>
 								</div>
 							</div>
@@ -1889,7 +1889,7 @@
 										</thead>
 										<tbody>
 											<tr>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="triclinic_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="triclinic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-05.png" class="img-responsive" alt=""/>
@@ -1901,7 +1901,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block selected" data-mh="mh_bravais_lattice_block" id="cubic_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-07.png" class="img-responsive" alt=""/>
@@ -1913,7 +1913,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-02.png" class="img-responsive" alt=""/>
@@ -1925,7 +1925,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-01.png" class="img-responsive" alt=""/>
@@ -1937,7 +1937,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="rhombohedral_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="rhombohedral_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-04.png" class="img-responsive" alt=""/>
@@ -1949,7 +1949,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="hexagonal_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="hexagonal_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-06.png" class="img-responsive" alt=""/>
@@ -1961,7 +1961,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_primitive">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_primitive">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-03.png" class="img-responsive" alt=""/>
@@ -1978,7 +1978,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_body_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-10.png" class="img-responsive" alt=""/>
@@ -1990,7 +1990,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_body_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="tetragonal_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-08.png" class="img-responsive" alt=""/>
@@ -2002,7 +2002,7 @@
 														</div>
 													</div>
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_body_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_body_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-09.png" class="img-responsive" alt=""/>
@@ -2017,7 +2017,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="hexagonal">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="hexagonal">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-06.png" class="img-responsive" alt=""/>
@@ -2037,7 +2037,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_face_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="cubic_face_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-12.png" class="img-responsive" alt=""/>
@@ -2052,7 +2052,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_face_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_face_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-11.png" class="img-responsive" alt=""/>
@@ -2084,7 +2084,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_base_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="orthorhombic_base_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-14.png" class="img-responsive" alt=""/>
@@ -2102,7 +2102,7 @@
 												<td class="mh_bravais_lattice_block empty" data-mh="mh_bravais_lattice_block">
 													<!-- Blank -->
 												</td>
-												<td class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_base_centered">
+												<td data-dismiss="modal" class="mh_bravais_lattice_block" data-mh="mh_bravais_lattice_block" id="monoclinic_base_centered">
 													<div class="bravais-lattice-block">
 														<div class="block-image">
 															<img src="Images/bravais-lattice-img-13.png" class="img-responsive" alt=""/>
@@ -2119,13 +2119,6 @@
 									</table>
 								</div>
 							</div>
-							<div class="modal-footer">
-								<div class="btn-add modal-btn">
-									<div class="btn-wrapper" id="add_lattice_btn" data-dismiss="modal">
-										<a class="btn btn-purple-light btn-block">Add</a>
-									</div>
-								</div>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -2135,13 +2128,13 @@
 				<div class="modal fade periodic-table-modal custom_scrollbar" id="periodic_table_modal" tabindex="-1" role="dialog" aria-labelledby="periodic_table_modalLabel">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
-							<div class="modal-header mega-header">
+							<div class="modal-header mega-header" id="periodicModalHeader">
 								<div class="modal-title-container">
 									<h2 id="periodic_table_modalLabel">Periodic Table</h2>
 								</div>
 								<div class="btn-close">
 									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="img-responsive" alt=""/></span>
+										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
 									</button>
 								</div>
 							</div>
@@ -2166,7 +2159,7 @@
 												<td class="ch dark ch-ne">Ne</td>
 											</tr>
 											<tr>
-												<td class="ch dark selected ch-na">Na</td>
+												<td class="ch dark ch-na">Na</td>
 												<td class="ch dark ch-mg">Mg</td>
 												<td colspan="10"></td>
 												<td class="ch dark ch-al">Al</td>
@@ -2222,7 +2215,7 @@
 												<td class="ch dark disabled ch-l">
 													<span>L*</span>
 												</td>
-												<td class="ch dark ch-hf">hf</td>
+												<td class="ch dark ch-hf">Hf</td>
 												<td class="ch dark ch-ta">Ta</td>
 												<td class="ch dark ch-w">W</td>
 												<td class="ch dark ch-re">Re</td>
@@ -2303,7 +2296,7 @@
 									</table>
 								</div>
 							</div>
-							<div class="modal-pre-footer">
+							<div class="modal-pre-footer" id="modalPreFooter">
 								<div class="periodic-table-type-container cnt-hidden">
 									<div class="periodic-table-type-wrapper">
 										<div class="block-title">
@@ -2335,7 +2328,7 @@
 								<div class="select-atom-properties-container">
 									<div class="select-atom-properties-inner">
 										<div class="element" id="tempSelection">
-											<p class="ch dark ch-na">Na</p>
+											<p class="ch dark ch-na">?</p>
 										</div>
 										<div class="element-properties-blocks">
                                             <div class="property-block disabled">
@@ -2348,7 +2341,7 @@
 													</div>
 												</a>
 											</div>
-                                            <div class="property-block disabled">
+                                            <div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>-3</p>
@@ -2358,7 +2351,7 @@
 													</div>
 												</a>
 											</div>
-                                            <div class="property-block disabled">
+                                            <div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>-2</p>
@@ -2368,7 +2361,7 @@
 													</div>
 												</a>
 											</div>
-                                            <div class="property-block disabled">
+                                            <div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>-1</p>
@@ -2378,27 +2371,27 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block selected">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>0</p>
 													</div>
 													<div class="resolution">
-														<p>1.900 &Aring;</p>
+														<p>- &Aring;</p>
 													</div>
 												</a>
 											</div>
-											<div class="property-block">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+1</p>
 													</div>
 													<div class="resolution">
-														<p>1.160 &Aring;</p>
+														<p>- &Aring;</p>
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+2</p>
@@ -2408,7 +2401,7 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+3</p>
@@ -2418,7 +2411,7 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+4</p>
@@ -2428,7 +2421,7 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+5</p>
@@ -2438,7 +2431,7 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+6</p>
@@ -2448,7 +2441,7 @@
 													</div>
 												</a>
 											</div>
-											<div class="property-block disabled">
+											<div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+7</p>
@@ -2458,7 +2451,7 @@
 													</div>
 												</a>
 											</div>
-                                            <div class="property-block disabled">
+                                            <div class="property-block disabled" data-dismiss="modal">
 												<a>
 													<div class="serial">
 														<p>+8</p>
@@ -2469,13 +2462,6 @@
 												</a>
 											</div>
 										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<div class="btn-add modal-btn">
-									<div class="btn-wrapper" id="add_atom_btn" data-dismiss="modal">
-										<a class="btn btn-purple-light btn-block" id="periodicAdd">Add</a>
 									</div>
 								</div>
 							</div>

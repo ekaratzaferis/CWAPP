@@ -65,7 +65,6 @@ define([
         var $periodicModal = jQuery('.ch');
     
         // Add Buttons
-        var $bravaisLattice = jQuery('#add_lattice_btn');
         var $periodicTableButton = jQuery('#add_atom_btn');
     
     
@@ -593,6 +592,14 @@ define([
             return result;
         };
     
+        function integerInput(string){
+            var result = false;
+            if (!(isNaN(string))) {
+                if (string.indexOf('.') === -1) result = string;
+            }
+            return result;
+        };
+    
         function translateParameter(string){
             switch(string){
                 case 'scaleX': return 'b';
@@ -683,6 +690,9 @@ define([
             $scrollBars.mCustomScrollbar();
             jQuery(window).ready(function(){
                 $progressBarWrapper.hide(2000);
+                jQuery('body').css('background-color','black');
+                jQuery('#screenWrapper').show(0);
+                jQuery('#main_controls_container').show(0);
             });
             jQuery(window).resize(function() {
               app_container();
@@ -1006,9 +1016,17 @@ define([
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
                     }
-                    else if (inputErrorHandler($parameter.val()) !== false) {
+                    else if (integerInput($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
+                    else { 
+                        _this.showTooltip({
+                            'element': $parameter.attr('id'),
+                            'placement': 'top',
+                            'message': 'insert integer'
+                        });
+                        $parameter.val('');
                     }
                 });
             });       
@@ -1048,9 +1066,17 @@ define([
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
-                    else if (inputErrorHandler($parameter.val()) !== false) {
+                    else if (integerInput($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    }
+                    else { 
+                        _this.showTooltip({
+                            'element': $parameter.attr('id'),
+                            'placement': 'top',
+                            'message': 'insert integer'
+                        });
+                        $parameter.val('');
                     }
                 });
             });
@@ -1342,8 +1368,20 @@ define([
                 }
                 else if (jQuery(this).attr('id') === 'motifLI'){
                     _.each(latticeLabels, function($parameter,k){
-                        $parameter.text(latticeParameters[k].val()); 
+                        var labelLength = parseFloat(latticeParameters[k].val()).toFixed(3);
+                        var labelAngle = parseFloat(latticeParameters[k].val()).toFixed(0);
+                        if ( (k !== 'alpha') && (k !== 'beta') && (k !== 'gamma') ) $parameter.text(labelLength+'Å'); 
+                        else $parameter.text(labelAngle+'°'); 
                     });
+                    jQuery('#swapBtn').hide('fast');
+                    jQuery('#swapBtn').attr('class','');
+                }
+                else if (jQuery(this).attr('id') === 'latticeTab'){
+                    if (latticeEvent !== false) jQuery('#swapBtn').show('fast');
+                }
+                else {
+                    jQuery('#swapBtn').hide('fast');
+                    jQuery('#swapBtn').attr('class','');
                 }
              });
             jQuery('#swapBtn').tooltip({
@@ -1606,10 +1644,15 @@ define([
             });
             jQuery('#swapBtn').on('click', function(){
                 argument = {};
-                if (jQuery('#swapBtn').hasClass('motif')) argument['swap'] = 'latticeTab';
-                else argument['swap'] = 'motifLI';
+                if (jQuery('#swapBtn').hasClass('motif')){
+                    argument['swap'] = 'latticeTab';
+                    jQuery('#swapBtn').removeClass('motif');
+                }
+                else {
+                    argument['swap'] = 'motifLI';
+                    jQuery('#swapBtn').addClass('motif');
+                }
                 PubSub.publish(events.SWAP_SCREEN, argument);
-                jQuery('#swapBtn').toggleClass('motif');
             });
 
             /* [Visualization Tab] */
@@ -1812,26 +1855,18 @@ define([
             
             /* [Modals] */
             $bravaisModal.on('click',function(){
-                $bravaisModal.removeClass('selected');
-                jQuery(this).addClass('selected');
-            });
-            $bravaisLattice.on('click', function() {
-                // Read selected Lattice.
-                var selected = jQuery('.mh_bravais_lattice_block.selected');
-                if (selected.length > 0) {
-                    jQuery('#selected_lattice').text(latticeNames[selected.attr('id')]);
-                    jQuery('#selected_lattice').parent().addClass('disabled');
-                    jQuery('#selected_lattice').addClass('disabled');
-                    PubSub.publish(events.LATTICE_CHANGE,selected.attr('id'));
-                    // Enable Motif Tab.
-                    $motifMEButton.find('a').attr('href','#scrn_motif');
-                    $motifMEButton.removeClass('disabled');
-                    $motifMEButton.removeClass('blocked');
-                    _this.disableLatticeChoice(true);
-                    $latticePadlock.find('a').prop('disabled', false);
-                    $latticePadlock.removeClass('disabled');
-                }
-            });   
+                jQuery('#selected_lattice').text(latticeNames[jQuery(this).attr('id')]);
+                jQuery('#selected_lattice').parent().addClass('disabled');
+                jQuery('#selected_lattice').addClass('disabled');
+                PubSub.publish(events.LATTICE_CHANGE,jQuery(this).attr('id'));
+                // Enable Motif Tab.
+                $motifMEButton.find('a').attr('href','#scrn_motif');
+                $motifMEButton.removeClass('disabled');
+                $motifMEButton.removeClass('blocked');
+                _this.disableLatticeChoice(true);
+                $latticePadlock.find('a').prop('disabled', false);
+                $latticePadlock.removeClass('disabled');
+            });  
             $periodicModal.on('click',function(){
                 if ( !jQuery(this).hasClass('disabled') && !jQuery(this).parent().parent().hasClass('element-symbol-container') ){   
                     $periodicModal.removeClass('selected');
@@ -1842,6 +1877,8 @@ define([
                     var selected = false;
                     preview.html(caller.html());
                     preview.attr('class',caller.attr('class'));
+                    preview.show(0);
+                    jQuery('.modal-pre-footer').show(0);
                     _.each($ionicValues, function($parameter, k){
                         var ionicValue;
                         var ionicIndex = jQuery($parameter).find('p').html();
@@ -1849,64 +1886,37 @@ define([
                             if ($atomsData[preview.html()]['ionic'][ionicIndex] !== undefined ){
                                 if ( ionicIndex === '≡') ionicValue = parseFloat($atomsData[preview.html()]['ionic']['≡']);
                                 else ionicValue = parseFloat($atomsData[preview.html()]['ionic'][ionicIndex]);
-                                jQuery($parameter).show('fast');
+                                jQuery($parameter).show(0);
                                 jQuery($parameter).removeClass('disabled');
                                 jQuery($parameter).find('.resolution p').html((ionicValue/100).toFixed(3) + ' &Aring;');
                             }
                             else if ( ionicIndex === '0' ){
                                 if ( $atomsData[preview.html()]['radius'] !== 0 ) {
-                                    jQuery($parameter).show('fast');
+                                    jQuery($parameter).show(0);
                                     jQuery($parameter).removeClass('disabled');
                                     jQuery($parameter).find('.resolution p').html(($atomsData[preview.html()]['radius']/100).toFixed(3) + ' &Aring;');
                                 }
                                 else {
                                     jQuery($parameter).addClass('disabled');
-                                    jQuery($parameter).hide('fast');
+                                    jQuery($parameter).hide(0);
                                     jQuery($parameter).find('.resolution p').html('-');
                                 }
                             }
                             else {
                                 jQuery($parameter).addClass('disabled');
-                                jQuery($parameter).hide('fast');
+                                jQuery($parameter).hide(0);
                                 jQuery($parameter).find('.resolution p').html('-');
                             }
                         }
                         else{
                             jQuery($parameter).addClass('disabled');
-                            jQuery($parameter).hide('fast');
+                            jQuery($parameter).hide(0);
                             jQuery($parameter).find('.resolution p').html('-');
-                        }
-                        switch(ionicIndex)
-                        {
-                            case '0':
-                                if (!(jQuery($parameter).hasClass('disabled'))) {
-                                    jQuery($parameter).addClass('selected');
-                                    if (selected !== false) {
-                                        if (selected.hasClass('selected')) selected.removeClass('selected');
-                                    }
-                                    selected = true;
-                                }
-                                break;
-                            case '≡':
-                                if (!(jQuery($parameter).hasClass('disabled'))){
-                                    jQuery($parameter).addClass('selected');
-                                    if (selected !== false) {
-                                        if (selected.hasClass('selected')) selected.removeClass('selected');
-                                    }
-                                    selected = true;
-                                }
-                                break;
-                            default:
-                                if ( (selected === false) && !(jQuery($parameter).hasClass('disabled')) ) {
-                                    jQuery($parameter).addClass('selected');
-                                    selected = jQuery($parameter);
-                                }
-                                break;
                         }    
                     });
                 }
             });
-            $periodicTableButton.on('click', function() {
+            $ionicValues.click(function(){
                 var selected = jQuery('td.ch.selected');
                 if (selected.length > 0) {
                     argument = {};
@@ -1927,8 +1937,8 @@ define([
                                 break;
                         }
                     });
-                    argument['ionicIndex'] = jQuery('.property-block.selected .serial p').html();
-                    var tempValue = jQuery('.property-block.selected .resolution p').html().split(" ");
+                    argument['ionicIndex'] = jQuery(this).find('.serial p').html();
+                    var tempValue = jQuery(this).find('.resolution p').html().split(" ");
                     argument['ionicValue'] = tempValue[0];
                     argument["tangency"]= (!($tangency.hasClass('buttonPressed'))) ? false : true;
                     PubSub.publish(events.ATOM_SELECTION, argument);
@@ -1941,19 +1951,17 @@ define([
                         $motifPadlock.removeClass('disabled');
                         $motifPadlock.find('a').prop('disabled', false);
                         _.each(latticeParameters, function($parameter,k){
-                            $parameter.prop('disabled',true);
-                            jQuery('#'+k+'Slider').slider('disable');
+                            if ( (k !== 'repeatY') && (k !== 'repeatX') && (k !== 'repeatZ') ){
+                                $parameter.prop('disabled',true);
+                                jQuery('#'+k+'Slider').slider('disable');
+                            }
                         });
                     }
                     latticeEvent = true;
-                    jQuery('#swapBtn').show('slow');
                 }
-            });
-            $ionicValues.click(function(){
-                if (!(jQuery(this).hasClass('disabled'))){
-                    $ionicValues.removeClass('selected');
-                    jQuery(this).addClass('selected');
-                }
+                $ionicValues.addClass('disabled');
+                jQuery('#tempSelection').find('p').hide('fast');
+                jQuery('.modal-pre-footer').hide('fast');
             });
             
     /*$
@@ -2176,6 +2184,12 @@ define([
             var sliderName = name+'Slider';
             jQuery('#'+sliderName).slider('value',val);
             jQuery('#'+name).val(val);
+            _.each(latticeLabels, function($parameter,k){
+                var labelLength = parseFloat(latticeParameters[k].val()).toFixed(3);
+                var labelAngle = parseFloat(latticeParameters[k].val()).toFixed(0);
+                if ( (k !== 'alpha') && (k !== 'beta') && (k !== 'gamma') ) $parameter.text(labelLength+'Å'); 
+                else $parameter.text(labelAngle+'°'); 
+            });
         };
         Menu.prototype.changeSliderValue = function(name, val, event) {
             var sliderName = name+'Slider';
