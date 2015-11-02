@@ -71,7 +71,7 @@ define([
     //view
     this.viewBox = [];
     this.viewMode = 'crystalClassic'; 
-    this.crystalIsDirty = false;
+    this.crystalNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
     this.cachedAtoms = [];
     // visualization
     this.renderingMode = 'realistic';
@@ -122,7 +122,7 @@ define([
     }
   };
   Lattice.prototype.offsetMotifsForViews = function(){
-    var objName = 'crystalGradeLimited';
+    var objName = 'crystalGradeLimited' ;
     var atoms = this.cachedAtoms; 
     for (var d = atoms.length - 1; d >= 0; d--) { 
       Explorer.remove({'object3d' : atoms[d]}); 
@@ -142,7 +142,7 @@ define([
     var backPos = new THREE.Vector3(halfX, halfY, 0);
     var upPos = new THREE.Vector3(halfX, this.parameters.scaleY, halfZ);
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
-
+ 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
  
     if(this.latticeType === 'face'){ 
@@ -470,7 +470,8 @@ define([
   
     return found;
   };
-  Lattice.prototype.setCSGmode = function(arg) {
+
+  Lattice.prototype.setCSGmode = function(arg, reset) {
      
     var _this = this, i = 0;
     this.viewMode = arg.mode ;
@@ -484,45 +485,43 @@ define([
        
       if(this.viewMode === 'crystalSubstracted'){
          
-        this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
-        this.editObjectsInScene('crystalGradeLimited', 'visibility', false);  
+        this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
 
-        var f = this.editObjectsInScene('crystalSubstracted', 'visibility', true);
-         
-        if(f === true){ 
-           
+        if(this.crystalNeedsRecalculation.crustalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
           while(i < this.actualAtoms.length ){ 
             this.actualAtoms[i].object3d.visible = false; 
             this.actualAtoms[i].subtractedForCache.object3d.visible = true;  
             i++;
           }
-          return;
-        } 
-        else{ 
-          while(i < this.actualAtoms.length ) { 
+
+          i =0;
+          while(i < this.cachedAtoms.length ){ 
+            this.cachedAtoms[i].visible = false; 
+            this.cachedAtoms[i].subtractedForCache.object3d.visible = true;  
+            i++;
+          }
+        }
+        else{
+          this.crystalNeedsRecalculation.crustalSubstracted = false;
+          while(i < this.actualAtoms.length ) {
             this.actualAtoms[i].object3d.visible = false; 
-            this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true); 
-        
+            this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);  
             i++;
           } 
            
-          i =0;
+          i = 0;
 
-          while(i < this.cachedAtoms.length ) {  
-            var mesh_ = this.subtractedSolidView(box, this.cachedAtoms[i]); 
-            mesh_.name = 'crystalSubstracted'; 
-            scene.add(mesh_); 
+          while(i < this.cachedAtoms.length ) {     
+            this.cachedAtoms[i].visible = false; 
+            this.cachedAtoms[i].subtractedSolidView(box, this.cachedAtoms[i].position, true);
             i++;
-          }  
+          } 
         }
       }
       else if(this.viewMode === 'crystalSolidVoid'){   
  
-        this.editObjectsInScene('crystalSubstracted', 'visibility', false);
-        this.editObjectsInScene('crystalGradeLimited', 'visibility', false);
-
         var f = this.editObjectsInScene('crystalSolidVoid', 'visibility', true);
-   
+ 
         i = 0;
         while(i < this.actualAtoms.length ) { 
           this.actualAtoms[i].object3d.visible = false;     
@@ -530,16 +529,28 @@ define([
             this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
           }
           i++; 
-        } 
-        if(f === true){  
-          return;
         }
-         
-        var geometry = new THREE.Geometry();  
+
+        i = 0;
+        while(i < this.cachedAtoms.length ) { 
+          this.cachedAtoms[i].visible = false;     
+          if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+            this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
+          }
+          i++; 
+        }
+   
+        if(this.crystalNeedsRecalculation.crystalSolidVoid === false && f === true){
+           return;
+        }
+        this.crystalNeedsRecalculation.crystalSolidVoid = false;
+        
+        var geometry = new THREE.Geometry(); 
+
+        i = 0;
 
         var globalG = new THREE.SphereGeometry(1, 32, 32);
 
-        i =0 ;
         while(i < this.actualAtoms.length ) {  
           this.actualAtoms[i].SolidVoid(this.actualAtoms[i].object3d.position);  
           var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
@@ -551,74 +562,76 @@ define([
         } 
 
         i=0;
-
+    
         while(i < this.cachedAtoms.length ) { 
-          this.cachedAtoms[i].updateMatrix();   
-          geometry.merge( this.cachedAtoms[i].geometry, this.cachedAtoms[i].matrix );
-          i++; 
+          this.cachedAtoms[i].SolidVoid(this.cachedAtoms[i].position);  
+          var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
+          mesh.scale.set(this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius());
+          mesh.position.set( this.cachedAtoms[i].position.x, this.cachedAtoms[i].position.y, this.cachedAtoms[i].position.z);
+          mesh.updateMatrix();   
+          geometry.merge( mesh.geometry, mesh.matrix ); 
+          i++;  
         } 
 
         var cube = THREE.CSG.toCSG(box); 
         cube = cube.inverse();
         var spheres = THREE.CSG.toCSG(geometry);
-        var geometryCSG = cube.subtract(spheres);
+         
+        var geometryCSG = cube.subtract(spheres); 
+
         var geom = THREE.CSG.fromCSG(geometryCSG);
         var finalGeom = assignUVs(geom);
-   
-        var solidBox = new THREE.Mesh( finalGeom, new THREE.MeshLambertMaterial({ color: '#9A2EFE' }) );
-        solidBox.name = 'crystalSolidVoid'; 
+        
+        var opacity = 1;
+  
+        var material = this.createMaterial("#9A2EFE", opacity);
+
+        var solidBox = new THREE.Mesh( finalGeom, material );
+        solidBox.name = 'crystalSolidVoid';
         Explorer.add({'object3d' : solidBox}); 
-
-        i = 0;
-
-        while(i < this.actualAtoms.length ) {   
-          this.actualAtoms[i].object3d.visible = false;   
-          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
-            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
-          }
-          i++; 
-        } 
-
       }
       else if(this.viewMode === 'crystalGradeLimited'){ 
   
-        this.editObjectsInScene('crystalSubstracted', 'visibility', false);
         this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
-        
-        box.visible = false;
-        scene.add(  box  );  
 
-        var collidableMeshList = [] ;
-        collidableMeshList.push(box); 
- 
+        var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
+        box.visible = false;
+        
         // find geometry's center
         var centroid = new THREE.Vector3(); 
         for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
           centroid.add( g.vertices[ z ] ); 
         }  
         centroid.divideScalar( g.vertices.length );
-           
+         
+        Explorer.add({'object3d' : box }); 
+
+        var collidableMeshList = [] ;
+        collidableMeshList.push(box);
+          
         i=0;
-   
+      
+        var dir = new THREE.Vector3(1,1000000,1); 
+
         while(i < this.actualAtoms.length ) {    
-
+           
           this.actualAtoms[i].object3d.visible = true;  
-
+             
           // workaround for points that are exactly on the grade (faces, cell points)
           var smartOffset = centroid.clone().sub(this.actualAtoms[i].object3d.position.clone());
           smartOffset.setLength(0.01);
           var originPointF = this.actualAtoms[i].object3d.position.clone().add(smartOffset);
           //
- 
-          var dir = new THREE.Vector3(1,100000,1); // don't care about it 
-          var rayF = new THREE.Raycaster( originPointF,dir.clone().normalize() );
+
+           
+          var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
           var collisionResultsF = rayF.intersectObjects( collidableMeshList );
-  
+   
           var touches = true ;
-          var radius = this.actualAtoms[i].getRadius() ;
-         
+          var radius = this.actualAtoms[i].getRadius() ; 
+
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
- 
+    
             var vertexIndex = this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
             var atomCentre = this.actualAtoms[i].object3d.position.clone();
 
@@ -629,17 +642,14 @@ define([
               var directionVector = globalVertex.sub( originPointF );     
               
               var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
-    
+              
               var collisionResults = ray.intersectObjects( collidableMeshList );
                  
               if( (collisionResults.length >= 1) &&  (collisionResults[0].distance <= radius) ) {
-                vertexIndex = -2;  
-                
+                vertexIndex = -2;   
               }
               vertexIndex--;
-              if(vertexIndex === -1) {
-                touches = false;
-              }
+              if(vertexIndex === -1) touches = false;
             }  
             if(!touches) {
               this.actualAtoms[i].object3d.visible = false ;
@@ -649,34 +659,37 @@ define([
           if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
             this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
           }
+              
           i++;   
         } 
 
         i=0;
 
         while(i < this.cachedAtoms.length ) { 
-            // Explorer.add({'object3d' : this.cachedAtoms[i] });
+           
+          this.cachedAtoms[i].visible = true;  
+             
           // workaround for points that are exactly on the grade (faces, cell points)
           var smartOffset = centroid.clone().sub(this.cachedAtoms[i].position.clone());
           smartOffset.setLength(0.01);
           var originPointF = this.cachedAtoms[i].position.clone().add(smartOffset);
           //
 
-          var dir = new THREE.Vector3(1,1000000,1);  
+           
           var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
           var collisionResultsF = rayF.intersectObjects( collidableMeshList );
    
           var touches = true ;
-          var radius = this.cachedAtoms[i].geometry.boundingSphere.radius ;  
+          var radius = this.cachedAtoms[i].getRadius() ; 
 
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
     
-            var vertexIndex = this.cachedAtoms[i].geometry.vertices.length-1;
+            var vertexIndex = this.cachedAtoms[i].children[0].geometry.vertices.length-1;
             var atomCentre = this.cachedAtoms[i].position.clone();
 
             while( vertexIndex >= 0 )
             {     
-              var localVertex = this.cachedAtoms[i].geometry.vertices[vertexIndex].clone();
+              var localVertex = this.cachedAtoms[i].children[0].geometry.vertices[vertexIndex].clone();
               var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].matrixWorld);
               var directionVector = globalVertex.sub( originPointF );     
               
@@ -688,51 +701,89 @@ define([
                 vertexIndex = -2;   
               }
               vertexIndex--;
-              if(vertexIndex === -1) {
-                touches = false;
-              }
+              if(vertexIndex === -1) touches = false;
             }  
-
-            if(touches === true) { 
-              this.cachedAtoms[i].visible = true;
+            if(!touches) {
+              this.cachedAtoms[i].visible = false ;
             }
           }
-          else{ 
+          else{  
             this.cachedAtoms[i].visible = true;
           }
           i++;
         } 
+      
         Explorer.remove({'object3d' : box }); 
       }
       else if(this.viewMode === 'crystalClassic'){ 
 
-        if(this.crystalIsDirty === true){
-
-          this.editObjectsInScene('crystalSubstracted', 'remove', true);
-          this.editObjectsInScene('crystalSolidVoid', 'remove', true);
-          this.editObjectsInScene('crystalGradeLimited', 'remove', true);
-
-          while(i < this.actualAtoms.length ) { 
-            this.actualAtoms[i].viewModeBeen = {'crystalClassic' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalSolidVoid' : false};
-            this.actualAtoms[i].removesubtractedForCache();
+        while(i < this.actualAtoms.length ){ 
+          this.actualAtoms[i].object3d.visible = true; 
+          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
           }
+          
+          i++;
+        }
+        
+        i =0;
+ 
+        if(reset === undefined){ 
+           
+          while(i < this.cachedAtoms.length ){ 
+            this.cachedAtoms[i].visible = false; 
+            if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+              this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
+            }  
+            i++;
+          }
+          this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
         }
         else{
-          this.editObjectsInScene('crystalSubstracted', 'visibility', false);
-          this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
-          this.editObjectsInScene('crystalGradeLimited', 'visibility', false);
-          
-          while(i < this.actualAtoms.length ) { 
-            this.actualAtoms[i].object3d.visible = true; 
-           
-            if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
-              this.actualAtoms[i].subtractedForCache.object3d.visible = false;   
-            }
-            i++;
-          }      
+          this.offsetMotifsForViews();
+          this.editObjectsInScene('crystalSolidVoid', 'remove', true);
         }
       } 
     }   
+  };
+  Lattice.prototype.createMaterial = function(color, opacity){
+    var material; 
+
+    if(this.renderingMode === 'wireframe') { 
+      material = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
+         
+    }
+    else if(this.renderingMode === 'realistic'){  
+      material = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(this.renderingMode === 'flat'){
+      material = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(this.renderingMode === 'toon'){ 
+      var phongMaterial = createShaderMaterial("phongDiffuse");
+      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color)); 
+ 
+      material = phongMaterial;
+    } 
+
+    return material;
+  }
+  function createShaderMaterial(id) {
+
+      var shader = THREE.ShaderTypes[id];
+
+      var u = THREE.UniformsUtils.clone(shader.uniforms);
+
+      var vs = shader.vertexShader;
+      var fs = shader.fragmentShader;
+
+      var material = new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs });
+
+      material.uniforms.uDirLightPos.value = new THREE.Vector3(300, 300, 60);
+      material.uniforms.uDirLightColor.value = new THREE.Color( 0xFFFFFF );
+      
+      return material;
+
   };
   Lattice.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 
@@ -824,7 +875,7 @@ define([
   }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
-
+ 
     this.updateLatticeUI(params);
 
     this.currentMotif = motif ;
@@ -881,10 +932,13 @@ define([
         );
       });
     });  
-    
-    this.offsetMotifsForViews();
-    this.updateLatticeTypeRL();
      
+    this.updateLatticeTypeRL();
+    
+    this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes
+  
+    this.setCSGmode({mode : 'crystalClassic'}, 'reset');
+    this.menu.chooseActiveCrystalMode('crystalClassic');
   }; 
   Lattice.prototype.createGrid = function() {
 
@@ -1065,7 +1119,7 @@ define([
     
     _times['c'] = new Date();
 
-    if(_this.latticeName !== 'hexagonal'){ 
+    if(this.latticeName !== 'hexagonal'){ 
       
       // the above concept of execution keeps the speed of execution high but also prevents the js thread to be idle processing only the above
         
@@ -1100,7 +1154,13 @@ define([
             });      
           });  
       });
-       
+      
+      
+      this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes
+  
+      this.setCSGmode({mode : 'crystalClassic'}, 'reset');
+      this.menu.chooseActiveCrystalMode('crystalClassic');
+      
     }
     else{  
 
@@ -1257,7 +1317,8 @@ define([
           )  
         );
       });
-    });  
+    }); 
+  
   };
   Lattice.prototype.getAnglesScales = function(){
     if(!this.lattice) {
@@ -1374,13 +1435,9 @@ define([
             atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ; 
           } 
         }); 
-
-        var endTime1 = new Date();
-        times_['actualatoms'] +=(endTime1 - startTime1);
-
+ 
         ///////////////////////
-
-        var startTime2 = new Date();
+ 
         _.each(points, function(point, reference) { 
           var pos = point.object3d.position.applyMatrix4(matrix);   
           if(caller==0) { 
@@ -1404,41 +1461,29 @@ define([
             }); 
           } 
         });   
-        var endTime2 = new Date();
-        times_['pointsANDgrids'] +=(endTime2 - startTime2); 
-
         ////////////////////
-
-        var startTime3 = new Date();
+ 
         _.each(_this.faces, function(face, k) {
           _.each(face.object3d.geometry.vertices, function(vertex , k){ 
             face.object3d.geometry.verticesNeedUpdate = true ; 
             vertex.applyMatrix4(matrix); 
           });   
-        });  
-        var endTime3 = new Date();   
-        times_['faces'] +=(endTime3 - startTime3);        
+        });         
       } 
-
-      var startTime4 = new Date();
+ 
       _.each(_this.millerPlanes, function(plane, reference) { 
         plane.plane.object3d.geometry.verticesNeedUpdate = true ;
         var vertices = plane.plane.object3d.geometry.vertices;
         _.each(vertices, function(vertex , k){  
           vertex.applyMatrix4(matrix); 
         });
-      });
-      var endTime4 = new Date();   
-      times_['planes'] +=(endTime4 - startTime4);
-
-      var startTime5 = new Date();
+      }); 
+ 
       _.each(_this.millerDirections, function(directional, reference) {
         directional.startPoint.applyMatrix4(matrix);
         directional.endpointPoint.applyMatrix4(matrix)
         updateMillerVector(directional);   
-      }); 
-      var endTime5 = new Date(); 
-      times_['directions'] +=(endTime5 - startTime5);
+      });  
 
     });  
   };
@@ -2017,7 +2062,7 @@ define([
     _this.updateLatticeTypeRL(); 
     
     this.menu.progressBarFinish();
-
+  
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
