@@ -853,7 +853,7 @@ define([
     this.grids.splice(0);
   }; 
   Lattice.prototype.updateLatticeUI = function(params){
-   
+    
     this.menu.setSliderValue("beta", params.beta );
     this.menu.setSliderValue("gamma", params.gamma );
     this.menu.setSliderValue("alpha", params.alpha );
@@ -870,8 +870,7 @@ define([
       this.menu.setSliderValue("scaleY", params.scaleY );
       this.menu.setSliderValue("scaleZ", params.scaleZ );
     }
-    
-  
+     
   }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 

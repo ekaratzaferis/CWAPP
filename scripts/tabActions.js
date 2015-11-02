@@ -66,7 +66,7 @@ define([
         return;
       } 
 
-      if(tabId === "latticeTab"){
+      if(tabId === "latticeTab" && (this.motifEditor.motifsAtoms.length > 0 || this.motifEditor.newSphere !== undefined)){
         this.lattice.updateLatticeUI(this.motifEditor.cellParameters);
       }
         
