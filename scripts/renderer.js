@@ -163,6 +163,7 @@ define([
           this.renderer.render( this.scene, this.cameras[0], undefined, true);
 
           if(this.doll !== undefined){  
+            this.renderer.clearDepth(); // celar depth buffer to have gear bar and doll on top
             this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
             this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
             this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 

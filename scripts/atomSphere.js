@@ -28,7 +28,7 @@ define([
     this.visible = visible; 
     this.elementName = elementName;
     this.wireframe = wireframe ;
-    this.opacity = opacity ; 
+    this.opacity = opacity; 
     this.position = position;  
     this.addMaterial(color, position) ;
        
@@ -38,7 +38,7 @@ define([
     
     this.color = color ; 
 
-    this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : this.opacity }) ; 
+    this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : 0.7 }) ; 
     
     if(this.wireframe == true){
       this.materials =  [  
@@ -63,11 +63,11 @@ define([
 
   }; 
   AtomSphere.prototype.setOpacity = function( opacity) {
+    
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity/10 ;
-    this.colorMaterial = new THREE.MeshBasicMaterial({ color : this.color, transparent: true, opacity: opacity/10 });
-    this.object3d.children[0].material.opacity = opacity/10 ; 
-    this.object3d.children[0].material.needsUpdate = true; 
+    this.object3d.children[0].material.opacity = 0.7 ;
+    this.object3d.children[0].material.needsUpdate = true;
   }; 
   AtomSphere.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;

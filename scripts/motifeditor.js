@@ -141,8 +141,7 @@ define([
     }  
     if(_.isUndefined(restore) ) {
       this.configureCellPoints('manual');
-    }
-
+    } 
   };
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
@@ -751,9 +750,9 @@ define([
   Motifeditor.prototype.scaleRelative = function(par){
 
     var _this = this;
-    var aScale = (par.Aa === undefined) ? parseFloat(par.scaleZ) : parseFloat(par.Aa) ;
-    var bScale = (par.Ab === undefined) ? parseFloat(par.scaleX) : parseFloat(par.Ab) ;
-    var cScale = (par.Ac === undefined) ? parseFloat(par.scaleY) : parseFloat(par.Ac) ;
+    var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
+    var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
+    var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
 
     if(aScale != undefined){ 
 
@@ -1533,12 +1532,7 @@ define([
     } ;
       
     return r;
-  };
-  Motifeditor.prototype.updateFixedParams = function (params) {
-    $("#fixedX").val(params.x);
-    $("#fixedY").val(params.y);
-    $("#fixedZ").val(params.z); 
-  };
+  }; 
   Motifeditor.prototype.updateFixedDimensions = function (latticeParams) {
 
     if(!_.isUndefined(latticeParams.scaleX) ) { 
@@ -5562,6 +5556,7 @@ define([
       
     if(this.padlock === false) {  
 
+      //this.menu.setMotifPadlock('unlock');
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -5578,7 +5573,7 @@ define([
 
     }
     else {  
-  
+      //this.menu.setMotifPadlock('lock');
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
