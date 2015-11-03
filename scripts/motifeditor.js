@@ -418,23 +418,7 @@ define([
       this.menu.setSliderMin('atomPosZ', -20.0000000000);
       this.menu.setSliderMax('atomPosZ', 20.0000000000);
       this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z);
-
-      //this.removeFromUnitCell(this.newSphere.getID());
-      //this.newSphere.destroy();
-      /*
-      if(!_.isUndefined( this.motifsAtoms[0])) {
-        this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
-        this.newSphere =  undefined;  
-        this.configureCellPoints();
-      }
-      else{
-        this.newSphere = undefined ;
-        this.lastSphereAdded = undefined ;
-        this.isEmpty = true ;  
-      }
-      this.dragMode = false;
-      */
-      //PubSub.publish(events.EDITOR_STATE,{ 'state' : "initial"});
+ 
     }
      
   };
@@ -819,7 +803,7 @@ define([
     var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
     var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
   
-    if(this.editorState.atomPosMode === 'relative'){
+    if(this.editorState.atomPosMode === 'relative'){ 
       this.scaleRelative(par);
       return;
     }
@@ -847,8 +831,7 @@ define([
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
             this.menu.setSliderValue("scaleZ", offset); 
-          }
- 
+          } 
         }
         aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
         
@@ -897,16 +880,17 @@ define([
       counterHelper++;  
     } 
     
-    /*if(aAtomIndex && this.unitCellAtoms[aAtomIndex].object3d !== undefined){  
-      var s = new THREE.Vector3(
-        this.unitCellAtoms[aAtomIndex].object3d.position.x - this.unitCellAtoms[bAtomIndex].object3d.position.x,
-        this.unitCellAtoms[aAtomIndex].object3d.position.y - this.unitCellAtoms[bAtomIndex].object3d.position.y,
-        this.unitCellAtoms[aAtomIndex].object3d.position.z - this.unitCellAtoms[bAtomIndex].object3d.position.z
-      ) ;
-     
-      this.giveInfo('The distance of tangent atoms after fixing -> Mathematical distance : '+(this.unitCellAtoms[aAtomIndex].getRadius() + this.unitCellAtoms[bAtomIndex].getRadius())+' , distance in CW : '+s.length());
+    if(this.latticeSystem === 'hexagonal' && this.latticeType === 'hexagonal'){  
+
+      if(aScale !== undefined){
+        this.cellParameters.scaleX = aScale ; 
+        this.menu.setSliderValue("scaleX", aScale); 
+      }
+      else if(bScale !== undefined){
+        this.cellParameters.scaleZ = bScale ;
+        this.menu.setSliderValue("scaleZ", bScale);  
+      }
     }
-    */
       
     ///////////////////////
     this.cellMutex = true ;
@@ -2196,14 +2180,14 @@ define([
 
         this.changeTangentR();
 
-        this.translateCellAtoms("x",  newPos.x , _this.newSphere.getID());
-        this.translateCellAtoms("y",  newPos.y , _this.newSphere.getID());
-        this.translateCellAtoms("z",  newPos.z , _this.newSphere.getID());
+        this.translateCellAtoms("x",  newPos.x , this.newSphere.getID());
+        this.translateCellAtoms("y",  newPos.y , this.newSphere.getID());
+        this.translateCellAtoms("z",  newPos.z , this.newSphere.getID());
         this.configureCellPoints(); 
 
-        this.menu.setSliderValue("atomPosX", _this.newSphere.object3d.position.x);
-        this.menu.setSliderValue("atomPosY", _this.newSphere.object3d.position.y);
-        this.menu.setSliderValue("atomPosZ", _this.newSphere.object3d.position.z);
+        this.menu.setSliderValue("atomPosX", this.newSphere.object3d.position.x);
+        this.menu.setSliderValue("atomPosY", this.newSphere.object3d.position.y);
+        this.menu.setSliderValue("atomPosZ", this.newSphere.object3d.position.z);
       }
       else{
         this.changeTangentR({'tangentR' : this.newSphere.tangentR});
@@ -2293,8 +2277,7 @@ define([
       this.newSphere = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });
       this.newSphere.fresh = false;
 
-      if(this.editorState.atomPosMode === 'relative'){
-         
+      if(this.editorState.atomPosMode === 'relative'){ 
         this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
         this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y/y);
         this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z/z);
@@ -2306,7 +2289,7 @@ define([
       }
        
       _.each(_this.motifsAtoms, function(atom, r) { 
-        if(atom.getID() == which) { 
+        if(atom.getID() === which) { 
           _this.motifsAtoms.splice(r,1);
         }
       });   
