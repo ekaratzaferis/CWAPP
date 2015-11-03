@@ -63,9 +63,9 @@ define([
     
         var $bravaisModal = jQuery('.mh_bravais_lattice_block');
         var $periodicModal = jQuery('.ch');
-    
-        // Add Buttons
-        var $periodicTableButton = jQuery('#add_atom_btn');
+        var $errorModal = jQuery('#error_modal');
+        var $infoModal = jQuery('#info_modal');
+        var $warningModal = jQuery('#warning_modal');
     
     
     
@@ -497,7 +497,8 @@ define([
             LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system',
             AXYZ_CHANGE: 'menu.axyz_change',
             MAN_ANGLE_CHANGE: 'menu.man_angle_change',
-            SWAP_SCREEN: 'menu.swap_screen'
+            SWAP_SCREEN: 'menu.swap_screen',
+            DIALOG_RESULT: 'menu.dialog_result'
         }; 
     
     
@@ -528,6 +529,13 @@ define([
        ------------*/
         var restrictionList = {};
     
+    
+    /* --------
+       Messages
+       ---------*/
+        var messages = {
+            '1':'Error Message Error Message Error Message Error Message'   
+        }
     
     /* ---------
        Functions
@@ -1405,14 +1413,10 @@ define([
                             $latticePadlock.find('a').prop('disabled', true);
                             $latticePadlock.addClass('disabled');
                             _this.removeLatticeRestrictions();
-                            if (!($motifPadlock.hasClass('disabled'))) {
-                                if (!($latticePadlock.children().hasClass('active'))) {
-                                    $motifPadlock.trigger('unlock');
-                                    $motifPadlock.find('a').button('toggle');
-                                }
-                                $motifPadlock.find('a').prop('disabled', true);
-                                $motifPadlock.addClass('disabled');
-                            }
+                            $motifPadlock.trigger('unlock');
+                            if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.find('a').button('toggle');
+                            $motifPadlock.find('a').prop('disabled', true);
+                            $motifPadlock.addClass('disabled');
                         }
                     }
                 }
@@ -1431,17 +1435,20 @@ define([
                 }
                 PubSub.publish(events.SET_PADLOCK, argument);
             });
+            $motifPadlock.on('lock', function(event,value){
+                $tangency.trigger('turnOn');
+                argument = {};
+                argument["padlock"] = false;
+                _.each(latticeParameters, function($parameter,k){
+                    $parameter.prop('disabled',true);
+                    jQuery('#'+k+'Slider').slider('disable');
+                });
+                PubSub.publish(events.SET_PADLOCK, argument);
+            });
             $motifPadlock.on('click', function() {
                 if (!($motifPadlock.hasClass('disabled'))) {
-                    if (!($motifPadlock.children().hasClass('active'))) {
-                        $motifPadlock.trigger('unlock');
-                    }
-                    else {
-                        $tangency.trigger('turnOn');
-                        argument = {};
-                        argument["padlock"] = false;
-                        PubSub.publish(events.SET_PADLOCK, argument);
-                    }
+                    if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.trigger('unlock');
+                    else $motifPadlock.trigger('lock');
                 }
             });
 
@@ -1964,6 +1971,24 @@ define([
                 jQuery('.modal-pre-footer').hide('fast');
             });
             
+            // Listen User Input in Dialog box
+            jQuery('#cancelWarning').on('click',function(){
+                argument = {};
+                argument['result'] = false;
+                PubSub.publish(events.DIALOG_RESULT, argument);
+            });
+            jQuery('#continueWarning').on('click',function(){
+                argument = {};
+                argument['result'] = true;
+                PubSub.publish(events.DIALOG_RESULT, argument);
+            });
+            $warningModal.on('hide.bs.modal', function(){
+                argument = {};
+                argument['result'] = false;
+                PubSub.publish(events.DIALOG_RESULT, argument);
+            });
+        
+            
     /*$
     
     _.each(fixedDimensions, function($parameter, k) {
@@ -1986,6 +2011,26 @@ define([
     /* --------------------
        Prototypes - Editors
        -------------------- */
+        Menu.prototype.showErrorDialog = function(argument){
+            var screen_height = jQuery(window).height();
+            $errorModal.find('#errorLabel h2').html('Error '+argument['code']);
+            $errorModal.find('#errorMessage').html(messages[argument['messageID']]);
+            $errorModal.modal('show').css('margin-top',(screen_height/2)-100);
+        };
+        Menu.prototype.showInfoDialog = function(argument){
+            var screen_height = jQuery(window).height();
+            $infoModal.find('#infoMessage').html(messages[argument['messageID']]);
+            $infoModal.modal('show').css('margin-top',(screen_height/2)-100);
+        };
+        Menu.prototype.showWarningDialog = function(argument){
+            var screen_height = jQuery(window).height();
+            $warningModal.find('#warningMessage').html(messages[argument['messageID']]);
+            $warningModal.modal('show').css('margin-top',(screen_height/2)-100);
+        };
+        Menu.prototype.setMotifPadlock = function(state){
+            if (state === 'lock') $motifPadlock.trigger('lock');
+            else if (state === 'unlock') $motifPadlock.trigger('unlock');
+        };
         Menu.prototype.chooseActiveRenderMode = function(id){
             _.each(renderizationMode, function($parameter, k) {
                 if ( k === id ){
@@ -3454,6 +3499,9 @@ define([
         };
         Menu.prototype.onSwapScreen = function(callback) {
             PubSub.subscribe(events.SWAP_SCREEN, callback);
+        };
+        Menu.prototype.onDialogResult = function(callback){
+            PubSub.subscribe(events.DIALOG_RESULT, callback);
         };
 
   return Menu;
