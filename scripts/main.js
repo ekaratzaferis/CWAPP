@@ -468,10 +468,7 @@ require([
   }); 
   menu.onManuallyCellVolumeChange(function(message, param) { 
     motifEditor.setManuallyCellVolume(param);
-  }); 
-  menu.onAtomTangencyChange(function(message, param) { 
-    motifEditor.setAtomsTangency(param);
-  });
+  });  
   menu.onAtomVisibility(function(message, param) { 
     motifEditor.atomVisibility(param); 
     lattice.atomVisibility(param); 

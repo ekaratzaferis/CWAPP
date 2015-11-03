@@ -4744,12 +4744,7 @@ define([
   Motifeditor.prototype.createAdditionalAtoms = function(){
     var atoms = this.cachedAtoms;
     var objName = 'cellGradeLimited';
-     
-    for (var d = atoms.length - 1; d >= 0; d--) { 
-     // UnitCellExplorer.remove({'object3d' : atoms[d]}); 
-    };
-    //atoms.splice(0);
-
+       
     var i = 0, j = 0;
 
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
@@ -4765,6 +4760,7 @@ define([
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
+    var renderingMode = this.renderingMode; 
 
     if(this.newSphere !== undefined){
       this.motifsAtoms.push(this.newSphere);
@@ -4777,10 +4773,8 @@ define([
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
         var id = this.motifsAtoms[j].myID; 
-        var elementName = this.motifsAtoms[j].elementName; 
         var elementName = this.motifsAtoms[j].elementName;  
-        var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
+        var opacity = this.motifsAtoms[j].opacity;  
         var identity;
 
         for ( i = 0; i < 4; i ++ ) { 
@@ -4925,10 +4919,8 @@ define([
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
         var id = this.motifsAtoms[j].myID; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var elementName = this.motifsAtoms[j].elementName;  
-        var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
+        var elementName = this.motifsAtoms[j].elementName;   
+        var opacity = this.motifsAtoms[j].opacity;  
         var identity;
  
         for ( i = 0; i < 4; i ++ ) {
@@ -4986,12 +4978,10 @@ define([
         var radius = this.motifsAtoms[j].radius; 
         var color = this.motifsAtoms[j].color; 
         var id = this.motifsAtoms[j].myID; 
-        var elementName = this.motifsAtoms[j].elementName; 
-        var elementName = this.motifsAtoms[j].elementName; 
+        var elementName = this.motifsAtoms[j].elementName;  
         var identity ; 
         var opacity = this.motifsAtoms[j].opacity; 
-        var renderingMode = this.renderingMode; 
-        
+         
         for ( i = 0; i < 4; i ++ ) {
           identity = "body"+i+'_1';
           this.cachedAtoms.push(

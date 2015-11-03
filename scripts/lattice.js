@@ -125,12 +125,11 @@ define([
     var objName = 'crystalGradeLimited' ;
     var atoms = this.cachedAtoms; 
     for (var d = atoms.length - 1; d >= 0; d--) { 
-      Explorer.remove({'object3d' : atoms[d]}); 
+      Explorer.remove({'object3d' : atoms[d].object3d}); 
     };
     atoms.splice(0);
     var i = 0, j = 0;
-
-    var globMat;
+ 
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
     var halfX = this.parameters.scaleX * 0.5;
     var halfY = this.parameters.scaleY * 0.5;
@@ -144,58 +143,112 @@ define([
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
  
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
- 
+    var renderingMode = this.renderingMode; 
+
     if(this.latticeType === 'face'){ 
       while(j <this.currentMotif.length) {
-        var p = this.currentMotif[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
-        }  
-
-        var radius = this.currentMotif[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
         
+        var p = this.currentMotif[j].object3d.position.clone(); 
+        var radius = this.currentMotif[j].radius;
+        var color = this.currentMotif[j].color ;
+        var opacity = this.currentMotif[j].opacity ;
+         
+        var elementName = this.currentMotif[j].elementName;
+        var id = this.currentMotif[j].myID; 
+
         ///
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft.name = objName;
-            replicaAtomLeft.position.set(p.x - halfX, p.y + y*this.parameters.scaleY, p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft);
- 
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(-1 * halfX, y*this.parameters.scaleY, halfZ + z*this.parameters.scaleZ));
+             
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
         for (var z = 0; z <= this.parameters.repeatZ; z++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) { 
-            var replicaAtomLeft2 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft2.name = objName;
-            replicaAtomLeft2.position.set(p.x - halfX, p.y + y*this.parameters.scaleY +halfY, p.z + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft2); 
+          for (var y = 0; y < this.parameters.repeatY; y++) {  
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(-1 * halfX, y*this.parameters.scaleY + halfY, z*this.parameters.scaleZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+               centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         }; 
         ///
 
         /// 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomBack.name = objName;
-            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY, p.z - halfZ ); 
-            atoms.push(replicaAtomBack);
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, y*this.parameters.scaleY, -1 * halfZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
+
           };
         };
         for (var x = 0; x <= this.parameters.repeatX; x++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-            var replicaAtomBack2 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomBack2.name = objName;
-            replicaAtomBack2.position.set(p.x + x*this.parameters.scaleX , p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
-            atoms.push(replicaAtomBack2);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(  x*this.parameters.scaleX , y*this.parameters.scaleY + halfY, -1 * halfZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };  
         ///
@@ -203,19 +256,47 @@ define([
         var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
 
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) { 
-            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomRight.name = objName;
-            replicaAtomRight.position.set(p.x + farX, p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomRight);
+          for (var y = 0; y <= this.parameters.repeatY; y++) {  
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( farX, y*this.parameters.scaleY, halfZ + z*this.parameters.scaleZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            ); 
           };
         };
         for (var z = 0; z <= this.parameters.repeatZ; z++) {
           for (var y = 0; y < this.parameters.repeatY; y++) { 
-            var replicaAtomRight2 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomRight2.name = objName;
-            replicaAtomRight2.position.set(p.x + farX, p.y + y*this.parameters.scaleY + halfY,p.z + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomRight2);
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( farX,  y*this.parameters.scaleY + halfY, z*this.parameters.scaleZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         }; 
         //
@@ -223,55 +304,139 @@ define([
         var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomFront.name = objName;
-            replicaAtomFront.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY,p.z + farZ); 
-            atoms.push(replicaAtomFront);
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX + halfX, y*this.parameters.scaleY, farZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
        
         for (var x = 0; x <= this.parameters.repeatX; x++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-            var replicaAtomFront2 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomFront2.name = objName;
-            replicaAtomFront2.position.set(p.x + x*this.parameters.scaleX,p.y + y*this.parameters.scaleY + halfY , p.z + farZ ); 
-            atoms.push(replicaAtomFront2);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX, y*this.parameters.scaleY + halfY , farZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
         
         //
         var farY = halfY + this.parameters.scaleY*this.parameters.repeatY ;
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var x = 0; x <= this.parameters.repeatX; x++) { 
-            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft3.name = objName;
-            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX, p.y + farY, p.z + z*this.parameters.scaleZ+halfZ); 
-            atoms.push(replicaAtomLeft3); 
+          for (var x = 0; x <= this.parameters.repeatX; x++) {  
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX, farY, z*this.parameters.scaleZ+halfZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            ); 
           };
         };
         for (var z = 0; z <= this.parameters.repeatZ; z++) {
-          for (var x = 0; x < this.parameters.repeatX; x++) { 
-            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft3.name = objName;
-            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + farY, p.z + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft3); 
+          for (var x = 0; x < this.parameters.repeatX; x++) {  
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX + halfX, farY, z*this.parameters.scaleZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif,
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            ); 
           };
         };
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var x = 0; x <= this.parameters.repeatX; x++) { 
-            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft3.name = objName;
-            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX, p.y - halfY, p.z + z*this.parameters.scaleZ+halfZ); 
-            atoms.push(replicaAtomLeft3); 
+          for (var x = 0; x <= this.parameters.repeatX; x++) {
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX,  -1 * halfY, z*this.parameters.scaleZ+halfZ));   
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
         for (var z = 0; z <= this.parameters.repeatZ; z++) {
           for (var x = 0; x < this.parameters.repeatX; x++) { 
-            var replicaAtomLeft3 = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft3.name = objName;
-            replicaAtomLeft3.position.set(p.x + x*this.parameters.scaleX + halfX, p.y - halfY, p.z + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft3); 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, -1 * halfY, z*this.parameters.scaleZ)); 
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
@@ -279,58 +444,108 @@ define([
       } 
     }
     else if(this.latticeType === 'base'){
-      while(j <this.currentMotif.length) {
-        var p = this.currentMotif[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
-        }  
-
+      while(j <this.currentMotif.length) { 
+        var p = this.currentMotif[j].object3d.position.clone(); 
         var radius = this.currentMotif[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
+        var color = this.currentMotif[j].color ;
+        var opacity = this.currentMotif[j].opacity ;
+         
+        var elementName = this.currentMotif[j].elementName;
+        var id = this.currentMotif[j].myID; 
    
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft.name = objName;
-            replicaAtomLeft.position.set(p.x - halfX,p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft);
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(-1 * halfX, y*this.parameters.scaleY, halfZ + z*this.parameters.scaleZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomBack.name = objName;
-            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX, p.y + y*this.parameters.scaleY, p.z - halfZ ); 
-            atoms.push(replicaAtomBack);
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, y*this.parameters.scaleY, -1 * halfZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
 
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) { 
-            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomRight.name = objName;
-            replicaAtomRight.position.set(p.x + farX,p.y + y*this.parameters.scaleY,p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomRight);
+          for (var y = 0; y <= this.parameters.repeatY; y++) {  
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(farX, y*this.parameters.scaleY, halfZ + z*this.parameters.scaleZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y <= this.parameters.repeatY; y++) {
-            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomFront.name = objName;
-            replicaAtomFront.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY,p.z + farZ); 
-            atoms.push(replicaAtomFront);
+          for (var y = 0; y <= this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, y*this.parameters.scaleY,farZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x, p.y + centerOfMotif.y, p.z + centerOfMotif.z),
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
@@ -340,58 +555,108 @@ define([
     } 
     else if(this.latticeType === 'body'){
       while(j <this.currentMotif.length) {
-        var p = this.currentMotif[j].object3d.position.clone();
-        if(this.renderingMode === 'wireframe') { 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.currentMotif[j].color, wireframe: true, opacity:0}) ; 
-        }
-        else if(this.renderingMode === 'realistic'){ 
-          globMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: this.currentMotif[j].color, transparent:true, opacity:this.currentMotif[j].opacity }) ; 
-        }
-        else{ 
-          globMat = new THREE.MeshLambertMaterial({  color: this.currentMotif[j].color, transparent:true, opacity: this.currentMotif[j].opacity }) ; 
-        }  
-
+        var p = this.currentMotif[j].object3d.position.clone(); 
         var radius = this.currentMotif[j].radius;
-        var globalG = new THREE.SphereGeometry(radius,32, 32);
-   
+        var color = this.currentMotif[j].color ;
+        var opacity = this.currentMotif[j].opacity ; 
+        var elementName = this.currentMotif[j].elementName;
+        var id = this.currentMotif[j].myID; 
+
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-            var replicaAtomLeft = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomLeft.name = objName;
-            replicaAtomLeft.position.set(p.x - halfX,p.y + y*this.parameters.scaleY + halfY,p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomLeft);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(-1 * halfX, y*this.parameters.scaleY + halfY, halfZ + z*this.parameters.scaleZ));
+             
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x,p.y + centerOfMotif.y, p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-            var replicaAtomBack = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomBack.name = objName;
-            replicaAtomBack.position.set(p.x + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY + halfY,p.z - halfZ ); 
-            atoms.push(replicaAtomBack);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, y*this.parameters.scaleY + halfY, -1 * halfZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x,p.y + centerOfMotif.y,p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         var farX = halfX + this.parameters.scaleX*this.parameters.repeatX ;
 
         for (var z = 0; z < this.parameters.repeatZ; z++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-
-            var replicaAtomRight = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomRight.name = objName;
-            replicaAtomRight.position.set(p.x + farX,p.y + y*this.parameters.scaleY + halfY,p.z + halfZ + z*this.parameters.scaleZ); 
-            atoms.push(replicaAtomRight);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( farX, y*this.parameters.scaleY + halfY,  halfZ + z*this.parameters.scaleZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x + centerOfMotif.x,p.y + centerOfMotif.y,p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         var farZ = halfZ + this.parameters.scaleZ*this.parameters.repeatZ ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var y = 0; y < this.parameters.repeatY; y++) {
-            var replicaAtomFront = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomFront.name = objName;
-            replicaAtomFront.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y + y*this.parameters.scaleY + halfY,p.z + farZ); 
-            atoms.push(replicaAtomFront);
+          for (var y = 0; y < this.parameters.repeatY; y++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3( x*this.parameters.scaleX + halfX, y*this.parameters.scaleY + halfY,  farZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x  + centerOfMotif.x,p.y + centerOfMotif.y,p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
         
@@ -399,54 +664,60 @@ define([
         var farY = halfY + this.parameters.scaleY*this.parameters.repeatY ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var z = 0; z < this.parameters.repeatZ; z++) {
-            var replicaAtomUp = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomUp.name = objName;
-            replicaAtomUp.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y + farY,p.z + z*this.parameters.scaleZ + halfZ); 
-            atoms.push(replicaAtomUp);
+          for (var z = 0; z < this.parameters.repeatZ; z++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, farY, z*this.parameters.scaleZ + halfZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x  + centerOfMotif.x,p.y + centerOfMotif.y,p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
-          for (var z = 0; z < this.parameters.repeatZ; z++) {
-            var replicaAtomDown = new THREE.Mesh( globalG, globMat ); 
-            if(objName !== undefined) replicaAtomDown.name = objName;
-            replicaAtomDown.position.set(p.x  + x*this.parameters.scaleX + halfX,p.y - halfY ,p.z + z*this.parameters.scaleZ + halfZ); 
-            atoms.push(replicaAtomDown);
+          for (var z = 0; z < this.parameters.repeatZ; z++) { 
+            var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(x*this.parameters.scaleX + halfX, -1 * halfY , z*this.parameters.scaleZ + halfZ));
+            atoms.push( 
+              new CrystalAtom(
+                new THREE.Vector3(p.x  + centerOfMotif.x, p.y + centerOfMotif.y,p.z + centerOfMotif.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                centerOfMotif, 
+                ' .png',
+                opacity,
+                renderingMode,
+                ' '
+              ) 
+            );
           };
         };
 
         j++;
       }
     } 
-    
-    i=0;
-     
+      
     /////////////////////////////////// 
- 
-    if (this.parameters.alpha !== 90) {  
-      var matrix = transformationMatrix({alpha : this.parameters.alpha});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-    if (this.parameters.beta !== 90) {  
-      var matrix = transformationMatrix({beta : this.parameters.beta});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-    if (this.parameters.gamma !== 90) {  
-      var matrix = transformationMatrix({gamma : this.parameters.gamma});  
-      _.each(atoms, function(atom) { 
-        atom.position.applyMatrix4(matrix);    
-      }); 
-    }
-    
+   
     i = 0;
-    while(i < atoms.length ){  
-      atoms[i].visible = false; 
-      Explorer.add({'object3d' : atoms[i]});  
+    while(i < atoms.length ){    
+      Explorer.add({'object3d' : atoms[i].object3d});  
       i++;
     }  
  
@@ -471,11 +742,10 @@ define([
     return found;
   };
 
-  Lattice.prototype.setCSGmode = function(arg, reset) {
+  Lattice.prototype.setCSGmode = function(arg, reset) { 
      
     var _this = this, i = 0;
-    this.viewMode = arg.mode ;
-      
+    this.viewMode = arg.mode ; 
     if(this.actualAtoms.length!==0){
   
       var scene = Explorer.getInstance().object3d;
@@ -496,7 +766,7 @@ define([
 
           i =0;
           while(i < this.cachedAtoms.length ){ 
-            this.cachedAtoms[i].visible = false; 
+            this.cachedAtoms[i].object3d.visible = false; 
             this.cachedAtoms[i].subtractedForCache.object3d.visible = true;  
             i++;
           }
@@ -512,8 +782,8 @@ define([
           i = 0;
 
           while(i < this.cachedAtoms.length ) {     
-            this.cachedAtoms[i].visible = false; 
-            this.cachedAtoms[i].subtractedSolidView(box, this.cachedAtoms[i].position, true);
+            this.cachedAtoms[i].object3d.visible = false; 
+            this.cachedAtoms[i].subtractedSolidView(box, this.cachedAtoms[i].object3d.position, true);
             i++;
           } 
         }
@@ -533,7 +803,7 @@ define([
 
         i = 0;
         while(i < this.cachedAtoms.length ) { 
-          this.cachedAtoms[i].visible = false;     
+          this.cachedAtoms[i].object3d.visible = false;     
           if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
             this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
           }
@@ -564,10 +834,10 @@ define([
         i=0;
     
         while(i < this.cachedAtoms.length ) { 
-          this.cachedAtoms[i].SolidVoid(this.cachedAtoms[i].position);  
+          this.cachedAtoms[i].SolidVoid(this.cachedAtoms[i].object3d.position);  
           var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
           mesh.scale.set(this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius(), this.cachedAtoms[i].getRadius());
-          mesh.position.set( this.cachedAtoms[i].position.x, this.cachedAtoms[i].position.y, this.cachedAtoms[i].position.z);
+          mesh.position.set( this.cachedAtoms[i].object3d.position.x, this.cachedAtoms[i].object3d.position.y, this.cachedAtoms[i].object3d.position.z); 
           mesh.updateMatrix();   
           geometry.merge( mesh.geometry, mesh.matrix ); 
           i++;  
@@ -667,12 +937,12 @@ define([
 
         while(i < this.cachedAtoms.length ) { 
            
-          this.cachedAtoms[i].visible = true;  
+          this.cachedAtoms[i].object3d.visible = true;  
              
           // workaround for points that are exactly on the grade (faces, cell points)
-          var smartOffset = centroid.clone().sub(this.cachedAtoms[i].position.clone());
+          var smartOffset = centroid.clone().sub(this.cachedAtoms[i].object3d.position.clone());
           smartOffset.setLength(0.01);
-          var originPointF = this.cachedAtoms[i].position.clone().add(smartOffset);
+          var originPointF = this.cachedAtoms[i].object3d.position.clone().add(smartOffset);
           //
 
            
@@ -684,13 +954,13 @@ define([
 
           if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
     
-            var vertexIndex = this.cachedAtoms[i].children[0].geometry.vertices.length-1;
-            var atomCentre = this.cachedAtoms[i].position.clone();
+            var vertexIndex = this.cachedAtoms[i].object3d.children[0].geometry.vertices.length-1;
+            var atomCentre = this.cachedAtoms[i].object3d.position.clone();
 
             while( vertexIndex >= 0 )
             {     
-              var localVertex = this.cachedAtoms[i].children[0].geometry.vertices[vertexIndex].clone();
-              var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].matrixWorld);
+              var localVertex = this.cachedAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(this.cachedAtoms[i].object3d.matrixWorld);
               var directionVector = globalVertex.sub( originPointF );     
               
               var ray = new THREE.Raycaster( originPointF, directionVector.clone().normalize() );
@@ -704,45 +974,48 @@ define([
               if(vertexIndex === -1) touches = false;
             }  
             if(!touches) {
-              this.cachedAtoms[i].visible = false ;
+              this.cachedAtoms[i].object3d.visible = false ;
             }
           }
           else{  
-            this.cachedAtoms[i].visible = true;
+            this.cachedAtoms[i].object3d.visible = true;
           }
           i++;
         } 
       
         Explorer.remove({'object3d' : box }); 
       }
-      else if(this.viewMode === 'crystalClassic'){ 
-
-        while(i < this.actualAtoms.length ){ 
-          this.actualAtoms[i].object3d.visible = true; 
-          if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
-            this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
-          }
-          
-          i++;
-        }
-        
+      else if(this.viewMode === 'crystalClassic'){
+ 
         i =0;
  
         if(reset === undefined){ 
-           
-          while(i < this.cachedAtoms.length ){ 
-            this.cachedAtoms[i].visible = false; 
-            if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
-              this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
-            }  
+          while(i < this.actualAtoms.length ){ 
+            this.actualAtoms[i].object3d.visible = true; 
+            if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
+              this.actualAtoms[i].subtractedForCache.object3d.visible = false;    
+            } 
             i++;
           }
           this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
         }
         else{
-          this.offsetMotifsForViews();
+          this.offsetMotifsForViews(); 
           this.editObjectsInScene('crystalSolidVoid', 'remove', true);
+
+          i =0;
+          while(i < this.cachedAtoms.length ){ 
+            this.cachedAtoms[i].object3d.visible = false; 
+            if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+              Explorer.remove({'object3d' : this.cachedAtoms[i].subtractedForCache.object3d});  
+            }  
+            i++;
+          }
+
         }
+
+        
+
       } 
     }   
   };
@@ -1409,6 +1682,7 @@ define([
     'faces' : 0,
     'grids' : 0
   };
+ 
   Lattice.prototype.transform = function(caller, parameterKeys, operation) {  
     var matrix; 
     var argument;
@@ -1420,8 +1694,7 @@ define([
     _.each(parameterKeys, function(k) { 
 
       ///////////////////////////////////
-      var startTime1 = new Date();
-
+       
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
         argument[k] = operation(parameters[k]); 
@@ -1433,7 +1706,7 @@ define([
             atom.object3d.position.y = atom.centerOfMotif.y + atom.offsetY;  
             atom.object3d.position.z = atom.centerOfMotif.z + atom.offsetZ; 
           } 
-        }); 
+        });  
  
         ///////////////////////
  
@@ -1622,12 +1895,7 @@ define([
       if(this.actualAtoms[i].identity === arg.id){
         this.actualAtoms[i].object3d.visible = arg.visible;
       }
-    }
-    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
-      if(this.actualAtoms[i].identity === arg.id){
-        this.actualAtoms[i].object3d.visible = arg.visible;
-      }
-    }  
+    } 
   };
   Lattice.prototype.directionParameterChange = function(arg) {
 
@@ -1900,6 +2168,38 @@ define([
     }
     return delta;
   }; 
+  Lattice.prototype.transformFlexible = function(vector, parameterKeys, operation) {  
+    var matrix; 
+    var argument;  
+    var parameters = this.parameters;
+    var _this = this;
+      
+    _.each(parameterKeys, function(k) { 
+
+      ///////////////////////////////////
+       
+      if (_.isUndefined(parameters[k]) === false) { 
+        argument = {};
+        argument[k] = operation(parameters[k]); 
+        matrix = transformationMatrix(argument);  
+       
+        vector.applyMatrix4(matrix); 
+        
+      }
+
+    });
+
+    return vector;
+  };
+  Lattice.prototype.transformOnlyApos = function(vector) { 
+    var _this = this;
+ 
+    var vec = this.transformFlexible(vector,_.union( shearing), function(value) {
+      return value;
+    });
+
+    return vec;
+  };
   Lattice.prototype.backwardTransformations = function() {   
     this.revertShearing();
     this.revertScaling();
@@ -2048,7 +2348,7 @@ define([
       var _this = this;
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
-      _.each(_this.actualAtoms, function(atom,k) { 
+      _.each(this.actualAtoms, function(atom,k) { 
         atom.destroy(); 
       });
       this.actualAtoms.splice(0); 
@@ -2058,7 +2358,7 @@ define([
       this.recreateMotif();
 
     }   
-    _this.updateLatticeTypeRL(); 
+    this.updateLatticeTypeRL(); 
     
     this.menu.progressBarFinish();
   
