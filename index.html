@@ -267,9 +267,9 @@
 															<div class="block-btn">
 																<a id="selected_lattice" class="btn btn-purple mh_title_box" data-toggle="modal" data-target="#bravais_lattice_modal" data-mh="mh_title_box">Choose a Lattice</a>
 															</div>
-															<div id="latticePadlock" class="block-icon mh_title_box" data-mh="mh_title_box">
-																<a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
-															</div>
+                                                            <div id="latticePadlock" class="block-icon mh_title_box" data-mh="mh_title_box">
+                                                                <a class="btn" data-toggle="button" aria-pressed="false" autocomplete="off"></a>
+                                                            </div>
 														</div>
 													</div>
 													<div class="tab-block repetition-block block-pad-sm theme-dark">
@@ -926,21 +926,21 @@
                                                                                                     <div class="col col-sm-4 latticeLabel">
                                                                                                         <div class="slider-detail">
                                                                                                             <div class="slider-label form-group-label">
-                                                                                                                <label>a :&nbsp;</label><label id="meAngleA">-</label>
+                                                                                                                <label>α :&nbsp;</label><label id="meAngleA">-</label>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div class="col col-sm-4 latticeLabel">
                                                                                                         <div class="slider-detail">
                                                                                                             <div class="slider-label form-group-label">
-                                                                                                                <label>b :&nbsp;</label><label id="meAngleB">-</label>
+                                                                                                                <label>β :&nbsp;</label><label id="meAngleB">-</label>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div class="col col-sm-4 latticeLabel">
                                                                                                         <div class="slider-detail">
                                                                                                             <div class="slider-label form-group-label">
-                                                                                                                <label>g :&nbsp;</label><label id="meAngleG">-</label>
+                                                                                                                <label>γ :&nbsp;</label><label id="meAngleG">-</label>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
@@ -2510,6 +2510,97 @@
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-dark-02" data-dismiss="modal">Ok</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</article>
+            
+            <!-- Error Modal -->
+			<article class="bravais-lattice-modal-container">
+				<div class="modal fade bravais-lattice-modal" id="error_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
+					<div class="modal-dialog" role="document" id="errorModalDialog">
+						<div class="modal-content">
+							<div class="modal-header mega-header" id="errorHeader">
+                                <div class="header-image" id="errorIcon">
+									<img src="Images/error.png" class="img-responsive" alt=""/>
+								</div>
+								<div class="modal-title-container" id="errorLabel">
+									<h2>Error 404</h2>
+								</div>
+								<div class="btn-close">
+									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
+									</button>
+								</div>
+							</div>
+                            
+							<div class="modal-body">
+								<p id="errorMessage">Error 404 Beer not found!</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-dark-02" data-dismiss="modal">Ok</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</article>
+            
+            <!-- Information Modal -->
+            <article class="bravais-lattice-modal-container">
+				<div class="modal fade bravais-lattice-modal" id="info_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
+					<div class="modal-dialog" role="document" id="infoModalDialog">
+						<div class="modal-content">
+							<div class="modal-header mega-header" id="infoHeader">
+                                <div class="header-image" id="infoIcon">
+									<img src="Images/information.png" class="img-responsive" alt=""/>
+								</div>
+								<div class="modal-title-container" id="infoLabel">
+									<h2>Information</h2>
+								</div>
+								<div class="btn-close">
+									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
+									</button>
+								</div>
+							</div>
+                            
+							<div class="modal-body">
+								<p id="infoMessage">Error 404 Beer not found!</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-dark-02" data-dismiss="modal">Continue</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</article>
+            
+            <!-- Information Modal -->
+            <article class="bravais-lattice-modal-container">
+				<div class="modal fade bravais-lattice-modal" id="warning_modal" tabindex="-1" role="dialog" aria-labelledby="bravais_lattice_modalLabel">
+					<div class="modal-dialog" role="document" id="warningModalDialog">
+						<div class="modal-content">
+							<div class="modal-header mega-header" id="warningHeader">
+                                <div class="header-image" id="warningIcon">
+									<img src="Images/error.png" class="img-responsive" alt=""/>
+								</div>
+								<div class="modal-title-container" id="warningLabel">
+									<h2>Warning</h2>
+								</div>
+								<div class="btn-close">
+									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true"><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
+									</button>
+								</div>
+							</div>
+                            
+							<div class="modal-body">
+								<p id="warningMessage">Error 404 Beer not found!</p>
+							</div>
+							<div class="modal-footer">
+								<button id="cancelWarning" type="button" class="btn btn-dark-02" data-dismiss="modal">Cancel</button>
+                                <button id="continueWarning" type="button" class="btn btn-dark-02" data-dismiss="modal">OK</button>
 							</div>
 						</div>
 					</div>

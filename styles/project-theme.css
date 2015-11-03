@@ -2057,7 +2057,7 @@ width: 70px;}
     margin: 0;
     height: 30px;
     width: 30px;
-    background: url("../Images/lock-icon.png") no-repeat center center;
+    background: url("../Images/lock-icon-gray.png") no-repeat center center;
     background-size: auto, 100%; }
     .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .bravais-block .block-content .block-icon .btn.active {
       background: url("../Images/lock-open-icon.png") no-repeat center center;
@@ -3560,11 +3560,15 @@ input.disabled[type="text"]{ background-color: black; }
     background: white;
 }
 #latticePadlock.disabled a{cursor: not-allowed;}
+#latticePadlock.disabled {background: #23262a;}
 #latticePadlock {
-    padding: 3px;
-    padding-top: 7px;
-    margin-top: 0px;
     float: right;
+    background: #15171b;
+    margin-top: 0;
+}
+#latticePadlock a{ 
+    padding-top: 45px; 
+    padding-left: 35.2px; 
 }
 
 #latticePadlock .btn:hover { background: url("../Images/lock-icon-white.png") no-repeat center center; }
@@ -3614,3 +3618,46 @@ input.disabled[type="text"]{ background-color: black; }
     z-index: 20;
     cursor: pointer;
 }
+
+.bravais-lattice-modal-container .modal .modal-dialog .modal-content .modal-footer {background: #25272b; }
+      .bravais-lattice-modal-container .modal .modal-dialog .modal-content .modal-footer .btn {
+        padding: 13px 30px;
+        text-transform: uppercase;
+        font-family: "Open Sans", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 17.6px;
+        color: #fff; }
+
+#errorIcon {
+    margin-left: 20px; 
+    margin-top: 11px; 
+    float:left;
+}
+#errorIcon img{ height: 22px; }
+#errorHeader { background: #81282B; }
+#errorModalDialog { max-width: 450px; }
+#errorLabel{ padding: 13px 15px !important; }
+#errorMessage{ padding: 20px;}
+
+#infoIcon {
+    margin-left: 20px; 
+    margin-top: 11px; 
+    float:left;
+}
+#infoIcon img{ height: 25px; }
+#infoHeader { background: #2362C0; }
+#infoModalDialog { max-width: 450px; }
+#infoLabel{ padding: 13px 15px !important; }
+#infoMessage{ padding: 20px;}
+
+#warningIcon {
+    margin-left: 20px; 
+    margin-top: 11px; 
+    float:left;
+}
+#warningIcon img{ height: 22px; }
+#warningHeader { background: #962426; }
+#warningModalDialog { max-width: 450px; }
+#warningLabel{ padding: 13px 15px !important; }
+#warningMessage{ padding: 20px;}
