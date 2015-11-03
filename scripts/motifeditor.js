@@ -385,7 +385,7 @@ define([
 
       var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
 
-      this.padlockMode({padlock : bool}); 
+      this.padlockMode({padlock : !bool}); 
 
       this.menu.editMEInputs(
         {
@@ -393,9 +393,7 @@ define([
          'tangency' : bool 
         }
       );
-
-      this.setAtomsTangency({tangency : false});
-   
+  
       this.menu.setSliderMin('atomPosX', 0);
       this.menu.setSliderMax('atomPosX', 1); 
       this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
@@ -440,44 +438,6 @@ define([
       //PubSub.publish(events.EDITOR_STATE,{ 'state' : "initial"});
     }
      
-  };
-  Motifeditor.prototype.setUIPadlock = function(arg){  
-     
-    if(arg === true){  
-       
-      this.cellParameters.alpha = this.initialLatticeParams.alpha ;
-      this.cellParameters.beta = this.initialLatticeParams.beta ;
-      this.cellParameters.gamma = this.initialLatticeParams.gamma ;
- 
-      this.menu.editMEInputs(
-        {
-          'cellAlpha' : this.cellParameters.alpha,
-          'cellBeta' : this.cellParameters.beta,
-          'cellGamma' : this.cellParameters.gamma 
-        }
-      );  
-      this.configureCellPoints();
- 
-      this.menu.editMEInputs(
-        {
-          'Aa' : this.cellParameters.scaleZ,
-          'Ab' : this.cellParameters.scaleX,
-          'Ac' : this.cellParameters.scaleY 
-        }
-      );  
-    }
-         
-    this.menu.disableMEInputs(
-      {
-        'Aa' : arg,
-        'Ab' : arg,
-        'Ac' : arg,
-        'cellAlpha' : arg,
-        'cellBeta' : arg,
-        'cellGamma' : arg 
-      }
-    );
-
   };
   Motifeditor.prototype.setAtomsPosition = function(param){ 
     
@@ -1497,10 +1457,7 @@ define([
     var offset = parseFloat( rightSide - wrongSide );
    
     return (sign*offset);
-  }
-  Motifeditor.prototype.setAtomsTangency = function(param){ 
-    this.globalTangency = param.tangency ;
-  }; 
+  } 
   Motifeditor.prototype.setAtomsParameter = function(param){
     var _this = this; 
      
@@ -5609,22 +5566,29 @@ define([
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
-     
+      
     this.padlock = !(arg.padlock);
     this.globalTangency = !(arg.padlock);
+      
+    if(this.padlock === false) {  
 
-    this.setUIPadlock(arg.padlock);
-     
-    if(this.padlock === false) { 
-      if(restore === true){
-        this.cellParameters.alpha = parseInt($("#alpha").val());
-        this.cellParameters.beta  = parseInt($("#beta").val());
-        this.cellParameters.gamma = parseInt($("#gamma").val());
-      } 
+      this.cellParameters.alpha = this.initialLatticeParams.alpha ;
+      this.cellParameters.beta = this.initialLatticeParams.beta ;
+      this.cellParameters.gamma = this.initialLatticeParams.gamma ;
+      
+      this.menu.setSliderValue("alpha", this.initialLatticeParams.alpha );
+      this.menu.setSliderValue("beta", this.initialLatticeParams.beta );
+      this.menu.setSliderValue("gamma", this.initialLatticeParams.gamma );
+ 
+      this.configureCellPoints();
+ 
+      this.menu.setSliderValue("scaleX", this.cellParameters.scaleX );
+      this.menu.setSliderValue("scaleZ", this.cellParameters.scaleZ );
+      this.menu.setSliderValue("scaleY", this.cellParameters.scaleY );
+
     }
     else {  
- 
-      this.globalTangency = true ;
+  
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -5634,44 +5598,17 @@ define([
       this.cellVolume.yInitVal = this.cellParameters.scaleY;
       this.cellVolume.zInitVal = this.cellParameters.scaleZ;  
        // for volume reduce functionality 
+  
       this.initVolumeState(); 
     }
-
-    // volume reducing functionality 
-
-    this.editorState.fixed = arg.padlock; // keep .fixed var for future uses
- 
-    var sz ;
-    if(_this.latticeName === 'hexagonal'){ 
-      sz = this.cellParameters.scaleX;
-
-    }
-    else{ 
-      sz = this.cellParameters.scaleZ; 
-    }  
-
-    this.menu.disableMEInputs(
-      {
-        'cellVolume' : !arg.padlock
-      }
-    );
-
-    this.menu.editMEInputs(
-      {
-        'scaleX' : this.cellParameters.scaleX,
-        'scaleY' : this.cellParameters.scaleY, 
-        'scaleZ' : sz 
-      }
-    );
-
+  
   }; 
 
   Motifeditor.prototype.initVolumeState = function(){   
 
     if(this.padlock === true || this.globalTangency === true){
       this.leastVolume();
-         
-      $("#cellVolume").val(100);   
+            
       this.menu.setSliderValue("cellVolume", 100 );  
 
       this.cellVolume.xInitVal = this.cellParameters.scaleX;
