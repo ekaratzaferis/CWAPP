@@ -83,7 +83,7 @@ define([
       if(!_.isUndefined(this.newSphere)) {
         this.newSphere.blinkMode(true, '#58D3F7');  
       }
-        
+         
       this.selectAtom(arg.parentId, doNotRepos, true);
       this.newSphere.tangentParent = arg.parentId ;
     }
@@ -392,18 +392,38 @@ define([
          'tangency' : bool 
         }
       );
-  
+      
+      var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
+
+      /*
+      if(pos.x < 0){
+        pos.x = 0;
+      }
+      if(pos.y < 0){
+        pos.y = 0;
+      }
+      if(pos.z < 0){
+        pos.z = 0;
+      }
+
+      
+      this.newSphere.object3d.position.set(pos.x, pos.y, pos.z);
+      this.translateCellAtoms("x", pos.x ,this.newSphere.getID());
+      this.translateCellAtoms("y", pos.y ,this.newSphere.getID());
+      this.translateCellAtoms("z", pos.z ,this.newSphere.getID());
+      */
+
       this.menu.setSliderMin('atomPosX', 0);
       this.menu.setSliderMax('atomPosX', 1); 
-      this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
+      this.menu.setSliderValue('atomPosX', pos.x/x);
 
       this.menu.setSliderMin('atomPosY', 0);
       this.menu.setSliderMax('atomPosY', 1);
-      this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y/y);
+      this.menu.setSliderValue('atomPosY', pos.y/y);
 
       this.menu.setSliderMin('atomPosZ', 0);
       this.menu.setSliderMax('atomPosZ', 1);
-      this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z/z);
+      this.menu.setSliderValue('atomPosZ', pos.z/z);
 
     }
     else if(this.editorState.atomPosMode === 'absolute'){
@@ -441,17 +461,11 @@ define([
     }
  
     var sliderXVal, sliderYVal, sliderZVal ;
-       
-    if(param.trigger === undefined){  
-      sliderXVal = xFactor * parseFloat($('#atomPosXSlider').slider("option", "value")); 
-      sliderYVal = yFactor * parseFloat($('#atomPosYSlider').slider("option", "value") ); 
-      sliderZVal = zFactor * parseFloat($('#atomPosZSlider').slider("option", "value") ); 
-    }
-    else{
-      sliderXVal = xFactor * parseFloat($('#atomPosX').val() ); 
-      sliderYVal = yFactor * parseFloat($('#atomPosY').val() );
-      sliderZVal = zFactor * parseFloat($('#atomPosZ').val() ); 
-    }  
+      
+    sliderXVal = xFactor * parseFloat($('#atomPosX').val() ); 
+    sliderYVal = yFactor * parseFloat($('#atomPosY').val() );
+    sliderZVal = zFactor * parseFloat($('#atomPosZ').val() ); 
+    
 
     if(this.editorState.atomPosMode === 'relative'){ 
       var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
@@ -1697,11 +1711,14 @@ define([
         ); 
         break;
       case "creating":
+        var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
-          arg.atomPos.x = arg.atomPos.x/ parseFloat(this.cellParameters.scaleX);
-          arg.atomPos.y = arg.atomPos.y/ parseFloat(this.cellParameters.scaleY);
-          arg.atomPos.z = arg.atomPos.z/ parseFloat(this.cellParameters.scaleZ);
+          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z) , {'revertShearing' : true});
+          pos.x = pos.x/ parseFloat(this.cellParameters.scaleX);
+          pos.y = pos.y/ parseFloat(this.cellParameters.scaleY);
+          pos.z = pos.z/ parseFloat(this.cellParameters.scaleZ);
         } 
+         
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -1712,9 +1729,9 @@ define([
         );  
         this.menu.editMEInputs(
           {
-            'atomPosX' : arg.atomPos.x,
-            'atomPosY' : arg.atomPos.y,
-            'atomPosZ' : arg.atomPos.z,  
+            'atomPosX' : pos.x,
+            'atomPosY' : pos.y,
+            'atomPosZ' : pos.z,  
             'atomColor' : color,  
             'atomOpacity' : 10,   
             'Aa' : this.cellParameters.scaleZ,
@@ -1749,11 +1766,13 @@ define([
         );  
         break;
       case "editing": 
+        var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
-          arg.atomPos.x = arg.atomPos.x/ parseFloat(this.cellParameters.scaleX);
-          arg.atomPos.y = arg.atomPos.y/ parseFloat(this.cellParameters.scaleY);
-          arg.atomPos.z = arg.atomPos.z/ parseFloat(this.cellParameters.scaleZ);
-        } 
+          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z) , {'revertShearing' : true});  
+          pos.x = pos.x/ parseFloat(this.cellParameters.scaleX);
+          pos.y = pos.y/ parseFloat(this.cellParameters.scaleY);
+          pos.z = pos.z/ parseFloat(this.cellParameters.scaleZ);
+        }  
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
@@ -1764,9 +1783,9 @@ define([
         );   
         this.menu.editMEInputs(
           {
-            'atomPosX' : arg.atomPos.x,
-            'atomPosY' : arg.atomPos.y,
-            'atomPosZ' : arg.atomPos.z,  
+            'atomPosX' : pos.x,
+            'atomPosY' : pos.y,
+            'atomPosZ' : pos.z,  
             'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
             'ionicIndex' : arg.ionicIndex, 
@@ -1815,6 +1834,7 @@ define([
         var x = parseFloat(this.cellParameters.scaleX) ;
         var y = parseFloat(this.cellParameters.scaleY) ;
         var z = parseFloat(this.cellParameters.scaleZ) ;
+        pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
         atomPos = '('+(pos.z/z).toFixed(1)+','+(pos.x/x).toFixed(1)+','+(pos.y/y).toFixed(1)+')';
       }  
       else{
@@ -2278,9 +2298,10 @@ define([
       this.newSphere.fresh = false;
 
       if(this.editorState.atomPosMode === 'relative'){ 
-        this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x/x);
-        this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y/y);
-        this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z/z);
+        var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
+        this.menu.setSliderValue('atomPosX', pos.x/x);
+        this.menu.setSliderValue('atomPosY', pos.y/y);
+        this.menu.setSliderValue('atomPosZ', pos.z/z);
       }
       else{
         this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x);
@@ -5539,7 +5560,7 @@ define([
       
     if(this.padlock === false) {  
 
-      //this.menu.setMotifPadlock('unlock');
+      this.menu.setMotifPadlock('unlock');
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -5556,7 +5577,7 @@ define([
 
     }
     else {  
-      //this.menu.setMotifPadlock('lock');
+      this.menu.setMotifPadlock('lock');
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta  = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
@@ -6073,6 +6094,52 @@ define([
     this.transform(reverseShearing, function(value) {  
       return -value;
     });
+  }; 
+ 
+  Motifeditor.prototype.transformMeGeneric = function(parameterKeys, vector, operation) {
+    var matrix, _this = this;
+    var argument; 
+    var parameters = this.cellParameters;  
+    _.each(parameterKeys, function(k) {   
+      if (_.isUndefined(parameters[k]) === false) { 
+        argument = {};
+        argument[k] = operation(parseFloat(parameters[k]));
+        matrix = transformationMatrix(argument);  
+        vector.applyMatrix4(matrix);
+      }
+    });
+
+    return vector;
+  };
+  Motifeditor.prototype.transformGeneric = function(vector, actions) {
+
+    var vec;
+
+    if(actions['revertShearing'] !== undefined){
+      vec = this.transformMeGeneric(reverseShearing,vector, function(value) {  
+        return -value;
+      });
+    }
+
+    if(actions['revertScaling'] !== undefined){
+      if(vec === undefined){
+        vec = vector;
+      }
+      vec = this.transformMeGeneric(reverseScaling, vec, function(value) { 
+        return (value === 0 ? 0 : 1 / value);
+      }); 
+    }
+
+    if(actions['transform'] !== undefined){
+      if(vec === undefined){
+        vec = vector;
+      }
+      vec = this.transformMeGeneric(_.union(scaling, shearing), vec, function(value) {
+        return value;
+      }); 
+    }
+    
+    return vec;
   }; 
       
   Motifeditor.prototype.cellPointsWithAngles = function() {  
