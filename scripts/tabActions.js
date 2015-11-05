@@ -42,7 +42,7 @@ define([
       }  
     }  
 
-    if( (tabId === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') && this.gearTour.state === 5){     
+    if( (tabId === "motifLI" ) && !($('#selected_lattice').html() === 'Choose a Lattice') ){     
       
       this.dollEditor.setVisibility(false); 
       this.hudCube.setVisibility(false);
@@ -60,7 +60,7 @@ define([
     }
     else if(tabId !== "motifLI" ){   
       if(
-        (this.lattice.viewMode !== 'crystalClassic' || this.gearTour.state !== 5) && 
+        (this.lattice.viewMode !== 'crystalClassic' ) && 
         ( tabId === "latticeTab" || tabId === "publicTab")
       ){
         return;

@@ -1668,8 +1668,7 @@ define([
         this.menu.disableMEButtons(
           {
             'atomPalette' : false,
-            'saveAtomChanges' : true,
-            'previewAtomChanges' : true,  
+            'saveAtomChanges' : true,   
             'deleteAtom' : true 
           }
         );
@@ -1722,8 +1721,7 @@ define([
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
-            'saveAtomChanges' : false,
-            'previewAtomChanges' : false, 
+            'saveAtomChanges' : false,  
             'deleteAtom' : false 
           }
         );  
@@ -1776,8 +1774,7 @@ define([
         this.menu.disableMEButtons(
           {
             'atomPalette' : true,
-            'saveAtomChanges' : false,
-            'previewAtomChanges' : false, 
+            'saveAtomChanges' : false, 
             'deleteAtom' : false 
           }
         );   
@@ -4348,7 +4345,7 @@ define([
   };
   Motifeditor.prototype.customBox = function(points) { 
     if(this.unitCellAtoms.length === 0){
-      return;
+      return new THREE.Geometry();
     }
     var vertices = [];
     var faces = [];

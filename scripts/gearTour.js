@@ -17,72 +17,62 @@ define([
     this.lattice = lattice ;
     this.crystalHasChanged = true ;
     this.menu = menu;
-    this.state = 5;
+    this.state = 6;
   };
  
-  GearTour.prototype.setState = function(state){
+  GearTour.prototype.setState = function(state, init){
 
-    if(this.lattice.actualAtoms.length === 0) {
+    if(this.lattice.actualAtoms.length === 0 && init === undefined) {
       return;
-    }
+    } 
 
-    if(state !== 5){
-      this.menu.switchTab('visualTab');
-      this.menu.setTabDisable({
-        'latticeTab': true,
-        'motifLI':true,
-        'millerPI':true,
-        'publicTab':true
-      });
-    }
-    else if( state === 5){
-      this.menu.setTabDisable({
-        'latticeTab': false,
-        'motifLI':false,
-        'millerPI':false,
-        'publicTab':false
-      });
-    }
-    this.state = state;
-
-    this.menu.resetProgressBar( 'Processing...');
+    this.state = state; 
 
     switch(state){ 
 
       case 1:  
+        this.hideCachedAtoms();
         this.setActualAtoms(false, 1);
         this.setMillers(false); 
-        this.hideSubtractedCell(); 
+        this.hideSubtractedCell();  
       break;
  
       case 2:  
+        this.hideCachedAtoms();
         this.setActualAtoms(false,2);
         this.setMillers(false); 
-        this.hideSubtractedCell(); 
+        this.hideSubtractedCell();  
       break;
-
 
       case 3:  
-        this.setActualAtoms(false,3); 
-        this.setMillers(true);
-        this.subtractedCell();  
+        this.hideCachedAtoms();
+        this.setActualAtoms(false, 3);
+        this.setMillers(true); 
+        this.hideSubtractedCell();  
       break;
 
-
-      case 4:  
+      case 4:   
+        this.hideCachedAtoms();
         this.setActualAtoms(false, 4);
         this.setMillers(true); 
-        this.hideSubtractedCell(); 
-      break;
+        this.setCSGforCrystal('crystalGradeLimited');
+      break; 
 
-
-      case 5:   
-        this.setActualAtoms(true, []);
+      case 5:  
+        this.hideCachedAtoms();
+        this.setActualAtoms(false,5); 
+        this.setMillers(true);
+        this.setCSGforCrystal('crystalSubstracted');  
+      break; 
+       
+      case 6:    
+        this.hideCachedAtoms();
+        this.setActualAtoms(true, 6);
         this.setMillers(true); 
         this.hideSubtractedCell();
+        
       break; 
-    }
-    this.menu.progressBarFinish();    
+    } 
 
   };
   
@@ -90,56 +80,65 @@ define([
  
     var l = this.lattice, _this = this; 
     var indexes;
-    if(state ===4 && bool === false) {
-      indexes = _this.findCellIndexes() ;
+
+    if(state === 3 && bool === false) {
+      indexes = this.findCellIndexes() ;
     }
 
     l.actualAtoms.forEach(function(atom, i) { 
       var visible = false ;
-      if(state === 2 && bool === false ){
-        visible = (atom.centerOfMotif.x === 0 && atom.centerOfMotif.y === 0 && atom.centerOfMotif.z === 0 ) ? true : false ;
-        atom.object3d.visible = visible ;
-      }
-      else if(state === 3 && bool === false){
+      if(state === 1 && bool === false){
         atom.object3d.visible = bool ; 
       }
-      else if(state === 4 && bool === false){
+      else if(state === 2 && bool === false ){
+        visible = (atom.centerOfMotif.x === 0 && atom.centerOfMotif.y === 0 && atom.centerOfMotif.z === 0 ) ? true : false ;
+        atom.object3d.visible = visible ;
+      } 
+      else if(state === 3 && bool === false){
         visible = indexes.hasOwnProperty(atom.latticeIndex);
         atom.object3d.visible = visible ;
+      } 
+      else if(state === 4 && bool === false){
+        atom.object3d.visible = bool ; 
       }
-      else{
-        atom.object3d.visible = bool ;
+      else if(state === 6 && bool === true){
+        atom.object3d.visible = bool ; 
       }
- 
     });
-  
-  };  
-  GearTour.prototype.removeSubtractedCell = function () {
-    this.crystalHasChanged = true ;
-    var j=0;
-    var scene = this.crystalScene.object3d;
-    while(j < this.lattice.actualAtoms.length ) {  
-      if(this.lattice.actualAtoms[j].subtractedForGear.object3d !== undefined) {
-        this.lattice.actualAtoms[j].removeSubtractedForGear();   
-      };
-      j++;
-    } 
 
-    this.setActualAtoms(true, []);
-    this.setMillers(true);  
+    
+  };   
+  GearTour.prototype.hideCachedAtoms = function(){
+    var i =0;
 
-  };
+    while(i < this.lattice.cachedAtoms.length ){ 
+      this.lattice.cachedAtoms[i].object3d.visible = false; 
+      if(this.lattice.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+        this.lattice.cachedAtoms[i].subtractedForCache.object3d.visible = false;    
+      } 
+      i++;
+    }
+  }
   GearTour.prototype.hideSubtractedCell = function(){
     var j=0;
     while(j < this.lattice.actualAtoms.length ) {  
-      if(this.lattice.actualAtoms[j].subtractedForGear.object3d !== undefined) {
-        this.lattice.actualAtoms[j].subtractedForGear.object3d.visible = false;   
+      if(this.lattice.actualAtoms[j].subtractedForCache.object3d !== undefined) {
+        this.lattice.actualAtoms[j].subtractedForCache.object3d.visible = false;   
+      };
+      j++;
+    }
+
+    j = 0;
+
+    while(j < this.lattice.cachedAtoms.length ) {  
+      if(this.lattice.cachedAtoms[j].subtractedForCache.object3d !== undefined) {
+        this.lattice.cachedAtoms[j].subtractedForCache.object3d.visible = false;   
       };
       j++;
     }  
 
   };
-  GearTour.prototype.subtractedCell = function(){
+  GearTour.prototype.setCSGforCrystal = function(mode){
  
     var geometry = new THREE.Geometry(), i=0;  
     var scene = this.crystalScene.object3d;
@@ -147,44 +146,18 @@ define([
     var viewBox = [] ;
     var box;
     var j = 0 ;
-
-    while(j < this.lattice.actualAtoms.length ) { 
-      var inTheCell = indexes.hasOwnProperty(this.lattice.actualAtoms[j].latticeIndex);
-      if(inTheCell){
-         
-        if((this.lattice.actualAtoms[j].subtractedForGear.object3d !== undefined) && !(this.crystalHasChanged)){
-          this.lattice.actualAtoms[j].subtractedForGear.object3d.visible = true;  
-        }
-        else{  
-             
-          if(box === undefined){  
-            var vb ;
-            if(!(this.motifEditor.latticeType === 'hexagonal')){  
-              viewBox['_000'] = this.lattice.points['r_0_0_0_0'].object3d ;
-              viewBox['_001'] = this.lattice.points['r_0_0_1_0'].object3d ;
-              viewBox['_010'] = this.lattice.points['r_0_1_0_0'].object3d ;
-              viewBox['_011'] = this.lattice.points['r_0_1_1_0'].object3d ;
-              viewBox['_100'] = this.lattice.points['r_1_0_0_0'].object3d ;
-              viewBox['_101'] = this.lattice.points['r_1_0_1_0'].object3d ;
-              viewBox['_110'] = this.lattice.points['r_1_1_0_0'].object3d ;
-              viewBox['_111'] = this.lattice.points['r_1_1_1_0'].object3d ;
-            
-              vb = this.lattice.customBox(viewBox) ;
-            }
-            else{
-              vb = this.lattice.customBoxForHexCell(); 
-            }
-            
-            box = new THREE.Mesh(vb, new THREE.MeshLambertMaterial({color:"#FF0000" }) );
-             
-          } 
-          this.lattice.actualAtoms[j].subtractedSolidView( box, this.lattice.actualAtoms[j].object3d.position, true );
-        } 
-      } 
-      j++;
-    }   
-    this.crystalHasChanged = false; 
-  };
+   
+    box = new THREE.Mesh(this.motifEditor.customBox(this.motifEditor.unitCellPositions, this.motifEditor.latticeName), new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
+      
+    if(mode === 'crystalSubstracted'){
+      this.lattice.setCSGmode({mode : 'crystalSubstracted'}, undefined, box);
+      this.crystalHasChanged = false;
+    }
+    else if('crystalGradeLimited'){
+      this.lattice.setCSGmode({mode : 'crystalGradeLimited'}, undefined, box);
+    }
+     
+  }; 
   GearTour.prototype.findCellIndexes = function(){
     
     var indexes = {}, _this = this ;

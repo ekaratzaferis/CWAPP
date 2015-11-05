@@ -743,8 +743,9 @@ define([
     return found;
   };
 
-  Lattice.prototype.setCSGmode = function(arg, reset) { 
-     
+  Lattice.prototype.setCSGmode = function(arg, reset, newBox) { 
+    
+    
     var _this = this, i = 0;
     this.viewMode = arg.mode ; 
       
@@ -754,8 +755,18 @@ define([
     var scene = Explorer.getInstance().object3d;
 
     var g = this.customBox(this.viewBox);
-    var box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
-     
+
+    var box;
+
+    if(newBox !== undefined){
+      box = newBox;
+    } 
+    else{
+      box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
+    }
+
+    box.visible = true;
+
     if(this.viewMode === 'crystalSubstracted'){
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
@@ -866,10 +877,7 @@ define([
     else if(this.viewMode === 'crystalGradeLimited'){ 
 
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
-
-      var box = new THREE.Mesh(g, new THREE.MeshBasicMaterial({side: THREE.DoubleSide,transparent:true, opacity:0.2, color:0xFF0000}));
-      box.visible = false;
-      
+  
       // find geometry's center
       var centroid = new THREE.Vector3(); 
       for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
@@ -884,7 +892,7 @@ define([
         
       i=0;
     
-      var dir = new THREE.Vector3(1,1000000,1); 
+      var dir = new THREE.Vector3(1,1000000,1); // can be optimized
 
       while(i < this.actualAtoms.length ) {    
          
@@ -895,8 +903,7 @@ define([
         smartOffset.setLength(0.01);
         var originPointF = this.actualAtoms[i].object3d.position.clone().add(smartOffset);
         //
-
-         
+ 
         var rayF = new THREE.Raycaster( originPointF, dir.clone().normalize() );
         var collisionResultsF = rayF.intersectObjects( collidableMeshList );
  
@@ -4148,7 +4155,7 @@ define([
     return geom;
   };
   Lattice.prototype.customBox = function(points) { 
-
+ 
     var vertices = [];
     var faces = [];
     var _this = this ;

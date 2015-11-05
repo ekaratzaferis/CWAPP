@@ -264,7 +264,12 @@ require([
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
   });
-  menu.onLatticeParameterChange(function(message, latticeParameters) { 
+  menu.onLatticeParameterChange(function(message, latticeParameters) {  
+    if(gearTour.state !== 6){
+      gearTour.crystalHasChanged = true;
+      gearTour.setState(6, true);
+      dollEditor.gearBarSlider.position.y = -0.3;
+    }
     lattice.setParameters(latticeParameters); 
     motifEditor.updateFixedDimensions(latticeParameters);
   });
@@ -578,6 +583,7 @@ require([
     motifEditor.setCSGmode(which);
   });
   menu.onCrystalChange(function(message, which) { 
+    
     lattice.setCSGmode(which);
   });
   menu.onUnitCellViewport(function(message, arg) { 
