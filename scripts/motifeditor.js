@@ -413,16 +413,16 @@ define([
       this.translateCellAtoms("z", pos.z ,this.newSphere.getID());
       */
 
-      this.menu.setSliderMin('atomPosX', 0);
-      this.menu.setSliderMax('atomPosX', 1); 
+      this.menu.setSliderMin('atomPosX', -4);
+      this.menu.setSliderMax('atomPosX', 4); 
       this.menu.setSliderValue('atomPosX', pos.x/x);
 
-      this.menu.setSliderMin('atomPosY', 0);
-      this.menu.setSliderMax('atomPosY', 1);
+      this.menu.setSliderMin('atomPosY', -4);
+      this.menu.setSliderMax('atomPosY', 4);
       this.menu.setSliderValue('atomPosY', pos.y/y);
 
-      this.menu.setSliderMin('atomPosZ', 0);
-      this.menu.setSliderMax('atomPosZ', 1);
+      this.menu.setSliderMin('atomPosZ', -4);
+      this.menu.setSliderMax('atomPosZ', 4);
       this.menu.setSliderValue('atomPosZ', pos.z/z);
 
     }
@@ -1714,9 +1714,9 @@ define([
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
           pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z) , {'revertShearing' : true});
-          pos.x = pos.x/ parseFloat(this.cellParameters.scaleX);
-          pos.y = pos.y/ parseFloat(this.cellParameters.scaleY);
-          pos.z = pos.z/ parseFloat(this.cellParameters.scaleZ);
+          pos.x = pos.x/ this.cellParameters.scaleX ;
+          pos.y = pos.y/ this.cellParameters.scaleY ;
+          pos.z = pos.z/ this.cellParameters.scaleZ ;
         } 
          
         this.menu.disableMEButtons(
