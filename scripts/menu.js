@@ -55,6 +55,9 @@ define([
         // Attach different event to Lattice Parameters
         var latticeEvent = false;
     
+        // Auto refresh state
+        var autoChange = false;
+    
     
     
     /* --------------
@@ -66,7 +69,7 @@ define([
         var $errorModal = jQuery('#error_modal');
         var $infoModal = jQuery('#info_modal');
         var $warningModal = jQuery('#warning_modal');
-    
+        $warningModal.caller = 'none';
     
     
     /* ---------------
@@ -141,7 +144,6 @@ define([
         var $motifXScreenColor = jQuery('#motifXScreenColor');
         var $motifYScreenColor = jQuery('#motifYScreenColor');
         var $motifZScreenColor = jQuery('#motifZScreenColor');
-        var $stereoscopic = false;
         
     
     
@@ -175,6 +177,7 @@ define([
         // [Motif Tab]
         var $atomPalette = jQuery('#atomPalette');
         var $previewAtomChanges = jQuery('.previewAtomChanges');
+        var $autoRefresh = jQuery('.autoRefresh');
         var $saveAtomChanges = jQuery('.saveAtomChanges');
         var $deleteAtom = jQuery('#deleteAtom');
         var $tangency = jQuery('#tangency');
@@ -431,7 +434,9 @@ define([
             'cellScreenColor' : $cellScreenColor,
             'motifXScreenColor' : $motifXScreenColor ,
             'motifYScreenColor' : $motifYScreenColor ,
-            'motifZScreenColor' : $motifZScreenColor
+            'motifZScreenColor' : $motifZScreenColor ,
+            'screenMode' : jQuery('#screenMode'),
+            'printMode' : jQuery('#printMode')
         };    
     
     
@@ -440,6 +445,7 @@ define([
        List of Published Events
        ------------------------ */
         var events = {
+            SOUND_VOLUME: 'menu.sound_volume',
             CHANGE_REND_MODE: 'menu.change_rend_mode',
             CHANGE_CRYSTAL_MODE: 'menu.change_crystal_mode',
             CHANGE_UNIT_CELL_MODE: 'menu.change_unit_cell_mode',
@@ -447,7 +453,6 @@ define([
             ATOM_VISIBILITY: 'menu.atom_visibility',
             PLANE_VISIBILITY: 'menu.plane_visibility',
             DIRECTION_VISIBILITY: 'menu.direction_visibility',
-            STEREOSCOPIC: 'menu.stereoscopic',
             PLANE_TOGGLE: 'menu.planes_toggle',
             ATOM_TOGGLE: 'menu.atom_toggle',
             DIRECTION_TOGGLE: 'menu.directions_toggle',
@@ -534,7 +539,9 @@ define([
        Messages
        ---------*/
         var messages = {
-            '1':'Error Message Error Message Error Message Error Message'   
+            '1':'<p>You have unlocked the lattice restrictions. <br/><br/> From now on no autopilot nor lattice restrictions will be applied.</p>',
+            '2':'<p>You have unlocked the autopilot restrictions. <br/><br/>From now on atoms no longer behave as rigid spheres and you will be able to change lattice parameters within the restrictions of the lattice you have chosen.</p>',
+            '3':'<p>This functionality is CPU intensive and your computer may be unavailable for a few minutes. <br/><br/> Are you sure you want to continue?</p>'
         }
     
     /* ---------
@@ -593,7 +600,7 @@ define([
                 }
                 else if (string.indexOf('/') !== -1) {
                     var temp = string.split('/');
-                    if (temp.length === 2) result = parseFloat(temp[0])/parseFloat(temp[1]);
+                    if (temp.length === 2) result = (parseFloat(temp[0])/parseFloat(temp[1])).toString();
                 }
             }
             else result = string;
@@ -692,6 +699,125 @@ define([
                 $atomsData = atomsInfo;
             });
             
+        /* --------------
+           Hover Tooltips
+           -------------- */
+            var listLeft = {
+                'controls_toggler':'left',
+                'latticeTab':'left',
+                'millerPI':'left',
+                'motifLI':'left',
+                'visualTab':'left',
+                'publicTab':'left',
+                'selected_lattice':'top',
+                'latticePadlock':'top',
+                'repeatZ':'top',
+                'repeatX':'top',
+                'repeatY':'top',
+                'scaleZ':'top',
+                'scaleZSlider':'top',
+                'scaleX':'top',
+                'scaleXSlider':'top',
+                'scaleY':'top',
+                'scaleYSlider':'top',
+                'beta':'top',
+                'betaSlider':'top',
+                'alpha':'top',
+                'alphaSlider':'top',
+                'gamma':'top',
+                'gammaSlider':'top',
+                'motifPadlock':'left',
+                'cube_color_border':'top',
+                'cube_color_filled':'top',
+                'radius':'top',
+                'radiusSlider':'top',
+                'faceOpacity':'top',
+                'faceOpacitySlider':'top',
+                'newPlane':'top',
+                'millerH':'top',
+                'millerK':'top',
+                'millerL':'top',
+                'millerI':'top',
+                'savePlane':'top',
+                'planeOpacity':'top',
+                'planeColor':'top',
+                'planeName':'top',
+                'deletePlane':'top',
+                'millerU':'top',
+                'millerV':'top',
+                'millerW':'top',
+                'millerT':'top',
+                'newDirection':'top',
+                'saveDirection':'top',
+                'dirRadius':'top',
+                'directionColor':'top',
+                'directionName':'top',
+                'deleteDirection':'top',
+                'atomPalette':'top',
+                'tangency':'top',
+                'atomPositioningXYZ':'top',
+                'atomPositioningABC':'top',
+                'atomPosZ':'top',
+                'atomPosZSlider':'top',
+                'atomPosX':'top',
+                'atomPosXSlider':'top',
+                'atomPosY':'top',
+                'atomPosYSlider':'top',
+                'atomColor':'top',
+                'atomOpacity':'top',
+                'atomOpacitySlider':'top',
+                'previewAtomChanges':'top',
+                'saveAtomChanges':'top',
+                'deleteAtom':'top',
+                'cellVolume':'top',
+                'cellVolumeSlider':'top',
+                'meLengthA':'top',
+                'meLengthB':'top',
+                'meLengthC':'top',
+                'meAngleA':'top',
+                'meAngleB':'top',
+                'meAngleG':'top',
+                'wireframe':'top',
+                'toon':'top',
+                'flat':'top',
+                'realistic':'top',
+                'distortionOn':'top',
+                'distortionOff':'top',
+                'anaglyph':'top',
+                'oculus':'top',
+                'crystalCamTargetOn':'top',
+                'crystalCamTargetOff':'top',
+                'fullScreen':'top',
+                'leapMotion':'top',
+                'crystalClassic':'top',
+                'crystalSubstracted':'top',
+                'crystalSolidVoid':'top',
+                'crystalGradeLimited':'top',
+                'unitCellViewport':'top',
+                'cellClassic':'top',
+                'cellSubstracted':'top',
+                'cellSolidVoid':'top',
+                'cellGradeLimited':'top',
+                'fogColor':'top',
+                'fogDensity':'top',
+                'fogDensitySlider':'top',
+                'sounds':'top',
+                'lights':'top',
+                'crystalScreenColor':'top',
+                'cellScreenColor':'top',
+                'motifXScreenColor':'top',
+                'motifYScreenColor':'top',
+                'motifZScreenColor':'top',
+                'notesButton':'top',
+                'motifZScreenColor':'top'
+            };
+            var i = 0;
+            _.each(listLeft, function($element, k){
+                _this.addHoverTooltip({ 'element': k.toString(), 'message': i, 'placement': $element.toString() });
+                i++;
+            });
+            
+            
         /* ---------------------
            ScrollBars and Window
            --------------------- */
@@ -753,14 +879,6 @@ define([
                         argument[name] = true;
                         PubSub.publish(events.FOG_CHANGE, argument);
                         break;
-
-                    case 'stereoscopic':
-                        $stereoscopic = true;
-                        argument ={};
-                        argument['anaglyph'] = $anaglyph.hasClass('active');
-                        argument['oculus'] = false;
-                        PubSub.publish(events.STEREOSCOPIC, argument);
-                        break;
                         
                     case 'unitCellViewport':
                         argument ={};
@@ -792,14 +910,6 @@ define([
                         argument[name] = false;
                         PubSub.publish(events.FOG_CHANGE, argument);
                         break;
-
-                    case 'stereoscopic':
-                        $stereoscopic = false;
-                        argument ={};
-                        argument['anaglyph'] = $anaglyph.hasClass('active');
-                        argument['oculus'] = false;
-                        PubSub.publish(events.STEREOSCOPIC, argument);
-                        break;
                         
                     case 'unitCellViewport':
                         argument ={};
@@ -823,6 +933,8 @@ define([
                     case 'motifXScreenColor' : k = 'motifXScreenColor'; eventColor = events.RENDERER_COLOR_CHANGE; break;
                     case 'motifYScreenColor' : k = 'motifYScreenColor'; eventColor = events.RENDERER_COLOR_CHANGE; break;
                     case 'motifZScreenColor' : k = 'motifZScreenColor'; eventColor = events.RENDERER_COLOR_CHANGE; break;
+                    case 'screenMode' : k = 'screenMode'; eventColor = 'x'; break;
+                    case 'printMode' : k = 'printMode'; eventColor = 'x'; break;
                 }
                 $parameter.spectrum({
                     color: "#ffffff",
@@ -903,6 +1015,7 @@ define([
                         jQuery('#'+k+'Slider').slider('value',argument[k]);
                         if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')) PubSub.publish(pubEventLength, argument);
                         else PubSub.publish(pubEventAngle, argument);
+                        if (autoChange === true) PubSub.publish(events.MOTIF_TO_LATTICE, 0);
                     });
                     $parameter.on('fail',function(event, value) {
                         $parameter.val(value);
@@ -962,7 +1075,7 @@ define([
                 jQuery('#'+name+'Slider').on('reflect', function(event, value){
                     var pubEvent;
                     if (latticeEvent === false) pubEvent = events.LATTICE_PARAMETER_CHANGE;
-                    else pubEventLength = events.MAN_ANGLE_CHANGE;
+                    else pubEvent = events.MAN_ANGLE_CHANGE;
                     argument = {};
                     argument[name] = value;
                     LastLatticeParameters[name] = argument[name]; 
@@ -1020,12 +1133,17 @@ define([
                 // Change Handlers
                 $parameter.on('change', function() {
                     argument = {};
-                    if (k == 'planeColor') {
+                    if (k === 'planeColor') {
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
                     }
+                    else if (k === 'planeName') {
+                        argument[k] = $parameter.val();
+                        console.log(argument[k]);
+                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
                     else if (integerInput($parameter.val()) !== false) {
-                        argument[k] = inputErrorHandler($parameter.val());
+                        argument[k] = integerInput($parameter.val());
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
                     }
                     else { 
@@ -1070,11 +1188,15 @@ define([
                 // Handlers
                 $parameter.on('change', function() {
                     argument = {};
-                    if (k == 'directionColor') {
+                    if (k === 'directionColor') {
                         argument[k] = $parameter.spectrum("get").toHex();
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
-                    else if (integerInput($parameter.val()) !== false) {
+                    else if (k === 'directionName') {
+                        argument[k] = $parameter.val();
+                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
+                    else if (inputErrorHandler($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
@@ -1417,6 +1539,9 @@ define([
                             if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.find('a').button('toggle');
                             $motifPadlock.find('a').prop('disabled', true);
                             $motifPadlock.addClass('disabled');
+                            _this.showInfoDialog({
+                                'messageID':1
+                            });
                         }
                     }
                 }
@@ -1426,8 +1551,10 @@ define([
                 argument = {};
                 argument["padlock"] = true;
                 _.each(latticeParameters, function($parameter,k){
-                    $parameter.prop('disabled',false);
-                    jQuery('#'+k+'Slider').slider('enable');
+                    if ( (k !== 'repeatY') && (k !== 'repeatX') && (k !== 'repeatZ') ){
+                        $parameter.prop('disabled',false);
+                        jQuery('#'+k+'Slider').slider('enable');
+                    }
                 });
                 if (!($latticePadlock.children().hasClass('active'))) {
                     _this.removeLatticeRestrictions();
@@ -1440,15 +1567,34 @@ define([
                 argument = {};
                 argument["padlock"] = false;
                 _.each(latticeParameters, function($parameter,k){
-                    $parameter.prop('disabled',true);
-                    jQuery('#'+k+'Slider').slider('disable');
+                    if ( (k !== 'repeatY') && (k !== 'repeatX') && (k !== 'repeatZ') ){
+                        $parameter.prop('disabled',true);
+                        jQuery('#'+k+'Slider').slider('disable');
+                    }
                 });
                 PubSub.publish(events.SET_PADLOCK, argument);
             });
             $motifPadlock.on('click', function() {
                 if (!($motifPadlock.hasClass('disabled'))) {
-                    if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.trigger('unlock');
+                    if (!($motifPadlock.children().hasClass('active'))) {
+                        _this.showInfoDialog({
+                            'messageID':2
+                        });
+                        $motifPadlock.trigger('unlock');
+                    }
                     else $motifPadlock.trigger('lock');
+                }
+            });
+            
+            jQuery('.latticeButtons').hide();
+            $autoRefresh.on('click', function(){
+                if (!($autoRefresh.hasClass('off'))) {
+                    $autoRefresh.addClass('off');
+                    autoChange = false;
+                }
+                else{
+                    $autoRefresh.removeClass('off');
+                    autoChange = true;
                 }
             });
 
@@ -1668,10 +1814,14 @@ define([
                 argument['fogDensity'] = $fogDensity.val();
                 PubSub.publish(events.FOG_PARAMETER_CHANGE, argument);
             });
+            _this.setSlider('sound',75,0,100,1,events.SOUND_VOLUME);
+            jQuery('#soundSlider').slider('disable');
             $sounds.on('click', function(){  
                 var argument = {};
                 $sounds.toggleClass('active');
                 argument["sounds"] = ($sounds.hasClass('active')) ? true : false ;
+                if (argument['sounds'] === true) jQuery('#soundSlider').slider('enable');
+                else jQuery('#soundSlider').slider('disable');
                 PubSub.publish(events.SET_SOUNDS, argument);
             });
             $lights.on('click', function(){  
@@ -1705,13 +1855,19 @@ define([
             _.each(crystalMode, function($parameter, k) {
                 $parameter.on('click', function() {
                     if (!($parameter.hasClass('disabled'))) {
-                        if (!($parameter.hasClass('active'))) {
-                            $parameter.addClass('active');
-                            argument = {};
-                            argument['mode'] = k;
-                            PubSub.publish(events.CHANGE_CRYSTAL_MODE, argument);
-                            _.each(crystalMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                        if ( (k === 'crystalSubstracted') || (k === 'crystalSolidVoid') ) {
+                            _this.showWarningDialog({ 'messageID': 3, 'caller': $parameter });
                         }
+                        else $parameter.trigger('action');
+                    }
+                });
+                $parameter.on('action', function() {
+                    if (!($parameter.hasClass('active'))) {
+                        $parameter.addClass('active');
+                        argument = {};
+                        argument['mode'] = k;
+                        PubSub.publish(events.CHANGE_CRYSTAL_MODE, argument);
+                        _.each(crystalMode, function($param, a) { if ( a !== k) $param.removeClass('active');});
                     }
                 });
             });
@@ -1787,45 +1943,33 @@ define([
                 }            
             });
             $anaglyph.click(function() {
-                if ($stereoscopic){
-                    $anaglyph.removeClass('disabled');
-                    if (!($anaglyph.hasClass('active'))){
-                        $oculus.removeClass('active');
-                        $anaglyph.addClass('active');
-                        argument ={};
-                        argument['anaglyph'] = true;
-                        PubSub.publish(events.ANAGLYPH_EFFECT, argument);
-                    }
-                    else{
-                        $anaglyph.removeClass('active');
-                        argument ={};
-                        argument['anaglyph'] = false;
-                        PubSub.publish(events.ANAGLYPH_EFFECT, argument);
-                    }
+                if (!($anaglyph.hasClass('active'))){
+                    $oculus.removeClass('active');
+                    $anaglyph.addClass('active');
+                    argument ={};
+                    argument['anaglyph'] = true;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
                 }
                 else{
-                    $anaglyph.addClass('disabled');
+                    $anaglyph.removeClass('active');
+                    argument ={};
+                    argument['anaglyph'] = false;
+                    PubSub.publish(events.ANAGLYPH_EFFECT, argument);
                 }
             });
             $oculus.click(function() {
-                if ($stereoscopic){
-                    $oculus.removeClass('disabled');
-                    if (!($oculus.hasClass('active'))){
-                        $anaglyph.removeClass('active');
-                        $oculus.addClass('active');
-                        argument ={};
-                        argument['oculus'] = true;
-                        PubSub.publish(events.OCULUS, argument);
-                    }
-                    else{
-                        $oculus.removeClass('active');
-                        argument ={};
-                        argument['v'] = false;
-                        PubSub.publish(events.OCULUS, argument);
-                    }
+                if (!($oculus.hasClass('active'))){
+                    $anaglyph.removeClass('active');
+                    $oculus.addClass('active');
+                    argument ={};
+                    argument['oculus'] = true;
+                    PubSub.publish(events.OCULUS, argument);
                 }
                 else{
-                    $oculus.addClass('disabled');
+                    $oculus.removeClass('active');
+                    argument ={};
+                    argument['v'] = false;
+                    PubSub.publish(events.OCULUS, argument);
                 }
             });
             
@@ -1965,10 +2109,12 @@ define([
                         });
                     }
                     latticeEvent = true;
+                    jQuery('.latticeButtons').show();
                 }
                 $ionicValues.addClass('disabled');
                 jQuery('#tempSelection').find('p').hide('fast');
                 jQuery('.modal-pre-footer').hide('fast');
+                autoChange = true;
             });
             
             // Listen User Input in Dialog box
@@ -1976,18 +2122,23 @@ define([
                 argument = {};
                 argument['result'] = false;
                 PubSub.publish(events.DIALOG_RESULT, argument);
+                $warningModal.caller = 'none';
             });
             jQuery('#continueWarning').on('click',function(){
                 argument = {};
                 argument['result'] = true;
                 PubSub.publish(events.DIALOG_RESULT, argument);
+                if ($warningModal.caller !== 'none') {
+                    $warningModal.caller.trigger('action');
+                    $warningModal.caller = 'none';
+                }
             });
             $warningModal.on('hide.bs.modal', function(){
                 argument = {};
                 argument['result'] = false;
                 PubSub.publish(events.DIALOG_RESULT, argument);
+                $warningModal.caller = 'none';
             });
-        
             
     /*$
     
@@ -2026,10 +2177,17 @@ define([
             var screen_height = jQuery(window).height();
             $warningModal.find('#warningMessage').html(messages[argument['messageID']]);
             $warningModal.modal('show').css('margin-top',(screen_height/2)-100);
+            $warningModal.caller = argument['caller'];
         };
         Menu.prototype.setMotifPadlock = function(state){
-            if (state === 'lock') $motifPadlock.trigger('lock');
-            else if (state === 'unlock') $motifPadlock.trigger('unlock');
+            if (state === 'lock') {
+                if (($motifPadlock.children().hasClass('active'))) $motifPadlock.buttton('toggle');
+                $motifPadlock.trigger('lock');
+            }
+            else if (state === 'unlock') {
+                if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.buttton('toggle');
+                $motifPadlock.trigger('unlock');
+            }
         };
         Menu.prototype.chooseActiveRenderMode = function(id){
             _.each(renderizationMode, function($parameter, k) {
@@ -2168,6 +2326,16 @@ define([
                 target.tooltip('hide');
             }, 2500);
         };
+        Menu.prototype.addHoverTooltip = function(argument){
+            var target = jQuery('#'+argument['element']);
+            target.attr('data-original-title', argument['message']);
+            target.tooltip({
+                container : 'body',
+                placement : argument['placement'],
+                trigger: 'hover',
+                title: argument['message']
+            });
+        };
         Menu.prototype.resetProgressBar = function(title) {
             $progressBarWrapper.find('.progressLabel').text(title);
             $progressBarWrapper.show();
@@ -2280,8 +2448,10 @@ define([
                 stop: function(event,ui){
                     _.each(latticeParameters, function($parameter,k){
                         if (k === inputName) {
-                            if (applyRestrictions(k+'Slider',ui.value.toString(),_this,false) === 'success') {
+                            var result = applyRestrictions(k+'Slider',ui.value.toString(),_this,false);
+                            if ( (result === 'success') || (result === 'reflect') ) {
                                 LastLatticeParameters[k] = ui.value;
+                                if (autoChange === true) PubSub.publish(events.MOTIF_TO_LATTICE, 0);
                             }
                         }
                     });
@@ -3502,6 +3672,9 @@ define([
         };
         Menu.prototype.onDialogResult = function(callback){
             PubSub.subscribe(events.DIALOG_RESULT, callback);
+        };
+        Menu.prototype.onSoundVolume = function(callback){
+            PubSub.subscribe(events.SOUND_VOLUME, callback);
         };
 
   return Menu;
