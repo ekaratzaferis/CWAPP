@@ -156,7 +156,7 @@ require([
   
   var lattice = new Lattice(menu, soundMachine);
   soundMachine.lattice = lattice;
-  
+
   // HUD  
   var navArrowsScene = NavArrowsHud.getInstance();  
   var hudArrows = new NavArrows(navArrowsScene.object3d, lattice);
@@ -334,6 +334,9 @@ require([
   });
   menu.onAtomPosModeChange(function(message, arg) {   
     motifEditor.atomPosMode(arg); 
+  });
+  menu.onSoundVolume(function(message, arg) {   
+    soundMachine.changeVolume(arg); 
   });
   menu.onSwapScreen(function(message, arg) {  
     tabActionsManager.tabClick(arg.swap);

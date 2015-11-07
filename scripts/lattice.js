@@ -1915,7 +1915,7 @@ define([
     } 
   };
   Lattice.prototype.directionParameterChange = function(arg) {
-
+     
     var checkParams = this.menu.getDirectionInputs();
         
     if(checkParams.millerU.length === 0 || checkParams.millerV.length === 0 || checkParams.millerW.length === 0){ 
@@ -1941,10 +1941,10 @@ define([
     } 
     else if( !_.isUndefined(arg.millerU) || !_.isUndefined(arg.millerV) || !_.isUndefined(arg.millerW) || !_.isUndefined(arg.millerT) ) { 
        
-      var u = (_.isUndefined(arg.millerU)) ? _this.tempDirs[0].u : parseInt(arg.millerU); 
-      var v = (_.isUndefined(arg.millerV)) ? _this.tempDirs[0].v : parseInt(arg.millerV); 
-      var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseInt(arg.millerW); 
-      var t = (_.isUndefined(arg.millerT)) ? _this.tempDirs[0].t : parseInt(arg.millerT); 
+      var u = (_.isUndefined(arg.millerU)) ? _this.tempDirs[0].u : parseFloat(arg.millerU); 
+      var v = (_.isUndefined(arg.millerV)) ? _this.tempDirs[0].v : parseFloat(arg.millerV); 
+      var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseFloat(arg.millerW); 
+      var t = (_.isUndefined(arg.millerT)) ? _this.tempDirs[0].t : parseFloat(arg.millerT); 
        
       if((this.latticeName === 'hexagonal')){
          
@@ -1955,6 +1955,7 @@ define([
         v/=devider;
         w/=devider;  
 
+        var pid = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"").split('.').join('');  
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
             _.times(parameters.repeatZ , function(_z) { 
@@ -1969,13 +1970,13 @@ define([
               endpointPoint.y += _y ; 
               endpointPoint.z += _z ;  
                
-              directional.u = parseInt($('#millerU').val()) ; 
-              directional.v = parseInt($('#millerV').val()) ; 
-              directional.w = parseInt($('#millerW').val()) ; 
-              directional.t = parseInt($('#millerT').val()) ; 
+              directional.u = parseFloat($('#millerU').val()) ; 
+              directional.v = parseFloat($('#millerV').val()) ; 
+              directional.w = parseFloat($('#millerW').val()) ; 
+              directional.t = parseFloat($('#millerT').val()) ; 
               directional.startPoint = startPoint; 
               directional.endpointPoint = endpointPoint; 
-              directional.id = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"") ;
+              directional.id = pid ;
               
               _this.forwardTransformationsMiller(_this.tempDirs[counter]);   
               directional.direction.updateDirectionPos(startPoint, endpointPoint); 
@@ -3274,8 +3275,7 @@ define([
       )
       && ( millerParameters.button === "savePlane")) {
       return;
-    }
-    console.log(millerParameters);
+    } 
 
     var _this = this ;
     var buttonClicked = millerParameters.button ;
@@ -3443,7 +3443,7 @@ define([
     var parameters = this.parameters ;
     var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
     var id, checkVals = parseFloat(u + v) * -1 ; 
- 
+    
     if(hexagonal){
       if(t != checkVals ) {   
         return null ;
@@ -3476,16 +3476,17 @@ define([
       new MillerVector(new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor, millerParameters.dirRadius) ;  
        
     }
-    else{ 
+    else{
+      var pid = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"").split('.').join(''); 
       var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w));
       u/=devider;
       v/=devider;
       w/=devider;  
-
+ 
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
           _.times(parameters.repeatZ , function(_z) {
-            id = _this.generateDirectionKey() ;
+            var id = _this.generateDirectionKey();
             var startPoint = (new THREE.Vector3 ( (v < 0 ? (v*(-1)) : 0 ) , (w < 0 ? (w*(-1)) : 0 ) , (u < 0 ? (u*(-1)) : 0 ))) ; 
             var endpointPoint = new THREE.Vector3 (  (v < 0 ? 0 : v ) , (w < 0 ? 0 : w ) , (u < 0 ? 0 : u ) ) ; 
             startPoint.x += _x ; 
@@ -3493,14 +3494,14 @@ define([
             startPoint.z += _z ; 
             endpointPoint.x += _x ; 
             endpointPoint.y += _y ; 
-            endpointPoint.z += _z ; 
+            endpointPoint.z += _z ;  
             if(!temp){ 
               _this.millerDirections[id] = {
                 visible: true,
                 direction : undefined,
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
-                id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                id : pid, 
                 u : parseFloat(millerParameters.millerU),
                 v : parseFloat(millerParameters.millerV),
                 w : parseFloat(millerParameters.millerW),
@@ -3510,7 +3511,7 @@ define([
                   visible: true, 
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
-                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  id : pid,
                   u : parseFloat(millerParameters.millerU),
                   v : parseFloat(millerParameters.millerV),
                   w : parseFloat(millerParameters.millerW),
@@ -3531,7 +3532,7 @@ define([
                   direction : undefined,
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
-                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  id : pid,
                   u : parseFloat(millerParameters.millerU),
                   v : parseFloat(millerParameters.millerV),
                   w : parseFloat(millerParameters.millerW),
@@ -3541,7 +3542,7 @@ define([
                     visible: true, 
                     startPoint : startPoint , 
                     endpointPoint : endpointPoint,
-                    id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                    id : pid,
                     u : parseFloat(millerParameters.millerU),
                     v : parseFloat(millerParameters.millerV),
                     w : parseFloat(millerParameters.millerW),
@@ -3557,7 +3558,7 @@ define([
                   direction : undefined,
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
-                  id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
+                  id : pid,
                   u : parseFloat(millerParameters.millerU),
                   v : parseFloat(millerParameters.millerV),
                   w : parseFloat(millerParameters.millerW),
@@ -3715,6 +3716,7 @@ define([
               'directionColor' : this.tempDirs[0].lastSaved.directionColor,  
               'directionName' : this.tempDirs[0].lastSaved.name  
             }, 
+
             this.directionalState.editing, 
             'edit'
           );
@@ -3819,8 +3821,9 @@ define([
     }
     var _this = this ;
     var buttonClicked = millerParameters.button ;
-    var directionID = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
- 
+    var directionID = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"");
+    directionID = directionID.split('.').join(''); // remove dots
+
     if (this.directionalState.state === "initial"){
       if( buttonClicked === "newDirection"){    
         this.updateDirectionList(
@@ -3922,10 +3925,12 @@ define([
         id = 'current';
       }
       else{
-        id = "_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"";
+        id = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"");
       } 
+      id = id.split('.').join(''); // remove dots
+
     } 
- 
+    
     var found = (action === 'edit') ? _.find(_this.directionalList, function(dir){ return dir.id === id; }) : undefined; 
 
     if( found === undefined){ 
@@ -3956,9 +3961,10 @@ define([
       }
       if( action !== 'delete'){
         var item = { id : id};
-        _this.directionalList.push(item); 
+        this.directionalList.push(item); 
       }    
     }
+  
     return found;
   };
   Lattice.prototype.directionVisibility = function (arg){ 

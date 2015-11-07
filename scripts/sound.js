@@ -42,9 +42,10 @@ define([
     } 
   };
 
-  Sound.prototype.changeVolume = function(value){ 
-    if(value){
-      this.universalGainNode.gain.value = parseFloat(value)/100;
+  Sound.prototype.changeVolume = function(arg){ 
+    console.log(arg);
+    if(arg.sound){
+      this.universalGainNode.gain.value = parseFloat(arg.sound)/100;
     }
   };
   Sound.prototype.loadSamples = function(url){
