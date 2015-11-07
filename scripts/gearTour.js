@@ -74,8 +74,8 @@ define([
       break; 
     } 
 
-  };
-  
+  }; 
+
   GearTour.prototype.setActualAtoms = function(bool, state){
  
     var l = this.lattice, _this = this; 

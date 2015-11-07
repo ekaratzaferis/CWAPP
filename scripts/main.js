@@ -155,6 +155,7 @@ require([
   crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
   
   var lattice = new Lattice(menu, soundMachine);
+  soundMachine.lattice = lattice;
   
   // HUD  
   var navArrowsScene = NavArrowsHud.getInstance();  
@@ -668,8 +669,7 @@ require([
         }  
         centroid.divideScalar( g.vertices.length );
       }
-
-
+ 
       orbitCrystal.control.target = centroid ;
     } 
   });

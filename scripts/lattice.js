@@ -745,7 +745,7 @@ define([
 
   Lattice.prototype.setCSGmode = function(arg, reset, newBox) { 
     
-    
+
     var _this = this, i = 0;
     this.viewMode = arg.mode ; 
       
@@ -3275,6 +3275,8 @@ define([
       && ( millerParameters.button === "savePlane")) {
       return;
     }
+    console.log(millerParameters);
+
     var _this = this ;
     var buttonClicked = millerParameters.button ;
     var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
@@ -3439,16 +3441,16 @@ define([
     var _this = this ;
     var hexagonal = (this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal') ? true : false ;
     var parameters = this.parameters ;
-    var u = parseInt(millerParameters.millerU), v = parseInt(millerParameters.millerV), w = parseInt(millerParameters.millerW), t = parseInt(millerParameters.millerT) ; 
-    var id, checkVals = parseInt(u + v) * -1 ; 
+    var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
+    var id, checkVals = parseFloat(u + v) * -1 ; 
  
     if(hexagonal){
       if(t != checkVals ) {   
         return null ;
       }
       var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
-      var aLength = parseInt(this.parameters.scaleZ) ;
-      var cLength = parseInt(this.parameters.scaleY) ;
+      var aLength = parseFloat(this.parameters.scaleZ) ;
+      var cLength = parseFloat(this.parameters.scaleY) ;
 
       var axis = new THREE.Vector3(0, 1, 0);
 
@@ -3499,9 +3501,9 @@ define([
                 startPoint : startPoint , 
                 endpointPoint : endpointPoint,
                 id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                u : parseInt(millerParameters.millerU),
-                v : parseInt(millerParameters.millerV),
-                w : parseInt(millerParameters.millerW),
+                u : parseFloat(millerParameters.millerU),
+                v : parseFloat(millerParameters.millerV),
+                w : parseFloat(millerParameters.millerW),
                 directionColor : millerParameters.directionColor,
                 name : millerParameters.directionName,
                 lastSaved : { 
@@ -3509,9 +3511,9 @@ define([
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
                   id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                  u : parseInt(millerParameters.millerU),
-                  v : parseInt(millerParameters.millerV),
-                  w : parseInt(millerParameters.millerW),
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
                   directionColor : millerParameters.directionColor,
                   name : millerParameters.directionName,
                   dirRadius : millerParameters.dirRadius
@@ -3530,9 +3532,9 @@ define([
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
                   id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                  u : parseInt(millerParameters.millerU),
-                  v : parseInt(millerParameters.millerV),
-                  w : parseInt(millerParameters.millerW),
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
                   directionColor : millerParameters.directionColor,
                   name : millerParameters.directionName,
                   lastSaved : { 
@@ -3540,9 +3542,9 @@ define([
                     startPoint : startPoint , 
                     endpointPoint : endpointPoint,
                     id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                    u : parseInt(millerParameters.millerU),
-                    v : parseInt(millerParameters.millerV),
-                    w : parseInt(millerParameters.millerW),
+                    u : parseFloat(millerParameters.millerU),
+                    v : parseFloat(millerParameters.millerV),
+                    w : parseFloat(millerParameters.millerW),
                     directionColor : millerParameters.directionColor,
                     name : millerParameters.directionName,
                     dirRadius : millerParameters.dirRadius
@@ -3556,9 +3558,9 @@ define([
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
                   id : ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+""),
-                  u : parseInt(millerParameters.millerU),
-                  v : parseInt(millerParameters.millerV),
-                  w : parseInt(millerParameters.millerW),
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
                   directionColor : millerParameters.directionColor,
                   name : millerParameters.directionName
                 });

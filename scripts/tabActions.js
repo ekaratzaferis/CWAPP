@@ -24,6 +24,8 @@ define([
     this.crystalScreenEvents = crystalScreenEvents ;
     this.motifRenderer = motifRenderer ;
     this.gearTour = gearTour ;
+
+    
   };
 
   TabActions.prototype.tabClick = function(tabId) {

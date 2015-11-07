@@ -22,6 +22,8 @@ define([
     this.crystalCameraOrbit  ;
     this.crysCentrSource = {panner: undefined , dryGain: undefined , panX : 0, panZ : 0, gain : 0 };
     this.steredLoops = {};
+    this.lattice;
+    this.volume = 0.75 ;
 
     var _this = this ;
 
@@ -33,8 +35,18 @@ define([
         alert('Web Audio API not supported in this browser.'); 
     }
     
+    if(this.procced === true){
+      this.universalGainNode = this.context.createGain();
+      this.universalGainNode.gain.value = 0.75;
+      this.universalGainNode.connect(this.context.destination);
+    } 
   };
 
+  Sound.prototype.changeVolume = function(value){ 
+    if(value){
+      this.universalGainNode.gain.value = parseFloat(value)/100;
+    }
+  };
   Sound.prototype.loadSamples = function(url){
     var _this = this ;
     var request = new XMLHttpRequest();
@@ -77,6 +89,25 @@ define([
      
   };
 
+  Sound.prototype.findCrystalCentroid = function() {
+
+    if(this.lattice === undefined){
+      return;
+    }
+
+    var g = this.lattice.customBox(this.lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+
+    return centroid ;
+  };
   Sound.prototype.switcher = function(start) {
     
     if(this.procced && this.buffers.length === 0){  
@@ -90,15 +121,10 @@ define([
     if(start){
       this.mute = false ; 
       this.crystalHold = setInterval( function() { 
-        var repeatX = parseInt($('#repeatX').val()), repeatY = parseInt($('#repeatY').val()), repeatZ = parseInt($('#repeatZ').val()) ; 
-        var scaleX = parseFloat($('#scaleX').val()), scaleY = parseFloat($('#scaleY').val()), scaleZ = parseFloat($('#scaleZ').val()) ; 
-         
-        var x = scaleX * repeatX/2 ;
-        var y = scaleY * repeatY/2 ;
-        var z = scaleZ * repeatZ/2 ;
+        var centroid = _this.findCrystalCentroid();
           
-        _this.animationMachine.produceWave(new THREE.Vector3(x,y,z), 'crystalCenter'); 
-        _this.play('crystalCenter', new THREE.Vector3(x,y,z), true);
+        _this.animationMachine.produceWave(centroid, 'crystalCenter'); 
+        _this.play('crystalCenter', centroid, true);
       },2000);
 
     }
@@ -119,7 +145,7 @@ define([
     if(!this.mute){  
       voice = this.context.createBufferSource();
       voice.buffer = this.buffers[sampleName] ; 
-      voice.connect(this.context.destination);
+      voice.connect(this.universalGainNode);
       this.steredLoops[sampleName] = voice ;
       voice.start(0); 
     }
@@ -140,11 +166,11 @@ define([
          
         voice.connect(dryGain);
         dryGain.connect(panner); 
-        panner.connect(this.context.destination);
+        panner.connect(this.universalGainNode);
              
       }
       else{
-        voice.connect(this.context.destination);
+        voice.connect(this.universalGainNode);
       }
       voice.start(0);
     }

@@ -1,5 +1,6 @@
  
- 
+onomata planes undefined
+
 1 allagi legnths na allazei kai to relative
 2. den kanei swst oretireve tis times relative  
  
