@@ -907,6 +907,9 @@ width: 70px;}
       background: #36383d;
       cursor: not-allowed; 
   }
+.action.off a{
+      background: #36383d;
+  }
 
 .action.purpleTheme a{background: #34373e; color: #43464b;}
 .action.purpleTheme a:hover{background: #524D6C; color: #fff;}
@@ -3661,3 +3664,11 @@ input.disabled[type="text"]{ background-color: black; }
 #warningModalDialog { max-width: 450px; }
 #warningLabel{ padding: 13px 15px !important; }
 #warningMessage{ padding: 20px;}
+
+.latticeButtons{ margin-top: 10px; }
+.autoRefresh a{ color: white; padding-top: 17px!important;}
+.autoRefresh a img{ margin-top: -3px;}
+
+.modal-footer .btn + .btn{ margin-left: 0px!important; }
+
+#soundSlider{ margin-top: 20px; }
