@@ -162,6 +162,7 @@ define([
         var $directions = jQuery("#directions");
         var $atomToggle = jQuery("#atomToggle");
         var $atomRadius = jQuery("#atomRadius");
+        var $unitCellViewport = jQuery("#unitCellViewport");
         /* Tabs */
         var $controls_toggler = jQuery('#controls_toggler');
         var $motifMEButton = jQuery('#motifLI');
@@ -313,7 +314,8 @@ define([
             'planes': $planes,
             'directions': $directions,
             'atomToggle': $atomToggle,
-            'atomRadius': $atomRadius
+            'atomRadius': $atomRadius,
+            'unitCellViewport': $unitCellViewport
         };
         
         // [Lattice Tab]
@@ -541,7 +543,8 @@ define([
         var messages = {
             '1':'<p>You have unlocked the lattice restrictions. <br/><br/> From now on no autopilot nor lattice restrictions will be applied.</p>',
             '2':'<p>You have unlocked the autopilot restrictions. <br/><br/>From now on atoms no longer behave as rigid spheres and you will be able to change lattice parameters within the restrictions of the lattice you have chosen.</p>',
-            '3':'<p>This functionality is CPU intensive and your computer may be unavailable for a few minutes. <br/><br/> Are you sure you want to continue?</p>'
+            '3':'<p>This functionality is CPU intensive and your computer may be unavailable for a few minutes. <br/><br/> Are you sure you want to continue?</p>',
+            '4':'<p><b>CrystalWalk</b> is a crystal editor and visualizer software designed for teaching materials science and engineering. <br/><br/>Based in <b>WebGL/HTML5</b>, it provides an accessible and interactive platform to students, professors and researchers.<br/><br/><b>CrystalWalk</b> is an <i>open-source</i> project developed by <b>Fernando Bardella’s Nuclear Technology PhD research</b> at the <b>Nuclear Energy Research Institute (IPEN) / Brazilian National Nuclear Commission (CNEN) at University of São Paulo (USP)</b>.<br/><br/>You can find more information at the project page at crystalwalk.org or reach the author at <b>bardella@ipen.br</b> for any questions, comments or concerns. </p>'
         }
     
     /* ---------
@@ -808,7 +811,7 @@ define([
                 'motifXScreenColor':'top',
                 'motifYScreenColor':'top',
                 'motifZScreenColor':'top',
-                'notesButton':'top',
+                'notesButton':'left',
                 'motifZScreenColor':'top'
             };
             var i = 0;
@@ -879,13 +882,6 @@ define([
                         argument[name] = true;
                         PubSub.publish(events.FOG_CHANGE, argument);
                         break;
-                        
-                    case 'unitCellViewport':
-                        argument ={};
-                        argument[name] = true;
-                        PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
-                        $viewport = true;
-                        break;
                 }
             });
             $icheck.on('ifUnchecked',function(){
@@ -909,13 +905,6 @@ define([
                         argument ={};
                         argument[name] = false;
                         PubSub.publish(events.FOG_CHANGE, argument);
-                        break;
-                        
-                    case 'unitCellViewport':
-                        argument ={};
-                        argument[name] = false;
-                        PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
-                        $viewport = false;
                         break;
                 }
             });
@@ -1342,6 +1331,9 @@ define([
                     case 'atomRadius':
                         title = 'Atom Radius';
                         break;
+                    case 'unitCellViewport':
+                        title = 'Unit Cell Viewport';
+                        break;
                 }
                 $parameter.parent().tooltip({
                     container : 'body',
@@ -1430,7 +1422,20 @@ define([
                     jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
                 }
             });
-            
+            $unitCellViewport.click(function(){
+                argument ={};
+                if ($unitCellViewport.parent().hasClass('lightThemeActive')){
+                    argument['unitCellViewport'] = false;
+                    PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
+                    $viewport = false;
+                }
+                else {
+                    argument['unitCellViewport'] = true;
+                    PubSub.publish(events.UC_CRYSTAL_VIEWPORT, argument);
+                    $viewport = true;
+                }
+                $unitCellViewport.parent().toggleClass('lightThemeActive');
+            });
             
             // Handle Motif access without a chosen Lattice
             $controls_toggler.on('click', function(){
@@ -1519,6 +1524,9 @@ define([
                 trigger: 'hover',
                 title: 'Swap between crystal and motif screen.'
             });
+            jQuery('#helpModal').on('click',function(){
+                _this.showInfoDialog({ 'messageID': 4 });
+            });
 
             /* [Lattice Tab] */
             $latticePadlock.find('a').prop('disabled', true);
@@ -1606,6 +1614,7 @@ define([
                         argument["button"]=this.id;
                         _.each(directionParameters, function($param, a ) {
                             if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
+                            else if (a == 'directionName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
                         PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
@@ -1619,6 +1628,7 @@ define([
                         argument["button"] = k;
                         _.each(planeParameters, function($param, a ) {
                             if (a == 'planeColor') argument[a] = $param.spectrum("get").toHex();
+                            else if (a == 'planeName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
                         PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
@@ -1902,9 +1912,9 @@ define([
                 $notepad.hide('slow');
             });
             $notepadButton.on('click',function(){
-                $notepadButton.parent().removeClass('btn-light');
-                $notepadButton.parent().addClass('btn-purple');
-                $notepad.show('slow');
+                if ($notepadButton.hasClass('opened')) $notepad.hide('slow');
+                else $notepad.show('slow');
+                $notepadButton.toggleClass('opened');
             });
             $crystalCamTargetOn.click(function(){
                 if( !($crystalCamTargetOn.hasClass('active')) ){ 
@@ -2171,7 +2181,8 @@ define([
         Menu.prototype.showInfoDialog = function(argument){
             var screen_height = jQuery(window).height();
             $infoModal.find('#infoMessage').html(messages[argument['messageID']]);
-            $infoModal.modal('show').css('margin-top',(screen_height/2)-100);
+            if (argument['messageID'] === 4) $infoModal.modal('show').css('margin-top',(screen_height/2)-250);
+            else $infoModal.modal('show').css('margin-top',(screen_height/2)-100);
         };
         Menu.prototype.showWarningDialog = function(argument){
             var screen_height = jQuery(window).height();
@@ -2505,7 +2516,7 @@ define([
             _.each(planeParameters, function($parameter, k) {
                 switch(k){
                     case 'millerI':
-                        if($parameter !== undefined) argument[k] = $parameter.val();
+                        if($parameter !== undefined) argument[k] = inputErrorHandler($parameter.val());
                         break;
 
                     case 'planeColor':
@@ -2517,7 +2528,7 @@ define([
                         break;
                         
                     default: 
-                        argument[k] = $parameter.val();
+                        argument[k] = inputErrorHandler($parameter.val());
                         break;
                 }
             });
@@ -2664,7 +2675,7 @@ define([
                 switch(k){
                         
                     case 'millerT':
-                        if($parameter !== undefined) argument[k] = $parameter.val();
+                        if($parameter !== undefined) argument[k] = inputErrorHandler($parameter.val());
                         break;
 
                     case 'directionColor':
@@ -2676,7 +2687,7 @@ define([
                         break;
                         
                     default: 
-                        argument[k] = $parameter.val();
+                        argument[k] = inputErrorHandler($parameter.val());
                         break;
                 }
             });
