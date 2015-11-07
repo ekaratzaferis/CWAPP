@@ -3320,6 +3320,10 @@ html,body {
 .toggle_menu:hover #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
 .toggle_menu.lightThemeActive #atomToggle{background-image: url('../Images/toggle-icon-active-09.png');}
 
+.toggle_menu #unitCellViewport{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-10.png');}
+.toggle_menu:hover #unitCellViewport{background-image: url('../Images/toggle-icon-active-10.png');}
+.toggle_menu.lightThemeActive #unitCellViewport{background-image: url('../Images/toggle-icon-active-10.png');}
+
 .motifBorderTop{ border-top: 8px solid #7F8289;}
 .motifBorderBottom{ border-bottom: 8px solid #7F8289; }
 .motifBorderLeft{ border-left: 8px solid #7F8289; }
@@ -3485,8 +3489,9 @@ input.disabled[type="text"]{ background-color: black; }
 #cellAlpha, #cellGamma, #cellBeta  { padding-left: 5px; padding-right: 5px; font-size: 13px!important;}
 #Aa, #Ab, #Ac { padding-left: 2px; padding-right: 2px; font-size: 13px!important;}
 #atomPosX, #atomPosY, #atomPosZ, #millerH, #millerK, #millerL, #millerI, #millerT, #millerU, #millerV, #millerW { padding-left: 2px; padding-right: 2px; font-size: 14px!important;}
-#unitCellViewport{ margin-top:20px; }
-#unitCellViewport label{ font-size: 15.4px; }
+
+#helpModal,#notesButton{ cursor: pointer; }
+#notesButton a{padding-left: 26px;}
 
 .sk-cube-grid {
   width: 80px;
