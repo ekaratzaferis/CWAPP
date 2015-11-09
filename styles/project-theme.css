@@ -3677,3 +3677,5 @@ input.disabled[type="text"]{ background-color: black; }
 .modal-footer .btn + .btn{ margin-left: 0px!important; }
 
 #soundSlider{ margin-top: 20px; }
+
+#planeOpacity{ position: relative; z-index:  1000; }
