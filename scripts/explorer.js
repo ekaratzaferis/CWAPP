@@ -103,9 +103,9 @@ define([
       new THREE.Vector3( 0,0,-1000 )
     );
      
-    this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) );
-    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) );
-    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#"+((1<<24)*Math.random()|0).toString(16)  }) ); 
+    this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
+    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
+    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
 
     this.object3d.add(this.bAxisLine);
     this.object3d.add(this.cAxisLine);

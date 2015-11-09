@@ -51,7 +51,7 @@ define([
     this.grids = [];
     this.hexGrids = {};
     this.faces = [];
-    this.gradeParameters = {"radius" : 1, "cylinderColor" : "FFFFFF" , "faceOpacity" : 1 , "faceColor" : "FFFFFF"};
+    this.gradeParameters = {"radius" : 2, "cylinderColor" : "A19EA1" , "faceOpacity" : 3 , "faceColor" : "907190"};
     this.hexagonalShapes = [] ;
     // miller
     this.millerParameters = []; 
@@ -75,6 +75,7 @@ define([
     this.cachedAtoms = [];
     // visualization
     this.renderingMode = 'realistic';
+    this.confirmationFunction = { id : ' ', object : ' '};
   }; 
   Lattice.prototype.renderingModeChange = function(arg) {
     
@@ -1915,9 +1916,9 @@ define([
     } 
   };
   Lattice.prototype.directionParameterChange = function(arg) {
-     
+
     var checkParams = this.menu.getDirectionInputs();
-        
+  
     if(checkParams.millerU.length === 0 || checkParams.millerV.length === 0 || checkParams.millerW.length === 0){ 
       return;
     }
@@ -3035,6 +3036,7 @@ define([
     _this.planeState.state = state;
     switch(state) {
         case "initial":  
+ 
           this.menu.disablePlaneButtons(
             {
               'newPlane' : false,
@@ -3048,7 +3050,7 @@ define([
               'millerK' : '',
               'millerL' : '',
               'millerI' : '',
-              'planeColor' : "#1F2227",
+              'planeColor' :  '#1F2227',
               'planeOpacity' : 10,
               'planeName' : ""
             } 
@@ -3066,6 +3068,7 @@ define([
           );  
           break;
         case "creating": 
+          var randomColor = '#'+(Math.floor(Math.random()*16777215).toString(16));
           this.menu.disablePlaneButtons(
             {
               'newPlane' : true,
@@ -3090,7 +3093,7 @@ define([
               'millerK' : '',
               'millerL' : '',
               'millerI' : '',
-              'planeColor' : "#1F2227",
+              'planeColor' : randomColor,
               'planeOpacity' : 10,
               'planeName' : ""
             } 
@@ -3118,21 +3121,49 @@ define([
           break;
       }
   };
-  Lattice.prototype.selectPlane = function (which){ 
+  Lattice.prototype.getConfirmationAnswer = function(arg){  
+ 
+    if(this.confirmationFunction.object === 'plane'){
+      this.confirmPlane(arg);
+    }
+    else if(this.confirmationFunction.object === 'direction'){
+      this.confirmDirection(arg);
+    }
+
+  };
+  Lattice.prototype.confirmDirection = function (arg){
+
+    if(arg.result === true){
+      this.selectDirection(this.confirmationFunction.id, true);
+    } 
+
+  }; 
+  Lattice.prototype.confirmPlane = function (arg){
+
+    if(arg.result === true){
+      this.selectPlane(this.confirmationFunction.id, true);
+    } 
+
+  }; 
+  Lattice.prototype.selectPlane = function (which, afterConfirm){ 
     var _this = this, alreadyExists = false; 
 
     if(which === this.planeState.editing){
       return;
     }
 
-    if(this.planeState.editing !== '-'){
+    if(this.planeState.editing !== '-' && afterConfirm === undefined){
+
+      this.confirmationFunction.object = 'plane' ;
+      this.confirmationFunction.id = which ;
+      this.menu.showWarningDialog({
+        'message':'Your changes will be lost. Are you sure you want to proceed?'
+      });
       
-      var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
-      
-      if (r !== true) {
-          return;
-      }  
- 
+      return ;
+    };
+
+    if(afterConfirm !== undefined){ 
       this.menu.highlightPlaneEntry({id : this.planeState.editing, color : 'bg-dark-gray'});
 
       if(this.tempPlanes.length === 0){
@@ -3580,6 +3611,7 @@ define([
    
     switch(state) {
         case "initial": 
+ 
           this.menu.disableDirectionButtons(
             {
               'saveDirection' : true,
@@ -3611,6 +3643,9 @@ define([
           );  
           break;
         case "creating": 
+
+          var randomColor = '#'+(Math.floor(Math.random()*16777215).toString(16));
+
           this.menu.disableDirectionButtons(
             {
               'saveDirection' : false,
@@ -3636,7 +3671,7 @@ define([
               'millerV' : '',
               'millerW' : '',
               'millerT' : '',
-              'directionColor' : '#1F2227',
+              'directionColor' : randomColor,
               'dirRadius' : 1,
               'directionName' : ""
             }
@@ -3664,7 +3699,7 @@ define([
           break;
       }
   };  
-  Lattice.prototype.selectDirection = function (which){ 
+  Lattice.prototype.selectDirection = function (which, afterConfirm){ 
      
     var _this = this, alreadyExists = false; 
 
@@ -3672,13 +3707,18 @@ define([
       return;
     }
      
-    if(this.directionalState.editing !== '-'){
-     
-      var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
+    if(this.directionalState.editing !== '-' && afterConfirm === undefined){
+
+      this.confirmationFunction.object = 'direction' ;
+      this.confirmationFunction.id = which ;
+      this.menu.showWarningDialog({
+        'message':'Your changes will be lost. Are you sure you want to proceed?'
+      });
       
-      if (r !== true) {
-          return;
-      }  
+      return ;
+    };
+
+    if(afterConfirm !== undefined){  
 
       this.menu.highlightDirectionEntry({id : this.directionalState.editing, color : 'bg-dark-gray'});
 
@@ -3798,7 +3838,7 @@ define([
     if ( isNaN(params.millerU) || isNaN(params.millerV) || isNaN(params.millerW) ) {
       return;
     }
-      
+     
     for (var i = 0; i < this.tempDirs.length; i++) {
       this.tempDirs[i].direction.destroy(); 
     };

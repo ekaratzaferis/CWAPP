@@ -281,7 +281,7 @@ require([
     crystalScene.updateAbcAxes(latticeParameters, crystalRenderer.getMainCamera());
   });
   // grade
-  menu.onGradeParameterChange(function(message, gradeParameters) {
+  menu.onGradeParameterChange(function(message, gradeParameters) { 
     lattice.setGrade(gradeParameters);
   });
   menu.onGradeChoices(function(message, gradeChoices) {
@@ -490,35 +490,7 @@ require([
   });  
   menu.fullScreenApp(function(message, param) {  
     fullScreen.fs();
-  });  
-  menu.updateNotes(function(message, arg) {  
-      
-    var length = arg.text.length;
-    var divWidth ;
-    if(length < 50 ){
-      divWidth = 100 ;
-    }
-    else if ( length < 100 ){
-      divWidth = 150 ;
-    }
-    else if ( length < 200 ){
-      divWidth = 200 ;
-    }
-    else if ( length < 400 ){
-      divWidth = 250 ;
-    }
-    else if ( length < 700 ){
-      divWidth = 350 ;
-    }
-    else if ( length < 1000 ){
-      divWidth = 450 ;
-    }
-    else{
-      divWidth = 700 ;
-    }
-     
-  });
-
+  });   
   menu.onCameraSyncChange(function(message, param) { 
     var cellCamera = unitCellRenderer.getMainCamera();
     var crystalCamera = crystalRenderer.getMainCamera();
@@ -586,9 +558,11 @@ require([
   menu.onUnitCellChange(function(message, which) { 
     motifEditor.setCSGmode(which);
   });
-  menu.onCrystalChange(function(message, which) { 
-    
+  menu.onCrystalChange(function(message, which) {  
     lattice.setCSGmode(which);
+  });
+  menu.onDialogResult(function(message, arg) {  
+    lattice.getConfirmationAnswer(arg);
   });
   menu.onUnitCellViewport(function(message, arg) { 
     if(arg.unitCellViewport === true){ 
