@@ -796,7 +796,6 @@ define([
                 'crystalSubstracted':'top',
                 'crystalSolidVoid':'top',
                 'crystalGradeLimited':'top',
-                'unitCellViewport':'top',
                 'cellClassic':'top',
                 'cellSubstracted':'top',
                 'cellSolidVoid':'top',
@@ -943,6 +942,14 @@ define([
                         PubSub.publish(eventColor, argument);
                     }
                 });
+                if (k === 'faceColor') {
+                    $parameter.spectrum('set','#907190');
+                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
+                }
+                else if (k === 'cylinderColor') {
+                    $parameter.spectrum('set','#A19EA1');
+                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
+                }
             });
             
             /* [Lattice Tab] */
@@ -1075,7 +1082,8 @@ define([
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
             });
             _.each(gradeParameters, function($parameter, k) {
-                $parameter.val(1);
+                if (k === 'radius') $parameter.val(2);
+                else $parameter.val(3);
                 $parameter.on('change', function() {
                     argument = {};
                     if (inputErrorHandler($parameter.val()) !== false) {
@@ -1085,8 +1093,8 @@ define([
                     }
                 });
             });
-            _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
-            _this.setSlider("faceOpacity",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("radius",2,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("faceOpacity",3,1,10,1,events.GRADE_PARAMETER_CHANGE);
 
             /* [P&D Tab] */
             _.each(planeParameters, function($parameter, k) {
@@ -1103,6 +1111,7 @@ define([
                     case 'planeOpacity':
                         $parameter.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
                         $parameter.selectpicker();
+                        $parameter.selectpicker('val','6');
                         $parameter.prop('disabled',true);
                         break;
 
@@ -1160,7 +1169,7 @@ define([
                         break;
 
                     case 'dirRadius':
-                        $parameter.html('<option>1</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
+                        $parameter.html('<option>10</option><option>20</option><option>40</option><option>60</option><option>80</option><option>100</option>');
                         $parameter.selectpicker();
                         $parameter.prop('disabled',true);
                         break;
@@ -1189,7 +1198,7 @@ define([
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
                     else if (k === 'dirRadius') {
-                        argument[k] = $parameter.val();
+                        argument[k] = (parseFloat($parameter.val()) / 10).toString();
                         PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
                     else if (inputErrorHandler($parameter.val()) !== false) {
@@ -1280,14 +1289,36 @@ define([
             });
             $cellVolume.val(100);
             $cellVolume.on('change', function() {
-                argument = {}; 
-                if (inputErrorHandler($cellVolume.val()) !== false) {
-                    argument['cellVolume'] = inputErrorHandler($cellVolume.val()); 
-                    jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
-                    PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
+                argument = {};
+                var value = integerInput($cellVolume.val());
+                if (value !== false) {
+                    if ( $tangency.parent().hasClass('purpleThemeActive') ){
+                        if (parseInt(value) >= 90) {
+                            argument['cellVolume'] = integerInput($cellVolume.val()); 
+                            jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
+                            PubSub.publish(events.CELL_VOLUME_CHANGE, argument);
+                        }
+                        else {
+                            _this.showTooltip({ 'element': $cellVolume.attr('id'), 'placement': 'top', 'message': 'Wrong Input' });
+                            $cellVolume.val('');   
+                        }
+                    }
+                    else if (parseInt(value) > 0) {
+                        argument['cellVolume'] = integerInput($cellVolume.val()); 
+                        jQuery('#cellVolumeSlider').slider('value',argument['cellVolume']);
+                        PubSub.publish(events.CELL_VOLUME_CHANGE, argument);   
+                    }
+                    else{
+                        _this.showTooltip({ 'element': $cellVolume.attr('id'), 'placement': 'top', 'message': 'Wrong Input' });
+                        $cellVolume.val(''); 
+                    }
+                }
+                else {
+                    _this.showTooltip({ 'element': $cellVolume.attr('id'), 'placement': 'top', 'message': 'Wrong Input' });
+                    $cellVolume.val('');
                 }
             });
-            _this.setSlider('cellVolume',100,0,400,0.1,events.CELL_VOLUME_CHANGE);
+            _this.setSlider('cellVolume',100,0.1,400,0.1,events.CELL_VOLUME_CHANGE);
 
             /* [Visualization Tab] */
             $fogDensity.val(1);
@@ -2679,7 +2710,8 @@ define([
                         break;
 
                     case 'dirRadius':
-                        $parameter.selectpicker('val',argument['dirRadius']);
+                        var temp = argument['dirRadius']+'0';
+                        $parameter.selectpicker('val',temp);
                         break;
 
                     case 'directionName':

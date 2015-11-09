@@ -3474,10 +3474,6 @@ input.disabled[type="text"]{ background-color: black; }
     color: white !important; 
     font-size: 15px !important; 
 }
-#planesTooltip{
-    overflow:hidden !important;
-    height:1% !important;
-}
 #savePlane{ 
     overflow:hidden !important;
     height:1% !important;
