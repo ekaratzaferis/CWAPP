@@ -742,7 +742,6 @@ define([
                 'millerL':'top',
                 'millerI':'top',
                 'savePlane':'top',
-                'planeOpacity':'top',
                 'planeColor':'top',
                 'planeName':'top',
                 'deletePlane':'top',
@@ -752,7 +751,6 @@ define([
                 'millerT':'top',
                 'newDirection':'top',
                 'saveDirection':'top',
-                'dirRadius':'top',
                 'directionColor':'top',
                 'directionName':'top',
                 'deleteDirection':'top',
@@ -926,7 +924,7 @@ define([
                     case 'printMode' : k = 'printMode'; eventColor = 'x'; break;
                 }
                 $parameter.spectrum({
-                    color: "#ffffff",
+                    color: "#A19EA1",
                     allowEmpty:true,
                     chooseText: "Choose",
                     cancelText: "Close",
@@ -943,6 +941,13 @@ define([
                         PubSub.publish(eventColor, argument);
                     }
                 });
+                if ( k === 'faceColor') {
+                    $parameter.spectrum('set','#907190');
+                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
+                }
+                else if ( k === 'cylinderColor') {
+                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
+                }
             });
             
             /* [Lattice Tab] */
@@ -1075,7 +1080,8 @@ define([
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
             });
             _.each(gradeParameters, function($parameter, k) {
-                $parameter.val(1);
+                if (k === 'radius') $parameter.val(2);
+                else $parameter.val(3);
                 $parameter.on('change', function() {
                     argument = {};
                     if (inputErrorHandler($parameter.val()) !== false) {
@@ -1085,8 +1091,8 @@ define([
                     }
                 });
             });
-            _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
-            _this.setSlider("faceOpacity",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("radius",2,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("faceOpacity",3,1,10,1,events.GRADE_PARAMETER_CHANGE);
 
             /* [P&D Tab] */
             _.each(planeParameters, function($parameter, k) {
@@ -1617,6 +1623,12 @@ define([
                             else if (a == 'directionName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
+                        if (k === 'newDirection') {
+                            var random = Math.floor(Math.random()*16777215).toString(16);
+                            $directionColor.spectrum('set','#'+random);
+                            $directionColor.children().css('background','#'+random);
+                            argument['directionColor'] = $directionColor.spectrum("get").toHex();
+                        }
                         PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
                     }
                 });
@@ -1631,11 +1643,16 @@ define([
                             else if (a == 'planeName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
+                        if (k === 'newPlane') {
+                            var random = Math.floor(Math.random()*16777215).toString(16);
+                            $planeColor.spectrum('set','#'+random);
+                            $planeColor.children().css('background','#'+random);
+                            argument['planeColor'] = $planeColor.spectrum("get").toHex();
+                        }
                         PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
                     }
                 });
             });
-
             
             /* [Motif Tab] */
             $tangency.on('click',function(){
