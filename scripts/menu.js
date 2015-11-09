@@ -742,6 +742,7 @@ define([
                 'millerL':'top',
                 'millerI':'top',
                 'savePlane':'top',
+                'planeOpacity':'top',
                 'planeColor':'top',
                 'planeName':'top',
                 'deletePlane':'top',
@@ -751,6 +752,7 @@ define([
                 'millerT':'top',
                 'newDirection':'top',
                 'saveDirection':'top',
+                'dirRadius':'top',
                 'directionColor':'top',
                 'directionName':'top',
                 'deleteDirection':'top',
@@ -924,7 +926,7 @@ define([
                     case 'printMode' : k = 'printMode'; eventColor = 'x'; break;
                 }
                 $parameter.spectrum({
-                    color: "#A19EA1",
+                    color: "#ffffff",
                     allowEmpty:true,
                     chooseText: "Choose",
                     cancelText: "Close",
@@ -941,13 +943,6 @@ define([
                         PubSub.publish(eventColor, argument);
                     }
                 });
-                if ( k === 'faceColor') {
-                    $parameter.spectrum('set','#907190');
-                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
-                }
-                else if ( k === 'cylinderColor') {
-                    $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
-                }
             });
             
             /* [Lattice Tab] */
@@ -1080,8 +1075,7 @@ define([
                 _this.setSlider(name,90,1,180,1,events.LATTICE_PARAMETER_CHANGE);
             });
             _.each(gradeParameters, function($parameter, k) {
-                if (k === 'radius') $parameter.val(2);
-                else $parameter.val(3);
+                $parameter.val(1);
                 $parameter.on('change', function() {
                     argument = {};
                     if (inputErrorHandler($parameter.val()) !== false) {
@@ -1091,8 +1085,8 @@ define([
                     }
                 });
             });
-            _this.setSlider("radius",2,1,10,1,events.GRADE_PARAMETER_CHANGE);
-            _this.setSlider("faceOpacity",3,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("radius",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
+            _this.setSlider("faceOpacity",1,1,10,1,events.GRADE_PARAMETER_CHANGE);
 
             /* [P&D Tab] */
             _.each(planeParameters, function($parameter, k) {
@@ -1134,7 +1128,10 @@ define([
                     }
                     else if (k === 'planeName') {
                         argument[k] = $parameter.val();
-                        console.log(argument[k]);
+                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                    }
+                    else if (k === 'planeOpacity') {
+                        argument[k] = $parameter.val();
                         PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
                     }
                     else if (integerInput($parameter.val()) !== false) {
@@ -1189,7 +1186,11 @@ define([
                     }
                     else if (k === 'directionName') {
                         argument[k] = $parameter.val();
-                        PubSub.publish(events.PLANE_PARAMETER_CHANGE, argument);
+                        PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
+                    }
+                    else if (k === 'dirRadius') {
+                        argument[k] = $parameter.val();
+                        PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, argument);
                     }
                     else if (inputErrorHandler($parameter.val()) !== false) {
                         argument[k] = inputErrorHandler($parameter.val());
@@ -1623,12 +1624,6 @@ define([
                             else if (a == 'directionName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
-                        if (k === 'newDirection') {
-                            var random = Math.floor(Math.random()*16777215).toString(16);
-                            $directionColor.spectrum('set','#'+random);
-                            $directionColor.children().css('background','#'+random);
-                            argument['directionColor'] = $directionColor.spectrum("get").toHex();
-                        }
                         PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
                     }
                 });
@@ -1643,16 +1638,11 @@ define([
                             else if (a == 'planeName') argument[a] = $param.val();
                             else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                         });
-                        if (k === 'newPlane') {
-                            var random = Math.floor(Math.random()*16777215).toString(16);
-                            $planeColor.spectrum('set','#'+random);
-                            $planeColor.children().css('background','#'+random);
-                            argument['planeColor'] = $planeColor.spectrum("get").toHex();
-                        }
                         PubSub.publish(events.MILLER_PLANE_SUBMIT, argument);
                     }
                 });
             });
+
             
             /* [Motif Tab] */
             $tangency.on('click',function(){
@@ -2166,7 +2156,6 @@ define([
                 PubSub.publish(events.DIALOG_RESULT, argument);
                 $warningModal.caller = 'none';
             });
-            
     /*$
     
     _.each(fixedDimensions, function($parameter, k) {
@@ -2203,9 +2192,10 @@ define([
         };
         Menu.prototype.showWarningDialog = function(argument){
             var screen_height = jQuery(window).height();
-            $warningModal.find('#warningMessage').html(messages[argument['messageID']]);
+            if ( argument['messageID'] !== undefined ) $warningModal.find('#warningMessage').html(messages[argument['messageID']]);
+            else $warningModal.find('#warningMessage').html(argument['message']);
             $warningModal.modal('show').css('margin-top',(screen_height/2)-100);
-            $warningModal.caller = argument['caller'];
+            if ( argument['caller'] !== undefined ) $warningModal.caller = argument['caller'];
         };
         Menu.prototype.setMotifPadlock = function(state){
             if (state === 'lock') {
