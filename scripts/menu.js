@@ -2135,11 +2135,17 @@ define([
             });
             
             // Listen User Input in Dialog box
+            jQuery('#closeWarning').on('click',function(){
+                argument = {};
+                argument['result'] = false;
+                PubSub.publish(events.DIALOG_RESULT, argument);
+                $warningModal.caller = 'userDenied';
+            });
             jQuery('#cancelWarning').on('click',function(){
                 argument = {};
                 argument['result'] = false;
                 PubSub.publish(events.DIALOG_RESULT, argument);
-                $warningModal.caller = 'none';
+                $warningModal.caller = 'userDenied';
             });
             jQuery('#continueWarning').on('click',function(){
                 argument = {};
@@ -2149,8 +2155,15 @@ define([
                     $warningModal.caller.trigger('action');
                     $warningModal.caller = 'none';
                 }
+                $warningModal.caller = 'userConfirmed';
             });
             $warningModal.on('hide.bs.modal', function(){
+                if ($warningModal.caller !== undefined){
+                    if ( ($warningModal.caller === 'userConfirmed') || ($warningModal.caller === 'userDenied') ){
+                        $warningModal.caller = 'none';
+                        return true;
+                    }
+                }
                 argument = {};
                 argument['result'] = false;
                 PubSub.publish(events.DIALOG_RESULT, argument);
