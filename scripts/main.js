@@ -336,6 +336,7 @@ require([
     motifEditor.atomPosMode(arg); 
   });
   menu.onSoundVolume(function(message, arg) {   
+    console.log(arg);
     soundMachine.changeVolume(arg); 
   });
   menu.onSwapScreen(function(message, arg) {  
@@ -564,7 +565,7 @@ require([
   menu.onDialogResult(function(message, arg) { 
 
     // TODO improve this. it is just a workaround
-     
+
     if(motifEditor.whichToConfirm !== undefined){
       motifEditor.getConfirmationAnswer(arg);
     }
