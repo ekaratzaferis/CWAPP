@@ -2171,8 +2171,15 @@ define([
       );
     }
      
+  }; 
+  Motifeditor.prototype.getConfirmationAnswer = function(arg){  
+      
+    if(arg.result === true){
+      this.selectAtom(this.whichToConfirm, undefined, undefined, true);
+    }
+    this.whichToConfirm = undefined;
   };
-  Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState){ 
+  Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState, afterConfirm){ 
     var _this = this;
     var doNotDestroy = false;
     var x = this.cellParameters.scaleX ;
@@ -2236,12 +2243,16 @@ define([
       }
       else if(this.newSphere !== undefined){
         // case where the user clicks other atom without having saved last atom's changes
-        if(this.newSphere.fresh === true){
-          var r = confirm("Your changes will be lost. Are you sure you want to proceed?");
-        
-          if (r !== true) {
-              return;
-          }  
+        if(this.newSphere.fresh === true && afterConfirm === undefined){
+
+          this.whichToConfirm = which;
+
+          this.menu.showWarningDialog({
+            'message':'Your changes will be lost. Are you sure you want to proceed?'
+          });
+          return;
+        }
+        else if(this.newSphere.fresh === true && afterConfirm !== undefined){ 
           this.updateAtomList(
             undefined, 
             this.newSphere.getID(), 
@@ -2251,11 +2262,15 @@ define([
           );
         }
         else if(this.newSphere.fresh === false){
-          var r = confirm("Your changes will be automatically saved. Are you sure you want to proceed?");
           
-          if (r !== true) {
-              return;
-          }
+          if(afterConfirm === undefined){
+            this.whichToConfirm = which;
+
+            this.menu.showWarningDialog({
+              'message':'Your changes will be automatically saved. Are you sure you want to proceed?'
+            });
+            return;
+          }  
           else{ 
             this.motifsAtoms.push(this.newSphere);
             

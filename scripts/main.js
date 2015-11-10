@@ -561,8 +561,17 @@ require([
   menu.onCrystalChange(function(message, which) {  
     lattice.setCSGmode(which);
   });
-  menu.onDialogResult(function(message, arg) {  
-    lattice.getConfirmationAnswer(arg);
+  menu.onDialogResult(function(message, arg) { 
+
+    // TODO improve this. it is just a workaround
+     
+    if(motifEditor.whichToConfirm !== undefined){
+      motifEditor.getConfirmationAnswer(arg);
+    }
+    else{
+      lattice.getConfirmationAnswer(arg);
+    }
+    
   });
   menu.onUnitCellViewport(function(message, arg) { 
     if(arg.unitCellViewport === true){ 
