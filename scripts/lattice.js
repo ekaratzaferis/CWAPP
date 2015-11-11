@@ -1191,6 +1191,7 @@ define([
       var p = point.object3d.position.clone(); 
       _.each(motif, function(atom) {  
         var opacity,wireframe,color,a;
+        var ionicIndex = atom.ionicIndex; 
         if(atom.object3d === undefined){
           opacity = atom.opacity;
           wireframe = atom.wireframe;
@@ -1218,7 +1219,8 @@ define([
             '/Images/'+atom.texture+'.png',
             opacity,
             _this.renderingMode,
-            kk
+            kk,
+            ionicIndex
           )  
         );
       });
@@ -1575,6 +1577,7 @@ define([
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) {  
         var a = atom.object3d.position; 
+        var ionicIndex = atom.ionicIndex; 
         var color, texture, opacity, wireframe;
         if(!_.isUndefined(atom.object3d) && !atom.object3d.children) { 
           color = atom.color; 
@@ -1603,7 +1606,8 @@ define([
             texture,
             opacity ,
             _this.renderingMode,
-            kk
+            kk,
+            ionicIndex
           )  
         );
       });
@@ -3051,7 +3055,7 @@ define([
               'millerL' : '',
               'millerI' : '',
               'planeColor' :  '#1F2227',
-              'planeOpacity' : 10,
+              'planeOpacity' : 6,
               'planeName' : ""
             } 
           );
@@ -3094,7 +3098,7 @@ define([
               'millerL' : '',
               'millerI' : '',
               'planeColor' : randomColor,
-              'planeOpacity' : 10,
+              'planeOpacity' : 6,
               'planeName' : ""
             } 
           );

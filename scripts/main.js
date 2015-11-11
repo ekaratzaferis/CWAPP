@@ -69,7 +69,8 @@ require([
   'rStatsExtras', 
   'leapMotionHandler',
   'renderingMode',
-  'tabActions'
+  'tabActions',
+  'atomCustomizer'
 ], function(
   PubSub, 
   _, 
@@ -104,7 +105,8 @@ require([
   RStatsExtras, 
   LeapMotionHandler,
   RenderingMode,
-  TabActions
+  TabActions,
+  AtomCustomizer
 ) {
   var menu = new Menu();
   
@@ -239,8 +241,11 @@ require([
   dollEditor.rePosition(); 
   orbitCrystal.dollOnDocumentMouseDown(dollEditor.onDocumentMouseDown.bind(dollEditor)) ;
 
+  // atom customizer
+  var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu);
+
   // mouse events happen in crytal screen 
-  var crystalScreenEvents = new CrystalMouseEvents(lattice, 'info', crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor);
+  var crystalScreenEvents = new CrystalMouseEvents(lattice, crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor, atomCustomizer);
 
   // full screen
   var fullScreen = new FullScreen();
@@ -261,6 +266,7 @@ require([
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
   var tabActionsManager = new TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour);
 
+   
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -336,7 +342,6 @@ require([
     motifEditor.atomPosMode(arg); 
   });
   menu.onSoundVolume(function(message, arg) {   
-    console.log(arg);
     soundMachine.changeVolume(arg); 
   });
   menu.onSwapScreen(function(message, arg) {  
@@ -422,6 +427,9 @@ require([
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
+  }); 
+  menu.onAtomCustomization(function(message, arg) {
+    atomCustomizer.customizeAtom(arg);
   }); 
   menu.onAtomSubmit(function(message, atomParam) {
  

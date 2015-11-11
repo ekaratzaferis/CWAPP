@@ -12,8 +12,9 @@ define([
 ) {
   
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
+  var uniqueId = -1;
 
-  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex) { 
+  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex) { 
      
     var _this = this; 
     this.radius = radius;  
@@ -22,6 +23,7 @@ define([
     this.identity = id ;
     this.materialls; 
     this.color = color; 
+    this.ionicIndex = ionicIndex; 
     this.offsetX = offsetX; 
     this.offsetY = offsetY; 
     this.opacity = opacity; 
@@ -30,28 +32,41 @@ define([
     this.helperPos = {"x":0, "y":0, "z":0};
     this.elementName = elementName; 
     this.latticeIndex = latticeIndex; 
+    this.visibility = true; 
     this.subtractedForCache = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
+    this.uniqueID = uniqueID();
     this.addMaterial(color, position, opacity, renderingMode,id) ; 
-  } 
-  function createShaderMaterial(id) {
+    
+  }  
+  CrystalAtom.prototype.setVisibility = function( bool) {
 
-      var shader = THREE.ShaderTypes[id];
+    this.visibility = bool; 
+    this.object3d.visibility = bool;
 
-      var u = THREE.UniformsUtils.clone(shader.uniforms);
+  };
+  CrystalAtom.prototype.setOpacity = function( opacity) {
+    
+    if(_.isUndefined(opacity)) return;
+    this.opacity =opacity;
+    this.object3d.children[0].material.opacity = opacity ;
+    this.object3d.children[0].material.needsUpdate = true;
+  }; 
+  CrystalAtom.prototype.setColorMaterial = function(color, temp) {
+    var _this = this;
+    if(color === undefined){
+      this.object3d.children[0].material.color = new THREE.Color( this.color );
+    }
+    else if(temp === undefined){ 
+      this.color = color ;  
+      this.object3d.children[0].material.color = new THREE.Color( this.color );
+    }
+    else if(temp !== undefined){   
+      this.object3d.children[0].material.color = new THREE.Color( color );
+    }
 
-      var vs = shader.vertexShader;
-      var fs = shader.fragmentShader;
-
-      var material = new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs });
-
-      material.uniforms.uDirLightPos.value = new THREE.Vector3(300, 300, 60);
-      material.uniforms.uDirLightColor.value = new THREE.Color( 0xFFFFFF );
-      
-      return material;
-
-  }
+  }; 
   CrystalAtom.prototype.coonMode = function(){   
  
     var phongMaterial = createShaderMaterial("phongDiffuse");
@@ -94,6 +109,7 @@ define([
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.identity = identity ;
+    sphere.uniqueID = this.uniqueID ;
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     this.object3d = sphere;
@@ -195,7 +211,7 @@ define([
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     sphere.name = 'atom';
-    sphere.identity = _this.identity ;
+    sphere.identity = this.identity ;
     this.object3d = sphere;
     this.object3d.position.x = _this.helperPos.x ;
     this.object3d.position.y = _this.helperPos.y ;
@@ -219,24 +235,7 @@ define([
   CrystalAtom.prototype.getRadius = function() {
     var _this = this ;
     return this.radius ;
-  }; 
-  CrystalAtom.prototype.setMaterial = function(color) {
-    var _this = this; 
-    this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color:color});
-    this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color:color });
-    this.object3d.children[1].material.needsUpdate = true;
-
-  };
-  CrystalAtom.prototype.collided = function() {
-    var _this = this;
-    this.object3d.children[1].material  = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color:"#FF0000" });
-    this.object3d.children[1].material.needsUpdate = true;
-    setTimeout(function() { 
-      _this.object3d.children[1].material = _this.colorMaterial;
-      _this.object3d.children[1].material.needsUpdate = true;
-
-    },200);
-  }; 
+  };  
   CrystalAtom.prototype.destroy = function() {  
     Explorer.remove(this);  
   };
@@ -270,6 +269,27 @@ define([
     geometry.uvsNeedUpdate = true;
 
     return geometry;
+  }
+  function uniqueID() {
+    uniqueId++; 
+    return uniqueId;
+  };
+  function createShaderMaterial(id) {
+
+      var shader = THREE.ShaderTypes[id];
+
+      var u = THREE.UniformsUtils.clone(shader.uniforms);
+
+      var vs = shader.vertexShader;
+      var fs = shader.fragmentShader;
+
+      var material = new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs });
+
+      material.uniforms.uDirLightPos.value = new THREE.Vector3(300, 300, 60);
+      material.uniforms.uDirLightColor.value = new THREE.Color( 0xFFFFFF );
+      
+      return material;
+
   }
   THREE.ShaderTypes = { 
     'phongDiffuse' : {

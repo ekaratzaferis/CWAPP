@@ -24,7 +24,7 @@ define([
   // possible useless FILE and will be DELETED
   //
 
-  function CrystalMouseEvents( client, func, _camera, domElement, state, dollEditor ) {
+  function CrystalMouseEvents( client, _camera, domElement, state, dollEditor, atomCustomizer ) {
     this.plane = {'object3d' : undefined} ;
     this.camera = _camera;
     this.container = domElement; 
@@ -34,13 +34,55 @@ define([
     this.state = state ;
     var _this =this ;
     this.dollEditor = dollEditor;
+    this.atomCustomizer = atomCustomizer;
     this.offset = new THREE.Vector3(); 
+    this.coloredAtomsExist = false;
 
     var mMoove = this.onDocumentMouseMove.bind(this) ; 
     document.getElementById(this.container).addEventListener("mousemove", mMoove, false); 
+
+    var mDown = this.onDocumentMouseDown.bind(this) ;
+    document.getElementById(this.container).addEventListener("mousedown",  mDown, false);
+
+    var mUp = this.onDocumentMouseUp.bind(this) ;
+    document.getElementById(this.container).addEventListener("mouseup"  ,    mUp, false);
      
   }; 
 
+  CrystalMouseEvents.prototype.onDocumentMouseDown = function(event){ 
+    
+    event.preventDefault();
+    var _this = this;
+
+    if(this.state === 'default'){
+      mouse.x = ( event.clientX / $('#'+this.container).width() ) * 2 - 1;
+      mouse.y = - ( event.clientY / $('#'+this.container).height() ) * 2 + 1;
+    }
+    else if(_this.state === 'motifScreen'){
+      mouse.x = ( event.clientX / $('#'+this.container).width() ) * 2 - 3;
+      mouse.y = - ( event.clientY / $('#'+this.container).height() ) * 2 + 1; 
+    }
+     
+    raycaster.setFromCamera( mouse, this.camera ); 
+ 
+    var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
+     
+    if ( crystalobjsIntersects.length > 0 ) {  
+
+      if(crystalobjsIntersects[0].object.parent.name === 'atom'){
+ 
+        var obj = crystalobjsIntersects[0].object ; 
+        var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});   
+
+        if(filteredAtom !== undefined){
+          this.atomCustomizer.atomJustClicekd(filteredAtom);
+        } 
+      }
+    }  
+  };
+  CrystalMouseEvents.prototype.onDocumentMouseUp = function(event){ 
+
+  };
   CrystalMouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
      
@@ -57,22 +99,32 @@ define([
      
     raycaster.setFromCamera( mouse, _this.camera ); 
  
-    var crystalobjsIntersects = raycaster.intersectObjects( _this.getCrystalObjects() );
-     
-    if ( crystalobjsIntersects.length > 0 ) {
+    var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
+    
+    if ( crystalobjsIntersects.length > 0 && crystalobjsIntersects[0].object.parent.name === 'atom') {  
 
-      if(crystalobjsIntersects[0].object.parent.name === 'atom') this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
-
-      var obj = crystalobjsIntersects[0].object ;
-
-      var filteredAtom = _.findWhere(_this.client.actualAtoms, {identity : obj.parent.identity}); 
-      $('#infoBox').css('display', 'inline');
-      $('#infoBox').text('This is an atom of '+filteredAtom.elementName+' and it has radius of '+filteredAtom.getRadius()+' angstroms.');
+      for (var i = this.client.actualAtoms.length - 1; i >= 0; i--) {
+        this.client.actualAtoms[i].setColorMaterial();
+      }; 
+        
+      this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
        
+      var obj = crystalobjsIntersects[0].object ; 
+      var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});  
+      filteredAtom.setColorMaterial(0xCC2EFA, true);
+      this.coloredAtomsExist = true; 
+      document.getElementById(this.container).style.cursor = 'pointer';
     } 
-    else{
+    else{  
       this.dollEditor.setAtomUnderDoll(undefined);
-      $('#infoBox').css('display', 'none');
+      
+      if(this.coloredAtomsExist === true){ 
+        for (var i = this.client.actualAtoms.length - 1; i >= 0; i--) {
+          this.client.actualAtoms[i].setColorMaterial();
+        };
+        this.coloredAtomsExist === false;
+      }
+      document.getElementById(this.container).style.cursor = 'default';
     }
   }
  
