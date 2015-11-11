@@ -36,7 +36,7 @@ define([
   };
 
   AtomCustomizer.prototype.customizeAtom = function(arg){ 
-    
+    var _this = this;
     var atom = _.findWhere(_this.lattice.actualAtoms, {uniqueID : arg.id});
     if(atom === undefined){
       //atom = _.findWhere(_this.lattice.cachedAtoms, {uniqueID : arg.id});

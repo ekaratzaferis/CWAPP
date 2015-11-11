@@ -1032,7 +1032,9 @@ define([
         } 
       }  
     } 
-       
+    
+    Explorer.remove({'object3d' : solidBox}); 
+
   };
   Lattice.prototype.createMaterial = function(color, opacity){
     var material; 
