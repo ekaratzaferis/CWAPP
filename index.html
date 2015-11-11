@@ -83,6 +83,98 @@
                     <div id="swapBtn" data-toggle="tooltip" data-placement="left">
                         <img src="Images/swap.png" />
                     </div>
+                    <!-- Individual Atom Controller -->
+                    <div class="bravais-lattice-modal-container">
+                        <div class="modal bravais-lattice-modal" id="iacBox">
+                            <div class="modal-dialog" role="document" id="infoModalDialog">
+                                <div class="modal-content">
+                                    <div class="modal-header mega-header" id="infoHeader">
+                                        <div class="modal-title-container" id="iacLabel">
+                                            <h2>Atom #37</h2>
+                                        </div>
+                                        <div class="btn-close">
+                                            <button id="iacClose" type="button" class="btn btn-primary" aria-label="Close">
+                                                <span><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-block visualization-block block-pad-sm theme-light">
+                                            <div class="block-content">
+                                                <div class="visualization-blocks-container">
+                                                    <div class="row row-1_0">
+                                                        <div class="col col-sm-9">
+                                                            <div class="action action-toggle-visiblity" id="iacToggle">
+                                                                <a><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a>
+                                                            </div>
+                                                            <div class="element-symbol-container" id="iacSymbol">
+                                                                <div class="element-box">
+                                                                    <a class="ch ch-o">O</a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="visualization-block" id="iacRadius">
+                                                                <div class="visualization-block-content">
+                                                                    <div class="color-picker-container">
+                                                                        <div class="color-label form-group-label">
+                                                                            <label id="radiusLabel">Radius:</label>
+                                                                            <label id="radiusLabelValue"> 150 &Aring;</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm-3">
+                                                            <div class="action action-toggle-visiblity" id="iacDoll">
+                                                                <a><img src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row row-1_0">
+                                                        <div class="col col-sm-2">
+                                                            <div class="visualization-block" id="iacColorWrapper">
+                                                                <div class="visualization-block-content">
+                                                                    <div class="color-picker-container">
+                                                                        <div class="color-label form-group-label">
+                                                                            <label for="txt_color">Color</label>
+                                                                        </div>
+                                                                        <div id="iacColor" class="color-picker color-picker-lg theme-01 bg-transparent ">
+                                                                            <div class="color"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm-7 visualization-block-iac">
+                                                            <div class="slider-group form-group">
+                                                                <div class="slider-detail">
+                                                                    <div class="slider-label form-group-label">
+                                                                        <label for="txt_visualization_radius">Opacity</label>
+                                                                    </div>
+                                                                    <div class="slider-input form-group-input theme-dark margTop6">
+                                                                        <input type="text" id="iacOpacity" class="form-control"/>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="slider-control slider-control-sm theme-dark">
+                                                                    <div class="slider" id="iacOpacitySlider"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col col-sm-3">
+                                                            <div class="element-symbol-container">
+                                                                <div class="action action-toggle-visiblity" id="iacNotes">
+                                                                    <a><img src="Images/notes-icon.png" class="img-responsive" alt=""/></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Atom Radius Slider -->
                     <div class="slider-group form-group theme-dark disabled" id="atomRadiusSliderContainer">
                         <div class="row">
