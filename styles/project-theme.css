@@ -3686,8 +3686,9 @@ input.disabled[type="text"]{ background-color: black; }
     z-index: 9000;
     top: 50px;
     left: 50px;
-    display: none!important;
+    display: none;
     max-width: 340px;
+    max-height: 206px;
 }
 #iacOpacityLabel{
     font-size: 12.6px;

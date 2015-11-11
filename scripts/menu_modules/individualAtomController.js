@@ -49,6 +49,11 @@ define([
     // Contructor //
     function individualAtomController(argument) {
         
+        // Add Symbol //
+        
+        
+        // Bind Event Listener //
+        
     };
     
     

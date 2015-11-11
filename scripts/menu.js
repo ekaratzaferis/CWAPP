@@ -14,7 +14,8 @@
         'bootstrap',
         'bootstrap-select',
         'jColor',
-        'individualAtomController'
+        'individualAtomController',
+        'stringEditor'
     ], function(
         jQuery,
         jQuery_ui,
@@ -26,7 +27,8 @@
         bootstrap,
         bootstrapSelect,
         jColor,
-        individualAtomController
+        individualAtomController,
+        stringEditor
     ) 
     {
         /* -----------------------
@@ -2028,6 +2030,7 @@
                     argument ={};
                     argument['threeD'] = true;
                     PubSub.publish(events.THREE_D_PRINTING, argument);
+                    console.log('pouladi');
                 });
 
                 /* [Public Library Tab] */
@@ -2210,9 +2213,9 @@
                     $warningModal.caller = 'none';
                 });
                 
-                
                 _this.setSlider('iacOpacity',5,1,10,0.1,events.FOG_PARAMETER_CHANGE);
                 var iac = new individualAtomController();
+                iac.showBox();
                 
         /*$
 
