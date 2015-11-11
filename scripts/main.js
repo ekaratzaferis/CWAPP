@@ -359,9 +359,8 @@ require([
   menu.onSoundVolume(function(message, arg) {   
     soundMachine.changeVolume(arg); 
   });
-  menu.on3DPrinting(function(message, arg) { 
-    console.log(9);  
-    saveSTL.changeVolume(crystalScene.object3d, 'stl_FIle');
+  menu.on3DPrinting(function(message, arg) {  
+    saveSTL(crystalScene.object3d, 'stl_FIle');
   });
   menu.onSwapScreen(function(message, arg) {  
     tabActionsManager.tabClick(arg.swap);
