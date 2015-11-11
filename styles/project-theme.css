@@ -212,6 +212,12 @@ nav.navbar .navbar-header button.navbar-toggle {
   .row-10 > .col {
     padding: 0 10px; }
 
+.row-1_0 {
+  margin-right: -1px;
+  margin-top: 7px!important;}
+.row-1_0 > .col {
+    padding: 0 2px; }
+
 .row-20 {
   margin-right: -20px;
   margin-left: -20px; }
@@ -1779,8 +1785,8 @@ width: 70px;}
                 margin-right: 0; }
         .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .sliders-symbol-container {
           margin-bottom: 10px; }
-.motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .sliders-symbol-container .element-symbol-container .element-box { cursor: pointer; }
-          .motif-tab-pane .tab-blocks-container .tab-block .tab-boxes-container .tab-box .box-body .sliders-symbol-container .element-symbol-container .element-box .ch {
+.element-symbol-container .element-box { cursor: pointer; }
+.element-symbol-container .element-box .ch {
             width: 100%;
             padding: 15px;
             display: block;
@@ -2098,11 +2104,11 @@ width: 70px;}
         display: table; }
       .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .visualization-block .visualization-blocks-container .visualization-block .visualization-block-content .color-box .color-box-inner:after {
         clear: both; }
-    .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .visualization-block .visualization-blocks-container .visualization-block .visualization-block-content .color-box .box-title {
+.box-title {
       float: left;
       margin-top: 25px;
       margin-right: 7px; }
-      .lattice-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .visualization-block .visualization-blocks-container .visualization-block .visualization-block-content .color-box .box-title p {
+.box-title p {
         text-transform: uppercase;
         font-family: "Open Sans", sans-serif;
         font-size: 12.6px;
@@ -3653,6 +3659,7 @@ input.disabled[type="text"]{ background-color: black; }
 #infoHeader { background: #2362C0; }
 #infoModalDialog { max-width: 450px; }
 #infoLabel{ padding: 13px 15px !important; }
+#iacLabel{ padding: 13px 15px !important; }
 #infoMessage{ padding: 20px;}
 
 #warningIcon {
@@ -3673,3 +3680,105 @@ input.disabled[type="text"]{ background-color: black; }
 .modal-footer .btn + .btn{ margin-left: 0px!important; }
 
 #soundSlider{ margin-top: 20px; }
+
+#iacBox{
+    position: absolute;
+    z-index: 9000;
+    top: 50px;
+    left: 50px;
+    display: none!important;
+    max-width: 340px;
+}
+#iacOpacityLabel{
+    font-size: 12.6px;
+    text-transform: uppercase;
+}
+#iacOpacity{
+    height: 28px;
+    padding: 5px;
+    text-align: center;
+}
+
+.visualization-block-iac .slider-group {
+    padding: 8px 15px;
+    padding-top: 0; }
+.visualization-block-iac .slider-group:after {
+      content: " ";
+      display: table; }
+.visualization-block-iac .slider-group:after {
+      clear: both; }
+.visualization-bloc-iack .slider-group .slider-detail {
+      float: left;
+      background: none; }
+.visualization-block-iac .slider-group .slider-detail .slider-label {
+        float: none;
+        clear: both;
+        text-align: left;
+        padding: 0; }
+.visualization-block-iac .slider-group .slider-detail .slider-label label {
+          text-transform: uppercase;
+          font-family: "Open Sans", sans-serif;
+          font-size: 12.6px;
+          font-weight: 900;
+          line-height: 16px;
+          color: #6a6a6e; }
+.visualization-block-iac .slider-group .slider-detail .slider-input {
+        float: none;
+        clear: both;
+        width: 50px; }
+.visualization-block-iac .slider-group .slider-detail .slider-input .form-control {
+          height: 28px;
+          padding: 5px;
+          text-align: center; }
+.visualization-block-iac .slider-group .slider-control {
+      float: right;
+      width: 55%;
+      margin-top: -18px; }
+.margTop6{margin-top: 6px;}
+#iacSymbol{
+    position: relative;
+    float: left;
+    width: 24%;
+}
+#iacSymbol .element-box a{ cursor: default; }
+#iacRadius{
+    position: relative;
+    float: right;
+    width: 52%;
+}
+#iacRadius .visualization-block-content{ 
+    padding-top: 4px;
+    padding-bottom: 3px;
+    background: grey;
+}
+#iacToggle a{
+    position: relative;
+    float: left;
+    width: 24%;
+    height: 50px;
+}
+#iacToggle img{
+    padding-top: 15px;
+    padding-left: 13px;
+}
+#iacDoll{
+    height: 50px;
+    margin-left: 20px;
+}
+#iacDoll img{ 
+    padding: 5px;
+    padding-top: 8px;
+    padding-bottom: 7px;
+}
+#iacNotes{
+    height: 50px;
+    margin-left: 20px;
+    margin-top: 7px;
+}
+#iacNotes img{ 
+    padding: 5px;
+    padding-top: 8px;
+    padding-bottom: 7px;
+}
+#radiusLabel{ font-size: 17px; }
+#radiusLabelValue{ color: white; font-size: 17px; }
