@@ -26,6 +26,7 @@ require.config({
     'STLExporter': '../vendor/STLExporter',
     'FileSaver': '../vendor/FileSaver',
     'individualAtomController': 'menu_modules/individualAtomController', 
+    'stringEditor': 'menu_modules/stringEditor'
 
   },
   shim: {
@@ -78,7 +79,8 @@ require([
   'atomCustomizer',
   'STLExporter',
   'FileSaver',
-  'individualAtomController'
+  'individualAtomController',
+  'stringEditor'
 
 ], function(
   PubSub, 
@@ -118,7 +120,8 @@ require([
   AtomCustomizer,
   STLExporter,
   FileSaver,
-  IndividualAtomController
+  IndividualAtomController,
+  StringEditor
 ) {
   var menu = new Menu();
   
@@ -133,11 +136,7 @@ require([
 
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
-
-  // stl exporter
-  
-  var stlExporter = new THREE.STLExporter();
-  // saveSTL(crystalScene.object3d, 'dsd'); 
+ 
   // crystal scene stats
   var glS = new glStats();
   var tS = new threeStats( crystalRenderer.renderer );
@@ -359,6 +358,10 @@ require([
   });
   menu.onSoundVolume(function(message, arg) {   
     soundMachine.changeVolume(arg); 
+  });
+  menu.on3DPrinting(function(message, arg) { 
+    console.log(9);  
+    saveSTL.changeVolume(crystalScene.object3d, 'stl_FIle');
   });
   menu.onSwapScreen(function(message, arg) {  
     tabActionsManager.tabClick(arg.swap);
