@@ -61,6 +61,9 @@
 
             // Auto refresh state
             var autoChange = false;
+        
+            // IAC
+            var iac;
 
 
 
@@ -2213,9 +2216,20 @@
                     $warningModal.caller = 'none';
                 });
                 
-                _this.setSlider('iacOpacity',5,1,10,0.1,events.FOG_PARAMETER_CHANGE);
-                var iac = new individualAtomController();
-                //iac.showBox();
+            
+                var se = new stringEditor();
+                argument = {};
+                argument['se'] = se;
+                iac = new individualAtomController(argument);
+                _this.openAtomCustomizer({
+                    'color':'#fff', 
+                    'name':'na', 
+                    'id':'1', 
+                    'ionicIndex':'-1', 
+                    'opacity':'0.2', 
+                    'radius':'180', 
+                    'visibility': false
+                });
                 
         /*$
 
@@ -3568,8 +3582,8 @@
                     }
                 }); 
             };
-            Menu.prototype.openAtomCustomizer = function(){
-
+            Menu.prototype.openAtomCustomizer = function(argument){
+                iac.showBox(argument);
             };
             String.prototype.capitalizeFirstLetter = function() {
                 return this.charAt(0).toUpperCase() + this.slice(1);

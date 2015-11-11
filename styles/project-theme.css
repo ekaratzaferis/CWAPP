@@ -3739,13 +3739,24 @@ input.disabled[type="text"]{ background-color: black; }
 #iacSymbol{
     position: relative;
     float: left;
-    width: 24%;
+    width: 25%;
 }
-#iacSymbol .element-box a{ cursor: default; }
+#iacSymbol .element-box a{ 
+    cursor: default; 
+    transition: none; 
+    -webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+    -webkit-transform: none;
+    -moz-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none;
+}
 #iacRadius{
     position: relative;
     float: right;
-    width: 52%;
+    width: 51%;
 }
 #iacRadius .visualization-block-content{ 
     padding-top: 4px;
