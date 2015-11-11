@@ -2221,15 +2221,6 @@
                 argument = {};
                 argument['se'] = se;
                 iac = new individualAtomController(argument);
-                _this.openAtomCustomizer({
-                    'color':'#fff', 
-                    'name':'na', 
-                    'id':'1', 
-                    'ionicIndex':'-1', 
-                    'opacity':'0.2', 
-                    'radius':'180', 
-                    'visibility': false
-                });
                 
         /*$
 
