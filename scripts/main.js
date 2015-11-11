@@ -22,7 +22,11 @@ require.config({
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select.min',
     'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
     'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
-    'jColor': '../vendor/colorpicker/spectrum'
+    'jColor': '../vendor/colorpicker/spectrum',
+    'STLExporter': '../vendor/STLExporter',
+    'FileSaver': '../vendor/FileSaver',
+    'individualAtomController': 'menu_modules/individualAtomController', 
+
   },
   shim: {
     'three': { exports: 'THREE' },
@@ -31,7 +35,8 @@ require.config({
     'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] },
     'scg': { deps: [ 'three' ] },
     'threeCSG': { deps: [ 'three' ] },
-    'rStats': { deps: [ 'three' ] }
+    'rStats': { deps: [ 'three' ] },
+    'STLExporter': { deps: [ 'three' ] }
   }
 });
 
@@ -70,7 +75,11 @@ require([
   'leapMotionHandler',
   'renderingMode',
   'tabActions',
-  'atomCustomizer'
+  'atomCustomizer',
+  'STLExporter',
+  'FileSaver',
+  'individualAtomController'
+
 ], function(
   PubSub, 
   _, 
@@ -106,7 +115,10 @@ require([
   LeapMotionHandler,
   RenderingMode,
   TabActions,
-  AtomCustomizer
+  AtomCustomizer,
+  STLExporter,
+  FileSaver,
+  IndividualAtomController
 ) {
   var menu = new Menu();
   
@@ -122,6 +134,10 @@ require([
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
 
+  // stl exporter
+  
+  var stlExporter = new THREE.STLExporter();
+  // saveSTL(crystalScene.object3d, 'dsd'); 
   // crystal scene stats
   var glS = new glStats();
   var tS = new threeStats( crystalRenderer.renderer );

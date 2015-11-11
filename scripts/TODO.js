@@ -44,5 +44,4 @@ List with Ideas
     5. parameters for lighting (maybe this is too much)
     6. When applying new motif to crystal auto position camera far from crystal.
         
-
-
+ 
