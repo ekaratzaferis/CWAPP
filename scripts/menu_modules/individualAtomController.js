@@ -96,7 +96,7 @@ define([
         });
         $opacitySlider.slider({
             value: 1,
-            min: 1,
+            min: 0,
             max: 10,
             step: 0.1,
             animate: true,
