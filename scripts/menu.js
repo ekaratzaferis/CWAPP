@@ -449,6 +449,8 @@
            List of Published Events
            ------------------------ */
             var events = {
+                THREE_D_PRINTING: 'menu.three_d_printing',
+                ATOM_CUSTOMIZATION: 'menu.atom_customization',
                 SOUND_VOLUME: 'menu.sound_volume',
                 CHANGE_REND_MODE: 'menu.change_rend_mode',
                 CHANGE_CRYSTAL_MODE: 'menu.change_crystal_mode',
@@ -2021,6 +2023,11 @@
                         argument['v'] = false;
                         PubSub.publish(events.OCULUS, argument);
                     }
+                });
+                jQuery('#DDDprinting').on('click',function(){
+                    argument ={};
+                    argument['threeD'] = true;
+                    PubSub.publish(events.THREE_D_PRINTING, argument);
                 });
 
                 /* [Public Library Tab] */
@@ -3750,6 +3757,12 @@
             Menu.prototype.onSoundVolume = function(callback){
                 PubSub.subscribe(events.SOUND_VOLUME, callback);
             };
+            Menu.prototype.onAtomCustomization  = function(callback){
+                PubSub.subscribe(events.ATOM_CUSTOMIZATION, callback);
+            }
+            Menu.prototype.on3DPrinting = function(callback){
+                PubSub.subscribe(events.THREE_D_PRINTING, callback);
+            }
 
       return Menu;
     });
