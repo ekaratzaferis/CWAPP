@@ -24,11 +24,5 @@ define([
         
     };
     
-    
-    // Module Interface //
-    individualAtomController.prototype.showBox = function(argument){
-        $box.show('slow');
-    }
-    
     return stringEditor;
 });
