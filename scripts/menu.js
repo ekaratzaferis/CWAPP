@@ -2215,7 +2215,7 @@
                 
                 _this.setSlider('iacOpacity',5,1,10,0.1,events.FOG_PARAMETER_CHANGE);
                 var iac = new individualAtomController();
-                iac.showBox();
+                //iac.showBox();
                 
         /*$
 
