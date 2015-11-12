@@ -26,11 +26,11 @@ require.config({
     'STLExporter': '../vendor/STLExporter',
     'FileSaver': '../vendor/FileSaver',
     'individualAtomController': 'menu_modules/individualAtomController', 
-    'stringEditor': 'menu_modules/stringEditor'
-    'stringEditor': 'menu_modules/tooltipGenerator'
-    'stringEditor': 'menu_modules/getUIValue'
-    'stringEditor': 'menu_modules/setUIValue'
-    'stringEditor': 'menu_modules/interfaceResizer'
+    'stringEditor': 'menu_modules/stringEditor',
+    'tooltipGenerator': 'menu_modules/tooltipGenerator',
+    'getUIValue': 'menu_modules/getUIValue',
+    'setUIValue': 'menu_modules/setUIValue',
+    'interfaceResizer': 'menu_modules/interfaceResizer'
 
   },
   shim: {
