@@ -42,14 +42,14 @@ define([
   }  
   CrystalAtom.prototype.setVisibility = function( bool) {
 
-    this.visibility = bool; 
-    this.object3d.visibility = bool;
+    this.visibility = bool;  
+    this.object3d.visible = bool;
 
   };
   CrystalAtom.prototype.setOpacity = function( opacity) {
     
     if(_.isUndefined(opacity)) return;
-    this.opacity =opacity;
+    this.opacity = opacity;
     this.object3d.children[0].material.opacity = opacity ;
     this.object3d.children[0].material.needsUpdate = true;
   }; 

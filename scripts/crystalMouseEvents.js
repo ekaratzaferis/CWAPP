@@ -104,13 +104,21 @@ define([
     if ( crystalobjsIntersects.length > 0 && crystalobjsIntersects[0].object.parent.name === 'atom') {  
 
       for (var i = this.client.actualAtoms.length - 1; i >= 0; i--) {
-        this.client.actualAtoms[i].setColorMaterial();
+        this.client.actualAtoms[i].setColorMaterial(); 
+        this.client.actualAtoms[i].object3d.visible = this.client.actualAtoms[i].visibility;
       }; 
         
       this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
        
       var obj = crystalobjsIntersects[0].object ; 
       var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});  
+      if(filteredAtom === undefined){
+        return;
+      }
+      
+      if(filteredAtom.object3d.visible === false){
+        filteredAtom.object3d.visible = true ;
+      }
       filteredAtom.setColorMaterial(0xCC2EFA, true);
       this.coloredAtomsExist = true; 
       document.getElementById(this.container).style.cursor = 'pointer';
@@ -121,8 +129,9 @@ define([
       if(this.coloredAtomsExist === true){ 
         for (var i = this.client.actualAtoms.length - 1; i >= 0; i--) {
           this.client.actualAtoms[i].setColorMaterial();
+          this.client.actualAtoms[i].object3d.visible = this.client.actualAtoms[i].visibility;
         };
-        this.coloredAtomsExist === false;
+        this.coloredAtomsExist = false;
       }
       document.getElementById(this.container).style.cursor = 'default';
     }

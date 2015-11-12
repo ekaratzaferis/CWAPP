@@ -360,6 +360,8 @@ require([
     soundMachine.changeVolume(arg); 
   });
   menu.on3DPrinting(function(message, arg) {  
+    var scene = new THREE.Scene();
+    
     saveSTL(crystalScene.object3d, 'stl_FIle');
   });
   menu.onSwapScreen(function(message, arg) {  
