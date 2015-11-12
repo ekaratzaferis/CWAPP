@@ -28,8 +28,11 @@ define([
     var canvasHeight = 0;
     var canvasWidth = 0;
     
-    // String Editor //
+    // stringEditor Module Reference //
     var $se = undefined;
+    
+    // getUIValue Module Reference //
+    var $getUI = undefined;
     
     // HTML Elements //
     var $visibility = jQuery('#iacToggle');
@@ -40,18 +43,21 @@ define([
     var $opacity = jQuery('#iacOpacity');
     var $opacitySlider = jQuery('#iacOpacitySlider');
     var $notes = jQuery('#iacNotes');
+    var $sound = jQuery('#iacSound');
     var $box = jQuery('#iacBox');
     var $closeButton = jQuery('#iacClose');
+    var $boxTitle = jQuery('#iacLabel h2');
     
     // Published Event //
     var $pubEvent = 'menu.atom_customization';
     var $atomID = undefined;
     
-    // Contructor //
+    // Functions //
     function individualAtomController(argument) {
         
-        // Acquire String Editor //
+        // Acquire Module References //
         if (!(_.isUndefined(argument.se))) $se = argument.se;
+        if (!(_.isUndefined(argument.getUI))) $getUI = argument.getUI;
         
         // Bind Event Listeners //
         $visibility.on('click',function(){
@@ -67,6 +73,7 @@ define([
             argument.id = $atomID;
             argument.dollMode = true;
             PubSub.publish($pubEvent, argument);
+            $box.hide('slow');
         });
         $color.spectrum({
             color: "#ffffff",
@@ -83,7 +90,7 @@ define([
             change: function(){
                 var argument = {};
                 argument.id = $atomID;
-                argument.color = $color.spectrum("get").toHex();
+                argument.color = '#'+$color.spectrum("get").toHex();
                 $color.children().css('background','#'+$color.spectrum("get").toHex());
                 PubSub.publish($pubEvent, argument);
             }
@@ -116,6 +123,19 @@ define([
             PubSub.publish($pubEvent, argument);
             $box.hide('fast');
         });
+        $sound.on('click',function(){
+            var argument = {};
+            argument.id = $atomID;
+            argument.sound = true;
+            PubSub.publish($pubEvent, argument);
+            // Turn system sound on //
+            jQuery('#sounds').trigger('click');
+        });
+        
+        // Highlight Buttons
+        $doll.find('a').hover(function(){$doll.find('img').attr('src','Images/doll-hover.png');},function(){$doll.find('img').attr('src','Images/doll.png');});
+        $notes.find('a').hover(function(){$notes.find('img').attr('src','Images/notes-icon-purple.png');},function(){$notes.find('img').attr('src','Images/notes-icon-white.png');});
+        $sound.find('a').hover(function(){$sound.find('img').attr('src','Images/sound-icon-hover-purple.png');},function(){$sound.find('img').attr('src','Images/sound-icon-hover.png');});
         
     };
     
@@ -127,15 +147,19 @@ define([
             $box.hide();
             return false;
         }
-        else $atomID = argument.id;
+        else {
+            $atomID = argument.id;
+            $boxTitle.html('Atom '+$atomID);
+        }
         
-        // Fix Element Symbol //
+        // Fix Element Color //
         if (_.isUndefined(argument.name)) {
             $box.hide();
             return false;
         }
-        else $symbol.find('a').attr('class','ch ch-'+argument.name);
+        else $symbol.find('a').attr('class','ch ch-'+$se.toLowerCase(argument.name));
         
+        // Fix Element Name //
         if (_.isUndefined(argument.ionicIndex)) {
             $box.hide();
             return false;
@@ -172,7 +196,7 @@ define([
             $opacitySlider.slider('value',$se.multiply10(argument.opacity));
         }
         
-        // Initialize Atom Opacity //
+        // Apply Atom Visibility //
         if (_.isUndefined(argument.visibility)) {
             $box.hide();
             return false;
@@ -189,10 +213,28 @@ define([
         $box.hide('slow');
     }
     individualAtomController.prototype.moveBox = function(argument){
-        
+        var xCoord = 0, yCoord = 0;
+        if (!(_.isUndefined(argument.x))) xCoord = $se.inputIsNumber(argument.x);
+        else return false;
+        if (!(_.isUndefined(argument.y))) yCoord = $se.inputIsNumber(argument.y);
+        else return false;
+        if (xCoord !== false) $box.css('top',xCoord);
+        else return false;
+        if (xCoord !== false) $box.css('left',yCoord);
+        else return false;
+        return true;
     }
-    individualAtomController.prototype.resize = function(argument){
-        
+    individualAtomController.prototype.resize = function(percentage){
+        if (!(_.isUndefined(percentage))) percentage = $se.inputIsNumber(percentage);
+        else return false;
+        if (percentage !== false){
+            $box.css('-webkit-transform','scale('+percentage+')');
+            $box.css('-webkit-transform-origin','0 0');
+            $box.css('transform','scale('+percentage+')');
+            $box.css('transform-origin','0 0');
+        }
+        else return false;
+        return true;
     }
     
     return individualAtomController;
