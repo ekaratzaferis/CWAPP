@@ -136,7 +136,10 @@ require([
 
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
- 
+  
+  // stlExporter
+  var stlExporter = new STLExporter();
+  
   // crystal scene stats
   var glS = new glStats();
   var tS = new threeStats( crystalRenderer.renderer );
@@ -361,8 +364,8 @@ require([
   });
   menu.on3DPrinting(function(message, arg) {  
     var scene = new THREE.Scene();
-    
-    saveSTL(crystalScene.object3d, 'stl_FIle');
+
+    stlExporter.saveSTL(crystalScene.object3d, 'stl_FIle');
   });
   menu.onSwapScreen(function(message, arg) {  
     tabActionsManager.tabClick(arg.swap);

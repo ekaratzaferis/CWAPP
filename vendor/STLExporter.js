@@ -24,79 +24,83 @@ define([
   MotifExplorer
   
 ) { 
-    THREE.STLExporter = function () {};
-      
-    THREE.STLExporter.prototype = {
+	function STLExporter() {
+	    THREE.STLExporter = function () {};
+	      
+	    THREE.STLExporter.prototype = {
 
-        constructor: THREE.STLExporter,
+	        constructor: THREE.STLExporter,
 
-        parse: ( function () {
+	        parse: ( function () {
 
-            var vector = new THREE.Vector3();
-            var normalMatrixWorld = new THREE.Matrix3();
+	            var vector = new THREE.Vector3();
+	            var normalMatrixWorld = new THREE.Matrix3();
 
-            return function ( scene ) {
+	            return function ( scene ) {
 
-                var output = '';
+	                var output = '';
 
-                output += 'solid exported\n';
+	                output += 'solid exported\n';
 
-                scene.traverse( function ( object ) {
+	                scene.traverse( function ( object ) {
 
-                    if ( object instanceof THREE.Mesh ) {
+	                    if ( object instanceof THREE.Mesh ) {
 
-                        var geometry = object.geometry;
-                        var matrixWorld = object.matrixWorld;
+	                        var geometry = object.geometry;
+	                        var matrixWorld = object.matrixWorld;
 
-                        if ( geometry instanceof THREE.Geometry ) {
+	                        if ( geometry instanceof THREE.Geometry ) {
 
-                            var vertices = geometry.vertices;
-                            var faces = geometry.faces;
+	                            var vertices = geometry.vertices;
+	                            var faces = geometry.faces;
 
-                            normalMatrixWorld.getNormalMatrix( matrixWorld );
+	                            normalMatrixWorld.getNormalMatrix( matrixWorld );
 
-                            for ( var i = 0, l = faces.length; i < l; i ++ ) {
+	                            for ( var i = 0, l = faces.length; i < l; i ++ ) {
 
-                                var face = faces[ i ];
+	                                var face = faces[ i ];
 
-                                vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
+	                                vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
 
-                                output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-                                output += '\t\touter loop\n';
+	                                output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
+	                                output += '\t\touter loop\n';
 
-                                var indices = [ face.a, face.b, face.c ];
+	                                var indices = [ face.a, face.b, face.c ];
 
-                                for ( var j = 0; j < 3; j ++ ) {
+	                                for ( var j = 0; j < 3; j ++ ) {
 
-                                    vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
+	                                    vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
 
-                                    output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
+	                                    output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
 
-                                }
+	                                }
 
-                                output += '\t\tendloop\n';
-                                output += '\tendfacet\n';
+	                                output += '\t\tendloop\n';
+	                                output += '\tendfacet\n';
 
-                            }
+	                            }
 
-                        }
+	                        }
 
-                    }
+	                    }
 
-                } );
+	                } );
 
-                output += 'endsolid exported\n';
+	                output += 'endsolid exported\n';
 
-                return output;
+	                return output;
 
-            };
+	            };
 
-        }() )
+	        }() )
 
-    };
+	    };
+    }
 
-    function saveSTL(scene, name) {
-        var exporter = new THREE.STLExporter();
+    STLExporter.prototype.saveSTL = function(scene, name){
+
+    	
+    	var exporter = new THREE.STLExporter();
         var stlString = exporter.parse(scene);
 
         var blob = new Blob([stlString], {
@@ -104,21 +108,8 @@ define([
             });
 
         saveAs(blob, name + '.stl');
-    }
-    var exporter = new THREE.STLExporter();
-    var exportString = function (output, filename) {
 
-        var blob = new Blob([output], {
-                type : 'text/plain'
-            });
-        var objectURL = URL.createObjectURL(blob);
+    }  
 
-        var link = document.createElement('a');
-        link.href = objectURL;
-        link.download = filename || 'data.json';
-        link.target = '_blank';
-        link.click();
-
-    };
-
+    return STLExporter;
 });
