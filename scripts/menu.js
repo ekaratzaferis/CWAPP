@@ -2033,7 +2033,6 @@
                     argument ={};
                     argument['threeD'] = true;
                     PubSub.publish(events.THREE_D_PRINTING, argument);
-                    console.log('pouladi');
                 });
 
                 /* [Public Library Tab] */
@@ -2221,6 +2220,15 @@
                 argument = {};
                 argument['se'] = se;
                 iac = new individualAtomController(argument);
+                /*_this.openAtomCustomizer({
+                    'color':'#fff', 
+                    'name':'na', 
+                    'id':'1', 
+                    'ionicIndex':'-1', 
+                    'opacity':'0.2', 
+                    'radius':'180', 
+                    'visibility': false
+                });*/
                 
         /*$
 
@@ -3575,6 +3583,9 @@
             };
             Menu.prototype.openAtomCustomizer = function(argument){
                 iac.showBox(argument);
+            };
+            Menu.prototype.moveAtomCustomizer = function(argument){
+                iac.moveBox(argument);
             };
             String.prototype.capitalizeFirstLetter = function() {
                 return this.charAt(0).toUpperCase() + this.slice(1);

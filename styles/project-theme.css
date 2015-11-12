@@ -3690,6 +3690,9 @@ input.disabled[type="text"]{ background-color: black; }
     max-width: 340px;
     max-height: 206px;
 }
+#iacBox #infoModalDialog{
+    margin: 0;
+}
 #iacOpacityLabel{
     font-size: 12.6px;
     text-transform: uppercase;
@@ -3734,12 +3737,14 @@ input.disabled[type="text"]{ background-color: black; }
 .visualization-block-iac .slider-group .slider-control {
       float: right;
       width: 55%;
-      margin-top: -18px; }
+      margin-top: -18px; 
+      margin-right: -7px; 
+}
 .margTop6{margin-top: 6px;}
 #iacSymbol{
     position: relative;
     float: left;
-    width: 25%;
+    width: 20%;
 }
 #iacSymbol .element-box a{ 
     cursor: default; 
@@ -3752,21 +3757,22 @@ input.disabled[type="text"]{ background-color: black; }
     -ms-transform: none;
     -o-transform: none;
     transform: none;
+    height: 50px;
 }
 #iacRadius{
     position: relative;
-    float: right;
-    width: 51%;
+    float: left;
+    width: 46%;
 }
 #iacRadius .visualization-block-content{ 
     padding-top: 4px;
     padding-bottom: 3px;
-    background: grey;
+    background: #25272b;
 }
 #iacToggle a{
     position: relative;
     float: left;
-    width: 24%;
+    width: 17%;
     height: 50px;
 }
 #iacToggle img{
@@ -3775,22 +3781,38 @@ input.disabled[type="text"]{ background-color: black; }
 }
 #iacDoll{
     height: 50px;
-    margin-left: 20px;
+    float: right;
+    position: relative;
 }
+#iacDoll a{ background: transparent!important; }
 #iacDoll img{ 
     padding: 5px;
     padding-top: 8px;
     padding-bottom: 7px;
 }
+#iacSound{
+    height: 50px;
+    float: right;
+    position: relative;
+    margin-top: 18px;
+}
+#iacSound a{ background: transparent!important; }
+#iacSound img{ 
+    padding: 5px;
+    padding-top: 8px;
+    padding-bottom: 7px;
+}
+#iacNotes a{ background: transparent!important; }
 #iacNotes{
     height: 50px;
-    margin-left: 20px;
-    margin-top: 7px;
+    margin-top: 17px;
+    margin-left: 5px;
 }
 #iacNotes img{ 
     padding: 5px;
     padding-top: 8px;
     padding-bottom: 7px;
 }
-#radiusLabel{ font-size: 17px; }
-#radiusLabelValue{ color: white; font-size: 17px; }
+#radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
+#radiusLabelValue{ color: white; font-size: 12.6px; }
+.purpleHeader{ background:#6f6299!important; ; }

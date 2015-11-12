@@ -67,6 +67,9 @@ define([
     stringEditor.prototype.divide10 = function(string){
         return parseFloat(string) / 10;  
     };
+    stringEditor.prototype.toLowerCase = function(string){
+        return string.toLowerCase();   
+    }
     
     return stringEditor;
 });
