@@ -27,6 +27,10 @@ require.config({
     'FileSaver': '../vendor/FileSaver',
     'individualAtomController': 'menu_modules/individualAtomController', 
     'stringEditor': 'menu_modules/stringEditor'
+    'stringEditor': 'menu_modules/tooltipGenerator'
+    'stringEditor': 'menu_modules/getUIValue'
+    'stringEditor': 'menu_modules/setUIValue'
+    'stringEditor': 'menu_modules/interfaceResizer'
 
   },
   shim: {
