@@ -80,7 +80,10 @@ require([
   'STLExporter',
   'FileSaver',
   'individualAtomController',
-  'stringEditor'
+  'tooltipGenerator',
+  'getUIValue',
+  'setUIValue',
+  'interfaceResizer'  
 
 ], function(
   PubSub, 
@@ -121,7 +124,11 @@ require([
   STLExporter,
   FileSaver,
   IndividualAtomController,
-  StringEditor
+  StringEditor,
+  TooltipGenerator,
+  GetUIValue,
+  SetUIValue,
+  InterfaceResizer 
 ) {
   var menu = new Menu();
   
@@ -139,7 +146,7 @@ require([
   
   // stlExporter
   var stlExporter = new STLExporter();
-  
+
   // crystal scene stats
   var glS = new glStats();
   var tS = new threeStats( crystalRenderer.renderer );
