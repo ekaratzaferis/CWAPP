@@ -16,12 +16,14 @@ define([
     this.soundMachine = soundMachine ;
     this.menu = menu;
     this.dollEditor = dollEditor;
-
-    
+ 
   };
  
   AtomCustomizer.prototype.atomJustClicekd = function(atom){ 
 
+    if(this.dollEditor.dollOn === true){
+      return;
+    }
     var arg = {
       'name' : atom.elementName,
       'ionicIndex' : atom.ionicIndex,
@@ -30,8 +32,7 @@ define([
       'opacity' : atom.opacity,
       'visibility' : atom.visibility, 
       'id' : atom.uniqueID
-    }
-    
+    } 
     this.menu.openAtomCustomizer(arg);
   };
 
@@ -40,9 +41,9 @@ define([
     
     var atom = _.findWhere(_this.lattice.actualAtoms, {uniqueID : arg.id});
     if(atom === undefined){
-      //atom = _.findWhere(_this.lattice.cachedAtoms, {uniqueID : arg.id});
+      atom = _.findWhere(_this.lattice.cachedAtoms, {uniqueID : arg.id});
     }
-    console.log(arg);
+    
     if(atom === undefined){
       return;
     }
@@ -62,6 +63,9 @@ define([
     }
     else if(arg.dollMode !== undefined){
       this.dollEditor.dollMode(atom.object3d);
+    } 
+    else if(arg.sound !== undefined){ 
+      this.soundMachine.atomSourcePos = atom.object3d.position.clone();
     } 
   
   };
