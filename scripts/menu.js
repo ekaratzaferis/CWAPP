@@ -178,6 +178,7 @@
             var $savePlane = jQuery('#savePlane');
             var $deletePlane = jQuery('#deletePlane');
             var $newPlane = jQuery('#newPlane');
+            var $parallelPlane = jQuery('#parallelPlane');
             var $saveDirection = jQuery('#saveDirection');
             var $deleteDirection = jQuery('#deleteDirection');
             var $newDirection = jQuery('#newDirection');
@@ -366,7 +367,8 @@
             var planeButtons = { 
                 'savePlane': $savePlane,
                 'deletePlane': $deletePlane,
-                'newPlane': $newPlane
+                'newPlane': $newPlane,
+                'parallelPlane': $parallelPlane
             };
             var directionButtons = { 
                 'saveDirection': $saveDirection,
@@ -2678,12 +2680,12 @@
                 else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
                 switch(argument['action']){
                     case 'save':
-                        $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                        $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="planeButton visible"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="planeButton visible"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td></tr>');
                         $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                         break;  
 
                     case 'edit':
-                        $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                        $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="planeButton visible"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="planeButton visible"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td></tr>');
                         $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                         break;
 

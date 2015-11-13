@@ -1666,23 +1666,25 @@ width: 70px;}
         cursor: pointer;
         display: block;
         height: 50px;
-        padding: 10px;
+        padding-top: 10px;
         text-align: center;
         background: #1f2227;
         border: #1f2227; }
+.table.pnd-table{ table-layout:fixed; }
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .pnd-serial {
       width: 70px;
       padding: 15px;
       font-family: "Open Sans", sans-serif;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 400;
       line-height: 16px;
       color: #fff; }
     .pnd-tab-pane .tab-content-container .tab-content-section-container .tab-blocks-container .tab-block .tab-boxes-container .pnd-box .box-body .pnd-table-container .pnd-table tbody tr .pnd-name {
       padding: 15px;
-      padding-left: 5px;
+      padding-left: 1px;
+      padding-right: 1px;
       font-family: "Open Sans", sans-serif;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 400;
       line-height: 16px;
       color: #fff; }
@@ -3816,3 +3818,6 @@ input.disabled[type="text"]{ background-color: black; }
 #radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
 #radiusLabelValue{ color: white; font-size: 12.6px; }
 .purpleHeader{ background:#6f6299!important; ; }
+#newPlane{ float: left; }
+#parallelPlane{ float: left; }
+#atomInterception a{ padding-top: 7px; }
