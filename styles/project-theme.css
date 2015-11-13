@@ -1666,7 +1666,7 @@ width: 70px;}
         cursor: pointer;
         display: block;
         height: 50px;
-        padding-top: 10px;
+        padding-top: 12px;
         text-align: center;
         background: #1f2227;
         border: #1f2227; }
@@ -3349,8 +3349,10 @@ html,body {
 .selectable{ cursor: pointer; overflow:hidden; }
 input.disabled[type="text"]{ background-color: black; }
 .block-btn.disabled{ cursor: not-allowed; }
-.directionButton, .atomButton, .planeButton{ background: #1f2227 !important; border: #1f2227 !important; }
-.directionButton:hover, .atomButton:hover, .planeButton:hover{ background: #08090b !important; border: #08090b !important; cursor: pointer !important;}
+.directionButton, .atomButton, .planeButton, .parallel, .interception{ background: #1f2227 !important; border: #1f2227 !important; }
+.directionButton:hover, .atomButton:hover, .planeButton:hover, .parallel:hover, .interception:hover{ background: #08090b !important; border: #08090b !important; cursor: pointer !important;}
+.parallel.active, .interception.active{ background: #6f6299 !important; }
+.parallel.active:hover, .interception.active:hover{ background: #6f6299 !important; }
 #appLogo{
     position: fixed;
     height: 20%;
@@ -3818,6 +3820,3 @@ input.disabled[type="text"]{ background-color: black; }
 #radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
 #radiusLabelValue{ color: white; font-size: 12.6px; }
 .purpleHeader{ background:#6f6299!important; ; }
-#newPlane{ float: left; }
-#parallelPlane{ float: left; }
-#atomInterception a{ padding-top: 7px; }

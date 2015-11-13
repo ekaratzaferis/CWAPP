@@ -456,6 +456,8 @@
            List of Published Events
            ------------------------ */
             var events = {
+                PLANE_INTERCEPTION: 'menu.plane_interception',
+                PLANE_PARALLEL: 'menu.plane_parallel',
                 THREE_D_PRINTING: 'menu.three_d_printing',
                 ATOM_CUSTOMIZATION: 'menu.atom_customization',
                 SOUND_VOLUME: 'menu.sound_volume',
@@ -1664,6 +1666,7 @@
                             _.each(directionParameters, function($param, a ) {
                                 if (a == 'directionColor') argument[a] = $param.spectrum("get").toHex();
                                 else if (a == 'directionName') argument[a] = $param.val();
+                                else if (a == 'dirRadius') argument[a] = parseFloat($param.val()) / 10;
                                 else if (inputErrorHandler($param.val()) !== false) argument[a] = inputErrorHandler($param.val());
                             });
                             PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, argument);
@@ -2680,12 +2683,12 @@
                 else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
                 switch(argument['action']){
                     case 'save':
-                        $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="planeButton visible"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="planeButton visible"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td></tr>');
+                        $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
                         $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                         break;  
 
                     case 'edit':
-                        $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="planeButton visible"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="planeButton visible"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td></tr>');
+                        $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel '+argument['parallel']+'"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception '+argument['interception']+'"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
                         $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
                         break;
 
@@ -2711,6 +2714,22 @@
                         }
                         $planesTable.find('#'+argument['id']).find('.planeButton').toggleClass('visible');
                         PubSub.publish(events.PLANE_VISIBILITY, arg);
+                    });
+                    $planesTable.find('#'+argument['id']).find('.parallel').on('click', function(){
+                        var arg = {};
+                        arg['id'] = argument['id'];
+                        if ($planesTable.find('#'+argument['id']).find('.parallel').hasClass('active')) arg['parallel'] = false;
+                        else arg['parallel'] = true;
+                        $planesTable.find('#'+argument['id']).find('.parallel').toggleClass('active');
+                        PubSub.publish(events.PLANE_PARALLEL, arg);
+                    });
+                    $planesTable.find('#'+argument['id']).find('.interception').on('click', function(){
+                        var arg = {};
+                        arg['id'] = argument['id'];
+                        if ($planesTable.find('#'+argument['id']).find('.interception').hasClass('active')) arg['interception'] = false;
+                        else arg['interception'] = true;
+                        $planesTable.find('#'+argument['id']).find('.interception').toggleClass('active');
+                        PubSub.publish(events.PLANE_INTERCEPTION, arg);
                     });
                 }
 
@@ -2768,6 +2787,7 @@
 
                         case 'dirRadius':
                             argument['dirRadius'] = $parameter.selectpicker('val');
+                            argument['dirRadius'] = parseFloat(argument['dirRadius']) / 10;
                             break;
 
                         default: 
@@ -3589,6 +3609,9 @@
             Menu.prototype.moveAtomCustomizer = function(argument){
                 iac.moveBox(argument);
             };
+            Menu.prototype.closeAtomCustomizer = function(){
+                iac.hideBox();
+            };
             String.prototype.capitalizeFirstLetter = function() {
                 return this.charAt(0).toUpperCase() + this.slice(1);
             };
@@ -3783,6 +3806,12 @@
             }
             Menu.prototype.on3DPrinting = function(callback){
                 PubSub.subscribe(events.THREE_D_PRINTING, callback);
+            }
+            Menu.prototype.onPlaneParallel = function(callback){
+                PubSub.subscribe(events.PLANE_PARALLEL, callback);
+            }
+            Menu.prototype.onPlaneInterception = function(callback){
+                PubSub.subscribe(events.PLANE_INTERCEPTION, callback);
             }
 
       return Menu;
