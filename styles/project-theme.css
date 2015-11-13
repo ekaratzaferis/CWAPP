@@ -3820,3 +3820,5 @@ input.disabled[type="text"]{ background-color: black; }
 #radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
 #radiusLabelValue{ color: white; font-size: 12.6px; }
 .purpleHeader{ background:#6f6299!important; ; }
+.zoomOption label { color: white; }
+.zoomOption label.active { background: #6f6299; }

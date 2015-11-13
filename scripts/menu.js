@@ -49,6 +49,8 @@
             // Menu Size
             var $menuWidthOpen = 520;
             var $menuWidthClose = 103;
+            var $menuShiftLeft = 0;
+            var $menuShiftRight = 0;
 
             // Viewport state
             var $viewport = false;
@@ -450,6 +452,13 @@
                 'printMode' : jQuery('#printMode')
             };    
 
+            // Zoom
+            var zoomOptions = {
+                '70': jQuery('#zoom70'),   
+                '80': jQuery('#zoom80'),   
+                '90': jQuery('#zoom90'),   
+                '100': jQuery('#zoom100')   
+            }
 
 
         /* ------------------------
@@ -1497,7 +1506,7 @@
                             $controls_toggler.find('.img-open').fadeIn('fast')
                         });
                         $screenWrapper.fadeOut('slow');
-                        $main_controls.animate({'right': '-417px'}, 500, function()
+                        $main_controls.animate({'right': $menuShiftRight}, 500, function()
                         {
                             $main_controls.removeClass('controls-open');
                             $main_controls.addClass('controls-close');
@@ -1525,7 +1534,7 @@
                             });
                             if (! ($main_controls.hasClass('controls-open')) ) {
                                 $screenWrapper.fadeOut('slow');
-                                $main_controls.animate({'right': '0'}, 500, function()
+                                $main_controls.animate({'right': $menuShiftLeft}, 500, function()
                                 {
                                     $main_controls.removeClass('controls-close');
                                     $main_controls.addClass('controls-open');
@@ -1900,6 +1909,51 @@
                     var argument = {};
                     argument["leap"]= ($leapMotion.hasClass('active')) ? false : true ;
                     PubSub.publish(events.LEAP_MOTION, argument);           
+                });
+                _.each(zoomOptions, function($parameter, k) {
+                    $parameter.on('click', function() {
+                        if (!($parameter.hasClass('active'))) {
+                            $parameter.addClass('active');
+                            var percentage = parseFloat(k) / 100;
+                            jQuery('.main-controls-container').css('-webkit-transform','scale('+percentage+')');
+                            jQuery('.main-controls-container').css('-webkit-transform-origin','0 0');
+                            jQuery('.main-controls-container').css('transform','scale('+percentage+')');
+                            jQuery('.main-controls-container').css('transform-origin','0 0');
+                            switch(k){
+                                case '70':
+                                    $menuWidthOpen = 370;
+                                    $menuWidthClose = 78.3;
+                                    $menuShiftRight = -442;
+                                    $menuShiftLeft = -150;
+                                    jQuery('.main-controls-container').css('right','-150px');
+                                    break;
+                                case '80':
+                                    $menuWidthOpen = 420;
+                                    $menuWidthClose = 86.6;
+                                    $menuShiftRight = -434;
+                                    $menuShiftLeft = -100;
+                                    jQuery('.main-controls-container').css('right','-100px');
+                                    break;
+                                case '90':
+                                    $menuWidthOpen = 470;
+                                    $menuWidthClose = 94.9;
+                                    $menuShiftRight = -427;
+                                    $menuShiftLeft = -50;
+                                    jQuery('.main-controls-container').css('right','-50px');
+                                    break;
+                                case '100':
+                                    $menuWidthOpen = 520;
+                                    $menuWidthClose = 103;
+                                    $menuShiftRight = -417;
+                                    $menuShiftLeft = 0;
+                                    jQuery('.main-controls-container').css('right','0px');
+                                    break;
+                            };
+                            window.dispatchEvent(new Event('resize'));
+                            jQuery('body').mCustomScrollbar('update');
+                            _.each(zoomOptions, function($param, a) { if ( a !== k) $param.removeClass('active');});
+                        }
+                    });
                 });
                 _.each(renderizationMode, function($parameter, k) {
                     $parameter.on('click', function() {
