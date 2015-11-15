@@ -219,13 +219,19 @@ define([
         else single = argument.single;
         
         // Atom ID //
-        if (_.isUndefined(argument.id)) {
-            closeBox();
-            return false;
+        if (single === true){
+            if (_.isUndefined(argument.id)) {
+                closeBox();
+                return false;
+            }
+            else {
+                $atomID = argument.id;
+                $boxTitle.html('Atom '+$atomID);
+            }
         }
         else {
-            $atomID = argument.id;
-            $boxTitle.html('Atom '+$atomID);
+            $atomID = 'selection';
+            $boxTitle.html('Atoms');
         }
         
         // Fix Element Class //
