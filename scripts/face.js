@@ -45,6 +45,7 @@ define([
     
     var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( {  /* depthWrite: false, depthTest: false, */ side: THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
+    mesh.name = 'face' ;
     mesh.renderOrder = 2;  
     this.object3d = mesh;
      

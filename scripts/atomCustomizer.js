@@ -41,7 +41,7 @@ define([
       var atomID = _.find(this.multiAtomIDs, function(id){ return id === atom_.uniqueID; });
 
       var atom = _.findWhere(_this.lattice.actualAtoms, {'uniqueID' : atom_.uniqueID});
-      
+
       if(atom === undefined){
         atom = _.findWhere(_this.lattice.cachedAtoms, {'uniqueID' : atom_.uniqueID});
       }
@@ -77,26 +77,35 @@ define([
       }
     }
     else{ 
-      this.closeAtomMenu();
 
-      this.multiAtomIDs.splice(0);
-      this.editMode = 'single';
-      atom_.cachedColor = atom_.color;
-      atom_.setColorMaterial(0xCC2EFA); 
+      if(this.singleAtom !== undefined){
+        this.singleAtom.setColorMaterial();
+        this.closeAtomMenu();
+        this.menu.closeAtomCustomizer();
+        return;
+      }
+      else{ 
+        this.closeAtomMenu();
 
-      this.singleAtom = atom_;
+        this.multiAtomIDs.splice(0);
+        this.editMode = 'single';
+        atom_.cachedColor = atom_.color;
+        atom_.setColorMaterial(0xCC2EFA); 
 
-      var arg = {
-        'name' : atom_.elementName,
-        'ionicIndex' : atom_.ionicIndex,
-        'radius' : atom_.radius,
-        'color' : atom_.color,
-        'opacity' : atom_.opacity,
-        'visibility' : atom_.visibility, 
-        'id' : atom_.uniqueID,
-        'single' : !ctrl
-      } 
-      this.menu.openAtomCustomizer(arg);
+        this.singleAtom = atom_ ;
+
+        var arg = {
+          'name' : atom_.elementName,
+          'ionicIndex' : atom_.ionicIndex,
+          'radius' : atom_.radius,
+          'color' : atom_.color,
+          'opacity' : atom_.opacity,
+          'visibility' : atom_.visibility, 
+          'id' : atom_.uniqueID,
+          'single' : !ctrl
+        } 
+        this.menu.openAtomCustomizer(arg);
+      }
     }
 
     this.menuIsOpen = true;
@@ -113,7 +122,7 @@ define([
     for (var i = this.lattice.cachedAtoms.length - 1; i >= 0; i--) { 
       this.lattice.cachedAtoms[i].setColorMaterial(this.lattice.cachedAtoms[i].cachedColor);
     }
-
+ 
     this.singleAtom = undefined;
 
     this.multiAtomIDs.splice(0); 

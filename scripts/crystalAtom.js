@@ -166,6 +166,7 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
+    sphereCut.name = 'subtractedAtom';
     
     if(gear !== undefined){
       this.subtractedForCache.object3d  = sphereCut ;

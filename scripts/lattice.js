@@ -2054,7 +2054,7 @@ define([
       h = (h!=0) ? 1/h : 0 ;
       k = (k!=0) ? 1/k : 0 ;
       l = (l!=0) ? 1/l : 0 ;
-        
+       
       if(_this.latticeName !== 'hexagonal'){
         if( h!=0 && k!=0 && l!=0) { 
           _.times(parameters.repeatX , function(_x) {

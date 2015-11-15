@@ -44,9 +44,39 @@ define([
 
 	                scene.traverse( function ( object ) {
 
-	                    if ( object instanceof THREE.Mesh ) {
+	                    if ( 
+                            object instanceof THREE.ArrowHelper ||
+                            (
+                                object instanceof THREE.Mesh && 
+                                object.visible === true &&
+                                (
+                                    object.parent.name === 'atom' || 
+                                    object.parent.name === 'subtractedAtom' || 
+                                    object.name === 'grid' || 
+                                    object.name === 'plane' || 
+                                    object.name === 'point' || 
+                                    object.name === 'direction' || 
+                                    object.name === 'dirLine' || 
+                                    object.name === 'crystalSolidVoid' ||  
+                                    object.name === 'face'
+                                    ) 
+                                ) 
+                            )
+                        {
 
-	                        var geometry = object.geometry;
+                            
+                            var geometry;
+
+                            if(object.name === 'direction'){
+                                geometry = new THREE.Geometry();
+
+                                object.cone.updateMatrix();
+                                geometry.merge( object.cone.geometry.clone(), object.cone.matrix ); 
+   
+                            }
+	                        else{
+                                geometry = object.geometry;
+                            }
 	                        var matrixWorld = object.matrixWorld;
 
 	                        if ( geometry instanceof THREE.Geometry ) {
