@@ -122,12 +122,16 @@ define([
                 break;
             }
             case 'distortionOn':{
-                if (jQuery('#distortionOn').hasClass('active')) return true;
-                else return false;
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                takeAction('distortionOff',jQuery('#distortionOff'),!value);
+                break;
             }
             case 'distortionOff':{
-                if (jQuery('#distortionOff').hasClass('active')) return true;
-                else return false;
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                takeAction('distortionOn',jQuery('#distortionOn'),!value);
+                break;
             }
             case 'anaglyph':{
                 if (jQuery('#anaglyph').hasClass('active')) return true;

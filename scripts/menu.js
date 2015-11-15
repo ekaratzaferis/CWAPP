@@ -2301,8 +2301,7 @@
                 
                 
                 setUI.setValue({
-                    'toon':{
-                        'publish':{'id':$atomID,'visibility':true},
+                    'distortionOn':{
                         'value':true
                     }
                 });
