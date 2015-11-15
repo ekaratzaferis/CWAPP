@@ -3202,8 +3202,9 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
 }
 html,body {
     height: 100%;
-    overflow: hidden;
+    overflow: visible;
     background-color: white;
+    transform-origin: top;
 }
 #app-container{
     float:left; 
