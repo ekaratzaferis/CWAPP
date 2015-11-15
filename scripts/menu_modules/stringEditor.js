@@ -22,7 +22,7 @@ define([
     
     stringEditor.prototype.capitalizeFirstLetter = function(string){
         return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+    };
     stringEditor.prototype.translateParameter = function(string){
         switch(string){
             case 'scaleX': return 'b';
@@ -69,7 +69,7 @@ define([
     };
     stringEditor.prototype.toLowerCase = function(string){
         return string.toLowerCase();   
-    }
+    };
     
     return stringEditor;
 });

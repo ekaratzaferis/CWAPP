@@ -15,7 +15,10 @@
         'bootstrap-select',
         'jColor',
         'individualAtomController',
-        'stringEditor'
+        'stringEditor',
+        'tooltipGenerator',
+        'setUIValue',
+        'interfaceResizer'
     ], function(
         jQuery,
         jQuery_ui,
@@ -28,7 +31,10 @@
         bootstrapSelect,
         jColor,
         individualAtomController,
-        stringEditor
+        stringEditor,
+        tooltipGenerator,
+        setUIValue,
+        interfaceResizer
     ) 
     {
         /* -----------------------
@@ -50,7 +56,7 @@
             var $menuWidthOpen = 520;
             var $menuWidthClose = 103;
             var $menuShiftLeft = 0;
-            var $menuShiftRight = 0;
+            var $menuShiftRight = -417;
 
             // Viewport state
             var $viewport = false;
@@ -1919,6 +1925,10 @@
                             jQuery('.main-controls-container').css('-webkit-transform-origin','0 0');
                             jQuery('.main-controls-container').css('transform','scale('+percentage+')');
                             jQuery('.main-controls-container').css('transform-origin','0 0');
+                            var elem = jQuery(".main-controls-container"), scaledHeight = elem[0].getBoundingClientRect().height;
+                            elem.parents(".mCSB_container").css({
+                                "height": elem.outerHeight()!==scaledHeight ? scaledHeight : "auto"
+                            });
                             switch(k){
                                 case '70':
                                     $menuWidthOpen = 370;
@@ -2276,9 +2286,16 @@
                 
             
                 var se = new stringEditor();
+                var ttg = new tooltipGenerator();
+                var setUI = new setUIValue();
+                var intRes = new interfaceResizer();
                 argument = {};
-                argument['se'] = se;
+                argument['stringEditor'] = se;
+                argument['tooltipGenerator'] = ttg;
+                argument['interfaceResizer'] = intRes;
+                argument['setUIValue'] = setUI;
                 iac = new individualAtomController(argument);
+            
                 /*_this.openAtomCustomizer({
                     'color':'#fff', 
                     'name':'na', 

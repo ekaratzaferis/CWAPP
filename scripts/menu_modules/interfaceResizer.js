@@ -15,61 +15,41 @@ define([
     _
 ) 
 {
+    // Variables
+    var canvasHeight = undefined;
+    var canvasWidth = undefined;
+    var screenHeight = undefined;
+    var screenWidth = undefined;
+    
     // Contructor //
-    function stringEditor() {
+    function interfaceResizer() {
         
     };
-    
-    stringEditor.prototype.capitalizeFirstLetter = function(string){
-        return string.charAt(0).toUpperCase() + string.slice(1);
+    function refreshDimensions(){
+        screenHeight = jQuery(window).height();
+        screenWidth = jQuery(window).width();
+        canvasHeight = jQuery('#app-container').height();
+        canvasWidth = jQuery('#app-container').width();   
     }
-    stringEditor.prototype.translateParameter = function(string){
-        switch(string){
-            case 'scaleX': return 'b';
-            case 'scaleY': return 'c';
-            case 'scaleZ': return 'a';
-            case 'alpha': return 'β';
-            case 'beta': return 'α';
-            case 'gamma': return 'υ';
-            case 'scaleXSlider': return 'b';
-            case 'scaleYSlider': return 'c';
-            case 'scaleZSlider': return 'a';
-            case 'alphaSlider': return 'β';
-            case 'betaSlider': return 'α';
-            case 'gammaSlider': return 'γ';
-            default: return 'Unknown';
-        }
+    
+    interfaceResizer.prototype.transform = function(argument){
+        argument.selector.css('-webkit-transform','scale('+argument.percentage+')');
+        argument.selector.css('-webkit-transform-origin','0 0');
+        argument.selector.css('transform','scale('+argument.percentage+')');
+        argument.selector.css('transform-origin','0 0');
     };
-    stringEditor.prototype.inputIsInteger = function(string){
-        if (!(isNaN(string))) {
-            if (string.indexOf('.') === -1) return string;
-        }
+    interfaceResizer.prototype.fitsCanvas = function(argument){
+        refreshDimensions();
+        if ( (argument.x + argument.width) > canvasWidth ) return 'width';
+        if ( (argument.y + argument.height) > canvasHeight ) return 'height';
+        return true;
+    };
+    interfaceResizer.prototype.fitsScreen = function(argument){
+        refreshDimensions();
+        if ( (argument.x + argument.width) > screenWidth ) return 'width';
+        if ( (argument.y + argument.height) > screeHeight ) return 'height';
         return false;
     };
-    stringEditor.prototype.inputIsNumber = function(string){
-        var result = false;
-        if (isNaN(string)) {
-            if (string.indexOf(',') !== -1) {
-                var temp = string.split(',');
-                if (temp.length === 2) result = string.replace(',','.');
-            }
-            else if (string.indexOf('/') !== -1) {
-                var temp = string.split('/');
-                if (temp.length === 2) result = (parseFloat(temp[0])/parseFloat(temp[1])).toString();
-            }
-        }
-        else result = string;
-        return result;
-    };
-    stringEditor.prototype.multiply10 = function(string){
-        return parseFloat(string) * 10;  
-    };
-    stringEditor.prototype.divide10 = function(string){
-        return parseFloat(string) / 10;  
-    };
-    stringEditor.prototype.toLowerCase = function(string){
-        return string.toLowerCase();   
-    }
     
-    return stringEditor;
+    return interfaceResizer;
 });
