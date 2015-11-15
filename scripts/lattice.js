@@ -789,9 +789,7 @@ define([
     else{
       box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
     }
-
-    box.visible = true;
-
+  
     if(this.viewMode === 'crystalSubstracted'){
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 

@@ -23,7 +23,7 @@ define([
   UnitCellExplorer,
   MotifExplorer
   
-) { 
+) { var gg =0;
 	function STLExporter() {
 	    THREE.STLExporter = function () {};
 	      
@@ -43,38 +43,52 @@ define([
 	                output += 'solid exported\n';
 
 	                scene.traverse( function ( object ) {
-
+                        gg++;
 	                    if ( 
                             object instanceof THREE.ArrowHelper ||
-                            (
+                            (   
                                 object instanceof THREE.Mesh && 
-                                object.visible === true &&
                                 (
-                                    object.parent.name === 'atom' || 
-                                    object.parent.name === 'subtractedAtom' || 
-                                    object.name === 'grid' || 
-                                    object.name === 'plane' || 
-                                    object.name === 'point' || 
-                                    object.name === 'direction' || 
-                                    object.name === 'dirLine' || 
-                                    object.name === 'crystalSolidVoid' ||  
-                                    object.name === 'face'
-                                    ) 
+                                    object.visible === true &&
+                                    (
+                                        
+                                        object.parent.name === 'subtractedAtom' || 
+                                        object.name === 'grid' || 
+                                        object.name === 'plane' || 
+                                        object.name === 'point' || 
+                                        object.name === 'direction' || 
+                                        object.name === 'dirLine' || 
+                                        object.name === 'crystalSolidVoid' ||  
+                                        object.name === 'face'
+                                    )  
                                 ) 
+                                ||
+                                (   
+                                    object.parent !== undefined &&
+                                    object.parent.visible === true &&
+                                    (
+                                        
+                                        object.parent.name === 'atom' 
+                                         
+                                    ) 
+                                )
                             )
+                        )
                         {
 
                             
                             var geometry;
-
+                            console.log(object);
+                            console.log(object.parent.centerOfMotif);
                             if(object.name === 'direction'){
                                 geometry = new THREE.Geometry();
 
                                 object.cone.updateMatrix();
                                 geometry.merge( object.cone.geometry.clone(), object.cone.matrix ); 
-   
+
                             }
 	                        else{
+                                object.updateMatrix();
                                 geometry = object.geometry;
                             }
 	                        var matrixWorld = object.matrixWorld;
@@ -125,6 +139,7 @@ define([
 	        }() )
 
 	    };
+        console.log(gg);
     }
 
     STLExporter.prototype.saveSTL = function(scene, name){
