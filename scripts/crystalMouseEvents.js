@@ -24,7 +24,7 @@ define([
   // possible useless FILE and will be DELETED
   //
 
-  function CrystalMouseEvents( client, _camera, domElement, state, dollEditor, atomCustomizer ) {
+  function CrystalMouseEvents( client, _camera, domElement, state, dollEditor, atomCustomizer, keyboard ) {
     this.plane = {'object3d' : undefined} ;
     this.camera = _camera;
     this.container = domElement; 
@@ -37,6 +37,7 @@ define([
     this.atomCustomizer = atomCustomizer;
     this.offset = new THREE.Vector3(); 
     this.coloredAtomsExist = false;
+    this.keyboard = keyboard; 
 
     var mMoove = this.onDocumentMouseMove.bind(this) ; 
     document.getElementById(this.container).addEventListener("mousemove", mMoove, false); 
@@ -75,9 +76,9 @@ define([
         if(filteredAtom === undefined){
           filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
         } 
-        console.log(filteredAtom);
+         
         if(filteredAtom !== undefined){
-          this.atomCustomizer.atomJustClicekd(filteredAtom);
+          this.atomCustomizer.atomJustClicekd(filteredAtom, this.keyboard.pressed("ctrl"));
         } 
       }
     }  
