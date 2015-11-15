@@ -24,6 +24,7 @@ define([
     this.steredLoops = {};
     this.lattice;
     this.volume = 0.75 ;
+    this.atomSourcePos = undefined;
 
     var _this = this ;
 
@@ -71,7 +72,9 @@ define([
   }  
  
   Sound.prototype.crystalCenterStop = function() {
-    if(this.crystalHold) clearInterval(this.crystalHold);
+    if(this.crystalHold) {
+      clearInterval(this.crystalHold);
+    }
   }; 
   Sound.prototype.calculateAngle = function(x,z){
      
@@ -90,21 +93,27 @@ define([
      
   };
 
-  Sound.prototype.findCrystalCentroid = function() {
+  Sound.prototype.soundSourcePos = function() {
 
     if(this.lattice === undefined){
       return;
     }
 
-    var g = this.lattice.customBox(this.lattice.viewBox);
     var centroid = new THREE.Vector3(0,0,0);
 
-    if(g !== undefined){ 
-      centroid = new THREE.Vector3(); 
-      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
-        centroid.add( g.vertices[ z ] ); 
-      }  
-      centroid.divideScalar( g.vertices.length );
+    if(this.atomSourcePos !== undefined){
+      centroid = this.atomSourcePos.clone();
+    }
+    else{ 
+      var g = this.lattice.customBox(this.lattice.viewBox);
+       
+      if(g !== undefined){ 
+        centroid = new THREE.Vector3(); 
+        for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+          centroid.add( g.vertices[ z ] ); 
+        }  
+        centroid.divideScalar( g.vertices.length );
+      }
     }
 
     return centroid ;
@@ -122,8 +131,7 @@ define([
     if(start){
       this.mute = false ; 
       this.crystalHold = setInterval( function() { 
-        var centroid = _this.findCrystalCentroid();
-          
+        var centroid = _this.soundSourcePos(); 
         _this.animationMachine.produceWave(centroid, 'crystalCenter'); 
         _this.play('crystalCenter', centroid, true);
       },2000);

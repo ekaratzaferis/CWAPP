@@ -15,7 +15,7 @@ define([
   var uniqueId = -1;
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex) { 
-     
+      
     var _this = this; 
     this.radius = radius;  
     this.material;
@@ -110,6 +110,7 @@ define([
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.identity = identity ;
     sphere.uniqueID = this.uniqueID ;
+    sphere.latticeIndex = this.latticeIndex ;
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     this.object3d = sphere;
@@ -211,7 +212,9 @@ define([
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     sphere.name = 'atom';
-    sphere.identity = this.identity ;
+    sphere.identity = this.identity ; 
+    sphere.uniqueID = this.uniqueID ;
+    sphere.latticeIndex = this.latticeIndex ;
     this.object3d = sphere;
     this.object3d.position.x = _this.helperPos.x ;
     this.object3d.position.y = _this.helperPos.y ;

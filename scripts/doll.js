@@ -412,7 +412,7 @@ define([
     raycaster.setFromCamera( mouse, this.camera );
     
     if ( this.SELECTED ) {
-      
+
       var intersects = raycaster.intersectObject( this.plane.object3d );
       var pos = intersects[ 0 ].point.sub( this.offset ) ;
 
@@ -476,7 +476,8 @@ define([
         intersects2[i].object.material.color.setHex(0x6F6299); 
       }   
     };
-    if(entered === false ){
+
+    if(entered === false ){  
 
       this.INTERSECTED = null; 
       document.getElementById(this.container).style.cursor = 'auto';  
@@ -609,10 +610,13 @@ define([
       this.SELECTED = null;
 
       if(this.atomUnderDoll){ 
-        if(this.soundMachine.procced) this.soundMachine.storePlay('atomUnderDoll'); 
+        if(this.soundMachine.procced) {
+          this.soundMachine.storePlay('atomUnderDoll'); 
+        }
         this.INTERSECTED.position.set( $('#app-container').width() / -1150 + 0.1, 0,0);  
 
         this.dollMode(this.atomUnderDoll);
+
         for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
           this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
           this.lattice.actualAtoms[j].object3d.visible = true ;

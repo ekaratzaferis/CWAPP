@@ -67,13 +67,15 @@ define([
  
     var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
      
-    if ( crystalobjsIntersects.length > 0 ) {  
-
+    if ( crystalobjsIntersects.length > 0 ) {   
       if(crystalobjsIntersects[0].object.parent.name === 'atom'){
  
         var obj = crystalobjsIntersects[0].object ; 
         var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});   
-
+        if(filteredAtom === undefined){
+          filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
+        } 
+        console.log(filteredAtom);
         if(filteredAtom !== undefined){
           this.atomCustomizer.atomJustClicekd(filteredAtom);
         } 
@@ -101,7 +103,7 @@ define([
  
     var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
     
-    if ( crystalobjsIntersects.length > 0 && crystalobjsIntersects[0].object.parent.name === 'atom') {  
+    if ( crystalobjsIntersects.length > 0 ) {  
 
       for (var i = this.client.actualAtoms.length - 1; i >= 0; i--) {
         this.client.actualAtoms[i].setColorMaterial(); 
@@ -113,7 +115,10 @@ define([
       var obj = crystalobjsIntersects[0].object ; 
       var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});  
       if(filteredAtom === undefined){
-        return;
+        filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
+        if(filteredAtom === undefined){
+          return;
+        }
       }
       
       if(filteredAtom.object3d.visible === false){
@@ -131,9 +136,13 @@ define([
           this.client.actualAtoms[i].setColorMaterial();
           this.client.actualAtoms[i].object3d.visible = this.client.actualAtoms[i].visibility;
         };
+        for (var i = this.client.cachedAtoms.length - 1; i >= 0; i--) {
+          this.client.cachedAtoms[i].setColorMaterial();
+          this.client.cachedAtoms[i].object3d.visible = this.client.cachedAtoms[i].visibility;
+        };
         this.coloredAtomsExist = false;
-      }
-      document.getElementById(this.container).style.cursor = 'default';
+        document.getElementById(this.container).style.cursor = 'default';
+      } 
     }
   }
  
@@ -143,7 +152,7 @@ define([
     _this.getCrystalObjs = [] ;
 
     Explorer.getInstance().object3d.traverse (function (object) {
-      if (object.name === 'atom' || object.name === 'miller') { 
+      if ((object.name === 'atom' && object.latticeIndex !== '-') || (object.name === 'atom' && object.latticeIndex === '-' && object.visible === true) || object.name === 'miller') {  
         for (var i = 0; i < object.children.length; i++) {  
           _this.getCrystalObjs.push(object.children[i]);
         };

@@ -1,9 +1,16 @@
  
-onomata planes undefined
+na kleinei to atom menu otan o xristis patisei sto doll
+cached atoms 
 
-1 allagi legnths na allazei kai to relative
-2. den kanei swst oretireve tis times relative  
- 
+
+[6:53:45 μμ] alexandros: onPlaneParallel
+[6:53:49 μμ] alexandros: onPlaneInterception
+closeAtomCustomizer()
+
+[7:15:30 μμ] alexandros: parallel = 'active'
+[7:15:40 μμ] alexandros: interception = 'active'
+
+  
  3. na dw ti paizei me grids faces.
  4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
 5. fps drop in unit cell renderern motif renderer
@@ -45,128 +52,3 @@ List with Ideas
     6. When applying new motif to crystal auto position camera far from crystal.
         
  
- /**
- * Based on https://github.com/mrdoob/three.js/blob/a72347515fa34e892f7a9bfa66a34fdc0df55954/examples/js/exporters/STLExporter.js
- * Tested on r68 and r70
- * @author jcarletto / https://github.com/jcarletto27
- * @author kjlubick / https://github.com/kjlubick
- * @author kovacsv / http://kovacsv.hu/
- * @author mrdoob / http://mrdoob.com/
- * and edited by Thanos Saringelos
- */ 
-
-define([
-  'three',
-  'jquery', 
-  'underscore',
-  'explorer',
-  'explorer',
-  'unitCellExplorer',
-  'motifExplorer'
-], function(
-  THREE,
-  jQuery, 
-  _, 
-  Explorer,
-  UnitCellExplorer,
-  MotifExplorer
-  
-) { 
-    THREE.STLExporter = function () {};
-      
-    THREE.STLExporter.prototype = {
-
-        constructor: THREE.STLExporter,
-
-        parse: ( function () {
-
-            var vector = new THREE.Vector3();
-            var normalMatrixWorld = new THREE.Matrix3();
-
-            return function ( scene ) {
-
-                var output = '';
-
-                output += 'solid exported\n';
-
-                scene.traverse( function ( object ) {
-
-                    if ( object instanceof THREE.Mesh ) {
-
-                        var geometry = object.geometry;
-                        var matrixWorld = object.matrixWorld;
-
-                        if ( geometry instanceof THREE.Geometry ) {
-
-                            var vertices = geometry.vertices;
-                            var faces = geometry.faces;
-
-                            normalMatrixWorld.getNormalMatrix( matrixWorld );
-
-                            for ( var i = 0, l = faces.length; i < l; i ++ ) {
-
-                                var face = faces[ i ];
-
-                                vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
-
-                                output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-                                output += '\t\touter loop\n';
-
-                                var indices = [ face.a, face.b, face.c ];
-
-                                for ( var j = 0; j < 3; j ++ ) {
-
-                                    vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
-
-                                    output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-
-                                }
-
-                                output += '\t\tendloop\n';
-                                output += '\tendfacet\n';
-
-                            }
-
-                        }
-
-                    }
-
-                } );
-
-                output += 'endsolid exported\n';
-
-                return output;
-
-            };
-
-        }() )
-
-    };
-
-    function saveSTL(scene, name) {
-        var exporter = new THREE.STLExporter();
-        var stlString = exporter.parse(scene);
-
-        var blob = new Blob([stlString], {
-                type : 'text/plain'
-            });
-
-        saveAs(blob, name + '.stl');
-    }
-    var exporter = new THREE.STLExporter();
-    var exportString = function (output, filename) {
-
-        var blob = new Blob([output], {
-                type : 'text/plain'
-            });
-        var objectURL = URL.createObjectURL(blob);
-
-        var link = document.createElement('a');
-        link.href = objectURL;
-        link.download = filename || 'data.json';
-        link.target = '_blank';
-        link.click();
-
-    };
-
-});

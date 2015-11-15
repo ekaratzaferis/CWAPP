@@ -22,7 +22,7 @@ define([
 
     for (var i = wavesNames.length - 1; i >= 0; i--) {
       this.wavesTrigger[wavesNames[i]] = false;
-      this.waves[wavesNames[i]] = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 32, 32 ) , new THREE.MeshBasicMaterial( { blending: THREE.AdditiveBlending, color: '#0066CC', side: THREE.DoubleSide, transparent:true, opacity:0.1 ,depthWrite:false} ) );
+      this.waves[wavesNames[i]] = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 32, 32 ) , new THREE.MeshBasicMaterial( { blending: THREE.AdditiveBlending, color: '#0066CC', side: THREE.DoubleSide, transparent:true, opacity:0.125 ,depthWrite:false} ) );
       this.waves[wavesNames[i]].visible = false ;
       scene.add({'object3d' : this.waves[wavesNames[i]]}); 
     }; 
@@ -54,9 +54,9 @@ define([
           var a = this.waves[wavesNames[i]].scale.x ; 
           a += offset ;
           this.waves[wavesNames[i]].scale.set(a,a,a); 
-          this.waves[wavesNames[i]].material.opacity -= offset/1000;
+          this.waves[wavesNames[i]].material.opacity -= offset/900;
           if(this.waves[wavesNames[i]].scale.x > 100){ 
-            this.waves[wavesNames[i]].material.opacity = 0.1;
+            this.waves[wavesNames[i]].material.opacity = 0.125;
             this.waves[wavesNames[i]].visible = false ;
             this.wavesTrigger[wavesNames[i]] = false ;
           }  

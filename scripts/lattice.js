@@ -157,6 +157,7 @@ define([
          
         var elementName = this.currentMotif[j].elementName;
         var id = this.currentMotif[j].myID; 
+        var ionicIndex = this.currentMotif[j].ionicIndex; 
 
         ///
         for (var z = 0; z < this.parameters.repeatZ; z++) {
@@ -178,7 +179,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -200,7 +202,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -225,7 +228,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
 
@@ -248,7 +252,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -274,7 +279,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             ); 
           };
@@ -296,7 +302,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -322,7 +329,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -345,7 +353,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -370,7 +379,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             ); 
           };
@@ -392,7 +402,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             ); 
           };
@@ -414,7 +425,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -436,7 +448,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -454,7 +467,8 @@ define([
          
         var elementName = this.currentMotif[j].elementName;
         var id = this.currentMotif[j].myID; 
-   
+        var ionicIndex = this.currentMotif[j].ionicIndex; 
+
         for (var z = 0; z < this.parameters.repeatZ; z++) {
           for (var y = 0; y <= this.parameters.repeatY; y++) { 
             var centerOfMotif = this.transformOnlyApos(new THREE.Vector3(-1 * halfX, y*this.parameters.scaleY, halfZ + z*this.parameters.scaleZ));
@@ -472,7 +486,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -495,7 +510,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -520,7 +536,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -545,7 +562,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -563,6 +581,7 @@ define([
         var opacity = this.currentMotif[j].opacity ; 
         var elementName = this.currentMotif[j].elementName;
         var id = this.currentMotif[j].myID; 
+        var ionicIndex = this.currentMotif[j].ionicIndex; 
 
         for (var z = 0; z < this.parameters.repeatZ; z++) {
           for (var y = 0; y < this.parameters.repeatY; y++) { 
@@ -583,7 +602,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -606,7 +626,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -631,7 +652,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -656,7 +678,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -682,7 +705,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -705,7 +729,8 @@ define([
                 ' .png',
                 opacity,
                 renderingMode,
-                ' '
+                '-',
+                ionicIndex
               ) 
             );
           };
@@ -745,12 +770,11 @@ define([
   };
 
   Lattice.prototype.setCSGmode = function(arg, reset, newBox) { 
-    
-
+     
     var _this = this, i = 0;
     this.viewMode = arg.mode ; 
       
-    if(this.actualAtoms.length===0 && reset === undefined){
+    if(this.actualAtoms.length === 0 && reset === undefined){
       return;  
     }
     var scene = Explorer.getInstance().object3d;
@@ -774,14 +798,14 @@ define([
 
       if(this.crystalNeedsRecalculation.crustalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
         while(i < this.actualAtoms.length ){ 
-          this.actualAtoms[i].object3d.visible = false; 
+          this.actualAtoms[i].setVisibility(false) ; 
           this.actualAtoms[i].subtractedForCache.object3d.visible = true;  
           i++;
         }
 
         i =0;
         while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].setVisibility(false) ;
           this.cachedAtoms[i].subtractedForCache.object3d.visible = true;  
           i++;
         }
@@ -789,7 +813,7 @@ define([
       else{
         this.crystalNeedsRecalculation.crustalSubstracted = false;
         while(i < this.actualAtoms.length ) {
-          this.actualAtoms[i].object3d.visible = false; 
+          this.actualAtoms[i].setVisibility(false) ;
           this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);  
           i++;
         } 
@@ -797,7 +821,7 @@ define([
         i = 0;
 
         while(i < this.cachedAtoms.length ) {     
-          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].setVisibility(false) ;
           this.cachedAtoms[i].subtractedSolidView(box, this.cachedAtoms[i].object3d.position, true);
           i++;
         } 
@@ -809,7 +833,7 @@ define([
 
       i = 0;
       while(i < this.actualAtoms.length ) { 
-        this.actualAtoms[i].object3d.visible = false;     
+        this.actualAtoms[i].setVisibility(false) ;    
         if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
           this.actualAtoms[i].subtractedForCache.object3d.visible = false;  
         }
@@ -818,7 +842,7 @@ define([
 
       i = 0;
       while(i < this.cachedAtoms.length ) { 
-        this.cachedAtoms[i].object3d.visible = false;     
+        this.cachedAtoms[i].setVisibility(false) ;    
         if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
           this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
         }
@@ -897,7 +921,7 @@ define([
 
       while(i < this.actualAtoms.length ) {    
          
-        this.actualAtoms[i].object3d.visible = true;  
+        this.actualAtoms[i].setVisibility(true) ;
            
         // workaround for points that are exactly on the grade (faces, cell points)
         var smartOffset = centroid.clone().sub(this.actualAtoms[i].object3d.position.clone());
@@ -933,7 +957,7 @@ define([
             if(vertexIndex === -1) touches = false;
           }  
           if(!touches) {
-            this.actualAtoms[i].object3d.visible = false ;
+            this.actualAtoms[i].setVisibility(false) ;
           }
         } 
         this.actualAtoms[i].GradeLimited(); 
@@ -948,7 +972,7 @@ define([
 
       while(i < this.cachedAtoms.length ) { 
          
-        this.cachedAtoms[i].object3d.visible = true;  
+        this.cachedAtoms[i].setVisibility(true) ; 
            
         // workaround for points that are exactly on the grade (faces, cell points)
         var smartOffset = centroid.clone().sub(this.cachedAtoms[i].object3d.position.clone());
@@ -985,11 +1009,11 @@ define([
             if(vertexIndex === -1) touches = false;
           }  
           if(!touches) {
-            this.cachedAtoms[i].object3d.visible = false ;
+            this.cachedAtoms[i].setVisibility(false) ;
           }
         }
         else{  
-          this.cachedAtoms[i].object3d.visible = true;
+          this.cachedAtoms[i].setVisibility(true);
         }
         i++;
       } 
@@ -1002,7 +1026,7 @@ define([
       
       if(reset === undefined){ 
         while(i < this.actualAtoms.length ){ 
-          this.actualAtoms[i].object3d.visible = true; 
+          this.actualAtoms[i].setVisibility(true)
           if(this.actualAtoms[i].subtractedForCache.object3d !== undefined){
             this.actualAtoms[i].subtractedForCache.object3d.visible = false;    
           } 
@@ -1010,7 +1034,7 @@ define([
         }
         i = 0;
         while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].setVisibility(false); 
           if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
             this.cachedAtoms[i].subtractedForCache.object3d.visible = false;    
           } 
@@ -1024,7 +1048,7 @@ define([
 
         i =0;
         while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].object3d.visible = false; 
+          this.cachedAtoms[i].setVisibility(false);  
           if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
             Explorer.remove({'object3d' : this.cachedAtoms[i].subtractedForCache.object3d});  
           }  
@@ -3802,6 +3826,7 @@ define([
         index = j;
       }
     }   
+
     this.millerDirections.splice(index-cnt+1,cnt);
       
     this.createMillerDirection({
