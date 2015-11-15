@@ -18,7 +18,9 @@
         'stringEditor',
         'tooltipGenerator',
         'setUIValue',
-        'interfaceResizer'
+        'getUIValue',
+        'interfaceResizer',
+        'messages'
     ], function(
         jQuery,
         jQuery_ui,
@@ -34,7 +36,9 @@
         stringEditor,
         tooltipGenerator,
         setUIValue,
-        interfaceResizer
+        getUIValue,
+        interfaceResizer,
+        messages
     ) 
     {
         /* -----------------------
@@ -568,7 +572,7 @@
         /* --------
            Messages
            ---------*/
-            var messages = {
+            var messageList = {
                 '1':'<p>You have unlocked the lattice restrictions. <br/><br/> From now on no autopilot nor lattice restrictions will be applied.</p>',
                 '2':'<p>You have unlocked the autopilot restrictions. <br/><br/>From now on atoms no longer behave as rigid spheres and you will be able to change lattice parameters within the restrictions of the lattice you have chosen.</p>',
                 '3':'<p>This functionality is CPU intensive and your computer may be unavailable for a few minutes. <br/><br/> Are you sure you want to continue?</p>',
@@ -889,6 +893,7 @@
                 });
                 $icheck.on('ifChecked',function(){
                     var name = jQuery(this).attr('name');
+                    jQuery(this).addClass('active');
                     switch(name){
                         case 'gridCheckButton':
                             argument ={};
@@ -913,6 +918,7 @@
                 });
                 $icheck.on('ifUnchecked',function(){
                     var name = jQuery(this).attr('name');
+                    jQuery(this).removeClass('active');
                     switch(name){
                         case 'gridCheckButton':
                             argument ={};
@@ -2289,22 +2295,24 @@
                 var ttg = new tooltipGenerator();
                 var setUI = new setUIValue();
                 var intRes = new interfaceResizer();
+                var msg = new messages();
+                var getUI = new getUIValue();
+                
+                
+                
+                setUI.setValue({
+                    'distortionOn':{
+                        'value':true
+                    }
+                });
+                
+                
                 argument = {};
                 argument['stringEditor'] = se;
                 argument['tooltipGenerator'] = ttg;
                 argument['interfaceResizer'] = intRes;
                 argument['setUIValue'] = setUI;
                 iac = new individualAtomController(argument);
-            
-                /*_this.openAtomCustomizer({
-                    'color':'#fff', 
-                    'name':'na', 
-                    'id':'1', 
-                    'ionicIndex':'-1', 
-                    'opacity':'0.2', 
-                    'radius':'180', 
-                    'visibility': false
-                });*/
                 
         /*$
 
@@ -2331,18 +2339,18 @@
             Menu.prototype.showErrorDialog = function(argument){
                 var screen_height = jQuery(window).height();
                 $errorModal.find('#errorLabel h2').html('Error '+argument['code']);
-                $errorModal.find('#errorMessage').html(messages[argument['messageID']]);
+                $errorModal.find('#errorMessage').html(messageList[argument['messageID']]);
                 $errorModal.modal('show').css('margin-top',(screen_height/2)-100);
             };
             Menu.prototype.showInfoDialog = function(argument){
                 var screen_height = jQuery(window).height();
-                $infoModal.find('#infoMessage').html(messages[argument['messageID']]);
+                $infoModal.find('#infoMessage').html(messageList[argument['messageID']]);
                 if (argument['messageID'] === 4) $infoModal.modal('show').css('margin-top',(screen_height/2)-250);
                 else $infoModal.modal('show').css('margin-top',(screen_height/2)-100);
             };
             Menu.prototype.showWarningDialog = function(argument){
                 var screen_height = jQuery(window).height();
-                if ( argument['messageID'] !== undefined ) $warningModal.find('#warningMessage').html(messages[argument['messageID']]);
+                if ( argument['messageID'] !== undefined ) $warningModal.find('#warningMessage').html(messageList[argument['messageID']]);
                 else $warningModal.find('#warningMessage').html(argument['message']);
                 $warningModal.modal('show').css('margin-top',(screen_height/2)-100);
                 if ( argument['caller'] !== undefined ) $warningModal.caller = argument['caller'];

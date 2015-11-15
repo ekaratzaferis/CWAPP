@@ -22,6 +22,14 @@ define([
     // Variables
     var $selector = undefined;
     
+    // Grouping
+    var renderizationMode = {
+        'realistic': jQuery('#realistic'),
+        'wireframe': jQuery('#wireframe'),
+        'toon': jQuery('#toon'),
+        'flat': jQuery('#flat')
+    };
+    
     // Published Events
     var events = {
         PLANE_INTERCEPTION: 'menu.plane_interception',
@@ -95,8 +103,122 @@ define([
     };
     function takeAction(index,selector,value){
         switch(index){
-                
-            // System Sound //
+            
+            // Visual Tab
+            case 'wireframe':{}//Move to realistic handler
+            case 'toon':{}//Move to realistic handler
+            case 'flat':{}//Move to realistic handler
+            case 'realistic':{
+                if (value === true){
+                    _.each(renderizationMode, function($param, a) { $param.removeClass('active');});
+                    selector.addClass('active');
+                }
+                else selector.removeClass('active');
+                break;
+            }
+            case 'lights':{
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                break;
+            }
+            case 'distortionOn':{
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                //takeAction('distortionOff',jQuery('#distortionOff'),!value);
+                break;
+            }
+            case 'distortionOff':{
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                //takeAction('distortionOn',jQuery('#distortionOn'),!value);
+                break;
+            }
+            case 'anaglyph':{
+                if (jQuery('#anaglyph').hasClass('active')) return true;
+                else return false;
+            }
+            case 'oculus':{
+                if (jQuery('#oculus').hasClass('active')) return true;
+                else return false;
+            }
+            case '3D':{
+                if (jQuery('#3D').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalCamTargetOn':{
+                if (jQuery('#crystalCamTargetOn').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalCamTargetOff':{
+                if (jQuery('#crystalCamTargetOff').hasClass('active')) return true;
+                else return false;
+            }
+            case 'fullScreen':{
+                if (jQuery('#fullScreen').hasClass('active')) return true;
+                else return false;
+            }
+            case 'leapMotion':{
+                if (jQuery('#leapMotion').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalClassic':{
+                if (jQuery('#crystalClassic').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalSubstracted':{
+                if (jQuery('#crystalSubstracted').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalSolidVoid':{
+                if (jQuery('#crystalSolidVoid').hasClass('active')) return true;
+                else return false;
+            }
+            case 'crystalGradeLimited':{
+                if (jQuery('#crystalGradeLimited').hasClass('active')) return true;
+                else return false;
+            }
+            case 'cellClassic':{
+                if (jQuery('#cellClassic').hasClass('active')) return true;
+                else return false;
+            }
+            case 'cellSubstracted':{
+                if (jQuery('#cellSubstracted').hasClass('active')) return true;
+                else return false;
+            }
+            case 'cellSolidVoid':{
+                if (jQuery('#cellSolidVoid').hasClass('active')) return true;
+                else return false;
+            }
+            case 'cellGradeLimited':{
+                if (jQuery('#cellGradeLimited').hasClass('active')) return true;
+                else return false;
+            }
+            case 'zoom100':{
+                if (jQuery('#zoom100').hasClass('active')) return true;
+                else return false;
+            }
+            case 'zoom90':{
+                if (jQuery('#zoom90').hasClass('active')) return true;
+                else return false;
+            }
+            case 'zoom80':{
+                if (jQuery('#zoom80').hasClass('active')) return true;
+                else return false;
+            }
+            case 'zoom70':{
+                if (jQuery('#zoom70').hasClass('active')) return true;
+                else return false;
+            }
+            case 'fog':{
+                if (jQuery('[name="fog"]').hasClass('active')) return true;
+                else return false;
+            }
+            case 'fogColor':{
+                return '#'+jQuery('#fogColor').spectrum('get').toHex();
+            }
+            case 'fogDensity':{
+                return jQuery('#fogDensity').val();   
+            }
             case 'sounds':{
                 if (value === true) {
                     selector.addClass('active');
@@ -107,16 +229,35 @@ define([
                     takeAction('soundSlider',jQuery('#soundSlider'),true);
                 }
                 break;
+            } 
+            case 'crystalScreenColor':{
+                return '#'+jQuery('#crystalScreenColor').spectrum('get').toHex();
+            }
+            case 'cellScreenColor':{
+                return '#'+jQuery('#cellScreenColor').spectrum('get').toHex();
+            }
+            case 'motifXScreenColor':{
+                return '#'+jQuery('#motifXScreenColor').spectrum('get').toHex();
+            }
+            case 'motifYScreenColor':{
+                return '#'+jQuery('#motifYScreenColor').spectrum('get').toHex();
+            }
+            case 'motifZScreenColor':{
+                return '#'+jQuery('#motifZScreenColor').spectrum('get').toHex();
+            }
+            case 'screenMode':{
+                return '#'+jQuery('#screenMode').spectrum('get').toHex();
+            }
+            case 'printMode':{
+                return '#'+jQuery('#printMode').spectrum('get').toHex();
             }
                 
-            // System Sound Slider //
+            //IAC Box
             case 'soundSliderToggle':{
                 if (value === true) selector.slider('enable');
                 else selector.slider('disable');
                 break;
             }
-            
-            // Change IAC visibility
             case 'iacVisibility':{
                 if (value === true) {
                     selector.find('img').attr('src','Images/visible-icon-sm.png');
@@ -128,20 +269,14 @@ define([
                 } 
                 break;
             }
-              
-            // Change IAC color
             case 'iacColor':{
                 selector.children().css('background',value);
                 break;
             }
-                
-            // IAC Opacity Input
             case 'iacOpacity':{
                 takeAction('iacOpacitySlider',jQuery('#iacOpacitySlider'),value);
                 break;
             }
-                
-            // IAC Opacity Slider
             case 'iacOpacitySlider':{
                 selector.slider('value',value);
                 break;
@@ -152,43 +287,53 @@ define([
     function publishAction(index,value){
         switch(index){
             
-            // System Sound 
+            // Visual Tab
+            case 'wireframe': {
+                PubSub.publish(events.CHANGE_REND_MODE, value);
+                break;
+            }
+            case 'toon': {
+                PubSub.publish(events.CHANGE_REND_MODE, value);
+                break;
+            }
+            case 'flat': {
+                PubSub.publish(events.CHANGE_REND_MODE, value);
+                break;
+            }
+            case 'realistic': {
+                PubSub.publish(events.CHANGE_REND_MODE, value);
+                break;
+            }
+            case 'lights':{
+                PubSub.publish(events.SET_LIGHTS, value);
+                break;
+            }
             case 'sounds': {
                 PubSub.publish(events.SET_SOUNDS, value);
                 break;
             }
                 
-            // Sound Source 
-            case 'sound': {
+            // IAC Box
+            case 'iacSound': {
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;
             }
-                
-            // IAC visibility
             case 'iacVisibility':{
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;
             }
-                
-            // IAC Doll Mode
             case 'iacDoll':{
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;
             }
-                
-            // IAC Color
             case 'iacColor':{
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;
             }
-                
-            // IAC Close
             case 'iacClose':{
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;
             }
-                
-            // IAC Opacity
             case 'iacOpacity':{
                 PubSub.publish(events.ATOM_CUSTOMIZATION, value); 
                 break;

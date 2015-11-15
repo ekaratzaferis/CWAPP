@@ -155,7 +155,7 @@ define([
         $sound.on('click',function(){
             // Change sound Source //
             $setUIValue.setValue({
-                'sound':{
+                'iacSound':{
                     'publish':{'id':$atomID,'sound':true}
                 }
             });
@@ -200,15 +200,6 @@ define([
     
     // Module Interface //
     individualAtomController.prototype.showBox = function(argument){
-        
-        // Check if box is already visible, notify system //
-        if (boxOn === true) {
-            $setUIValue.setValue({
-                'iacClose':{
-                    'publish':{'id':$atomID,'finish':true}
-                }
-            });   
-        }
         
         // Atom Selection //
         var single = undefined;
