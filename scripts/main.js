@@ -30,7 +30,15 @@ require.config({
     'tooltipGenerator': 'menu_modules/tooltipGenerator',
     'getUIValue': 'menu_modules/getUIValue',
     'setUIValue': 'menu_modules/setUIValue',
-    'interfaceResizer': 'menu_modules/interfaceResizer'
+    'interfaceResizer': 'menu_modules/interfaceResizer',
+    'messages': 'menu_modules/messages',
+    'latticeTab': 'menu_modules/latticeTab',
+    'pndTab': 'menu_modules/pndTab',
+    'motifTab': 'menu_modules/motifTab',
+    'visualTab': 'menu_modules/visualTab',
+    'libraryTab': 'menu_modules/libraryTab',
+    'disableUIElement': 'menu_modules/disableUIElement',
+    'notesTab': 'menu_modules/notesTab' 
 
   },
   shim: {
