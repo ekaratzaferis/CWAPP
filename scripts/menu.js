@@ -2295,6 +2295,17 @@
                 argument['interfaceResizer'] = intRes;
                 argument['setUIValue'] = setUI;
                 iac = new individualAtomController(argument);
+                
+                _this.openAtomCustomizer({
+                    'single':false,
+                    'color':'#fff', 
+                    'name':'na', 
+                    'id':'1', 
+                    'ionicIndex':'-1', 
+                    'opacity':'0.2', 
+                    'radius':'180', 
+                    'visibility': false
+                });
             
                 /*_this.openAtomCustomizer({
                     'color':'#fff', 

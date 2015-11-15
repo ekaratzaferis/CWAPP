@@ -27,6 +27,7 @@ define([
     // Local Variables //
     var boxWidth = 340;
     var boxHeight = 207;
+    var boxOn = false;
     
     // Module References //
     var $stringEditor = undefined;
@@ -38,6 +39,7 @@ define([
     var $visibility = jQuery('#iacToggle');
     var $symbol = jQuery('#iacSymbol');
     var $radius = jQuery('#radiusLabelValue');
+    var $radiusLabel = jQuery('#radiusLabel');
     var $doll = jQuery('#iacDoll');
     var $color = jQuery('#iacColor');
     var $opacity = jQuery('#iacOpacity');
@@ -64,6 +66,12 @@ define([
         if (!(_.isUndefined(argument.interfaceResizer))) $interfaceResizer = argument.interfaceResizer;
         else return false;
         
+        // Make box draggable
+        $box.draggable({
+            scroll: false,
+            handle: '#infoHeader'
+        });
+        
         // Bind Event Listeners //
         $visibility.on('click',function(){
             if ($visibility.hasClass('notVisible')) $setUIValue.setValue({
@@ -87,7 +95,7 @@ define([
                     'publish':{'id':$atomID,'dollMode':true}
                 }
             });
-            $box.hide('slow');
+            closeBox();
         });
         $color.spectrum({
             color: "#ffffff",
@@ -142,7 +150,7 @@ define([
                     'publish':{'id':$atomID,'finish':true}
                 }
             });
-            $box.hide('fast');
+            closeBox();
         });
         $sound.on('click',function(){
             // Change sound Source //
@@ -168,13 +176,51 @@ define([
         $notes.find('a').hover(function(){$notes.find('img').attr('src','Images/notes-icon-purple.png');},function(){$notes.find('img').attr('src','Images/notes-icon-white.png');});
         $sound.find('a').hover(function(){$sound.find('img').attr('src','Images/sound-icon-hover-purple.png');},function(){$sound.find('img').attr('src','Images/sound-icon-hover.png');});
     };
+    function changeLayout(mode){
+        if (mode === true){
+            $sound.show();
+            $notes.show();
+            $doll.show();
+            $symbol.show();
+        }
+        else{
+            $sound.hide();
+            $notes.hide();
+            $doll.hide();
+            $symbol.hide();
+            $radius.html('Multi-atom');
+            $radiusLabel.html('Selection:');
+        }
+    };
+    function closeBox(){
+        $atomID = undefined;
+        $box.hide('slow');
+        boxOn = false;
+    };
     
     // Module Interface //
     individualAtomController.prototype.showBox = function(argument){
         
+        // Check if box is already visible, notify system //
+        if (boxOn === true) {
+            $setUIValue.setValue({
+                'iacClose':{
+                    'publish':{'id':$atomID,'finish':true}
+                }
+            });   
+        }
+        
+        // Atom Selection //
+        var single = undefined;
+        if (_.isUndefined(argument.single)) {
+            closeBox();
+            return false;
+        }
+        else single = argument.single;
+        
         // Atom ID //
         if (_.isUndefined(argument.id)) {
-            $box.hide();
+            closeBox();
             return false;
         }
         else {
@@ -182,33 +228,39 @@ define([
             $boxTitle.html('Atom '+$atomID);
         }
         
-        // Fix Element Color //
-        if (_.isUndefined(argument.name)) {
-            $box.hide();
-            return false;
+        // Fix Element Class //
+        if (single === true){
+            if (_.isUndefined(argument.name)) {
+                closeBox();
+                return false;
+            }
+            else $symbol.find('a').attr('class','ch ch-'+$stringEditor.toLowerCase(argument.name));
         }
-        else $symbol.find('a').attr('class','ch ch-'+$stringEditor.toLowerCase(argument.name));
         
         // Fix Element Name //
-        if (_.isUndefined(argument.ionicIndex)) {
-            $box.hide();
-            return false;
-        }
-        else {
-            if (argument.ionicIndex !== '0') $symbol.find('a').html('<span style="font-size:15px;">'+$stringEditor.capitalizeFirstLetter(argument.name)+'<sup>'+argument.ionicIndex+'</sup></span>');
-            else $symbol.find('a').html($stringEditor.capitalizeFirstLetter(argument.name));
+        if (single === true){
+            if (_.isUndefined(argument.ionicIndex)) {
+                closeBox();
+                return false;
+            }
+            else {
+                if (argument.ionicIndex !== '0') $symbol.find('a').html('<span style="font-size:15px;">'+$stringEditor.capitalizeFirstLetter(argument.name)+'<sup>'+argument.ionicIndex+'</sup></span>');
+                else $symbol.find('a').html($stringEditor.capitalizeFirstLetter(argument.name));
+            }
         }
         
         // Insert Atom Radius //
-        if (_.isUndefined(argument.radius)) {
-            $box.hide();
-            return false;
+        if (single === true){
+            if (_.isUndefined(argument.radius)) {
+                closeBox();
+                return false;
+            }
+            else $radius.html(argument.radius+ ' &Aring;');
         }
-        else $radius.html(argument.radius+ ' &Aring;');
         
         // Initialize Atom Color //
         if (_.isUndefined(argument.color)) {
-            $box.hide();
+            closeBox();
             return false;
         }
         else {
@@ -218,7 +270,7 @@ define([
         
         // Initialize Atom Opacity //
         if (_.isUndefined(argument.opacity)) {
-            $box.hide();
+            closeBox();
             return false;
         }
         else {
@@ -228,7 +280,7 @@ define([
         
         // Apply Atom Visibility //
         if (_.isUndefined(argument.visibility)) {
-            $box.hide();
+            closeBox();
             return false;
         }
         else {
@@ -236,12 +288,15 @@ define([
             else if ((argument.visibility === false) && (!($visibility.hasClass('notVisible')))) $visibility.trigger('click');
         }
         
+        // Apply layout
+        changeLayout(single);
+        
         $box.show('slow');
+        boxOn = true;
         return true;
     };
     individualAtomController.prototype.hideBox = function(){
-        $atomID = undefined;
-        $box.hide('slow');
+        closeBox();
     };
     individualAtomController.prototype.moveBox = function(argument){
         var xCoord = 0, yCoord = 0;
