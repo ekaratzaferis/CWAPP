@@ -338,7 +338,9 @@
                 'directions': $directions,
                 'atomToggle': $atomToggle,
                 'atomRadius': $atomRadius,
-                'unitCellViewport': $unitCellViewport
+                'unitCellViewport': $unitCellViewport,
+                'labelToggle': jQuery('#labelToggle'),
+                'highlightTangency': jQuery('#highlightTangency')
             };
 
             // [Lattice Tab]
@@ -1408,6 +1410,12 @@
                             break;
                         case 'unitCellViewport':
                             title = 'Unit Cell Viewport';
+                            break;
+                        case 'labelToggle':
+                            title = 'Toggle atom labels';
+                            break;
+                        case 'highlightTangency':
+                            title = 'Highlight overlapped atoms';
                             break;
                     }
                     $parameter.parent().tooltip({
