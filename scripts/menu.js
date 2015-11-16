@@ -76,6 +76,7 @@
         
             // IAC
             var iac;
+            var ttg;
 
 
 
@@ -2292,7 +2293,7 @@
                 
             
                 var se = new stringEditor();
-                var ttg = new tooltipGenerator();
+                ttg = new tooltipGenerator();
                 var intRes = new interfaceResizer();
                 var setUI = new setUIValue({
                     'interfaceResizer':intRes
@@ -2337,6 +2338,9 @@
         /* --------------------
            Prototypes - Editors
            -------------------- */
+            Menu.prototype.canvasTooltip = function(argument){
+                ttg.canvasTooltip(argument); 
+            }
             Menu.prototype.showErrorDialog = function(argument){
                 var screen_height = jQuery(window).height();
                 $errorModal.find('#errorLabel h2').html('Error '+argument['code']);
