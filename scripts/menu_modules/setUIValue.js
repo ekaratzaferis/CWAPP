@@ -124,7 +124,9 @@ define([
         AXYZ_CHANGE: 'menu.axyz_change',
         MAN_ANGLE_CHANGE: 'menu.man_angle_change',
         SWAP_SCREEN: 'menu.swap_screen',
-        DIALOG_RESULT: 'menu.dialog_result'
+        DIALOG_RESULT: 'menu.dialog_result',
+        LABEL_TOGGLE: 'menu.label_toggle',
+        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
     }; 
     
     // Contructor //
@@ -320,10 +322,15 @@ define([
                 }
                 else {
                     selector.removeClass('active');
-                    takeAction('soundSlider',jQuery('#soundSlider'),true);
+                    takeAction('soundSliderToggle',jQuery('#soundSlider'),true);
                 }
                 break;
-            } 
+            }
+            case 'soundSliderToggle':{
+                if (value === true) selector.slider('enable');
+                else selector.slider('disable');
+                break;
+            }
             case 'crystalScreenColor':{
                 selector.children().css('background',value);
                 break;
@@ -346,11 +353,6 @@ define([
             }
                 
             //IAC Box
-            case 'soundSliderToggle':{
-                if (value === true) selector.slider('enable');
-                else selector.slider('disable');
-                break;
-            }
             case 'iacVisibility':{
                 if (value === true) {
                     selector.find('img').attr('src','Images/visible-icon-sm.png');
@@ -482,6 +484,10 @@ define([
                 PubSub.publish(events.SET_SOUNDS, value);
                 break;
             }
+            case 'soundVolume': {
+                PubSub.publish(events.SOUND_VOLUME, value);
+                break;
+            }
             case 'crystalScreenColor':{
                 PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
                 break;
@@ -500,6 +506,10 @@ define([
             }
             case 'motifZScreenColor':{
                 PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
+                break;
+            }
+            case '3DPrinting':{
+                PubSub.publish(events.THREE_D_PRINTING, value);
                 break;
             }
                 
