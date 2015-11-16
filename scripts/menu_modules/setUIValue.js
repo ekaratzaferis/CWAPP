@@ -7,12 +7,16 @@ define([
     'jquery',
     'jquery-ui',
     'pubsub',
-    'underscore'
+    'underscore',
+    'bootstrap',
+    'icheck'
 ], function(
     jQuery,
     jQuery_ui,
     PubSub, 
-    _
+    _,
+    bootstrap,
+    icheck
 ) 
 {    
     
@@ -22,6 +26,9 @@ define([
     // Variables
     var $selector = undefined;
     
+    // Modules References
+    var $interfaceResizer = undefined;
+    
     // Grouping
     var renderizationMode = {
         'realistic': jQuery('#realistic'),
@@ -29,6 +36,29 @@ define([
         'toon': jQuery('#toon'),
         'flat': jQuery('#flat')
     };
+    var stereoscopic = {
+        'anaglyph': jQuery('#anaglyph'),
+        'oculus': jQuery('#oculus'),
+        '3D': jQuery('#3D')
+    };
+    var crystalMode = {
+        'crystalClassic': jQuery('#crystalClassic'),
+        'crystalSubstracted': jQuery('#crystalSubstracted'),
+        'crystalSolidVoid': jQuery('#crystalSolidVoid'),
+        'crystalGradeLimited': jQuery('#crystalGradeLimited')
+    };
+    var unitCellMode = {
+        'cellClassic': jQuery('#cellClassic'),
+        'cellSubstracted': jQuery('#cellSubstracted'),
+        'cellSolidVoid': jQuery('#cellSolidVoid'),
+        'cellGradeLimited': jQuery('#cellGradeLimited')
+    };
+    var zoomOptions = {
+        '70': jQuery('#zoom70'),   
+        '80': jQuery('#zoom80'),   
+        '90': jQuery('#zoom90'),   
+        '100': jQuery('#zoom100')   
+    }
     
     // Published Events
     var events = {
@@ -98,16 +128,20 @@ define([
     }; 
     
     // Contructor //
-    function setUIValue() {
+    function setUIValue(argument) {
+        
+        // Acquire Module References //
+        if (!(_.isUndefined(argument.interfaceResizer))) $interfaceResizer = argument.interfaceResizer;
+        else return false;
         
     };
     function takeAction(index,selector,value){
         switch(index){
             
             // Visual Tab
-            case 'wireframe':{}//Move to realistic handler
-            case 'toon':{}//Move to realistic handler
-            case 'flat':{}//Move to realistic handler
+            case 'wireframe':{} //Move to realistic handler
+            case 'toon':{} //Move to realistic handler
+            case 'flat':{} //Move to realistic handler
             case 'realistic':{
                 if (value === true){
                     _.each(renderizationMode, function($param, a) { $param.removeClass('active');});
@@ -122,102 +156,162 @@ define([
                 break;
             }
             case 'distortionOn':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
-                //takeAction('distortionOff',jQuery('#distortionOff'),!value);
+                if (value === true) {
+                    selector.addClass('active');
+                    jQuery('#distortionOff').removeClass('active');
+                }
+                else {
+                    selector.removeClass('active');
+                    jQuery('#distortionOff').addClass('active');
+                }
                 break;
             }
             case 'distortionOff':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
-                //takeAction('distortionOn',jQuery('#distortionOn'),!value);
+                if (value === true) {
+                    selector.addClass('active');
+                    jQuery('#distortionOn').removeClass('active');
+                }
+                else {
+                    selector.removeClass('active');
+                    jQuery('#distortionOn').addClass('active');
+                }
                 break;
             }
-            case 'anaglyph':{
-                if (jQuery('#anaglyph').hasClass('active')) return true;
-                else return false;
-            }
-            case 'oculus':{
-                if (jQuery('#oculus').hasClass('active')) return true;
-                else return false;
-            }
+            case 'anaglyph':{} // Move to 3D handler
+            case 'oculus':{} // Move to 3D handler
             case '3D':{
-                if (jQuery('#3D').hasClass('active')) return true;
-                else return false;
+                if (value === true){
+                    _.each(stereoscopic, function($param, a) { $param.removeClass('active');});
+                    selector.addClass('active');
+                }
+                else selector.removeClass('active');
+                break;
             }
             case 'crystalCamTargetOn':{
-                if (jQuery('#crystalCamTargetOn').hasClass('active')) return true;
-                else return false;
+                if (value === true) {
+                    selector.addClass('active');
+                    jQuery('#crystalCamTargetOff').removeClass('active');
+                }
+                else {
+                    selector.removeClass('active');
+                    jQuery('#crystalCamTargetOff').addClass('active');
+                }
+                break;
             }
             case 'crystalCamTargetOff':{
-                if (jQuery('#crystalCamTargetOff').hasClass('active')) return true;
-                else return false;
+                if (value === true) {
+                    selector.addClass('active');
+                    jQuery('#crystalCamTargetOn').removeClass('active');
+                }
+                else {
+                    selector.removeClass('active');
+                    jQuery('#crystalCamTargetOn').addClass('active');
+                }
+                break;
             }
             case 'fullScreen':{
-                if (jQuery('#fullScreen').hasClass('active')) return true;
-                else return false;
+                if (value === false) {
+                    if (selector.hasClass('active')) selector.button('toggle');
+                }
+                else {
+                    if (!(selector.hasClass('active'))) selector.button('toggle');   
+                }
+                break;
             }
             case 'leapMotion':{
-                if (jQuery('#leapMotion').hasClass('active')) return true;
-                else return false;
+                if (value === false) {
+                    if (selector.hasClass('active')) selector.button('toggle');
+                }
+                else {
+                    if (!(selector.hasClass('active'))) selector.button('toggle');   
+                }
+                break;
             }
-            case 'crystalClassic':{
-                if (jQuery('#crystalClassic').hasClass('active')) return true;
-                else return false;
+            case 'crystalClassic':{} // Move to crystalGradeLimited handler
+            case 'crystalSubstracted':{} // Move to crystalGradeLimited handler
+            case 'crystalSolidVoid':{} // Move to crystalGradeLimited handler
+            case 'crystalGradeLimited':{ 
+                if (value === true){
+                    _.each(crystalMode, function($param, a) { $param.removeClass('active');});
+                    selector.addClass('active');
+                }
+                else selector.removeClass('active');
+                break;
             }
-            case 'crystalSubstracted':{
-                if (jQuery('#crystalSubstracted').hasClass('active')) return true;
-                else return false;
-            }
-            case 'crystalSolidVoid':{
-                if (jQuery('#crystalSolidVoid').hasClass('active')) return true;
-                else return false;
-            }
-            case 'crystalGradeLimited':{
-                if (jQuery('#crystalGradeLimited').hasClass('active')) return true;
-                else return false;
-            }
-            case 'cellClassic':{
-                if (jQuery('#cellClassic').hasClass('active')) return true;
-                else return false;
-            }
-            case 'cellSubstracted':{
-                if (jQuery('#cellSubstracted').hasClass('active')) return true;
-                else return false;
-            }
-            case 'cellSolidVoid':{
-                if (jQuery('#cellSolidVoid').hasClass('active')) return true;
-                else return false;
-            }
+            case 'cellClassic':{} // Move to cellGradeLimited handler
+            case 'cellSubstracted':{} // Move to cellGradeLimited handler
+            case 'cellSolidVoid':{} // Move to cellGradeLimited handler
             case 'cellGradeLimited':{
-                if (jQuery('#cellGradeLimited').hasClass('active')) return true;
-                else return false;
+                if (value === true){
+                    _.each(unitCellMode, function($param, a) { $param.removeClass('active');});
+                    selector.addClass('active');
+                }
+                else selector.removeClass('active');
+                break;
             }
             case 'zoom100':{
-                if (jQuery('#zoom100').hasClass('active')) return true;
-                else return false;
-            }
+                if (value === true){
+                    var percentage = undefined;
+                    _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
+                    selector.addClass('active');
+                    $interfaceResizer.transformMenu(1);
+                }
+                else selector.removeClass('active');
+                break;
+            } 
             case 'zoom90':{
-                if (jQuery('#zoom90').hasClass('active')) return true;
-                else return false;
-            }
+                if (value === true){
+                    var percentage = undefined;
+                    _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
+                    selector.addClass('active');
+                    $interfaceResizer.transformMenu(0.9);
+                }
+                else selector.removeClass('active');
+                break;
+            } 
             case 'zoom80':{
-                if (jQuery('#zoom80').hasClass('active')) return true;
-                else return false;
-            }
+                if (value === true){
+                    var percentage = undefined;
+                    _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
+                    selector.addClass('active');
+                    $interfaceResizer.transformMenu(0.8);
+                }
+                else selector.removeClass('active');
+                break;
+            } 
             case 'zoom70':{
-                if (jQuery('#zoom70').hasClass('active')) return true;
-                else return false;
+                if (value === true){
+                    var percentage = undefined;
+                    _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
+                    selector.addClass('active');
+                    $interfaceResizer.transformMenu(0.7);
+                }
+                else selector.removeClass('active');
+                break;
             }
             case 'fog':{
-                if (jQuery('[name="fog"]').hasClass('active')) return true;
-                else return false;
+                if (value === true) {
+                    selector.addClass('active');
+                    selector.icheck('check');
+                }
+                else {
+                    selector.addClass('active');
+                    selector.icheck('uncheck');
+                }
+                break;
             }
             case 'fogColor':{
-                return '#'+jQuery('#fogColor').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
             case 'fogDensity':{
-                return jQuery('#fogDensity').val();   
+                selector.val(value);
+                takeAction('fogDensitySlider',jQuery('#fogDensitySlider'),value);
+                break;
+            }
+            case 'fogDensitySlider':{
+                selector.slider('value',value);
+                break;
             }
             case 'sounds':{
                 if (value === true) {
@@ -231,25 +325,24 @@ define([
                 break;
             } 
             case 'crystalScreenColor':{
-                return '#'+jQuery('#crystalScreenColor').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
             case 'cellScreenColor':{
-                return '#'+jQuery('#cellScreenColor').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
             case 'motifXScreenColor':{
-                return '#'+jQuery('#motifXScreenColor').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
             case 'motifYScreenColor':{
-                return '#'+jQuery('#motifYScreenColor').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
             case 'motifZScreenColor':{
-                return '#'+jQuery('#motifZScreenColor').spectrum('get').toHex();
-            }
-            case 'screenMode':{
-                return '#'+jQuery('#screenMode').spectrum('get').toHex();
-            }
-            case 'printMode':{
-                return '#'+jQuery('#printMode').spectrum('get').toHex();
+                selector.children().css('background',value);
+                break;
             }
                 
             //IAC Box
@@ -274,6 +367,7 @@ define([
                 break;
             }
             case 'iacOpacity':{
+                selector.val(value);
                 takeAction('iacOpacitySlider',jQuery('#iacOpacitySlider'),value);
                 break;
             }
@@ -308,8 +402,104 @@ define([
                 PubSub.publish(events.SET_LIGHTS, value);
                 break;
             }
+            case 'distortionOn':{
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, value);
+                break;
+            }
+            case 'distortionOff':{
+                PubSub.publish(events.MOTIF_DISTORTION_CHANGE, value);
+                break;
+            }
+            case 'anaglyph':{
+                PubSub.publish(events.ANAGLYPH_EFFECT, value);
+                break;
+            }
+            case 'oculus':{
+                PubSub.publish(events.OCULUS, value);
+                break;
+            }
+            case '3D':{
+                
+                break;
+            } // empty
+            case 'crystalCamTargetOn':{
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, value);
+                break;
+            }
+            case 'crystalCamTargetOff':{
+                PubSub.publish(events.CRYSTAL_CAM_TARGET, value);
+                break;
+            }
+            case 'fullScreen':{
+                PubSub.publish(events.FULL_SCREEN_APP, value);
+                break;
+            }
+            case 'leapMotion':{
+                PubSub.publish(events.LEAP_MOTION, value);
+                break;
+            }
+            case 'crystalClassic':{
+                PubSub.publish(events.CHANGE_CRYSTAL_MODE, value);
+                break;
+            }
+            case 'crystalSubstracted':{
+                PubSub.publish(events.CHANGE_CRYSTAL_MODE, value);
+                break;
+            }
+            case 'crystalSolidVoid':{
+                PubSub.publish(events.CHANGE_CRYSTAL_MODE, value);
+                break;
+            }
+            case 'crystalGradeLimited':{
+                PubSub.publish(events.CHANGE_CRYSTAL_MODE, value);
+                break;
+            }
+            case 'cellClassic':{
+                PubSub.publish(events.CHANGE_UNIT_CELL_MODE, value);
+                break;
+            }
+            case 'cellSubstracted':{
+                PubSub.publish(events.CHANGE_UNIT_CELL_MODE, value);
+                break;
+            }
+            case 'cellSolidVoid':{
+                PubSub.publish(events.CHANGE_UNIT_CELL_MODE, value);
+                break;
+            }
+            case 'cellGradeLimited':{
+                PubSub.publish(events.CHANGE_UNIT_CELL_MODE, value);
+                break;
+            }
+            case 'fog': {
+                PubSub.publish(events.FOG_CHANGE, value);
+                break;
+            }
+            case 'fogDensity': {
+                PubSub.publish(events.FOG_PARAMETER_CHANGE, value);
+                break;
+            }
             case 'sounds': {
                 PubSub.publish(events.SET_SOUNDS, value);
+                break;
+            }
+            case 'crystalScreenColor':{
+                PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
+                break;
+            }
+            case 'cellScreenColor':{
+                PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
+                break;
+            }
+            case 'motifXScreenColor':{
+                PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
+                break;
+            }
+            case 'motifYScreenColor':{
+                PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
+                break;
+            }
+            case 'motifZScreenColor':{
+                PubSub.publish(events.RENDERER_COLOR_CHANGE, value);
                 break;
             }
                 

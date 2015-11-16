@@ -2293,16 +2293,18 @@
             
                 var se = new stringEditor();
                 var ttg = new tooltipGenerator();
-                var setUI = new setUIValue();
                 var intRes = new interfaceResizer();
+                var setUI = new setUIValue({
+                    'interfaceResizer':intRes
+                });
                 var msg = new messages();
                 var getUI = new getUIValue();
                 
-                
+            
                 
                 setUI.setValue({
-                    'distortionOn':{
-                        'value':true
+                    'fogDensity':{
+                        'value':5
                     }
                 });
                 
