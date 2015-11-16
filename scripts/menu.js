@@ -76,6 +76,7 @@
         
             // IAC
             var iac;
+            var ttg;
 
 
 
@@ -2292,17 +2293,18 @@
                 
             
                 var se = new stringEditor();
-                var ttg = new tooltipGenerator();
-                var setUI = new setUIValue();
+                ttg = new tooltipGenerator();
                 var intRes = new interfaceResizer();
+                var setUI = new setUIValue({
+                    'interfaceResizer':intRes
+                });
                 var msg = new messages();
                 var getUI = new getUIValue();
                 
                 
-                
                 setUI.setValue({
-                    'distortionOn':{
-                        'value':true
+                    'fogDensity':{
+                        'value':5
                     }
                 });
                 
@@ -2336,6 +2338,9 @@
         /* --------------------
            Prototypes - Editors
            -------------------- */
+            Menu.prototype.canvasTooltip = function(argument){
+                ttg.canvasTooltip(argument); 
+            }
             Menu.prototype.showErrorDialog = function(argument){
                 var screen_height = jQuery(window).height();
                 $errorModal.find('#errorLabel h2').html('Error '+argument['code']);

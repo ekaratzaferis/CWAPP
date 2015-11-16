@@ -3823,3 +3823,9 @@ input.disabled[type="text"]{ background-color: black; }
 .purpleHeader{ background:#6f6299!important; ; }
 .zoomOption label { color: white; }
 .zoomOption label.active { background: #6f6299; }
+#canvasTooltip{ 
+    z-index: 10000;
+    position: absolute;
+    height: 0px;
+    width: 0px;
+}

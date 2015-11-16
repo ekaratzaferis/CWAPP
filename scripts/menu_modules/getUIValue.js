@@ -171,12 +171,6 @@ define([
             case 'motifZScreenColor':{
                 return '#'+jQuery('#motifZScreenColor').spectrum('get').toHex();
             }
-            case 'screenMode':{
-                return '#'+jQuery('#screenMode').spectrum('get').toHex();
-            }
-            case 'printMode':{
-                return '#'+jQuery('#printMode').spectrum('get').toHex();
-            }
                 
         };
     }
