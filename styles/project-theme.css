@@ -3333,6 +3333,14 @@ html,body {
 .toggle_menu:hover #unitCellViewport{background-image: url('../Images/toggle-icon-active-10.png');}
 .toggle_menu.lightThemeActive #unitCellViewport{background-image: url('../Images/toggle-icon-active-10.png');}
 
+.toggle_menu #labelToggle{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-11.png');}
+.toggle_menu:hover #labelToggle{background-image: url('../Images/toggle-icon-active-11.png');}
+.toggle_menu.lightThemeActive #labelToggle{background-image: url('../Images/toggle-icon-active-11.png');}
+
+.toggle_menu #highlightTangency{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-12.png');}
+.toggle_menu:hover #highlightTangency{background-image: url('../Images/toggle-icon-active-12.png');}
+.toggle_menu.lightThemeActive #highlightTangency{background-image: url('../Images/toggle-icon-active-12.png');}
+
 .motifBorderTop{ border-top: 8px solid #7F8289;}
 .motifBorderBottom{ border-bottom: 8px solid #7F8289; }
 .motifBorderLeft{ border-left: 8px solid #7F8289; }
@@ -3828,4 +3836,25 @@ input.disabled[type="text"]{ background-color: black; }
     position: absolute;
     height: 0px;
     width: 0px;
+}
+@keyframes highlight {
+  0% {
+    -webkit-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+    -moz-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+    box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+  }
+  50% {
+    -webkit-box-shadow: 0px 0px 37px 16px rgba(255,255,255,1);
+    -moz-box-shadow: 0px 0px 37px 16px rgba(255,255,255,1);
+    box-shadow: 0px 0px 37px 16px rgba(255,255,255,1);
+  }
+  100% {
+    -webkit-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+    -moz-box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+    box-shadow: 0px 0px 0px 0px rgba(255,255,255,1);
+  }
+}
+
+.highlight {
+  animation: highlight 3s;
 }

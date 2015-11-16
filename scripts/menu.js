@@ -20,7 +20,8 @@
         'setUIValue',
         'getUIValue',
         'interfaceResizer',
-        'messages'
+        'messages',
+        'visualTab'
     ], function(
         jQuery,
         jQuery_ui,
@@ -38,7 +39,8 @@
         setUIValue,
         getUIValue,
         interfaceResizer,
-        messages
+        messages,
+        visualTab
     ) 
     {
         /* -----------------------
@@ -538,7 +540,9 @@
                 AXYZ_CHANGE: 'menu.axyz_change',
                 MAN_ANGLE_CHANGE: 'menu.man_angle_change',
                 SWAP_SCREEN: 'menu.swap_screen',
-                DIALOG_RESULT: 'menu.dialog_result'
+                DIALOG_RESULT: 'menu.dialog_result',
+                LABEL_TOGGLE: 'menu.label_toggle',
+                HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
             }; 
 
 
@@ -1358,8 +1362,6 @@
                 /* [Visualization Tab] */
                 $fogDensity.val(1);
                 _this.setSlider('fogDensity',5,1,10,0.1,events.FOG_PARAMETER_CHANGE);
-                $menuZoom.html('<option>100%</option><option>90%</option><option>80%</option><option>70%</option>');
-                $menuZoom.selectpicker();
 
                 /* [Public Library Tab] */
 
@@ -1508,6 +1510,30 @@
                         $viewport = true;
                     }
                     $unitCellViewport.parent().toggleClass('lightThemeActive');
+                });
+                jQuery('#labelToggle').click(function(){
+                    argument ={};
+                    if (jQuery('#labelToggle').parent().hasClass('lightThemeActive')){
+                        argument['labelToggle'] = false;
+                        PubSub.publish(events.LABEL_TOGGLE, argument);
+                    }
+                    else {
+                        argument['labelToggle'] = true;
+                        PubSub.publish(events.LABEL_TOGGLE, argument);
+                    }
+                    jQuery('#labelToggle').parent().toggleClass('lightThemeActive');
+                });
+                jQuery('#highlightTangency').click(function(){
+                    argument ={};
+                    if (jQuery('#highlightTangency').parent().hasClass('lightThemeActive')){
+                        argument['highlightTangency'] = false;
+                        PubSub.publish(events.HIGHLIGHT_TANGENCY, argument);
+                    }
+                    else {
+                        argument['highlightTangency'] = true;
+                        PubSub.publish(events.HIGHLIGHT_TANGENCY, argument);
+                    }
+                    jQuery('#highlightTangency').parent().toggleClass('lightThemeActive');
                 });
 
                 // Handle Motif access without a chosen Lattice
@@ -2101,7 +2127,7 @@
                     else{
                         $oculus.removeClass('active');
                         argument ={};
-                        argument['v'] = false;
+                        argument['oculus'] = false;
                         PubSub.publish(events.OCULUS, argument);
                     }
                 });
@@ -2301,13 +2327,17 @@
                 var msg = new messages();
                 var getUI = new getUIValue();
                 
+                var vTab = new visualTab({
+                    'getUIValue': getUI,
+                    'setUIValue': setUI
+                });
+                
                 
                 setUI.setValue({
                     'fogDensity':{
                         'value':5
                     }
                 });
-                
                 
                 argument = {};
                 argument['stringEditor'] = se;
@@ -2338,9 +2368,13 @@
         /* --------------------
            Prototypes - Editors
            -------------------- */
+            Menu.prototype.highlightElement = function(argument){
+                jQuery('#'+argument.id).removeClass('highlight');
+                jQuery('#'+argument.id).addClass('highlight');
+            };
             Menu.prototype.canvasTooltip = function(argument){
                 ttg.canvasTooltip(argument); 
-            }
+            };
             Menu.prototype.showErrorDialog = function(argument){
                 var screen_height = jQuery(window).height();
                 $errorModal.find('#errorLabel h2').html('Error '+argument['code']);
@@ -3896,6 +3930,12 @@
             }
             Menu.prototype.onPlaneInterception = function(callback){
                 PubSub.subscribe(events.PLANE_INTERCEPTION, callback);
+            }
+            Menu.prototype.onLabelToggle = function(callback){
+                PubSub.subscribe(events.LABEL_TOGGLE, callback);
+            }
+            Menu.prototype.onHighlightTangency = function(callback){
+                PubSub.subscribe(events.HIGHLIGHT_TANGENCY, callback);
             }
 
       return Menu;
