@@ -2300,7 +2300,6 @@
                 var msg = new messages();
                 var getUI = new getUIValue();
                 
-            
                 
                 setUI.setValue({
                     'fogDensity':{

@@ -24,6 +24,8 @@ define([
     var xCoord = undefined;
     var yCoord = undefined;
     
+    var $canvasTooltip = jQuery('#canvasTooltip');
+    
     // Contructor //
     function tooltipGenerator() {
         
@@ -74,17 +76,30 @@ define([
         else return false;
         return true;
     };
-    tooltipGenerator.showCanvasTooltip = function(argument){
-        if (!(_.isUndefined(argument.message))) message = argument.message;
-        else return false;
-        if (!(_.isUndefined(argument.x))) xCoord = argument.x;
-        else return false;
-        if (!(_.isUndefined(argument.message))) yCoord = argument.y;
-        else return false;
-        
-        jQuery('#canvasTooltip').css('top',argument.yCoord);
-        jQuery('#canvasTooltip').css('left',argument.xCoord);
-        
+    tooltipGenerator.prototype.canvasTooltip = function(argument){
+        if (!(_.isUndefined(argument.show))) {
+            if (argument.show === true) $canvasTooltip.tooltip('show');
+            else $canvasTooltip.tooltip('hide');
+        }
+        else {
+            if (!(_.isUndefined(argument.message))) message = argument.message;
+            else return false;
+            if (!(_.isUndefined(argument.x))) xCoord = argument.x;
+            else return false;
+            if (!(_.isUndefined(argument.y))) yCoord = argument.y;
+            else return false;
+
+            $canvasTooltip.css('top',yCoord+'px');
+            $canvasTooltip.css('left',xCoord+'px');
+            $canvasTooltip.attr('data-original-title', message);
+            $canvasTooltip.tooltip({
+                container : 'body',
+                placement : 'right',
+                trigger: 'hover',
+                title: message,
+                template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow" style="color: white; border-right-color: white;"></div><div class="tooltip-inner" style="background-color: white;"></div></div>'
+            });
+        }
     };
     
     return tooltipGenerator;
