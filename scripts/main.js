@@ -691,6 +691,12 @@ require([
   menu.onLeapTrackingSystemChange(function(message, arg) { 
     leapM.selectTS(arg);
   });  
+  menu.onPlaneParallel(function(message, arg) { 
+    lattice.parallelPlane(arg);
+  }); 
+  menu.onPlaneInterception(function(message, arg) { 
+    lattice.interceptedPlane(arg);
+  }); 
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;

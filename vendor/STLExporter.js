@@ -23,7 +23,7 @@ define([
   UnitCellExplorer,
   MotifExplorer
   
-) { var gg =0;
+) {  
 	function STLExporter() {
 	    THREE.STLExporter = function () {};
 	      
@@ -43,7 +43,7 @@ define([
 	                output += 'solid exported\n';
 
 	                scene.traverse( function ( object ) {
-                        gg++;
+                         
 	                    if ( 
                             object instanceof THREE.ArrowHelper ||
                             (   
@@ -78,8 +78,7 @@ define([
 
                             
                             var geometry;
-                            console.log(object);
-                            console.log(object.parent.centerOfMotif);
+                            
                             if(object.name === 'direction'){
                                 geometry = new THREE.Geometry();
 
@@ -139,7 +138,7 @@ define([
 	        }() )
 
 	    };
-        console.log(gg);
+        
     }
 
     STLExporter.prototype.saveSTL = function(scene, name){

@@ -2508,6 +2508,12 @@ define([
   };
 
   // planes
+  Lattice.prototype.parallelPlane = function(arg) {
+    console.log(arg);
+  };
+  Lattice.prototype.interceptedPlane = function(arg) {
+    console.log(arg);
+  };
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
     var parameters = this.parameters ;
