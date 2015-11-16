@@ -23,6 +23,7 @@ define([
     this.identity = id ;
     this.materialls; 
     this.color = color; 
+    this.cachedColor = color; 
     this.ionicIndex = ionicIndex; 
     this.offsetX = offsetX; 
     this.offsetY = offsetY; 
@@ -64,8 +65,7 @@ define([
     }
     else if(temp !== undefined){   
       this.object3d.children[0].material.color = new THREE.Color( color );
-    }
-
+    } 
   }; 
   CrystalAtom.prototype.coonMode = function(){   
  
@@ -166,6 +166,7 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
+    sphereCut.name = 'subtractedAtom';
     
     if(gear !== undefined){
       this.subtractedForCache.object3d  = sphereCut ;

@@ -20,7 +20,7 @@ define([
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
     var arrow = new THREE.ArrowHelper( direction , start, length , color, length/8, length/20);
- 
+    arrow.name = 'direction' ;
     this.object3d = arrow;
     Explorer.add(this);
 
@@ -97,7 +97,7 @@ define([
     mesh.position.set(newPoint.x,newPoint.y,newPoint.z);
     mesh.scale.x = this.radius*2.5;
     mesh.scale.z = this.radius*2.5;
-     
+    mesh.name = 'dirLine';
     this.tubeMesh.object3d = mesh ;
     
     Explorer.add(this.tubeMesh);

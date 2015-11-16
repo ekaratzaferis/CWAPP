@@ -40,6 +40,7 @@ define([
 
     var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: color,opacity:opacity/10,  transparent: true } ) );
     mesh.renderOrder = 1 ;
+    mesh.name = 'plane' ;
     this.object3d = mesh;
     Explorer.add(this);
 

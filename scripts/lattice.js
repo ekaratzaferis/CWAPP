@@ -789,9 +789,7 @@ define([
     else{
       box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
     }
-
-    box.visible = true;
-
+  
     if(this.viewMode === 'crystalSubstracted'){
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
@@ -2054,7 +2052,7 @@ define([
       h = (h!=0) ? 1/h : 0 ;
       k = (k!=0) ? 1/k : 0 ;
       l = (l!=0) ? 1/l : 0 ;
-        
+       
       if(_this.latticeName !== 'hexagonal'){
         if( h!=0 && k!=0 && l!=0) { 
           _.times(parameters.repeatX , function(_x) {
@@ -2510,6 +2508,12 @@ define([
   };
 
   // planes
+  Lattice.prototype.parallelPlane = function(arg) {
+    console.log(arg);
+  };
+  Lattice.prototype.interceptedPlane = function(arg) {
+    console.log(arg);
+  };
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
     var parameters = this.parameters ;

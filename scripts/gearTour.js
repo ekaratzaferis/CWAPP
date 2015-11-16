@@ -88,21 +88,21 @@ define([
     l.actualAtoms.forEach(function(atom, i) { 
       var visible = false ;
       if(state === 1 && bool === false){
-        atom.object3d.visible = bool ; 
+        atom.setVisibility(visible); 
       }
       else if(state === 2 && bool === false ){
         visible = (atom.centerOfMotif.x === 0 && atom.centerOfMotif.y === 0 && atom.centerOfMotif.z === 0 ) ? true : false ;
-        atom.object3d.visible = visible ;
+        atom.setVisibility(visible); 
       } 
       else if(state === 3 && bool === false){
         visible = indexes.hasOwnProperty(atom.latticeIndex);
-        atom.object3d.visible = visible ;
+        atom.setVisibility(visible); 
       } 
       else if(state === 4 && bool === false){
-        atom.object3d.visible = bool ; 
+        atom.setVisibility(visible); 
       }
       else if(state === 6 && bool === true){
-        atom.object3d.visible = bool ; 
+        atom.setVisibility(bool); 
       }
     });
 
@@ -112,7 +112,7 @@ define([
     var i =0;
 
     while(i < this.lattice.cachedAtoms.length ){ 
-      this.lattice.cachedAtoms[i].object3d.visible = false; 
+      this.lattice.cachedAtoms[i].setVisibility(false); 
       if(this.lattice.cachedAtoms[i].subtractedForCache.object3d !== undefined){
         this.lattice.cachedAtoms[i].subtractedForCache.object3d.visible = false;    
       } 

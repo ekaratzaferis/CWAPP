@@ -265,7 +265,8 @@ require([
   var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
  
   // handel keyboard keys
-  var keyboard = new KeyboardKeys(new THREEx.KeyboardState(), crystalScene, orbitCrystal, motifEditor, crystalRenderer);
+  var keyboardControl = new THREEx.KeyboardState();
+  var keyboard = new KeyboardKeys(keyboardControl, crystalScene, orbitCrystal, motifEditor, crystalRenderer);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
@@ -282,7 +283,7 @@ require([
   var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu);
 
   // mouse events happen in crytal screen 
-  var crystalScreenEvents = new CrystalMouseEvents(lattice, crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor, atomCustomizer);
+  var crystalScreenEvents = new CrystalMouseEvents(lattice, crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor, atomCustomizer, keyboardControl);
 
   // full screen
   var fullScreen = new FullScreen();
@@ -690,6 +691,12 @@ require([
   menu.onLeapTrackingSystemChange(function(message, arg) { 
     leapM.selectTS(arg);
   });  
+  menu.onPlaneParallel(function(message, arg) { 
+    lattice.parallelPlane(arg);
+  }); 
+  menu.onPlaneInterception(function(message, arg) { 
+    lattice.interceptedPlane(arg);
+  }); 
   menu.targetOfCamChange(function(message, arg) { 
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;

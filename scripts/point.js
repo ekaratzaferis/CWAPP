@@ -15,6 +15,7 @@ define([
   function Point(position) {
      
     this.object3d = new THREE.Mesh(geometry,material); 
+    this.object3d.name = 'point'; 
     this.object3d.position.fromArray(position.toArray());
     Explorer.add(this);
   }

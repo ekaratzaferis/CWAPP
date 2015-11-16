@@ -23,7 +23,7 @@ define([
   UnitCellExplorer,
   MotifExplorer
   
-) { 
+) {  
 	function STLExporter() {
 	    THREE.STLExporter = function () {};
 	      
@@ -43,10 +43,53 @@ define([
 	                output += 'solid exported\n';
 
 	                scene.traverse( function ( object ) {
+                         
+	                    if ( 
+                            object instanceof THREE.ArrowHelper ||
+                            (   
+                                object instanceof THREE.Mesh && 
+                                (
+                                    object.visible === true &&
+                                    (
+                                        
+                                        object.parent.name === 'subtractedAtom' || 
+                                        object.name === 'grid' || 
+                                        object.name === 'plane' || 
+                                        object.name === 'point' || 
+                                        object.name === 'direction' || 
+                                        object.name === 'dirLine' || 
+                                        object.name === 'crystalSolidVoid' ||  
+                                        object.name === 'face'
+                                    )  
+                                ) 
+                                ||
+                                (   
+                                    object.parent !== undefined &&
+                                    object.parent.visible === true &&
+                                    (
+                                        
+                                        object.parent.name === 'atom' 
+                                         
+                                    ) 
+                                )
+                            )
+                        )
+                        {
 
-	                    if ( object instanceof THREE.Mesh ) {
+                            
+                            var geometry;
+                            
+                            if(object.name === 'direction'){
+                                geometry = new THREE.Geometry();
 
-	                        var geometry = object.geometry;
+                                object.cone.updateMatrix();
+                                geometry.merge( object.cone.geometry.clone(), object.cone.matrix ); 
+
+                            }
+	                        else{
+                                object.updateMatrix();
+                                geometry = object.geometry;
+                            }
 	                        var matrixWorld = object.matrixWorld;
 
 	                        if ( geometry instanceof THREE.Geometry ) {
@@ -95,6 +138,7 @@ define([
 	        }() )
 
 	    };
+        
     }
 
     STLExporter.prototype.saveSTL = function(scene, name){
