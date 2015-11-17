@@ -15,61 +15,31 @@ define([
     _
 ) 
 {
+    // Module References
+    var $messageList = undefined;
+    var $interfaceResizer = undefined;
+    var $tooltipGenerator = undefined;
+    
     // Contructor //
-    function stringEditor() {
+    function menuRibbon(argument) {
+        
+        // Acquire module references
+        if (!(_.isUndefined(argument.messages))) $messageList = argument.messages;
+        else return false;
+        if (!(_.isUndefined(argument.interfaceResizer))) $interfaceResizer = argument.interfaceResizer;
+        else return false;
+        if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
+        else return false;
+        
         
     };
     
-    stringEditor.prototype.capitalizeFirstLetter = function(string){
-        return string.charAt(0).toUpperCase() + string.slice(1);
+    menuRibbon.prototype.switchTab = function(argument){
+        
     };
-    stringEditor.prototype.translateParameter = function(string){
-        switch(string){
-            case 'scaleX': return 'b';
-            case 'scaleY': return 'c';
-            case 'scaleZ': return 'a';
-            case 'alpha': return 'β';
-            case 'beta': return 'α';
-            case 'gamma': return 'υ';
-            case 'scaleXSlider': return 'b';
-            case 'scaleYSlider': return 'c';
-            case 'scaleZSlider': return 'a';
-            case 'alphaSlider': return 'β';
-            case 'betaSlider': return 'α';
-            case 'gammaSlider': return 'γ';
-            default: return 'Unknown';
-        }
-    };
-    stringEditor.prototype.inputIsInteger = function(string){
-        if (!(isNaN(string))) {
-            if (string.indexOf('.') === -1) return string;
-        }
-        return false;
-    };
-    stringEditor.prototype.inputIsNumber = function(string){
-        var result = false;
-        if (isNaN(string)) {
-            if (string.indexOf(',') !== -1) {
-                var temp = string.split(',');
-                if (temp.length === 2) result = string.replace(',','.');
-            }
-            else if (string.indexOf('/') !== -1) {
-                var temp = string.split('/');
-                if (temp.length === 2) result = (parseFloat(temp[0])/parseFloat(temp[1])).toString();
-            }
-        }
-        else result = string;
-        return result;
-    };
-    stringEditor.prototype.multiply10 = function(string){
-        return parseFloat(string) * 10;  
-    };
-    stringEditor.prototype.divide10 = function(string){
-        return parseFloat(string) / 10;  
-    };
-    stringEditor.prototype.toLowerCase = function(string){
-        return string.toLowerCase();   
-    };
+    menuRibbon.prototype.disableTab = function(argument){
+        
+    }
     
-    return stringEditor;
+    return menuRibbon;
 });

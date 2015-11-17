@@ -84,7 +84,16 @@ define([
     };
     tooltipGenerator.prototype.canvasTooltip = function(argument){
 
-        if (!(_.isUndefined(argument.message))) $canvasTooltip.attr('data-original-title', argument.message);
+        if (!(_.isUndefined(argument.message))) {
+            $canvasTooltip.attr('data-original-title', argument.message);
+            $canvasTooltip.tooltip({
+                container : 'body',
+                placement : 'right',
+                trigger: 'manual',
+                title: argument.message,
+                template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow" style="color: white; border-right-color: white;"></div><div class="tooltip-inner" style="background-color: white;"></div></div>'
+            });
+        }
         if (!(_.isUndefined(argument.y))) $canvasTooltip.css('top',argument.y+'px');
         if (!(_.isUndefined(argument.x))) $canvasTooltip.css('left',argument.x+'px');
 

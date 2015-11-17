@@ -22,7 +22,8 @@
         'interfaceResizer',
         'messages',
         'visualTab',
-        'userDialog'
+        'userDialog',
+        'menuRibbon'
     ], function(
         jQuery,
         jQuery_ui,
@@ -42,7 +43,8 @@
         interfaceResizer,
         messages,
         visualTab,
-        userDialog
+        userDialog,
+        menuRibbon
     ) 
     {
         /* -----------------------
@@ -2334,9 +2336,11 @@
                 var setUI = new setUIValue({
                     'interfaceResizer':intRes
                 });
-                var msg = new messages();
                 var getUI = new getUIValue();
-                var usrDialog = new userDialog();
+                var msg = new messages();
+                var usrDialog = new userDialog({'messages':msg});
+                
+                var menuRib = new menuRibbon({'messages':msg,'tooltipGenerator':ttg,'interfaceResizer':intRes});
                 
                 var vTab = new visualTab({
                     'userDialog': usrDialog,
