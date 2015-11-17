@@ -28,7 +28,13 @@ define([
     
     // Contructor //
     function tooltipGenerator() {
-        
+        $canvasTooltip.tooltip({
+            container : 'body',
+            placement : 'right',
+            trigger: 'manual',
+            title: 'empty',
+            template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow" style="color: white; border-right-color: white;"></div><div class="tooltip-inner" style="background-color: white;"></div></div>'
+        });
     };
     
     tooltipGenerator.prototype.addOnHoverTooltip = function(argument){
@@ -77,29 +83,25 @@ define([
         return true;
     };
     tooltipGenerator.prototype.canvasTooltip = function(argument){
-        if (!(_.isUndefined(argument.show))) {
-            if (argument.show === true) $canvasTooltip.tooltip('show');
-            else $canvasTooltip.tooltip('hide');
-        }
-        else {
-            if (!(_.isUndefined(argument.message))) message = argument.message;
-            else return false;
-            if (!(_.isUndefined(argument.x))) xCoord = argument.x;
-            else return false;
-            if (!(_.isUndefined(argument.y))) yCoord = argument.y;
-            else return false;
 
-            $canvasTooltip.css('top',yCoord+'px');
-            $canvasTooltip.css('left',xCoord+'px');
-            $canvasTooltip.attr('data-original-title', message);
+        if (!(_.isUndefined(argument.message))) {
+            $canvasTooltip.attr('data-original-title', argument.message);
             $canvasTooltip.tooltip({
                 container : 'body',
                 placement : 'right',
-                trigger: 'hover',
-                title: message,
+                trigger: 'manual',
+                title: argument.message,
                 template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow" style="color: white; border-right-color: white;"></div><div class="tooltip-inner" style="background-color: white;"></div></div>'
             });
         }
+        if (!(_.isUndefined(argument.y))) $canvasTooltip.css('top',argument.y+'px');
+        if (!(_.isUndefined(argument.x))) $canvasTooltip.css('left',argument.x+'px');
+
+        if (!(_.isUndefined(argument.show))) {
+            if (argument.show === true) $canvasTooltip.tooltip('show');
+            else if (argument.show === false) $canvasTooltip.tooltip('hide');
+        }
+        
     };
     
     return tooltipGenerator;

@@ -72,7 +72,13 @@ define([
         'motifXScreenColor' : jQuery('#motifXScreenColor'),
         'motifYScreenColor' : jQuery('#motifYScreenColor'),
         'motifZScreenColor' : jQuery('#motifZScreenColor')
-    }
+    };
+    var zoomOptions = {
+        '70': jQuery('#zoom70'),   
+        '80': jQuery('#zoom80'),   
+        '90': jQuery('#zoom90'),   
+        '100': jQuery('#zoom100')   
+    };
     
     // Contructor //
     function visualTab(argument) {

@@ -21,7 +21,9 @@
         'getUIValue',
         'interfaceResizer',
         'messages',
-        'visualTab'
+        'visualTab',
+        'userDialog',
+        'menuRibbon'
     ], function(
         jQuery,
         jQuery_ui,
@@ -40,7 +42,9 @@
         getUIValue,
         interfaceResizer,
         messages,
-        visualTab
+        visualTab,
+        userDialog,
+        menuRibbon
     ) 
     {
         /* -----------------------
@@ -2332,10 +2336,14 @@
                 var setUI = new setUIValue({
                     'interfaceResizer':intRes
                 });
-                var msg = new messages();
                 var getUI = new getUIValue();
+                var msg = new messages();
+                var usrDialog = new userDialog({'messages':msg});
+                
+                var menuRib = new menuRibbon({'messages':msg,'tooltipGenerator':ttg,'interfaceResizer':intRes});
                 
                 var vTab = new visualTab({
+                    'userDialog': usrDialog,
                     'getUIValue': getUI,
                     'setUIValue': setUI
                 });
@@ -2377,8 +2385,10 @@
            Prototypes - Editors
            -------------------- */
             Menu.prototype.highlightElement = function(argument){
-                jQuery('#'+argument.id).removeClass('highlight');
                 jQuery('#'+argument.id).addClass('highlight');
+                setTimeout(function(){
+                    jQuery('#'+argument.id).removeClass('highlight');
+                }, 3500);
             };
             Menu.prototype.canvasTooltip = function(argument){
                 ttg.canvasTooltip(argument); 
