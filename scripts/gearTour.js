@@ -9,7 +9,7 @@ define([
   Explorer,
   _
 ) { 
-  var stateNames = [ 'Lattice Points', 'The motif', 'The cropped unit cell', 'Whole unit cell', 'the crystal' ];
+  var stateNames = ['Lattice Points', 'The motif', 'The cropped unit cell', 'Whole unit cell', 'the crystal' ];
   function GearTour(crystalScene, motifEditor, lattice, menu) { 
     
     this.crystalScene = crystalScene ;
@@ -17,7 +17,7 @@ define([
     this.lattice = lattice ;
     this.crystalHasChanged = true ;
     this.menu = menu;
-    this.state = 6;
+    this.state = 1;
   };
  
   GearTour.prototype.setState = function(state, init){

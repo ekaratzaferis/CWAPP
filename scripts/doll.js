@@ -19,8 +19,8 @@ define([
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();  
   var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
-  var levelNames = [ 'Lattice Points', 'Motif', 'Constructive Unit Cell', 'Unit cell', 'Cropped unit cell', 'Crystal' ];
-
+  var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
+  
   function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour) {
 
     this.plane = {'object3d' : undefined} ;
@@ -41,7 +41,7 @@ define([
     this.crystalOrbit = crystalOrbit;
     this.atomUnderDoll ; 
     this.objsToIntersect = [];
-    this.gearState = 5;
+    this.gearState = 1;
     this.levels = [];
     this.levelLabels = [];
     this.enablemouseEvents = true;
@@ -74,7 +74,7 @@ define([
 
     this.gearBar = createGearBar(); 
     this.gearBarSlider = createGearBarSlider(); 
-    this.gearBarSlider.position.y = -0.3;
+    this.gearBarSlider.position.y = -7.05;
     
     DollExplorer.add( { object3d :this.gearBar });
     this.objsToIntersect.push(this.gearBar);
@@ -91,33 +91,23 @@ define([
       this.levels[i] = m ;
       this.objsToIntersect.push(m);
     };  
- 
+     
     for (var g = 0; g < levelNames.length ; g++) {
-      this.levelLabels[g] = makeTextSprite(
-        levelNames[g],  
-        { 
-          fontsize: 25.0, 
-          fontface: "Arial", 
-          borderColor: {r:0, g:128, b:255, a:1.0},  
-          fontColor: {r:189, g:189, b:189, a:1.0} 
-        } 
-      );
+      this.levelLabels[g] = {
+        'position' : new THREE.Vector2(0,0),  
+        'allowed' : false,
+        'levelName' : levelNames[g] 
+      };
       this.levelLabels[g].position.y = yPosGearSlider[g] - 2;   
-      this.levelLabels[g].visible = false;  
-      this.objsToIntersect.push(this.levelLabels[g]);
-      DollExplorer.add({object3d : this.levelLabels[g]});
     };
-        
+    this.levelLabels[0].allowed = true;
+
+    this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
+    this.helper.visible = false;
+    DollExplorer.add( {object3d : this.helper} );
+
     this.rePosition();
-
-    var mMoove = this.onDocumentMouseMove.bind(this) ;
-    //var mDown  = this.onDocumentMouseDown.bind(this) ;
-    var mUp    = this.onDocumentMouseUp.bind(this) ;
-    
-    document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false);
-    //document.getElementById('crystalRendererMouse').addEventListener("mousedown",  mDown, false);
-    document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
-
+  
   }; 
   function createGearBarSlider(){
 
@@ -382,251 +372,39 @@ define([
     this.gearBar.position.x = newX ;  ; 
     this.gearBarSlider.position.x = newX ;  ;
 
-    for (var j = 0; j < this.levels.length ; j++) { 
-      this.levels[j].position.x = newX ;  ;
-      this.levelLabels[j].position.x = newX  + 7 ; 
-    };
-  
+    for (var j = 0; j < this.levels.length ; j++) {  
+      this.levels[j].position.x = newX ;  
+      this.helper.position.set(this.levels[j].position.x, this.levels[j].position.y, this.levels[j].position.z);
+      this.levelLabels[j].position = this.toScreenPosition(this.helper, this.camera); 
+      this.levelLabels[j].position.x += 15;
+    };  
   } 
+  Doll.prototype.toScreenPosition = function(obj, camera){ 
+    var vector = new THREE.Vector3();
+    var width = jQuery('#app-container').width() ;
+    var height = jQuery(window).height() ; 
+
+    // TODO: need to update this when resize window
+    var widthHalf = 0.5*width;
+    var heightHalf = 0.5*height;
+    
+    obj.updateMatrixWorld();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(camera);
+    
+    vector.x = ( vector.x * widthHalf ) + widthHalf;
+    vector.y = - ( vector.y * heightHalf ) + heightHalf;
+    
+    return { 
+        x: vector.x,
+        y: vector.y
+    };
+
+  };
   Doll.prototype.setAtomUnderDoll = function(atom){  
     this.atomUnderDoll = atom ;  
   };
-  Doll.prototype.onDocumentMouseMove = function(event){ 
-    var _this = this;
-    
-    if(this.enablemouseEvents !== true){
-      return;
-    } 
  
-    var contWidth = $('#'+this.container).width() ;
-     
-    if(contWidth < 800 ){
-      mouse.x = (  -3 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) );  
-    }
-    else{  
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) ); 
-    }
-     
-    raycaster.setFromCamera( mouse, this.camera );
-    
-    if ( this.SELECTED ) {
-
-      var intersects = raycaster.intersectObject( this.plane.object3d );
-      var pos = intersects[ 0 ].point.sub( this.offset ) ;
-
-      this.SELECTED.position.copy( pos );
-        
-      if(this.atomUnderDoll){  
-        for (var i = 0; i < this.lattice.actualAtoms.length; i++) { 
-          this.lattice.actualAtoms[i].object3d.children[0].material.color.set( this.lattice.actualAtoms[i].color) ;
-        };
-        this.atomUnderDoll.children[0].material.color.setHex(0x1ADB17);  
-      }
-      else{
-        for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
-          this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
-        };
-      } 
-      return; 
-    }
-
-    var intersects2 = raycaster.intersectObjects( this.objsToIntersect, true );
-    var entered = false;
-
-    for (var i = intersects2.length - 1; i >= 0; i--) {  
-      if ( this.INTERSECTED !== intersects2[i].object && intersects2[i].object.name === 'doll') {
-        entered = true;
-        this.INTERSECTED = intersects2[i].object; 
-        this.plane.object3d.position.copy( this.INTERSECTED.position );  
-        document.getElementById(this.container).style.cursor = 'pointer';
-      }  
-      if(intersects2[i].object.name === 'dollHolder' ){
-        entered = true;
-        this.dollHolder.children[0].material.color.setHex(0x6F6299); // 0xCA_6A04 D537FF
-        this.dollHolder.children[2].material.color.setHex(0x6F6299);
-        this.dollHolder.children[3].material.color.setHex(0x6F6299);
-        document.getElementById(this.container).style.cursor = 'pointer';
-      }
-      if((intersects2[i].object.name === 'doll' && this.dollOn === true)){
-        document.getElementById(this.container).style.cursor = 'pointer';
-        entered = true;
-      }
-      if((intersects2[i].object.name === 0) || (intersects2[i].object.name === 1) || (intersects2[i].object.name === 2) || (intersects2[i].object.name === 3) || (intersects2[i].object.name === 4) || (intersects2[i].object.name === 5) ){
-        entered = true;
-        intersects2[i].object.visible = true; 
-        this.levelLabels[intersects2[i].object.name].visible = true;
-        document.getElementById(this.container).style.cursor = 'pointer';
-      } 
-      if(intersects2[i].object.name === 'plusSymbol' || intersects2[i].object.name === 'minusSymbol'){
-        entered = true; 
-        document.getElementById(this.container).style.cursor = 'pointer';
-      }
-      if(intersects2[i].object.name === 'minus' || intersects2[i].object.name === 'plus'){
-        entered = true; 
-        if(this.gearState !== 6 && intersects2[i].object.name === 'plus') { 
-          this.levelLabels[5].visible = false;
-        } 
-        if(this.gearState !== 1 && intersects2[i].object.name === 'minus') { 
-          this.levelLabels[0].visible = false;
-        }  
-         
-        document.getElementById(this.container).style.cursor = 'pointer';
-        intersects2[i].object.material.color.setHex(0x6F6299); 
-      }   
-    };
-
-    if(entered === false ){  
-
-      this.INTERSECTED = null; 
-      document.getElementById(this.container).style.cursor = 'auto';  
-      this.gearBar.children[1].material.color.setHex(0xA19EA1);
-      this.gearBar.children[3].material.color.setHex(0xA19EA1);   
-      this.dollHolder.children[0].material.color.setHex(0xA19EA1);
-      this.dollHolder.children[2].material.color.setHex(0xA19EA1);
-      this.dollHolder.children[3].material.color.setHex(0xA19EA1);
-
-      for (var f = this.levels.length - 1; f >= 0; f--) { 
-        this.levels[f].visible = false;
-        this.levelLabels[f].visible = false;
-      };
-
-    }  
-  }; 
-  Doll.prototype.onDocumentMouseDown = function(event){  
-    var _this = this, clickedOnMe = false; 
-     
-    if(this.enablemouseEvents !== true){
-      return;
-    }  
- 
-    this.SELECTED = undefined;
-    
-    var contWidth = $('#'+this.container).width() ;
-
-    if(contWidth < 800 ){
-      mouse.x = (  -3 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) );  
-    }
-    else{  
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) ); 
-    }
-
-    raycaster.setFromCamera( mouse, this.camera ); 
-
-    var intersects = raycaster.intersectObjects( this.objsToIntersect, true );
- 
-    for (var i = intersects.length - 1; i >= 0; i--) { 
-      
-      if(intersects[i].object.name === 'dollHolder'){  
-        clickedOnMe = true;
-        if(this.soundMachine.procced) {
-          this.soundMachine.play('dollHolder');
-        }
-        if(this.dollOn){
-          intersects[i].object.parent.children[0].material.color.setHex(0xA19EA1);
-          intersects[i].object.parent.children[2].material.color.setHex(0xA19EA1);
-          intersects[i].object.parent.children[3].material.color.setHex(0xA19EA1); 
-          this.rePosition();
-          this.dollOn = false;
-          this.doll.visible = false; 
-
-          this.animationMachine.doll_toAtomMovement = undefined ;
-          this.keyboard.dollmode = false;
-          this.crystalOrbit.camera.position.set(30,30,60);
-          this.crystalOrbit.control.target = new THREE.Vector3(0,0,0);
-          this.crystalOrbit.control.rotateSpeed = 1.0;
-          this.crystalOrbit.disableUpdate = false;
-          this.crystalOrbit.control.enabled = true;
-        } 
-        else if(intersects[i].object.name === 'dollHolder'){ 
-          intersects[i].object.parent.children[0].material.color.setHex(0x71469A);
-          intersects[i].object.parent.children[2].material.color.setHex(0x71469A);
-          intersects[i].object.parent.children[3].material.color.setHex(0x71469A); 
-
-          this.dollOn = true; 
-          this.doll.visible = true;
-      
-        }
-      }
-      else if(intersects[i].object.name === 'minus'){
-        clickedOnMe = true;
-        this.soundMachine.play('dollHolder'); // to change 
-         
-        if(this.gearState > 1 ){
-          this.gearState--;
-          for (var k = this.levelLabels.length - 1; k >= 0; k--) {
-            this.levelLabels[k].visible = false;
-          };
-          this.levelLabels[this.gearState-1].visible = true;
-          setTimeout(function() {_this.levelLabels[_this.gearState-1].visible = false;}, 1000);
-          this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
-          this.gearTour.setState(this.gearState);
-        } 
-      }  
-      else if(intersects[i].object.name === 'plus'){ 
-        clickedOnMe = true;
-        this.soundMachine.play('dollHolder'); //to change 
-        if(this.gearState < 6 ){
-          this.gearState++;
-          for (var k = this.levelLabels.length - 1; k >= 0; k--) {
-            this.levelLabels[k].visible = false;
-          };
-          this.levelLabels[this.gearState-1].visible = true;
-          setTimeout(function() {_this.levelLabels[_this.gearState-1].visible = false;}, 1000);
-          this.gearBarSlider.position.y = yPosGearSlider[this.gearState-1];
-          this.gearTour.setState(this.gearState);
-        } 
-      } 
-      else if(intersects[i].object.name === 0 || intersects[i].object.name === 1 || intersects[i].object.name === 2 || intersects[i].object.name === 3 || intersects[i].object.name === 4 || intersects[i].object.name === 5 ){ 
-        clickedOnMe = true;
-        this.gearBarSlider.position.y = yPosGearSlider[intersects[i].object.name];
-        this.gearState = intersects[i].object.name + 1 ;
-        if(this.soundMachine.procced) this.soundMachine.storePlay('dollHolder'); 
-        this.gearTour.setState(this.gearState);
-      }  
-      else if(intersects[i].object.name === 'doll'){   
-        clickedOnMe = true; 
-        this.crystalOrbit.control.enabled = false;
-        this.SELECTED = intersects[i].object; 
-        var intersects_ = raycaster.intersectObject( this.plane.object3d ); 
-        this.offset.copy( intersects_[0].point ).sub( this.plane.object3d.position ); 
-        document.getElementById(this.container).style.cursor = 'none'; 
-      }
-    }; 
-    return clickedOnMe; 
-  }; 
-   
-  Doll.prototype.onDocumentMouseUp  = function(event){  
-    var _this = this;
-  
-    this.crystalOrbit.control.enabled = true ; 
-     
-    if ( this.INTERSECTED ) {
-
-      this.plane.object3d.position.copy( this.INTERSECTED.position ); 
-      this.SELECTED = null;
-
-      if(this.atomUnderDoll){ 
-        if(this.soundMachine.procced) {
-          this.soundMachine.storePlay('atomUnderDoll'); 
-        }
-        this.INTERSECTED.position.set( $('#app-container').width() / -1150 + 0.1, 0,0);  
-
-        this.dollMode(this.atomUnderDoll);
-
-        for (var j = 0; j < this.lattice.actualAtoms.length; j++) {  
-          this.lattice.actualAtoms[j].object3d.children[0].material.color.set( this.lattice.actualAtoms[j].color) ;
-          this.lattice.actualAtoms[j].object3d.visible = true ;
-        }; 
-      }  
-    } 
-
-    document.getElementById(this.container).style.cursor = 'auto';
-     
-  };
   Doll.prototype.dollMode  = function(atom){ 
      
     var params = this.lattice.getParameters() ;

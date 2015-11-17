@@ -38,7 +38,10 @@ require.config({
     'visualTab': 'menu_modules/visualTab',
     'libraryTab': 'menu_modules/libraryTab',
     'disableUIElement': 'menu_modules/disableUIElement',
-    'notesTab': 'menu_modules/notesTab' 
+    'notesTab': 'menu_modules/notesTab',
+    'menuRibbon': 'menu_modules/menuRibbon',
+    'userDialog': 'menu_modules/userDialog',
+    'modals': 'menu_modules/modals'
 
   },
   shim: {
@@ -78,6 +81,7 @@ require([
   'animate',
   'gearTour',
   'doll', 
+  'dollGearBarMouseEvents', 
   'dollExplorer',
   'keyboardKeys',
   'keyboardState',
@@ -91,11 +95,7 @@ require([
   'atomCustomizer',
   'STLExporter',
   'FileSaver',
-  'individualAtomController',
-  'tooltipGenerator',
-  'getUIValue',
-  'setUIValue',
-  'interfaceResizer'  
+  'individualAtomController'  
 
 ], function(
   PubSub, 
@@ -122,6 +122,7 @@ require([
   Animate, 
   GearTour, 
   Doll, 
+  DollGearBarMouseEvents, 
   DollExplorer, 
   KeyboardKeys, 
   KeyboardState, 
@@ -135,12 +136,7 @@ require([
   AtomCustomizer,
   STLExporter,
   FileSaver,
-  IndividualAtomController,
-  StringEditor,
-  TooltipGenerator,
-  GetUIValue,
-  SetUIValue,
-  InterfaceResizer 
+  IndividualAtomController 
 ) {
   var menu = new Menu();
   
@@ -277,7 +273,11 @@ require([
   var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   dollEditor.rePosition(); 
-  orbitCrystal.dollOnDocumentMouseDown(dollEditor.onDocumentMouseDown.bind(dollEditor)) ;
+  
+
+  // doll and gear tour mouse events
+  var dollGearBarME = new DollGearBarMouseEvents(crystalRenderer.dollCamera, orbitCrystal, lattice, dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu);
+  orbitCrystal.dollOnDocumentMouseDown(dollGearBarME.onDocumentMouseDown.bind(dollGearBarME)) ;
 
   // atom customizer
   var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu);
@@ -308,12 +308,13 @@ require([
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
+    dollGearBarME.walkStep = 2;
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
-    if(gearTour.state !== 6){
+    if(gearTour.state !== 1){
       gearTour.crystalHasChanged = true;
-      gearTour.setState(6, true);
-      dollEditor.gearBarSlider.position.y = -0.3;
+      gearTour.setState(1, true);
+      dollEditor.gearBarSlider.position.y = -7.05;
     }
     lattice.setParameters(latticeParameters); 
     motifEditor.updateFixedDimensions(latticeParameters);
@@ -466,7 +467,12 @@ require([
   menu.atomSelection(function(message , arg) {
     motifEditor.selectElem(arg); 
     var parameters = motifEditor.getDimensions() ;
-    lattice.setMotif(motifEditor.getMotif(), parameters)  ;
+    lattice.setMotif(motifEditor.getMotif(), parameters) ;
+    dollGearBarME.walkStep = 3;
+    dollEditor.levelLabels[2].allowed = true;
+    dollEditor.levelLabels[3].allowed = true;
+    dollEditor.levelLabels[4].allowed = true;
+    dollEditor.levelLabels[5].allowed = true;
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -726,7 +732,8 @@ require([
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults);  
-      menu.setLatticeRestrictions(lattice.restrictions);   
+      menu.setLatticeRestrictions(lattice.restrictions);
+      dollEditor.levelLabels[1].allowed = true;
     }
   });
   
