@@ -15,7 +15,7 @@ define([
   var uniqueId = -1;
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex) { 
-      
+      console.log(color)
     var _this = this; 
     this.radius = radius;  
     this.material;
@@ -39,6 +39,12 @@ define([
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
     this.uniqueID = uniqueID();
     this.addMaterial(color, position, opacity, renderingMode,id) ; 
+ 
+    // private vars
+    var originalColor = color;
+    this.getOriginalColor = function(){
+      return originalColor;
+    }
     
   }  
   CrystalAtom.prototype.setVisibility = function( bool) {

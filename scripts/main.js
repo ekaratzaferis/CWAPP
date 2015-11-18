@@ -95,7 +95,9 @@ require([
   'atomCustomizer',
   'STLExporter',
   'FileSaver',
-  'individualAtomController'  
+  'individualAtomController',
+  'atomMaterialManager',  
+  'atomRelationshipManager'  
 
 ], function(
   PubSub, 
@@ -136,7 +138,9 @@ require([
   AtomCustomizer,
   STLExporter,
   FileSaver,
-  IndividualAtomController 
+  IndividualAtomController,
+  AtomMaterialManager,  
+  AtomRelationshipManager 
 ) {
   var menu = new Menu();
   
@@ -304,6 +308,10 @@ require([
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
   var tabActionsManager = new TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour);
 
+  var atomMaterialManager =  new AtomMaterialManager(lattice, motifEditor);
+  var atomRelationshipManager =  new AtomRelationshipManager(lattice, motifEditor);
+   
+  motifEditor.atomRelationshipManager = atomRelationshipManager;
    
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -393,7 +401,7 @@ require([
     if(arg.swap === 'latticeTab'){ 
       crystalScreenEvents.state = 'default';
     }
-    else if(arg.swap === 'motifLI'){
+    else if(arg.swap === 'motifTab'){
       crystalScreenEvents.state = 'motifScreen';
     } 
   });
@@ -442,7 +450,7 @@ require([
     } 
   });
   menu.onRendererColorChange(function(message, arg) { 
-
+    console.log(arg);
     if(!_.isUndefined(arg.crystalScreenColor)){ 
       crystalRenderer.backgroundColor = ('#'+arg.crystalScreenColor);
     }
@@ -604,8 +612,10 @@ require([
     hudArrows.updateAngles(params); 
     hudArrows.setVisibility();
     hudCube.updateAngles(params);
-    crystalScene.updateAbcAxes(params,crystalRenderer.getMainCamera());
-
+    crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+ 
+    atomRelationshipManager.checkCrystalforOverlap();
+     
   });
   menu.setDragMode(function(message, param){
     motifEditor.setDraggableAtom(param)  ;
@@ -736,7 +746,18 @@ require([
       dollEditor.levelLabels[1].allowed = true;
     }
   });
-  
+  menu.onLabelToggle(function(message, arg) { 
+    atomMaterialManager.labeling(arg);
+  });
+  menu.onHighlightTangency(function(message, arg) { 
+    atomRelationshipManager.checkForOverlap(arg); 
+  });
+
+
+  ///////////////////////
+  ///////////////////////
+  ///////////////////////
+
   // to read the json file
   var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   

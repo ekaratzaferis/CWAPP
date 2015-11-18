@@ -31,7 +31,12 @@ define([
     this.opacity = opacity; 
     this.position = position;  
     this.addMaterial(color, position) ;
-       
+    
+    // private vars
+    var originalColor = color;
+    this.getOriginalColor = function(){
+      return originalColor;
+    }
   }
   AtomSphere.prototype.addMaterial = function(color, position) {
     var _this = this ;

@@ -71,6 +71,8 @@ define([
     this.cachedAtoms = [];
     this.cachedAtomsPositions = {};
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
+
+    this.atomRelationshipManager;
   
   }; 
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
@@ -2731,6 +2733,8 @@ define([
       this.menu.chooseActiveUnitCellMode('cellClassic');
     } 
 
+    this.atomRelationshipManager.checkMotiforOverlap();
+    this.atomRelationshipManager.checkCellforOverlap(); 
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  

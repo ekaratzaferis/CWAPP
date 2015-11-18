@@ -34,7 +34,12 @@ define([
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
 
     this.addMaterial(color, position, opacity, renderingMode) ;
-     
+    
+    // private vars
+    var originalColor = color;
+    this.getOriginalColor = function(){
+      return originalColor;
+    }
   };
   THREE.ShaderTypes = { 
     'phongDiffuse' : {
@@ -124,6 +129,19 @@ define([
       return material;
 
   };
+  UnitCellAtom.prototype.setColorMaterial = function(color, temp) {
+    var _this = this;
+    if(color === undefined){
+      this.object3d.children[0].material.color = new THREE.Color( this.color );
+    }
+    else if(temp === undefined){ 
+      this.color = color ;  
+      this.object3d.children[0].material.color = new THREE.Color( this.color );
+    }
+    else if(temp !== undefined){   
+      this.object3d.children[0].material.color = new THREE.Color( color );
+    } 
+  }; 
   UnitCellAtom.prototype.coonMode = function(){ 
  
     var phongMaterial = createShaderMaterial("phongDiffuse");
