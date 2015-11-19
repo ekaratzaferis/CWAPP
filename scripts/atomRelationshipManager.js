@@ -1,6 +1,6 @@
 
 /*global define*/
-'use strict';
+//'use strict';
 
 define([
   'three',
@@ -24,8 +24,84 @@ define([
     this.motifEditor = motifEditor;
     this.highlightOverlapState = false;
   };    
+  AtomRelationshipManager.prototype.checkForOverlap = function(arg){
+ 
 
+    if(arg !== undefined){  
+      this.highlightOverlapState = arg.highlightTangency;
+    }
+
+    if(this.highlightOverlapState === true){
+      this.highlightOverlapState = false; 
+      this.checkCrystalforOverlap();
+      this.checkMotiforOverlap();
+      this.checkCellforOverlap();
+      this.highlightOverlapState = true; 
+    }
+    this.checkCrystalforOverlap();
+    this.checkMotiforOverlap();
+    this.checkCellforOverlap();
+  }
+  AtomRelationshipManager.prototype.checkMotiforOverlap = function(arg){
+     
+    if(this.highlightOverlapState === true){
+ 
+      for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
+
+        var ri = this.motifEditor.motifsAtoms[i].radius;
+        var posi = this.motifEditor.motifsAtoms[i].object3d.position.clone();
+
+        for (var j = this.motifEditor.motifsAtoms.length - 1; j >= 0; j--) {
+          
+          var rj = this.motifEditor.motifsAtoms[j].radius;
+
+          var tangentDist = ri + rj;
+
+          var posj = this.motifEditor.motifsAtoms[j].object3d.position.clone();
+           
+          var realDist = (posi).distanceTo(posj);
+ 
+          if(realDist !== 0 && (realDist + 0.0001 < tangentDist )){  
+            console.log(this.motifEditor.motifsAtoms[j]);
+            console.log(this.motifEditor.motifsAtoms[i]);
+            this.motifEditor.motifsAtoms[j].setColorMaterial('#ff0000'); 
+            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000'); 
+            console.log(realDist,tangentDist);
+
+          } 
+        };
+
+        if(this.motifEditor.newSphere !== undefined){ 
+         
+          var realDist = (posi).distanceTo(this.motifEditor.newSphere.object3d.position);
+          var tangentDist = this.motifEditor.newSphere.radius + ri;
+          if(realDist !== 0 && (realDist + 0.0001 < tangentDist )){   
+            console.log(this.motifEditor.newSphere.object3d.position);
+            console.log(this.motifEditor.motifsAtoms[i].object3d.position);
+            console.log(realDist,tangentDist);
+            this.motifEditor.newSphere.setColorMaterial('#ff0000'); 
+            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000'); 
+
+          } 
+        }  
+      };
+    }
+    else if(this.highlightOverlapState === false){
+      for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) { 
+        
+        if(this.motifEditor.motifsAtoms[i].getOriginalColor !== undefined){ 
+          this.motifEditor.motifsAtoms[i].setColorMaterial(this.motifEditor.motifsAtoms[i].getOriginalColor());
+        } 
+      };
+      if(this.motifEditor.newSphere !== undefined){ 
+           
+        this.motifEditor.newSphere.setColorMaterial(this.motifEditor.newSphere.getOriginalColor()); 
+    
+      }  
+    } 
+  };
   AtomRelationshipManager.prototype.checkCellforOverlap = function(arg){
+ 
     if(this.highlightOverlapState === true){
       for (var i = this.motifEditor.unitCellAtoms.length - 1; i >= 0; i--) {
         for (var j = this.motifEditor.unitCellAtoms.length - 1; j >= 0; j--) {
@@ -35,13 +111,13 @@ define([
           var tangentDist = ri + rj;
 
           var realDist = (this.motifEditor.unitCellAtoms[j].object3d.position).distanceTo(this.motifEditor.unitCellAtoms[i].object3d.position);
- 
-          if(realDist !== 0 && realDist + 0.0000001< tangentDist ){
-                
+          
+          if(realDist !== 0 && realDist + 0.0001< tangentDist ){ 
+
             this.motifEditor.unitCellAtoms[j].setColorMaterial('#ff0000'); 
             this.motifEditor.unitCellAtoms[i].setColorMaterial('#ff0000'); 
 
-          }
+          } 
         };
       };
     }
@@ -54,59 +130,9 @@ define([
          
       };
     }
-  };
-  AtomRelationshipManager.prototype.checkMotiforOverlap = function(arg){
-
-    if(this.motifEditor.newSphere !== undefined){
-      this.motifEditor.motifsAtoms.push(this.motifEditor.newSphere);
-    }
-
-    if(this.highlightOverlapState === true){
-      for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
-        for (var j = this.motifEditor.motifsAtoms.length - 1; j >= 0; j--) {
-          var ri = this.motifEditor.motifsAtoms[i].radius;
-          var rj = this.motifEditor.motifsAtoms[j].radius;
-
-          var tangentDist = ri + rj;
-
-          var posj = new THREE.Vector3(this.motifEditor.motifsAtoms[j].position.x, this.motifEditor.motifsAtoms[j].position.x, this.motifEditor.motifsAtoms[j].position.z);
-          var posi = new THREE.Vector3(this.motifEditor.motifsAtoms[i].position.x, this.motifEditor.motifsAtoms[i].position.x, this.motifEditor.motifsAtoms[i].position.z);
-
-          var realDist = (posi).distanceTo(posj);
-
-          if(realDist !== 0 && realDist + 0.0000001< tangentDist ){
-                
-            this.motifEditor.motifsAtoms[j].setColorMaterial('#ff0000'); 
-            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000'); 
-
-          }
-        };
-      };
-    }
-    else if(this.highlightOverlapState === false){
-      for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) { 
-          
-        this.motifEditor.motifsAtoms[i].setColorMaterial(this.motifEditor.motifsAtoms[i].getOriginalColor()); 
-        
-      };
-    }
-
-    if(this.motifEditor.newSphere !== undefined){
-      this.motifEditor.motifsAtoms.pop();
-    }
-  };
-  AtomRelationshipManager.prototype.checkForOverlap = function(arg){
-
-    if(arg !== undefined){  
-      this.highlightOverlapState = arg.highlightTangency;
-    }
-
-    this.checkCrystalforOverlap();
-    this.checkMotiforOverlap();
-    this.checkCellforOverlap();
-  }
+  }; 
   AtomRelationshipManager.prototype.checkCrystalforOverlap = function(arg){
-  
+     
     if(this.highlightOverlapState === true){
       for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) {
         for (var j = this.lattice.actualAtoms.length - 1; j >= 0; j--) {
@@ -117,7 +143,7 @@ define([
 
           var realDist = (this.lattice.actualAtoms[j].object3d.position).distanceTo(this.lattice.actualAtoms[i].object3d.position);
  
-          if(realDist !== 0 && realDist + 0.0000001< tangentDist ){
+          if(realDist !== 0 && realDist + 0.0001< tangentDist ){
                 
             this.lattice.actualAtoms[j].setColorMaterial('#ff0000'); 
             this.lattice.actualAtoms[i].setColorMaterial('#ff0000'); 
@@ -129,7 +155,7 @@ define([
     else if(this.highlightOverlapState === false){
       for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
           
-        this.lattice.actualAtoms[i].setColorMaterial(this.lattice.actualAtoms[i].cachedColor); 
+        this.lattice.actualAtoms[i].setColorMaterial(this.lattice.actualAtoms[i].getOriginalColor()); 
         
       };
     }

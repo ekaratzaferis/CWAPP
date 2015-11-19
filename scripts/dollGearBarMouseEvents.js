@@ -60,14 +60,7 @@ define([
     
     document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false); 
     document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
-
-    this.menu.canvasTooltip({
-        'message':' ',
-        'x':0,
-        'y':0 ,
-        'show' : false
-    });  
-
+   
   };  
   DollGearBarMouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 

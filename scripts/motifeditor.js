@@ -2069,8 +2069,30 @@ define([
       this.initVolumeState();
 
     } 
-
+ 
+    this.checkCellForCollisions();
+    this.checkMotifForCollisions();
   }; 
+  Motifeditor.prototype.checkCellForCollisions = function(){
+
+    if(this.atomRelationshipManager.highlightOverlapState === true){
+      this.atomRelationshipManager.highlightOverlapState = false;  
+      this.atomRelationshipManager.checkCellforOverlap();
+      this.atomRelationshipManager.highlightOverlapState = true; 
+
+    }   
+    this.atomRelationshipManager.checkCellforOverlap(); 
+  };
+  Motifeditor.prototype.checkMotifForCollisions = function(){ 
+    
+    if(this.atomRelationshipManager.highlightOverlapState === true){
+      this.atomRelationshipManager.highlightOverlapState = false; 
+      this.atomRelationshipManager.checkMotiforOverlap(); 
+      this.atomRelationshipManager.highlightOverlapState = true; 
+
+    }  
+    this.atomRelationshipManager.checkMotiforOverlap(); 
+  };
   Motifeditor.prototype.findAngles = function(axis){ // set with parameter for flexibility
     var _this = this ; 
      
@@ -2365,9 +2387,7 @@ define([
     if(_this.latticeName !== 'hexagonal') {
       this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false, manual); 
     } 
-
-    //edw paizei kapoio provlima me to oti vriskei collisions sunexeia me
-
+ 
     this.cellPointsWithScaling(dimensions, true, manual); // todo fix that true  
      
     if(_this.latticeName !== 'hexagonal'){
@@ -2732,9 +2752,7 @@ define([
       this.setCSGmode({mode : 'cellClassic'});
       this.menu.chooseActiveUnitCellMode('cellClassic');
     } 
-
-    this.atomRelationshipManager.checkMotiforOverlap();
-    this.atomRelationshipManager.checkCellforOverlap(); 
+   
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore){  
     var _this = this;  

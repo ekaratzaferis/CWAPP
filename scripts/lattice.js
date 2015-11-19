@@ -76,6 +76,8 @@ define([
     // visualization
     this.renderingMode = 'realistic';
     this.confirmationFunction = { id : ' ', object : ' '};
+
+    this.atomRelationshipManager;
   }; 
   Lattice.prototype.renderingModeChange = function(arg) {
     
@@ -1190,7 +1192,7 @@ define([
   }
   Lattice.prototype.setMotif = function(motif, params){
     var _this = this ; 
- 
+     
     this.updateLatticeUI(params);
 
     this.currentMotif = motif ;
@@ -1256,6 +1258,14 @@ define([
   
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
+
+    if(this.atomRelationshipManager.highlightOverlapState === true){
+      this.atomRelationshipManager.highlightOverlapState = false; 
+      this.atomRelationshipManager.checkCrystalforOverlap(); 
+      this.atomRelationshipManager.highlightOverlapState = true; 
+
+    }   
+    this.atomRelationshipManager.checkCrystalforOverlap();
   }; 
   Lattice.prototype.createGrid = function() {
 
@@ -1527,8 +1537,7 @@ define([
       }); 
     }; 
 
-    this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes
-     
+    this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
 

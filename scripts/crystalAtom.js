@@ -12,10 +12,10 @@ define([
 ) {
   
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
-  var uniqueId = -1;
+  var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex) { 
-      console.log(color)
+       
     var _this = this; 
     this.radius = radius;  
     this.material;

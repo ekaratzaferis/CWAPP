@@ -312,6 +312,7 @@ require([
   var atomRelationshipManager =  new AtomRelationshipManager(lattice, motifEditor);
    
   motifEditor.atomRelationshipManager = atomRelationshipManager;
+  lattice.atomRelationshipManager = atomRelationshipManager;
    
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -450,7 +451,7 @@ require([
     } 
   });
   menu.onRendererColorChange(function(message, arg) { 
-    console.log(arg);
+     
     if(!_.isUndefined(arg.crystalScreenColor)){ 
       crystalRenderer.backgroundColor = ('#'+arg.crystalScreenColor);
     }
@@ -481,6 +482,10 @@ require([
     dollEditor.levelLabels[3].allowed = true;
     dollEditor.levelLabels[4].allowed = true;
     dollEditor.levelLabels[5].allowed = true;
+
+    atomRelationshipManager.checkCrystalforOverlap(); 
+    motifEditor.checkCellForCollisions();
+    motifEditor.checkMotifForCollisions();
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -528,6 +533,10 @@ require([
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
     } 
+
+    motifEditor.checkCellForCollisions();
+    atomRelationshipManager.checkCrystalforOverlap();
+    motifEditor.checkMotifForCollisions();
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -613,8 +622,9 @@ require([
     hudArrows.setVisibility();
     hudCube.updateAngles(params);
     crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
- 
+
     atomRelationshipManager.checkCrystalforOverlap();
+    motifEditor.checkCellForCollisions();
      
   });
   menu.setDragMode(function(message, param){
