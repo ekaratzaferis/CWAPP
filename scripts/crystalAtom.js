@@ -42,13 +42,7 @@ define([
     this.uniqueID = uniqueID(); 
     this.materialLetter;
 
-    var textureLoader = new THREE.TextureLoader(); 
-    textureLoader.load("Images/atoms/Be.png",
-      function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(color, position, opacity, renderingMode,id,tex) ;
-      }
-    );
+    this.addMaterial(color, position, opacity, renderingMode,id, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
 
     // private vars
     var originalColor = color;
@@ -56,7 +50,7 @@ define([
       return originalColor;
     }
     
-  }  
+  };
   CrystalAtom.prototype.setVisibility = function( bool) {
 
     this.visibility = bool;  
@@ -121,7 +115,7 @@ define([
       this.colorMaterial = phongMaterial;
     }
     
-    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true,opacity:1 }) ;
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
 
     this.materials =  [  
       this.colorMaterial, 

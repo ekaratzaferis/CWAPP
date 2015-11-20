@@ -33,17 +33,9 @@ define([
     this.opacity = opacity; 
     this.position = position;  
     this.materialLetter;
-
-    //this.addMaterial(color, position) ;
-    
-    var textureLoader = new THREE.TextureLoader(); 
-    textureLoader.load("Images/atoms/Be.png",
-      function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(color, position, tex) ;
-      }
-    );
-
+ 
+    this.addMaterial(color, position, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
+      
     // private vars
     var originalColor = color;
     this.getOriginalColor = function(){
@@ -56,7 +48,7 @@ define([
     this.color = color ; 
 
     this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : 0.7 }) ; 
-    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true, opacity:1 }) ;
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
 
     if(this.wireframe == true){
       this.materials =  [  

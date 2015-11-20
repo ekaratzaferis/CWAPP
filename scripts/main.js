@@ -145,11 +145,6 @@ require([
   AtomRelationshipManager 
 ) {
 
-  $('<script id="vertex_shader" type="x-shader/x-vertex"> varying vec3 vNormal; void main() { vNormal = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 ); } </script>').appendTo(document.body);
-
-  $('<script id="fragment_shader" type="x-shader/x-fragment"> uniform sampler2D texture; varying vec3 vNormal; void main() { vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5; vec3 color = texture2D( texture, uv ).rgb; if ( vNormal.z < - 0.85 ) color = vec3( 0.777, 0.74, 0.74 ); gl_FragColor = vec4( color, 1.0 ); } </script>').appendTo(document.body);
-
-    
   var menu = new Menu();
   
   // Scenes 
@@ -316,7 +311,10 @@ require([
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
   var tabActionsManager = new TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour);
 
-  var atomMaterialManager =  new AtomMaterialManager(lattice, motifEditor);
+  // material manager
+  var crystalScene = Explorer.getInstance();
+
+  var atomMaterialManager = AtomMaterialManager.getInstance(lattice, motifEditor);
   var atomRelationshipManager =  new AtomRelationshipManager(lattice, motifEditor);
    
   motifEditor.atomRelationshipManager = atomRelationshipManager;

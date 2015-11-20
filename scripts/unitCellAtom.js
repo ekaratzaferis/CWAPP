@@ -6,57 +6,45 @@ define([
   'underscore',
   'csg',
   'threeCSG',
-  'atomMaterialManager',
-  'dynamictexture'
+  'atomMaterialManager' 
 ], function(
   THREE,
   UnitCellExplorer,
   _,
   csg,
   ThreeCSG,
-  AtomMaterialManager,
-  Dynamictexture
+  AtomMaterialManager 
 ) { 
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
 
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode) { 
+  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex) { 
      
     var _this = this; 
     this.radius = radius;  
     this.material;
     this.latticeIndex = latticeIndex; 
+    this.ionicIndex = ionicIndex; 
     this.materials;
     this.tangency = tangency;  
     this.color = color; 
     this.opacity = opacity ; 
     this.myID = id; 
     this.elementName = elementName; 
-    this.viewMode = 'Classic'; 
+    this.viewMode = 'Classic' ; 
     this.subtractedForCache = { 'object3d': undefined} ; 
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
     this.materialLetter;
-
-    //_this.addMaterial(color, position, opacity, renderingMode ) ;
-
-    var textureLoader = new THREE.TextureLoader(); 
-    textureLoader.load("Images/atoms/Be.png",
-      function(tex){ 
-        tex.mapping = THREE.SphericalReflectionMapping;
-        _this.addMaterial(color, position, opacity, renderingMode,tex) ;
-      }
-    ); 
-
-    //this.addMaterial() ;
+    
+    this.addMaterial(color, position, opacity, renderingMode, AtomMaterialManager.getTexture(this.elementName,this.ionicIndex)) ;
     
     // private vars
     var originalColor = color;
     this.getOriginalColor = function(){
       return originalColor;
     }
-  };
-  
+  }; 
   UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode,image) {
     var _this = this ;
     var wireMat;
@@ -81,8 +69,8 @@ define([
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
       this.colorMaterial = phongMaterial;
     }
-    
-    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true,opacity:1 }) ;
+
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
 
     this.materials =  [  
       this.colorMaterial, 
