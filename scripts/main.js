@@ -41,7 +41,8 @@ require.config({
     'notesTab': 'menu_modules/notesTab',
     'menuRibbon': 'menu_modules/menuRibbon',
     'userDialog': 'menu_modules/userDialog',
-    'modals': 'menu_modules/modals'
+    'modals': 'menu_modules/modals',
+    'dynamictexture': '../vendor/dynamictexture'
 
   },
   shim: {
@@ -52,7 +53,8 @@ require.config({
     'scg': { deps: [ 'three' ] },
     'threeCSG': { deps: [ 'three' ] },
     'rStats': { deps: [ 'three' ] },
-    'STLExporter': { deps: [ 'three' ] }
+    'STLExporter': { deps: [ 'three' ] },
+    'dynamictexture': { deps: [ 'three' ] }
   }
 });
 
@@ -142,6 +144,12 @@ require([
   AtomMaterialManager,  
   AtomRelationshipManager 
 ) {
+
+  $('<script id="vertex_shader" type="x-shader/x-vertex"> varying vec3 vNormal; void main() { vNormal = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 ); } </script>').appendTo(document.body);
+
+  $('<script id="fragment_shader" type="x-shader/x-fragment"> uniform sampler2D texture; varying vec3 vNormal; void main() { vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5; vec3 color = texture2D( texture, uv ).rgb; if ( vNormal.z < - 0.85 ) color = vec3( 0.777, 0.74, 0.74 ); gl_FragColor = vec4( color, 1.0 ); } </script>').appendTo(document.body);
+
+    
   var menu = new Menu();
   
   // Scenes 

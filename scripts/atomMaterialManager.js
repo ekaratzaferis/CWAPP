@@ -26,8 +26,14 @@ define([
     
   }
 
-  AtomMaterialManager.prototype.labeling = function(arg){
-    
+  AtomMaterialManager.prototype.getImage = function(elementName, callback){
+    var textureLoader = new THREE.TextureLoader(); 
+    textureLoader.load("Images/atoms/Be.png",
+      function(tex){ 
+        tex.mapping = THREE.SphericalReflectionMapping;
+        callback(tex) ;
+      }
+    ); 
   }
   return AtomMaterialManager;
   

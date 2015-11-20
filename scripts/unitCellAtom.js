@@ -5,13 +5,17 @@ define([
   'unitCellExplorer',
   'underscore',
   'csg',
-  'threeCSG'
+  'threeCSG',
+  'atomMaterialManager',
+  'dynamictexture'
 ], function(
   THREE,
   UnitCellExplorer,
   _,
   csg,
-  ThreeCSG
+  ThreeCSG,
+  AtomMaterialManager,
+  Dynamictexture
 ) { 
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
 
@@ -32,8 +36,19 @@ define([
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
+    this.materialLetter;
 
-    this.addMaterial(color, position, opacity, renderingMode) ;
+    //_this.addMaterial(color, position, opacity, renderingMode ) ;
+
+    var textureLoader = new THREE.TextureLoader(); 
+    textureLoader.load("Images/atoms/Be.png",
+      function(tex){ 
+        tex.mapping = THREE.SphericalReflectionMapping;
+        _this.addMaterial(color, position, opacity, renderingMode,tex) ;
+      }
+    ); 
+
+    //this.addMaterial() ;
     
     // private vars
     var originalColor = color;
@@ -41,75 +56,124 @@ define([
       return originalColor;
     }
   };
+  
+  UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode,image) {
+    var _this = this ;
+    var wireMat;
+ 
+
+    if(renderingMode === 'wireframe') { 
+      wireMat = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
+      this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
+    }
+    else if(renderingMode === 'realistic'){  
+      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(renderingMode === 'flat'){
+      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
+    }
+    else if(renderingMode === 'toon'){ 
+      var phongMaterial = createShaderMaterial("phongDiffuse");
+      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color)); 
+
+      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      this.colorMaterial = phongMaterial;
+    }
+    
+    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true,opacity:1 }) ;
+
+    this.materials =  [  
+      this.colorMaterial, 
+      wireMat,
+      this.materialLetter
+    ];
+    
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
+
+    if(this.tangency === undefined){
+      sphere.visible = false;
+    }
+
+    sphere.scale.set(this.radius, this.radius, this.radius);
+    sphere.children[0].receiveShadow = true; 
+    sphere.children[0].castShadow = true;  
+    sphere.name = 'atom';
+    this.object3d = sphere;
+    this.object3d.position.fromArray(position.toArray()); 
+    UnitCellExplorer.add(this);  
+  };
+
   THREE.ShaderTypes = { 
     'phongDiffuse' : {
 
-        uniforms: {
+      uniforms: {
 
-            "uDirLightPos": { type: "v3", value: new THREE.Vector3() },
-            "uDirLightColor": { type: "c", value: new THREE.Color( 0xffffff ) },
+        "uDirLightPos": { type: "v3", value: new THREE.Vector3() },
+        "uDirLightColor": { type: "c", value: new THREE.Color( 0xffffff ) },
 
-            "uMaterialColor":  { type: "c", value: new THREE.Color( 0xffffff ) },
+        "uMaterialColor":  { type: "c", value: new THREE.Color( 0xffffff ) },
 
-            uKd: {
-                type: "f",
-                value: 0.7
-            },
-            uBorder: {
-                type: "f",
-                value: 0.4
-            }
+        uKd: {
+            type: "f",
+            value: 0.7
         },
+        uBorder: {
+            type: "f",
+            value: 0.4
+        }
+      },
 
-        vertexShader: [
+      vertexShader: [
 
-            "varying vec3 vNormal;",
-            "varying vec3 vViewPosition;",
+        "varying vec3 vNormal;",
+        "varying vec3 vViewPosition;",
 
-            "void main() {",
+        "void main() {",
 
-                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-                "vNormal = normalize( normalMatrix * normal );",
-                "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-                "vViewPosition = -mvPosition.xyz;",
+          "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+          "vNormal = normalize( normalMatrix * normal );",
+          "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+          "vViewPosition = -mvPosition.xyz;",
 
-            "}"
+        "}"
 
-        ].join("\n"),
+      ].join("\n"),
 
-        fragmentShader: [
+      fragmentShader: [
 
-            "uniform vec3 uMaterialColor;",
+        "uniform vec3 uMaterialColor;",
 
-            "uniform vec3 uDirLightPos;",
-            "uniform vec3 uDirLightColor;",
+        "uniform vec3 uDirLightPos;",
+        "uniform vec3 uDirLightColor;",
 
-            "uniform float uKd;",
-            "uniform float uBorder;",
+        "uniform float uKd;",
+        "uniform float uBorder;",
 
-            "varying vec3 vNormal;",
-            "varying vec3 vViewPosition;",
+        "varying vec3 vNormal;",
+        "varying vec3 vViewPosition;",
 
-            "void main() {",
+        "void main() {",
 
-                // compute direction to light
-                "vec4 lDirection = viewMatrix * vec4( uDirLightPos, 0.0 );",
-                "vec3 lVector = normalize( lDirection.xyz );",
+          // compute direction to light
+          "vec4 lDirection = viewMatrix * vec4( uDirLightPos, 0.0 );",
+          "vec3 lVector = normalize( lDirection.xyz );",
 
-                // diffuse: N * L. Normal must be normalized, since it's interpolated.
-                "vec3 normal = normalize( vNormal );",
-                //was: "float diffuse = max( dot( normal, lVector ), 0.0);",
-                // solution
-                "float diffuse = dot( normal, lVector );",
-                "if ( diffuse > 0.6 ) { diffuse = 1.0; }",
-                "else if ( diffuse > -0.2 ) { diffuse = 0.7; }",
-                "else { diffuse = 0.3; }",
+          // diffuse: N * L. Normal must be normalized, since it's interpolated.
+          "vec3 normal = normalize( vNormal );",
+          //was: "float diffuse = max( dot( normal, lVector ), 0.0);",
+          // solution
+          "float diffuse = dot( normal, lVector );",
+          "if ( diffuse > 0.6 ) { diffuse = 1.0; }",
+          "else if ( diffuse > -0.2 ) { diffuse = 0.7; }",
+          "else { diffuse = 0.3; }",
 
-                "gl_FragColor = vec4( uKd * uMaterialColor * uDirLightColor * diffuse, 1.0 );",
+          "gl_FragColor = vec4( uKd * uMaterialColor * uDirLightColor * diffuse, 1.0 );",
 
-            "}"
+        "}"
 
-        ].join("\n") 
+      ].join("\n") 
     } 
   };
   function createShaderMaterial(id) {
@@ -130,6 +194,10 @@ define([
 
   };
   UnitCellAtom.prototype.setColorMaterial = function(color, temp) {
+
+    if(this.object3d === undefined){
+      return;
+    }
     var _this = this;
     if(color === undefined){
       this.object3d.children[0].material.color = new THREE.Color( this.color );
@@ -152,50 +220,7 @@ define([
   } 
   UnitCellAtom.prototype.hideSubtracted = function(bool) {
     this.subtractedForCache.object3d.visible = bool;
-  }; 
-  UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode) {
-    var _this = this ;
-    var wireMat;
-
-    if(renderingMode === 'wireframe') { 
-      wireMat = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
-    }
-    else if(renderingMode === 'realistic'){  
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
-    }
-    else if(renderingMode === 'flat'){
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
-    }
-    else if(renderingMode === 'toon'){ 
-      var phongMaterial = createShaderMaterial("phongDiffuse");
-      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color)); 
-
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.colorMaterial = phongMaterial;
-    }
-      
-    this.materials =  [  
-      this.colorMaterial, 
-      wireMat
-    ];
-    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
-
-    if(this.tangency === undefined){
-      sphere.visible = false;
-    }
-
-    sphere.scale.set(this.radius, this.radius, this.radius);
-    sphere.children[0].receiveShadow = true; 
-    sphere.children[0].castShadow = true;  
-    sphere.name = 'atom';
-    this.object3d = sphere;
-    this.object3d.position.fromArray(position.toArray()); 
-    UnitCellExplorer.add(this);  
-  };
+  };  
   UnitCellAtom.prototype.setOpacity = function(opacity, renderingMode) { 
     
     this.opacity = opacity/10;

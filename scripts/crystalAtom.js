@@ -4,11 +4,13 @@
 define([
   'three',
   'explorer',
-  'underscore'
+  'underscore',
+  'atomMaterialManager'
 ], function(
   THREE,
   Explorer,
-  _
+  _,
+  AtomMaterialManager
 ) {
   
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
@@ -37,9 +39,17 @@ define([
     this.subtractedForCache = { 'object3d': undefined} ;  
     this.viewMode = 'Classic';
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
-    this.uniqueID = uniqueID();
-    this.addMaterial(color, position, opacity, renderingMode,id) ; 
- 
+    this.uniqueID = uniqueID(); 
+    this.materialLetter;
+
+    var textureLoader = new THREE.TextureLoader(); 
+    textureLoader.load("Images/atoms/Be.png",
+      function(tex){ 
+        tex.mapping = THREE.SphericalReflectionMapping;
+        _this.addMaterial(color, position, opacity, renderingMode,id,tex) ;
+      }
+    );
+
     // private vars
     var originalColor = color;
     this.getOriginalColor = function(){
@@ -61,6 +71,11 @@ define([
     this.object3d.children[0].material.needsUpdate = true;
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
+
+     if(this.object3d === undefined){
+      return;
+    }
+
     var _this = this;
     if(color === undefined){
       this.object3d.children[0].material.color = new THREE.Color( this.color );
@@ -81,7 +96,7 @@ define([
     this.object3d.children[0].material = phongMaterial ;
     this.object3d.children[0].material.needsUpdate = true; 
   } 
-  CrystalAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, identity) {
+  CrystalAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, identity, image) {
     var _this = this ;
 
     var wireMat; 
@@ -105,10 +120,13 @@ define([
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
       this.colorMaterial = phongMaterial;
     }
-  
+    
+    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true,opacity:1 }) ;
+
     this.materials =  [  
       this.colorMaterial, 
-      wireMat
+      wireMat,
+      this.materialLetter
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , this.materials);

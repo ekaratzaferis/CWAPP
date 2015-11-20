@@ -4,11 +4,13 @@
 define([
   'three',
   'motifExplorer',
-  'underscore'
+  'underscore',
+  'atomMaterialManager'
 ], function(
   THREE,
   MotifExplorer,
-  _
+  _,
+  AtomMaterialManager
 ) {
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
   // tangency is not used anymore!
@@ -30,33 +32,47 @@ define([
     this.wireframe = wireframe ;
     this.opacity = opacity; 
     this.position = position;  
-    this.addMaterial(color, position) ;
+    this.materialLetter;
+
+    //this.addMaterial(color, position) ;
     
+    var textureLoader = new THREE.TextureLoader(); 
+    textureLoader.load("Images/atoms/Be.png",
+      function(tex){ 
+        tex.mapping = THREE.SphericalReflectionMapping;
+        _this.addMaterial(color, position, tex) ;
+      }
+    );
+
     // private vars
     var originalColor = color;
     this.getOriginalColor = function(){
       return originalColor;
     }
   }
-  AtomSphere.prototype.addMaterial = function(color, position) {
+  AtomSphere.prototype.addMaterial = function(color, position, image) {
     var _this = this ;
     
     this.color = color ; 
 
     this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : 0.7 }) ; 
-    
+    this.materialLetter = new THREE.MeshPhongMaterial({ map : image, transparent:true, opacity:1 }) ;
+
     if(this.wireframe == true){
       this.materials =  [  
         this.colorMaterial, 
-        new THREE.MeshBasicMaterial({color : "#ffffff", wireframe: true, opacity:0})
+        new THREE.MeshBasicMaterial({color : "#ffffff", wireframe: true, opacity:0}),
+        this.materialLetter
       ];
     }
     else{
       this.materials =  [  
         this.colorMaterial, 
-         new THREE.MeshPhongMaterial({transparent:true, opacity:0})
+         new THREE.MeshPhongMaterial({transparent:true, opacity:0}),
+         this.materialLetter
       ]; 
     }
+ 
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials);
     sphere.name = 'atom';
@@ -101,6 +117,10 @@ define([
     return _this.radius ;
   }; 
   AtomSphere.prototype.setColorMaterial = function(color) {
+
+    if(this.object3d  === undefined){
+      return;
+    }
     var _this = this;
     this.color = color ; 
     
