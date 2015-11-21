@@ -84,8 +84,8 @@ define([
       
     var texture = new THREE.Texture( canvas  );
     texture.needsUpdate = true; 
-    texture.mapping = THREE.SphericalReflectionMapping; 
-    texture.minFilter = THREE.NearestFilter ;
+    //texture.mapping = THREE.SphericalReflectionMapping; 
+    //texture.minFilter = THREE.NearestFilter ;
     return texture;
   }
   return {
