@@ -16,7 +16,7 @@ define([
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
   var uniqueId = -1; 
 
-  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex) { 
+  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling) { 
        
     var _this = this; 
     this.radius = radius;  
@@ -42,12 +42,17 @@ define([
     this.uniqueID = uniqueID(); 
     this.materialLetter;
 
+    this.labeling = labeling;
+
     this.addMaterial(color, position, opacity, renderingMode,id, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
 
     // private vars
     var originalColor = color;
     this.getOriginalColor = function(){
       return originalColor;
+    }
+    this.setOriginalColor = function(color){
+      originalColor = color;
     }
     
   };
@@ -63,6 +68,8 @@ define([
     this.opacity = opacity;
     this.object3d.children[0].material.opacity = opacity ;
     this.object3d.children[0].material.needsUpdate = true;
+    this.object3d.children[2].material.opacity = opacity ;
+    this.object3d.children[2].material.needsUpdate = true;
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
 
@@ -115,7 +122,9 @@ define([
       this.colorMaterial = phongMaterial;
     }
     
-    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+    
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
 
     this.materials =  [  
       this.colorMaterial, 
@@ -153,12 +162,40 @@ define([
   CrystalAtom.prototype.flatMode = function(bool){
     
     this.object3d.children[0].material =  new THREE.MeshLambertMaterial( {color : this.color, transparent:true, opacity:this.opacity} );  
-    this.object3d.children[0].material.needsUpdate = true;    
+    this.object3d.children[0].material.needsUpdate = true; 
+
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+
+    this.object3d.children[2].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
+    this.object3d.children[2].material.needsUpdate = true; 
+    this.object3d.children[2].material.map.needsUpdate = true;     
   };
+  CrystalAtom.prototype.setLabeling = function(bool){
+ 
+    this.labeling = bool;
+
+    if(this.labeling === true){
+      this.object3d.children[2].material.opacity = this.opacity ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[2].material.map.needsUpdate = true;
+    }
+    else if(this.labeling === false){
+      this.object3d.children[2].material.opacity = 0 ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[2].material.map.needsUpdate = true;
+    }
+  };
+
   CrystalAtom.prototype.realisticMode = function(bool){
     
     this.object3d.children[0].material =  new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color : this.color, transparent:true, opacity:this.opacity} );  
-    this.object3d.children[0].material.needsUpdate = true;    
+    this.object3d.children[0].material.needsUpdate = true; 
+
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+
+    this.object3d.children[2].material.opacity = labelOp;  
+    this.object3d.children[2].material.needsUpdate = true; 
+    this.object3d.children[2].material.map.needsUpdate = true;   
   }; 
   CrystalAtom.prototype.GradeLimited = function() {
     this.viewMode = 'crystalGradeLimited' ; 

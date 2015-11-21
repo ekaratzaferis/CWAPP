@@ -17,7 +17,7 @@ define([
 ) { 
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
 
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex) { 
+  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
      
     var _this = this; 
     this.radius = radius;  
@@ -36,7 +36,9 @@ define([
     this.helperPos = {"x":0, "y":0, "z":0};  
     this.viewModeBeen = {'cellClassic' : false, 'cellSubstracted' : false, 'cellGradeLimited' : false, 'cellSolidVoid' : false}; 
     this.materialLetter;
-    
+    this.texture;
+    this.labeling = labeling;
+
     this.addMaterial(color, position, opacity, renderingMode, AtomMaterialManager.getTexture(this.elementName,this.ionicIndex)) ;
     
     // private vars
@@ -44,11 +46,15 @@ define([
     this.getOriginalColor = function(){
       return originalColor;
     }
+    this.setOriginalColor = function(color){
+      originalColor = color;
+    }
   }; 
   UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode,image) {
     var _this = this ;
     var wireMat;
  
+    this.texture = image;
 
     if(renderingMode === 'wireframe') { 
       wireMat = new THREE.MeshPhongMaterial({  specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
@@ -69,8 +75,10 @@ define([
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
       this.colorMaterial = phongMaterial;
     }
-
-    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
+    
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+     
+    this.materialLetter = new THREE.MeshPhongMaterial({  map : image, transparent:true, opacity : labelOp   }) ;
 
     this.materials =  [  
       this.colorMaterial, 
@@ -216,22 +224,51 @@ define([
     if(renderingMode === 'wireframe'){
       return;
     }
-    else if(renderingMode === 'flat'){
-      this.flatMode();
-    }
-    else if(renderingMode === 'realistic'){
-      this.realisticMode();
+    else if(renderingMode === 'flat' || renderingMode === 'realistic' ){
+      this.object3d.children[0].material.opacity = this.opacity ;  
+      this.object3d.children[0].material.needsUpdate = true; 
+
+      var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+
+      this.object3d.children[2].material.opacity = labelOp ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[2].material.map.needsUpdate = true;
     } 
+  };
+  UnitCellAtom.prototype.setLabeling = function(bool){
+    this.labeling = bool;
+
+    if(this.labeling === true){
+      this.object3d.children[2].material.opacity = this.opacity ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[2].material.map.needsUpdate = true;
+    }
+    else if(this.labeling === false){
+      this.object3d.children[2].material.opacity = 0 ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[2].material.map.needsUpdate = true;
+    }
   };
   UnitCellAtom.prototype.flatMode = function(bool){
     
     this.object3d.children[0].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:this.opacity} );  
-    this.object3d.children[0].material.needsUpdate = true;    
+    this.object3d.children[0].material.needsUpdate = true; 
+
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+
+    this.object3d.children[2].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
+    this.object3d.children[2].material.needsUpdate = true;  
+    this.object3d.children[2].material.map.needsUpdate = true;  
   };
   UnitCellAtom.prototype.realisticMode = function(bool){
-    
+
     this.object3d.children[0].material =  new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color : this.color, transparent:true, opacity:this.opacity} );  
-    this.object3d.children[0].material.needsUpdate = true;    
+    this.object3d.children[0].material.needsUpdate = true; 
+
+     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+
+    this.object3d.children[2].material.opacity = labelOp;  
+    this.object3d.children[2].material.needsUpdate = true;    
   };
   UnitCellAtom.prototype.wireframeMat = function(bool){
     this.wireframe = bool ;
@@ -244,7 +281,10 @@ define([
       this.object3d.children[1].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
     }
     this.object3d.children[0].material.needsUpdate = true;  
-    this.object3d.children[1].material.needsUpdate = true;  
+    this.object3d.children[1].material.needsUpdate = true;
+
+    this.object3d.children[2].material.opacity = 0;  
+    this.object3d.children[2].material.needsUpdate = true;   
   };
   UnitCellAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this; 

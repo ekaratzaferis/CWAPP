@@ -73,6 +73,7 @@ define([
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
 
     this.atomRelationshipManager;
+    this.labeling = false;
   
   }; 
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
@@ -206,7 +207,8 @@ define([
       newId, 
       1,
       false,
-      params.ionicIndex
+      params.ionicIndex,
+      this.labeling
     );
 
     this.newSphere = a;  
@@ -1468,6 +1470,7 @@ define([
     }
     else if(!_.isUndefined(param.atomColor)){  
       this.newSphere.setColorMaterial("#"+param.atomColor);
+      this.newSphere.setOriginalColor("#"+param.atomColor);
       this.colorUnitCellAtoms(this.newSphere.getID(), "#"+param.atomColor);
     }
     else if(!_.isUndefined(param.atomTexture)){
@@ -3048,7 +3051,8 @@ define([
                     identity,
                     opacity,
                     _this.renderingMode,
-                    ionicIndex
+                    ionicIndex,
+                    _this.labeling
                   ) 
                 ); 
 
@@ -3081,7 +3085,8 @@ define([
                     identity, 
                     opacity,
                     _this.renderingMode,
-                    ionicIndex
+                    ionicIndex,
+                    _this.labeling
                   ) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3107,7 +3112,8 @@ define([
                 identity, 
                 opacity, 
                 _this.renderingMode,
-                ionicIndex
+                ionicIndex,
+                _this.labeling
               ) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3131,7 +3137,8 @@ define([
                 "__"+i, 
                 opacity,
                 _this.renderingMode,
-                ionicIndex
+                ionicIndex,
+                _this.labeling
               ) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3155,7 +3162,8 @@ define([
                 "___"+i, 
                 opacity,
                 _this.renderingMode,
-                ionicIndex
+                ionicIndex,
+                _this.labeling
               ) 
             ); 
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3184,7 +3192,8 @@ define([
                     identity, 
                     opacity,
                     _this.renderingMode,
-                    ionicIndex
+                    ionicIndex,
+                    _this.labeling
                   ) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3210,7 +3219,8 @@ define([
               identity, 
               opacity,
               _this.renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             ) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3238,7 +3248,8 @@ define([
                     identity, 
                     opacity,
                     _this.renderingMode,
-                    ionicIndex
+                    ionicIndex,
+                    _this.labeling
                   ) 
                 ); 
                 _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3264,7 +3275,8 @@ define([
               identity, 
               opacity,
               _this.renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             ) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3288,7 +3300,8 @@ define([
               identity, 
               opacity,
               _this.renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             ) 
           ); 
           _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3321,7 +3334,8 @@ define([
                 'hc_'+_x+_y+_z, 
                 opacity,
                 _this.renderingMode,
-                ionicIndex
+                ionicIndex,
+                _this.labeling
               ) 
             );  
             _this.unitCellAtoms[_this.unitCellAtoms.length-1].setUserOffset("x",pos.x );
@@ -3359,7 +3373,8 @@ define([
                   reference, 
                   opacity,
                   _this.renderingMode,
-                  ionicIndex
+                  ionicIndex,
+                  _this.labeling
                 ) 
               );  
 
@@ -4791,7 +4806,8 @@ define([
   Motifeditor.prototype.createAdditionalAtoms = function(){
     var atoms = this.cachedAtoms;
     var objName = 'cellGradeLimited';
-       
+    var _this = this;
+
     var i = 0, j = 0;
 
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
@@ -4842,7 +4858,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           );
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4864,7 +4881,8 @@ define([
               id, 
               identity,
               opacity,
-              renderingMode
+              renderingMode,
+              _this.labeling
             )
           );
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4887,7 +4905,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           );
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4910,7 +4929,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           );
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4932,7 +4952,8 @@ define([
               id, 
               identity,
               opacity,
-              renderingMode
+              renderingMode,
+              _this.labeling
             )
           ); 
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4955,7 +4976,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           );  
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -4993,7 +5015,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           ); 
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -5016,7 +5039,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex
+              ionicIndex,
+              _this.labeling
             )
           );   
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -5055,7 +5079,8 @@ define([
               identity,
               opacity,
               renderingMode,
-              ionicIndex 
+              ionicIndex,
+              _this.labeling 
             )
           ); 
           this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -5080,7 +5105,8 @@ define([
           identity,
           opacity,
           renderingMode,
-          ionicIndex
+          ionicIndex,
+          _this.labeling
         )
       );
       this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -5103,7 +5129,8 @@ define([
           identity,
           opacity,
           renderingMode,
-          ionicIndex
+          ionicIndex,
+          _this.labeling
         )
       ); 
       this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
@@ -5696,11 +5723,14 @@ define([
     for (var i = 0; i<this.unitCellAtoms.length; i++) { 
       if(this.unitCellAtoms[i].myID === id ){ 
         this.unitCellAtoms[i].setMaterial(color, this.renderingMode);
+        this.unitCellAtoms[i].setOriginalColor(color);
+
       }
     }
     for (var i = 0; i<this.cachedAtoms.length; i++) { 
       if(this.cachedAtoms[i].myID === id ){ 
         this.cachedAtoms[i].setMaterial(color, this.renderingMode);
+        this.cachedAtoms[i].setOriginalColor(color);
       }
     }  
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes

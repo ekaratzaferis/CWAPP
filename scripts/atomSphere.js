@@ -14,7 +14,7 @@ define([
 ) {
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
   // tangency is not used anymore!
-  function AtomSphere(visible, position, radius, color, tangency, elementName, id, opacity, wireframe, ionicIndex ) {
+  function AtomSphere(visible, position, radius, color, tangency, elementName, id, opacity, wireframe, ionicIndex, labeling) {
      
     var _this = this; 
     this.radius = radius;  
@@ -33,6 +33,7 @@ define([
     this.opacity = opacity; 
     this.position = position;  
     this.materialLetter;
+    this.labeling = labeling;
  
     this.addMaterial(color, position, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
       
@@ -41,6 +42,9 @@ define([
     this.getOriginalColor = function(){
       return originalColor;
     }
+    this.setOriginalColor = function(color){
+      originalColor = color;
+    }
   }
   AtomSphere.prototype.addMaterial = function(color, position, image) {
     var _this = this ;
@@ -48,7 +52,9 @@ define([
     this.color = color ; 
 
     this.colorMaterial = new THREE.MeshBasicMaterial({ color: color, transparent:true, opacity : 0.7 }) ; 
-    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true  }) ;
+    var labelOp = (this.labeling === true) ? this.opacity : 0 ;
+    
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp }) ;
 
     if(this.wireframe == true){
       this.materials =  [  
@@ -75,6 +81,19 @@ define([
     MotifExplorer.add(this); 
 
   }; 
+  AtomSphere.prototype.setLabeling = function(bool){
+ 
+    this.labeling = bool;
+
+    if(this.labeling === true){
+      this.object3d.children[2].material.opacity = this.opacity ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+    }
+    else if(this.labeling === false){
+      this.object3d.children[2].material.opacity = 0 ;  
+      this.object3d.children[2].material.needsUpdate = true; 
+    }
+  };
   AtomSphere.prototype.setOpacity = function( opacity) {
     
     if(_.isUndefined(opacity)) return;

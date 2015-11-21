@@ -23,7 +23,33 @@ define([
     this.motifEditor = motifEditor;
      
   } 
+  AtomMaterialManager.prototype.setLabels = function(arg){
+    
+    var bool = arg.labelToggle;
 
+    this.motifEditor.labeling = bool;
+    this.lattice.labeling = bool;
+
+    for (var i = this.motifEditor.unitCellAtoms.length - 1; i >= 0; i--) { 
+      this.motifEditor.unitCellAtoms[i].setLabeling(bool);
+    };
+
+    for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) {
+      this.lattice.actualAtoms[i].setLabeling(bool);
+    };
+
+    for (var i = this.lattice.cachedAtoms.length - 1; i >= 0; i--) {
+      this.lattice.cachedAtoms[i].setLabeling(bool);
+    };
+
+    for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
+      this.motifEditor.motifsAtoms[i].setLabeling(bool);
+    };
+    
+    if(this.motifEditor.newSphere !== undefined){
+      this.motifEditor.newSphere.setLabeling(bool);
+    }
+  }
   function createLabel(element, ionic, x, y, z, size, color, backGroundColor, backgroundMargin) {
  
     var canvas = document.createElement("canvas");
@@ -53,18 +79,12 @@ define([
    
     if(ionic !== '0'){
       context.font = (size/2) + "pt Arial";
-      context.fillText( ionic , canvas.width / 2.5 + 1.5*context.measureText(ionic).width , canvas.height / 2.8); 
+      context.fillText( ionic , canvas.width / 2.5 + context.measureText(element).width + context.measureText(ionic).width/2 , canvas.height / 2.8); 
     }
       
     var texture = new THREE.Texture( canvas  );
-    texture.needsUpdate = true;
-    //texture.anisotropy = 1;
-    texture.mapping = THREE.SphericalReflectionMapping;
-    //texture.wrapS = THREE.RepeatWrapping;
-    //texture.wrapT = THREE.RepeatWrapping;
-    //texture.repeat.set(8,8);
-    //texture.magFilter = THREE.NearestFilter;
-    //texture.minFilter = THREE.LinearMipMapLinearFilter;
+    texture.needsUpdate = true; 
+    texture.mapping = THREE.SphericalReflectionMapping; 
     texture.minFilter = THREE.NearestFilter ;
     return texture;
   }

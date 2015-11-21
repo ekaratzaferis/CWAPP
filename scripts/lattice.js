@@ -78,6 +78,7 @@ define([
     this.confirmationFunction = { id : ' ', object : ' '};
 
     this.atomRelationshipManager;
+    this.labeling = false;
   }; 
   Lattice.prototype.renderingModeChange = function(arg) {
     
@@ -182,7 +183,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -205,7 +207,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -231,7 +234,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
 
@@ -255,7 +259,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -282,7 +287,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             ); 
           };
@@ -305,7 +311,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -332,7 +339,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -356,7 +364,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -382,7 +391,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             ); 
           };
@@ -405,7 +415,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             ); 
           };
@@ -428,7 +439,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -451,7 +463,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -489,7 +502,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -513,7 +527,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -539,7 +554,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -565,13 +581,13 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
         };
-
-
+ 
         j++;
       }
     } 
@@ -605,7 +621,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -629,7 +646,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -655,7 +673,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -681,7 +700,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -708,7 +728,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -732,7 +753,8 @@ define([
                 opacity,
                 renderingMode,
                 '-',
-                ionicIndex
+                ionicIndex,
+                this.labeling
               ) 
             );
           };
@@ -1246,7 +1268,8 @@ define([
             opacity,
             _this.renderingMode,
             kk,
-            ionicIndex
+            ionicIndex,
+            _this.labeling
           )  
         );
       });
@@ -1640,7 +1663,8 @@ define([
             opacity ,
             _this.renderingMode,
             kk,
-            ionicIndex
+            ionicIndex,
+            _this.labeling
           )  
         );
       });

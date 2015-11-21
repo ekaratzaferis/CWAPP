@@ -763,7 +763,7 @@ require([
     }
   });
   menu.onLabelToggle(function(message, arg) { 
-    atomMaterialManager.labeling(arg);
+    atomMaterialManager.setLabels(arg);
   });
   menu.onHighlightTangency(function(message, arg) { 
     atomRelationshipManager.checkForOverlap(arg); 
