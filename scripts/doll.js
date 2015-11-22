@@ -21,7 +21,7 @@ define([
   var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
   var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
   
-  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour) {
+  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour, menu) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
@@ -45,6 +45,7 @@ define([
     this.levels = [];
     this.levelLabels = [];
     this.enablemouseEvents = true;
+    this.menu = menu;
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -72,7 +73,7 @@ define([
     DollExplorer.add( { object3d :this.dollHolder });
     this.objsToIntersect.push(this.dollHolder);
 
-    this.gearBar = createGearBar(); 
+    this.gearBar = createGearBar();  
     this.gearBarSlider = createGearBarSlider(); 
     this.gearBarSlider.position.y = -7.05;
     
@@ -284,7 +285,7 @@ define([
  
     levelsGeom.computeFaceNormals(); 
     
-    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0xA19EA1 }) );
+    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0x2E2E2E }) );
     levels.name = 'levels';  
     levels.position.y = -7.2 ;    
    
@@ -360,17 +361,20 @@ define([
     return intPos.x;
   }; 
 
+  var oneTimeVar = 0;
+
   Doll.prototype.rePosition = function(){  
-    
+    var _this = this;
+     
     var xFromCubeScaled = (($('#hudRendererCube').width()/2)/$('#app-container').width())*2 - 1;
     var newX = this.findPlanePoint(new THREE.Vector2(xFromCubeScaled, 0 ));
     this.dollHolder.position.x = newX;
  
     this.doll.position.x = newX + 4 ; 
     this.doll.position.y = 4; 
-    this.dollHolder.position.x = newX ;  ; 
+    this.dollHolder.position.x = newX ;  
     this.gearBar.position.x = newX ;  ; 
-    this.gearBarSlider.position.x = newX ;  ;
+    this.gearBarSlider.position.x = newX ;  
 
     for (var j = 0; j < this.levels.length ; j++) {  
       this.levels[j].position.x = newX ;  
@@ -378,6 +382,16 @@ define([
       this.levelLabels[j].position = this.toScreenPosition(this.helper, this.camera); 
       this.levelLabels[j].position.x += 15;
     };  
+    
+    oneTimeVar++;
+    if(oneTimeVar === 3){ 
+      this.menu.canvasTooltip({
+        'message':levelNames[0],
+        'x': _this.levelLabels[0].position.x,
+        'y':_this.levelLabels[0].position.y,
+        'show':true
+      }); 
+    }
   } 
   Doll.prototype.toScreenPosition = function(obj, camera){ 
     var vector = new THREE.Vector3();

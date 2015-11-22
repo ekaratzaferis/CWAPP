@@ -277,7 +277,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance();  
   crystalRenderer.setDoll(dollScene.object3d ); 
-  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour);
+  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   dollEditor.rePosition(); 
   
@@ -323,7 +323,7 @@ require([
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
-    dollGearBarME.walkStep = 2;
+    dollGearBarME.setWalkStep(2);
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
     if(gearTour.state !== 1){
@@ -483,7 +483,7 @@ require([
     motifEditor.selectElem(arg); 
     var parameters = motifEditor.getDimensions() ;
     lattice.setMotif(motifEditor.getMotif(), parameters) ;
-    dollGearBarME.walkStep = 3;
+    dollGearBarME.setWalkStep(3);
     dollEditor.levelLabels[2].allowed = true;
     dollEditor.levelLabels[3].allowed = true;
     dollEditor.levelLabels[4].allowed = true;

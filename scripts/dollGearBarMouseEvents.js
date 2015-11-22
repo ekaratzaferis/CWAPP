@@ -45,6 +45,7 @@ define([
     this.tooltipMem;
     this.walkStep = 1;
     this.tooltipIsVisible = false;
+    this.firstTimeEnded = false;
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -60,8 +61,21 @@ define([
     
     document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false); 
     document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
-   
-  };  
+    
+    document.body.addEventListener('click', function myClick(event) 
+      {  
+        _this.firstTimeEnded = true;
+        _this.menu.canvasTooltip({ 
+          'show':false
+        });
+        document.body.removeEventListener('click', myClick);  
+      } 
+    );
+
+  }; 
+  function myClick(event) { 
+    document.body.removeEventListener('click', myClick);  
+  } 
   DollGearBarMouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 
      
@@ -203,6 +217,26 @@ define([
     return clickedOnMe; 
   }; 
   
+  DollGearBarMouseEvents.prototype.setWalkStep = function(num){ 
+    this.walkStep = num;
+    var scene = DollExplorer.getInstance();
+
+    var object = scene.object3d.getObjectByName( 0 );
+    console.log(object);
+    if(num === 2){
+      scene.object3d.traverse (function (object)
+      {  
+        if (object.name === 0){
+            console.log(object);
+        }       
+          
+      });
+      this.dollEditor.gearBarSlider.position.y = -5.7;
+    }
+    else if(num === 3){
+      this.dollEditor.gearBarSlider.position.y = -0.30;
+    }
+  }; 
   DollGearBarMouseEvents.prototype.walkTourSet = function(clickedLevel){  
   
     if(this.walkStep === 1 && clickedLevel === 0){
@@ -323,12 +357,14 @@ define([
     };
      
     if(entered === false ){
+      
+      if(this.firstTimeEnded === true){
+        this.tooltipIsVisible = false; 
  
-      this.tooltipIsVisible = false; 
- 
-      this.menu.canvasTooltip({ 
-        'show':false
-      });
+        this.menu.canvasTooltip({ 
+          'show':false
+        });
+      }
        
       this.INTERSECTED = null; 
       document.getElementById(this.container).style.cursor = 'auto';  
