@@ -76,7 +76,11 @@ define([
     this.gearBar = createGearBar();  
     this.gearBarSlider = createGearBarSlider(); 
     this.gearBarSlider.position.y = -7.05;
+
+    this.gearBarSliderLevels = createLevels();  
     
+    DollExplorer.add( { object3d :this.gearBarSliderLevels });
+
     DollExplorer.add( { object3d :this.gearBar });
     this.objsToIntersect.push(this.gearBar);
 
@@ -264,33 +268,44 @@ define([
 
     obj.add(minusSquare);
     obj.add(minusSquareM);
+ 
+    return obj;
+  };
+  function createLevels(){
+
+    var obj = new THREE.Object3D();
 
     // levels 
-    var levelsGeom = new THREE.Geometry();
-
     for (var i = 0; i < 6; i++) {
-      var Sv1 = new THREE.Vector3(-0.35,  0.12 + i*1.4,  0);
-      var Sv2 = new THREE.Vector3(-0.35, -0.12 + i*1.4,  0); 
-      var Sv3 = new THREE.Vector3( 0.35, -0.12 + i*1.4,  0);  
-      var Sv4 = new THREE.Vector3( 0.35,  0.12 + i*1.4,  0);  
+ 
+      var levelsGeom = new THREE.Geometry();
+     
+      var Sv1 = new THREE.Vector3(-0.35,  0.13 ,  0);
+      var Sv2 = new THREE.Vector3(-0.35, -0.13 ,  0); 
+      var Sv3 = new THREE.Vector3( 0.35, -0.13 ,  0);  
+      var Sv4 = new THREE.Vector3( 0.35,  0.13 ,  0);  
        
       levelsGeom.vertices.push(Sv1);
       levelsGeom.vertices.push(Sv2);
       levelsGeom.vertices.push(Sv3);
       levelsGeom.vertices.push(Sv4);
       
-      levelsGeom.faces.push( new THREE.Face3( 0+4*i, 1+4*i, 2+4*i ) );
-      levelsGeom.faces.push( new THREE.Face3( 0+4*i, 2+4*i, 3+4*i ) );
+      levelsGeom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+      levelsGeom.faces.push( new THREE.Face3( 0, 2, 3 ) );
+       
+      levelsGeom.computeFaceNormals();
+      levelsGeom.computeVertexNormals();
+
+      var color = (i === 0) ? 0xA19EA1 : 0x2E2E2E ;
+      var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: color }) );
+      levels.name = 'level'+i;   
+ 
+      levels.position.y = yPosGearSlider[i]  ;    
+     
+      obj.add(levels);
     };
- 
-    levelsGeom.computeFaceNormals(); 
     
-    var levels = new THREE.Mesh( levelsGeom, new THREE.MeshBasicMaterial({ color: 0x2E2E2E }) );
-    levels.name = 'levels';  
-    levels.position.y = -7.2 ;    
-   
-    obj.add(levels);
- 
+    obj.name = 'lev';
     return obj;
   };
   function createDoll(){
@@ -344,7 +359,7 @@ define([
     this.gearBar.visible = bool;
     this.gearBarSlider.visible = bool; 
     this.dollHolder.visible = bool;
-
+    this.gearBarSliderLevels.visible = bool; 
     this.enablemouseEvents = bool;
   }; 
   Doll.prototype.findPlanePoint = function(pos){  
@@ -383,6 +398,8 @@ define([
       this.levelLabels[j].position.x += 15;
     };  
     
+    this.gearBarSliderLevels.position.x = newX;
+
     oneTimeVar++;
     if(oneTimeVar === 3){ 
       this.menu.canvasTooltip({

@@ -176,7 +176,7 @@ define([
       this.initVolumeState(); 
       
     }
-
+ 
     var _this = this ;
     
     var radius = parseFloat(params.ionicValue);
@@ -196,7 +196,7 @@ define([
         params.element
       ); 
     } 
- 
+
     var a = new AtomSphere( 
       true, 
       new THREE.Vector3(p.x,p.y,p.z), 
@@ -210,7 +210,7 @@ define([
       params.ionicIndex,
       this.labeling
     );
-
+  
     this.newSphere = a;  
    
     this.addAtomInCell( 
@@ -226,13 +226,13 @@ define([
       params.ionicIndex
     );
 
-    PubSub.publish(
+    /* PubSub.publish(
       events.EDITOR_STATE,{
         'state' : "creating", 
         'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
         'atomColor' : params.atomColor
       }
-    );  
+    ); */ 
     
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
@@ -3394,18 +3394,27 @@ define([
         this.unitCellAtoms.splice(i,1);
       }
     };  
-   
+    
+    // autosave feature
+    this.motifsAtoms.push(this.newSphere); 
+  
     this.updateAtomList(
-      {x:'-',y:'-',z:'-'}, 
+      pos, 
       this.newSphere.getID(), 
-      '-', 
+      this.newSphere.getRadius(), 
       this.newSphere.elementName,
       'save',
-      'bg-light-purple',
-      undefined,
+      'bg-light-gray',
+      this.newSphere.tangentParent,
       this.newSphere.color,
       this.newSphere.ionicIndex
     );
+    PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
+    this.lastSphereAdded = this.newSphere ;
+    this.newSphere.blinkMode(false); 
+    this.newSphere = undefined ;
+    this.dragMode = false; 
+    // end
 
     this.createAdditionalAtoms();
   }; 

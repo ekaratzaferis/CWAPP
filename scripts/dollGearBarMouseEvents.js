@@ -219,21 +219,18 @@ define([
   
   DollGearBarMouseEvents.prototype.setWalkStep = function(num){ 
     this.walkStep = num;
-    var scene = DollExplorer.getInstance();
-
-    var object = scene.object3d.getObjectByName( 0 );
-    console.log(object);
+    
     if(num === 2){
-      scene.object3d.traverse (function (object)
-      {  
-        if (object.name === 0){
-            console.log(object);
-        }       
-          
-      });
+        
+      this.dollEditor.gearBarSliderLevels.children[0].material.color.setHex(0xA19EA1);
+      this.dollEditor.gearBarSliderLevels.children[1].material.color.setHex(0xA19EA1);
       this.dollEditor.gearBarSlider.position.y = -5.7;
     }
     else if(num === 3){
+      for (var i = 0; i < 6; i++) {
+        this.dollEditor.gearBarSliderLevels.children[i].material.color.setHex(0xA19EA1);
+      };
+       
       this.dollEditor.gearBarSlider.position.y = -0.30;
     }
   }; 
