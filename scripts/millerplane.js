@@ -11,7 +11,7 @@ define([
   _
 ) {
 
-  function MillerPlane( b , a, c, d, opacity, color) {
+  function MillerPlane( b , a, c, d, e, opacity, color) {
       
     var vertices = [];
     var faces = [];
@@ -22,7 +22,7 @@ define([
       vertices.push(new THREE.Vector3(c.x,c.y,c.z));
       faces.push(new THREE.Face3(0,2,1));
     }
-    else{
+    else if(_.isUndefined(e)){
 
       vertices.push(new THREE.Vector3(a.x,a.y,a.z));
       vertices.push(new THREE.Vector3(b.x,b.y,b.z));
@@ -31,6 +31,16 @@ define([
       faces.push(new THREE.Face3(0,2,1));
       faces.push(new THREE.Face3(2,3,1));
     } 
+    else{
+      vertices.push(new THREE.Vector3(a.x,a.y,a.z));
+      vertices.push(new THREE.Vector3(b.x,b.y,b.z));
+      vertices.push(new THREE.Vector3(c.x,c.y,c.z));
+      vertices.push(new THREE.Vector3(d.x,d.y,d.z));
+      vertices.push(new THREE.Vector3(e.x,e.y,e.z));
+      faces.push(new THREE.Face3(0,2,1));
+      faces.push(new THREE.Face3(2,3,1));
+      faces.push(new THREE.Face3(3,4,1));
+    }
 
     var geom = new THREE.Geometry();
     geom.vertices = vertices;

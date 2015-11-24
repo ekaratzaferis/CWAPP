@@ -451,7 +451,7 @@ define([
   Motifeditor.prototype.setAtomsPosition = function(param){ 
     
     var _this = this;  
-
+    console.log(param);
     var oldX,oldY,oldZ;
     var stillColliding = true, doNotOverlap = this.globalTangency ;
     var xFactor = 1;
