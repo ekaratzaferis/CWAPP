@@ -366,9 +366,9 @@ define([
     
     this.menu.editMEInputs(
       {   
-        'Aa' : this.cellParameters.scaleZ,
-        'Ab' : this.cellParameters.scaleX,
-        'Ac' : this.cellParameters.scaleY,
+        'scaleZ' : this.cellParameters.scaleZ,
+        'scaleX' : this.cellParameters.scaleX,
+        'scaleY' : this.cellParameters.scaleY,
         'cellAlpha' : this.cellParameters.alpha,
         'cellBeta' : this.cellParameters.beta,
         'cellGamma' : this.cellParameters.gamma
@@ -597,9 +597,9 @@ define([
       if(this.editorState.atomPosMode !== 'relative'){ 
         this.menu.editMEInputs(
           {   
-            'Aa' : this.cellParameters.scaleZ,
-            'Ab' : this.cellParameters.scaleX,
-            'Ac' : this.cellParameters.scaleY,
+            'scaleZ' : this.cellParameters.scaleZ,
+            'scaleX' : this.cellParameters.scaleX,
+            'scaleY' : this.cellParameters.scaleY,
             'cellAlpha' : this.cellParameters.alpha,
             'cellBeta' : this.cellParameters.beta,
             'cellGamma' : this.cellParameters.gamma
@@ -1687,9 +1687,9 @@ define([
             'atomColor' : '#1F2227',  
             'atomOpacity' : 10,
             'atomName' : '-', 
-            'Aa' : this.cellParameters.scaleZ,
-            'Ab' : this.cellParameters.scaleX,
-            'Ac' : this.cellParameters.scaleY,
+            'scaleZ' : this.cellParameters.scaleZ,
+            'scaleX' : this.cellParameters.scaleX,
+            'scaleY' : this.cellParameters.scaleY,
             'cellAlpha' : this.cellParameters.alpha,
             'cellBeta' : this.cellParameters.beta,
             'cellGamma' : this.cellParameters.gamma
@@ -1706,13 +1706,7 @@ define([
             'atomPositioningABC' : true,  
             'rotAngleTheta' :  false, 
             'rotAnglePhi' : false,
-            'tangentR' : false,
-            'Aa' : true,
-            'Ab' : true,
-            'Ac' : true,
-            'cellAlpha' : true,
-            'cellBeta' : true,
-            'cellGamma' : true 
+            'tangentR' : false 
           }
         ); 
         break;
@@ -1739,9 +1733,9 @@ define([
             'atomPosZ' : pos.z,  
             'atomColor' : color,  
             'atomOpacity' : 10,   
-            'Aa' : this.cellParameters.scaleZ,
-            'Ab' : this.cellParameters.scaleX,
-            'Ac' : this.cellParameters.scaleY,
+            'scaleZ' : this.cellParameters.scaleZ,
+            'scaleX' : this.cellParameters.scaleX,
+            'scaleY' : this.cellParameters.scaleY,
             'cellAlpha' : this.cellParameters.alpha,
             'cellBeta' : this.cellParameters.beta,
             'cellGamma' : this.cellParameters.gamma
@@ -1760,13 +1754,7 @@ define([
             'atomColor' : false, 
             'atomOpacity' : false,     
             'atomPositioningXYZ' : false,
-            'atomPositioningABC' : false,
-            'Aa' : padD,
-            'Ab' : padD,
-            'Ac' : padD,
-            'cellAlpha' : padD,
-            'cellBeta' : padD,
-            'cellGamma' : padD
+            'atomPositioningABC' : false 
           }
         );  
         break;
@@ -1808,13 +1796,7 @@ define([
             'atomPosY' : false,
             'atomPosZ' : false,  
             'atomColor' : false,  
-            'atomOpacity' : false,  
-            'Aa' : padD,
-            'Ab' : padD,
-            'Ac' : padD,
-            'cellAlpha' : padD,
-            'cellBeta' : padD,
-            'cellGamma' : padD
+            'atomOpacity' : false 
           }
         );  
         break;

@@ -2547,70 +2547,263 @@ define([
   Lattice.prototype.interceptedPlane = function(arg) {
     console.log(arg);
   };
-  function findPlanePoints(h,k,l,a,b,c,maxIndex, hInit, kInit, lInit ){
+  function findPlanePoints(h,k,l,a,b,c,d,maxIndex, hInit, kInit, lInit ){
 
     if(h <= 1 && k <= 1 && l <= 1 ){
       return [];
     }
 
-    var yAxesX0Z1, xAxesY0Z1, zAxesY0X1, yAxesX1Z0, yAxesX1Z1 ;
+    var yAxesX0Z1, 
+        xAxesY0Z1, 
+        zAxesY0X1, 
+        yAxesX1Z0, 
+        yAxesX1Z1,
+        zAxesX1Y0,
+        zAxesX1Y1,
+        xAxesY1Z0,
+        zAxesY1X0,
+        zAxesX0Y1,
+        xAxesY1Z1;
+
     var points = [];
+    
+    if(d === undefined){ 
+      if(lInit === maxIndex ){
 
-    points.push(b);
+        points.push(b);
 
-    if(lInit === maxIndex ){
-      if(h>1){
-        // case where h is outside the UC
+        if(h>1){
+          // case where h is outside the UC
 
-        var line = new THREE.Line3(b.clone(), c.clone());
-        var planoref = new THREE.Plane(new THREE.Vector3(0,0,1), -1 ); 
-        yAxesX0Z1 = planoref.intersectLine(line);
-        points.push(yAxesX0Z1);
+          var line = new THREE.Line3(b.clone(), c.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(0,0,1), -1 ); 
+          yAxesX0Z1 = planoref.intersectLine(line);
+          points.push(yAxesX0Z1);
 
-        var line2 = new THREE.Line3(c.clone(), a.clone()); 
-        xAxesY0Z1 = planoref.intersectLine(line2); 
-        if( xAxesY0Z1.x <= 1){
-          points.push(xAxesY0Z1);
-        }
-      }
-      else{
-        points.push(c);
-      }
-
-      if(xAxesY0Z1 !== undefined && xAxesY0Z1.x >1){ // or zAxesY0X1.z > 1
-
-        // case where our shape intersects with the yAxesX1Z1 
-
-        var triangle = new THREE.Triangle( b, c, a ); 
-        var pOfTriangle = triangle.plane();
-        var line = new THREE.Line3(new THREE.Vector3(1,0,1), new THREE.Vector3(1,1,1));
-        yAxesX1Z1 = pOfTriangle.intersectLine(line); 
-        points.push(yAxesX1Z1);
-      }
-
-      if(k>1){
-        // case where h is outside the UC
-
-        var line = new THREE.Line3(b.clone(), a.clone());
-        var planoref = new THREE.Plane(new THREE.Vector3(1,0,0), -1 ); 
-        yAxesX1Z0 = planoref.intersectLine(line);
-         
-        var line2 = new THREE.Line3(c.clone(), a.clone()); 
-        zAxesY0X1 = planoref.intersectLine(line2); 
-        if( zAxesY0X1.z <= 1){
-          points.push(yAxesX1Z0);
-          points.push(yAxesX1Z0);
+          var line2 = new THREE.Line3(c.clone(), a.clone()); 
+          xAxesY0Z1 = planoref.intersectLine(line2); 
+          if( xAxesY0Z1.x <= 1){
+            points.push(xAxesY0Z1);
+          }
         }
         else{
-          points.push(yAxesX1Z0);
+          points.push(c);
         }
+
+        if(xAxesY0Z1 !== undefined && xAxesY0Z1.x >1){ // or zAxesY0X1.z > 1
+
+          // case where our shape intersects with the yAxesX1Z1 
+
+          var triangle = new THREE.Triangle( b, c, a ); 
+          var pOfTriangle = triangle.plane();
+          var line = new THREE.Line3(new THREE.Vector3(1,0,1), new THREE.Vector3(1,1,1));
+          yAxesX1Z1 = pOfTriangle.intersectLine(line); 
+          points.push(yAxesX1Z1);
+        }
+
+        if(k>1){ 
+
+          var line = new THREE.Line3(b.clone(), a.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(1,0,0), -1 ); 
+          yAxesX1Z0 = planoref.intersectLine(line);
+           
+          var line2 = new THREE.Line3(c.clone(), a.clone()); 
+          zAxesY0X1 = planoref.intersectLine(line2); 
+          if( zAxesY0X1.z <= 1){
+            points.push(zAxesY0X1);
+            points.push(yAxesX1Z0);
+          }
+          else{
+            points.push(yAxesX1Z0);
+          }
+        }
+        else{
+          points.push(a);
+        } 
       }
-      else{
+      else if(hInit === maxIndex ){ //////////////////////////////////////////////////////
+
+        points.push(c);
+
+        if(k>1){
+          // case where k is outside the UC
+
+          var line = new THREE.Line3(c.clone(), a.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(1,0,0), -1 ); 
+          zAxesX1Y0 = planoref.intersectLine(line);
+          points.push(zAxesX1Y0);
+
+          var line2 = new THREE.Line3(b.clone(), a.clone()); 
+          yAxesX1Z0 = planoref.intersectLine(line2); 
+          if( yAxesX1Z0.y <= 1){
+            points.push(yAxesX1Z0);
+          }
+        }
+        else{
+          points.push(a);
+        }
+
+        if( yAxesX1Z0 !== undefined && yAxesX1Z0.y >1){  
+    
+          var triangle = new THREE.Triangle( b, c, a ); 
+          var pOfTriangle = triangle.plane();
+          var line = new THREE.Line3(new THREE.Vector3(1,1,1), new THREE.Vector3(1,1,0));
+          zAxesX1Y1 = pOfTriangle.intersectLine(line); 
+          points.push(zAxesX1Y1);
+        }
+
+        if(l>1){
+          // case where h is outside the UC
+
+          var line = new THREE.Line3(b.clone(), c.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(0,1,0), -1 ); 
+          zAxesY1X0 = planoref.intersectLine(line);
+           
+          var line2 = new THREE.Line3(b.clone(), a.clone()); 
+          xAxesY1Z0 = planoref.intersectLine(line2); 
+          if( xAxesY1Z0.x <= 1){
+            points.push(xAxesY1Z0);
+            points.push(zAxesY1X0);
+          }
+          else{
+            points.push(zAxesY1X0);
+          }
+        }
+        else{
+          points.push(b);
+        } 
+      }
+      else if(kInit === maxIndex ){ //////////////////////////////////////////////////////
+
         points.push(a);
+
+        if(l>1){
+          // case where k is outside the UC
+
+          var line = new THREE.Line3(b.clone(), a.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(0,1,0), -1 ); 
+          xAxesY1Z0 = planoref.intersectLine(line);
+          points.push(xAxesY1Z0);
+
+          var line2 = new THREE.Line3(b.clone(), c.clone()); 
+          zAxesX0Y1 = planoref.intersectLine(line2); 
+          if( zAxesX0Y1.z <= 1){
+            points.push(zAxesX0Y1);
+          }
+        }
+        else{
+          points.push(b);
+        }
+
+        if( zAxesX0Y1 !== undefined && zAxesX0Y1.z >1){  
+    
+          var triangle = new THREE.Triangle( b, c, a ); 
+          var pOfTriangle = triangle.plane();
+          var line = new THREE.Line3(new THREE.Vector3(1,1,1), new THREE.Vector3(0,1,1));
+          xAxesY1Z1 = pOfTriangle.intersectLine(line); 
+          points.push(xAxesY1Z1);
+        }
+
+        if(h>1){
+          // case where h is outside the UC
+
+          var line = new THREE.Line3(a.clone(), c.clone());
+          var planoref = new THREE.Plane(new THREE.Vector3(0,0,1), -1 ); 
+          xAxesY0Z1 = planoref.intersectLine(line);
+           
+          var line2 = new THREE.Line3(b.clone(), c.clone()); 
+          yAxesX0Z1 = planoref.intersectLine(line2); 
+          if( yAxesX0Z1.y <= 1){
+            points.push(yAxesX0Z1);
+            points.push(xAxesY0Z1);
+          }
+          else{
+            points.push(xAxesY0Z1);
+          }
+        }
+        else{
+          points.push(c);
+        } 
+      }
+    }
+    else{
+
+      if((hInit === 0 && kInit === 0) || (kInit === 0 && lInit === 0) || (hInit === 0 && lInit === 0) ){
+        points.push(a);
+        points.push(b);
+        points.push(c);
+        points.push(d); 
+      }
+      else{ 
+        if(hInit === 0 ){
+          if(a.x > 1){
+            var line = new THREE.Line3(d.clone(), a.clone());
+            var planoref = new THREE.Plane(new THREE.Vector3(1,0,0), -1 ); 
+            yAxesX1Z0 = planoref.intersectLine(line);
+            points.push(yAxesX1Z0);
+
+            var line2 = new THREE.Line3(b.clone(), c.clone()); 
+            yAxesX1Z1 = planoref.intersectLine(line2);
+            points.push(yAxesX1Z1);
+
+            points.push(c);
+            points.push(d);  
+          }
+          else{
+            points.push(a);
+            points.push(b);
+            points.push(c);
+            points.push(d);
+          }
+        }
+        else if(kInit === 0 ){
+ 
+          if(a.z > 1){
+            var line = new THREE.Line3(d.clone(), a.clone());
+            var planoref = new THREE.Plane(new THREE.Vector3(0,0,1), -1 ); 
+            yAxesX1Z0 = planoref.intersectLine(line);
+            points.push(yAxesX1Z0);
+
+            var line2 = new THREE.Line3(b.clone(), c.clone()); 
+            yAxesX1Z1 = planoref.intersectLine(line2);
+            points.push(yAxesX1Z1);
+
+            points.push(c);
+            points.push(d);  
+          }
+          else{
+            points.push(a);
+            points.push(b);
+            points.push(c);
+            points.push(d);
+          }
+        }
+        else if(lInit === 0 ){
+ 
+          if(a.z > 1){
+            var line = new THREE.Line3(d.clone(), a.clone());
+            var planoref = new THREE.Plane(new THREE.Vector3(0,0,1), -1 ); 
+            yAxesX1Z0 = planoref.intersectLine(line);
+            points.push(yAxesX1Z0);
+
+            var line2 = new THREE.Line3(b.clone(), c.clone()); 
+            yAxesX1Z1 = planoref.intersectLine(line2);
+            points.push(yAxesX1Z1);
+
+            points.push(c);
+            points.push(d);  
+          }
+          else{
+            points.push(a);
+            points.push(b);
+            points.push(c);
+            points.push(d);
+          }
+        }
+
       }
 
     }
- 
     return points;
   }
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
@@ -2649,7 +2842,7 @@ define([
           
           var d,e;
 
-          var points = findPlanePoints(h, k, l, a, b, c, maxIndex, hInit, kInit, lInit );
+          var points =  findPlanePoints(h, k, l, a, b, c, undefined, maxIndex, hInit, kInit, lInit );
               
           if( points.length > 0){
             a = points[0];
@@ -2826,8 +3019,7 @@ define([
               c.y = 1;
               d.z = 1;
               d.x = k;
-            }
-
+            } 
           }
           else{
             a.y = l;
@@ -2837,8 +3029,7 @@ define([
             c.y = l;
             c.z = 1;
             d.y = l;
-            d.z = 1;
-
+            d.z = 1; 
           }
           if(h<0) {
             a.z+=1;
@@ -2858,6 +3049,19 @@ define([
             c.y+=1;
             d.y+=1;
           }
+
+          var d,e;
+
+          var points =  findPlanePoints(h, k, l, a, b, c, d, maxIndex, hInit, kInit, lInit );
+              
+          if( points.length > 0){
+            a = points[0];
+            b = points[1];
+            c = points[2];
+            d = points[3];
+            e = points[4];
+          }
+
           _.times(parameters.repeatX , function(_x) {
             _.times(parameters.repeatY , function(_y) {
               _.times(parameters.repeatZ , function(_z) {
@@ -2866,16 +3070,17 @@ define([
                 var _b = new THREE.Vector3(b.x + _x , b.y + _y, b.z + _z);
                 var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
                 var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
-                var x = new MillerPlane(_a,_b,_c,_d, millerParameters.planeOpacity , millerParameters.planeColor );
+             
+                var x = new MillerPlane(_a,_b,_c,_d, undefined, millerParameters.planeOpacity , millerParameters.planeColor );
                 id = _this.generatePlaneKey();
                 if(!temp){ 
                   _this.millerPlanes[id] = {
                     visible: true,
                     plane : x, 
-                    a : a, 
-                    b : b, 
-                    c : c , 
-                    d : d , 
+                    a : _a, 
+                    b : _b, 
+                    c : _c , 
+                    d : _d , 
                     parallel : m,
                     id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                     h : parseInt(millerParameters.millerH),
@@ -2886,9 +3091,10 @@ define([
                     planeName : millerParameters.planeName,
                     lastSaved : { 
                       visible: true,  
-                      a : a, 
-                      b : b, 
-                      c : c, 
+                      a : _a, 
+                      b : _b, 
+                      c : _c, 
+                      d : _d,
                       parallel : m,
                       l : parseInt(millerParameters.millerL),
                       id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
@@ -2907,10 +3113,10 @@ define([
                     _this.tempPlanes.push({
                       visible: true,
                       plane : x, 
-                      a : a, 
-                      b : b, 
-                      c : c , 
-                      d : d ,
+                      a : _a, 
+                      b : _b, 
+                      c : _c , 
+                      d : _d ,
                       parallel : m, 
                       id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                       h : parseInt(millerParameters.millerH),
@@ -2921,9 +3127,10 @@ define([
                       planeName : millerParameters.planeName,
                       lastSaved : { 
                         visible: true,  
-                        a : a, 
-                        b : b, 
-                        c : c, 
+                        a : _a, 
+                        b : _b, 
+                        c : _c , 
+                        d : _d ,
                         parallel : m,
                         l : parseInt(millerParameters.millerL),
                         id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
@@ -2940,10 +3147,10 @@ define([
                     _this.tempPlanes.push({
                       visible: true,
                       plane : x, 
-                      a : a, 
-                      b : b, 
-                      c : c , 
-                      d : d , 
+                      a : _a, 
+                      b : _b, 
+                      c : _c , 
+                      d : _d ,
                       parallel : m,
                       id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                       h : parseInt(millerParameters.millerH),
@@ -2960,11 +3167,9 @@ define([
             });
           });
         }
-      }
-
-    
+      }  
     };
-    console.log(this.tempPlanes);
+     
     if(this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal'){
       if( h!=0 && k!=0 && l!=0) { 
         _.times(parameters.repeatX , function(_x) {

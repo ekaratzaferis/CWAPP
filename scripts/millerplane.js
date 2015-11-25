@@ -11,11 +11,11 @@ define([
   _
 ) {
 
-  function MillerPlane( b , a, c, d, e, opacity, color) {
+  function MillerPlane( b, a, c, d, e, opacity, color) {
       
     var vertices = [];
     var faces = [];
-
+ 
     if(_.isUndefined(d)){
       vertices.push(new THREE.Vector3(a.x,a.y,a.z));
       vertices.push(new THREE.Vector3(b.x,b.y,b.z));

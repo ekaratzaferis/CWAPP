@@ -4,7 +4,9 @@
   for Cell : 1.every time the user drags and leaves an atom,  2. every time he uses the length/angle sliders, 3. every time an atom is deleted/added
   for Motif : 1.every time the user drags and leaves an atom,  2.. every time an atom is deleted/added
 
-
+-- otan allazw hkl den allazoun ta parallels
+-- na kleinei me to parallel koumpi 
+-- arnitika
 
 [6:53:45 μμ] alexandros: onPlaneParallel
 [6:53:49 μμ] alexandros: onPlaneInterception
