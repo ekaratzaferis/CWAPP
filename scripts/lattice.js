@@ -2547,7 +2547,7 @@ define([
   Lattice.prototype.interceptedPlane = function(arg) {
     console.log(arg);
   };
-  function findPlanePoints(h,k,l,a,b,c,d,maxIndex, hInit, kInit, lInit ){
+  function findPlanePoints(h,k,l,a,b,c,d,maxIndexSymbol, hInit, kInit, lInit ){
 
     if(h <= 1 && k <= 1 && l <= 1 ){
       return [];
@@ -2568,7 +2568,7 @@ define([
     var points = [];
     
     if(d === undefined){ 
-      if(lInit === maxIndex ){
+      if(maxIndexSymbol === 'l'){
 
         points.push(b);
 
@@ -2621,7 +2621,7 @@ define([
           points.push(a);
         } 
       }
-      else if(hInit === maxIndex ){ //////////////////////////////////////////////////////
+      else if(maxIndexSymbol === 'h'){ //////////////////////////////////////////////////////
 
         points.push(c);
 
@@ -2673,7 +2673,7 @@ define([
           points.push(b);
         } 
       }
-      else if(kInit === maxIndex ){ //////////////////////////////////////////////////////
+      else if(maxIndexSymbol === 'k' ){ //////////////////////////////////////////////////////
 
         points.push(a);
 
@@ -2813,9 +2813,21 @@ define([
     var kInit = parseInt(millerParameters.millerK); 
     var lInit = parseInt(millerParameters.millerL);
     var id;  
-    var maxIndex = Math.max(hInit,kInit,lInit);  
-       
-    for (var m = 1; m <= maxIndex; m++)  {
+    var maxIndex = Math.max(Math.abs(hInit), Math.abs(kInit), Math.abs(lInit));  
+    var maxIndexSymbol ;
+    
+    if(Math.abs(hInit) >= Math.abs(kInit) && Math.abs(hInit) >= Math.abs(lInit)){
+      maxIndexSymbol = 'h';
+    }
+    else if(Math.abs(kInit) >= Math.abs(hInit) && Math.abs(kInit) >= Math.abs(lInit)){
+      maxIndexSymbol = 'k';
+    }
+    else if(Math.abs(lInit) >= Math.abs(hInit) && Math.abs(lInit) >= Math.abs(kInit)){
+      maxIndexSymbol = 'l';
+    }
+
+
+    for (var m = 1; m <= maxIndex*2 - 1; m++)  {
        
       var h = ( hInit !== 0 ) ? (1/hInit)*m : 0 ;  
       var k = ( kInit !== 0 ) ? (1/kInit)*m : 0 ;
@@ -2842,7 +2854,7 @@ define([
           
           var d,e;
 
-          var points =  findPlanePoints(h, k, l, a, b, c, undefined, maxIndex, hInit, kInit, lInit );
+          var points =  findPlanePoints(h, k, l, a, b, c, undefined, maxIndexSymbol, hInit, kInit, lInit );
               
           if( points.length > 0){
             a = points[0];
@@ -3052,7 +3064,7 @@ define([
 
           var d,e;
 
-          var points =  findPlanePoints(h, k, l, a, b, c, d, maxIndex, hInit, kInit, lInit );
+          var points =  findPlanePoints(h, k, l, a, b, c, d, maxIndexSymbol, hInit, kInit, lInit );
               
           if( points.length > 0){
             a = points[0];
