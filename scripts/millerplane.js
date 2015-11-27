@@ -11,11 +11,19 @@ define([
   _
 ) {
 
-  function MillerPlane( b, a, c, d, e, opacity, color) {
-      
+  function MillerPlane( b, a, c, d, e, opacity, color, visible) {
+
+    this.color = color; 
+    this.opacity = opacity; 
+    this.visible = visible; 
+
+    //console.log(a,b,c );
+
+    var _this = this; 
+    
     var vertices = [];
     var faces = [];
- 
+
     if(_.isUndefined(d)){
       vertices.push(new THREE.Vector3(a.x,a.y,a.z));
       vertices.push(new THREE.Vector3(b.x,b.y,b.z));
@@ -51,10 +59,11 @@ define([
     var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: color,opacity:opacity/10,  transparent: true } ) );
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
+    mesh.visible = visible; 
     this.object3d = mesh;
     Explorer.add(this);
 
-  };
+  }; 
   MillerPlane.prototype.updatePlanePos = function(h,k,l,i) {   
      
     var length =  start.distanceTo(end) ; 
@@ -67,9 +76,10 @@ define([
     this.updateTube(start, end);
 
   };
-  MillerPlane.prototype.setVisible = function( x) {
+  MillerPlane.prototype.setVisible = function(bool) {
       
-    this.object3d.visible = x ;
+    this.object3d.visible = bool ;
+    this.visible = bool ;
 
   };
   MillerPlane.prototype.setOpacity = function( opacity) {
@@ -81,10 +91,25 @@ define([
 
   };
   MillerPlane.prototype.setColor = function(color) {
-    if(_.isUndefined(color)) return;
-    this.color = color;
-    this.object3d.material.needsUpdate = true;
-    this.object3d.material.color.setHex( color );
+    if(_.isUndefined(color)){ 
+      this.object3d.material.needsUpdate = true;
+      if(this.color[0] === '#'){
+        this.object3d.material.color.set( this.color );
+      }
+      else{
+        this.object3d.material.color.setHex( this.color );
+      } 
+    }
+    else{  
+      this.color =  color ;
+      this.object3d.material.needsUpdate = true;
+      if(this.color[0] === '#'){
+        this.object3d.material.color.set( this.color );
+      }
+      else{
+        this.object3d.material.color.setHex( this.color );
+      }
+    }
   };
 
   MillerPlane.prototype.destroy = function() {

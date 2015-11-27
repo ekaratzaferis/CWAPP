@@ -2077,153 +2077,27 @@ define([
     } 
     else if( !_.isUndefined(arg.millerH) || !_.isUndefined(arg.millerK) || !_.isUndefined(arg.millerL) || !_.isUndefined(arg.millerI) ) { 
       var counter = 0 ;
-      var h = parseInt(($('#millerH').val())); 
-      var k = parseInt(($('#millerK').val())); 
-      var l = parseInt(($('#millerL').val())); 
-      var i = parseInt(($('#millerI').val())); 
-      
-      h = (h!=0) ? 1/h : 0 ;
-      k = (k!=0) ? 1/k : 0 ;
-      l = (l!=0) ? 1/l : 0 ;
-       
-      if(_this.latticeName !== 'hexagonal'){
-        if( h!=0 && k!=0 && l!=0) { 
-          _.times(parameters.repeatX , function(_x) {
-            _.times(parameters.repeatY , function(_y) {
-              _.times(parameters.repeatZ , function(_z) {        
-                var a = new THREE.Vector3( (k<0 ? (1+k) : k) + _x,  (l<0 ? 1 : 0 ) + _y , (h<0 ? 1 : 0) + _z); 
-                var b = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x,  (l<0 ? (1+l) : l ) + _y, (h<0 ? 1 : 0) + _z ); 
-                var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
-                var plane = _this.tempPlanes[counter];
-                 
-                plane.a = a ; 
-                plane.b = b ; 
-                plane.c = c ; 
-                plane.h = parseInt(($('#millerH').val())) ; 
-                plane.k = parseInt(($('#millerK').val())) ;  
-                plane.l = parseInt(($('#millerL').val())) ;  
-                plane.id =  ("_"+($('#millerH').val())+""+($('#millerK').val())+""+($('#millerL').val())+"");
-                 
-                var vertices = plane.plane.object3d.geometry.vertices;
-                vertices[0] = a ;
-                vertices[1] = b ;
-                vertices[2] = c ;
+      var hInit = parseInt(($('#millerH').val())); 
+      var kInit = parseInt(($('#millerK').val())); 
+      var lInit = parseInt(($('#millerL').val())); 
+      var iInit = parseInt(($('#millerI').val())); 
+ 
+      var arg = {
+        millerH: $('#millerH').val(),
+        millerI: "",
+        millerK: $('#millerK').val(),
+        millerL: $('#millerL').val(),
+        planeColor: '#'+($('#planeColor').spectrum("get").toHex()), //alex fix
+        planeName: "",
+        planeOpacity: $('#planeOpacity').val() 
+      }
 
-                _this.forwardTransformationsMiller(plane);  
-                
-                counter++;
-              });
-            });
-          });
-        }
-        else{ 
-          var a = new THREE.Vector3(0,0,0), b = new THREE.Vector3(0,0,0), c = new THREE.Vector3(0,0,0) , d = new THREE.Vector3(0,0,0);  
-          if (h!=0){
-            a.z = h;
-            if(k!=0){
-              b.z = h;
-              b.y = 1;
-              c.x = k;
-              c.y = 1;
-              d.x = k;
-            }
-            else if(l!=0){
-              b.z = h;
-              b.x = 1;
-              c.x = 1;
-              c.y = l;
-              d.y = l;
-            }
-            else{
-              b.z = h;
-              b.y = 1;
-              c.x = 1;
-              c.y = 1;
-              c.z = h;
-              d.x = 1;
-              d.z = h;
-            }
-          }
-          else if(k!=0){
-            a.x = k;
-            if(l!=0){
-              b.z = 1;
-              b.x = k;
-              c.y = l;
-              c.z = 1;
-              d.y = l;     
-            }
-            else{
-              b.x = k;
-              b.y = 1;
-              c.z = 1;
-              c.x = k;
-              c.y = 1;
-              d.z = 1;
-              d.x = k;
-            } 
-          }
-          else{
-            a.y = l;
-            b.y = l;
-            b.x = 1;
-            c.x = 1;
-            c.y = l;
-            c.z = 1;
-            d.y = l;
-            d.z = 1; 
-          }
-          if(h<0) {
-            a.z+=1;
-            b.z+=1;
-            c.z+=1;
-            d.z+=1;
-          }
-          if(k<0) {
-            a.x+=1;
-            b.x+=1;
-            c.x+=1;
-            d.x+=1;
-          }
-          if(l<0) {
-            a.y+=1;
-            b.y+=1;
-            c.y+=1;
-            d.y+=1;
-          }
-          _.times(parameters.repeatX , function(_x) {
-            _.times(parameters.repeatY , function(_y) {
-              _.times(parameters.repeatZ , function(_z) { 
-                var plane = _this.tempPlanes[counter];
-                 
-                plane.a = a ; 
-                plane.b = b ; 
-                plane.c = c ; 
-                plane.d = d ; 
-                plane.h = parseInt(($('#millerH').val())) ; 
-                plane.k = parseInt(($('#millerK').val())) ;  
-                plane.l = parseInt(($('#millerL').val())) ;  
-                plane.id =  ("_"+($('#millerH').val())+""+($('#millerK').val())+""+($('#millerL').val())+"");
-                
-                var _a = new THREE.Vector3(a.x + _x , a.y + _y, a.z + _z);
-                var _b = new THREE.Vector3(b.x + _x , b.y + _y, b.z + _z);
-                var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
-                var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z); 
-
-                var vertices = plane.plane.object3d.geometry.vertices;
-                vertices[0] = _a ;
-                vertices[1] = _b ;
-                vertices[2] = _c ;
-                vertices[3] = _d ;
-
-                _this.forwardTransformationsMiller(plane); 
-
-                counter++;
-              });
-            });
-          });
-        }
-      }   
+      for (var i = 0; i < this.tempPlanes.length; i++) {
+        this.tempPlanes[i].plane.destroy(); 
+      };  
+      this.tempPlanes.splice(0); 
+      this.createMillerPlane(arg, true, false);
+        
     }   
         
   };
@@ -2449,8 +2323,7 @@ define([
   Lattice.prototype.onLoad = function(callback) {
     PubSub.subscribe(events.LOAD, callback);
   };
-  
- 
+   
   // Millers
  
   Lattice.prototype.reCreateMillers = function() {
@@ -2541,18 +2414,43 @@ define([
   };
 
   // planes
-  Lattice.prototype.parallelPlane = function(arg) {
-    console.log(arg);
+  Lattice.prototype.parallelPlane = function(arg) { 
+
+    var id = arg.id;
+    var visible = arg.parallel;
+
+    if(arg.id === 'current'){
+        id = ("_"+($('#millerH').val())+""+($('#millerK').val())+""+($('#millerL').val())+"");
+    } 
+    for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
+        if(this.millerPlanes[i].id === id && this.millerPlanes[i].parallel !== 1 ){
+            this.millerPlanes[i].plane.setVisible(arg.parallel);
+        }
+        
+    };
+    for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
+        if(this.tempPlanes[i].id === id && this.tempPlanes[i].parallel !== 1 ){
+            this.tempPlanes[i].plane.setVisible(arg.parallel);
+        }
+        
+    };
   };
   Lattice.prototype.interceptedPlane = function(arg) {
     console.log(arg);
   };
-  function findPlanePoints(h,k,l,a,b,c,d,maxIndexSymbol, hInit, kInit, lInit ){
+  function checkIfOutOfBox(a,b,c,d){
+    
+      var triangle = new THREE.Triangle( h, k, l ); 
+      var pOfTriangle = triangle.plane();
+      var line = new THREE.Line3(new THREE.Vector3(1,0,1), new THREE.Vector3(1,1,1));
+      var yAxesX1Z1 = pOfTriangle.intersectLine(line);  
+  };
+  function findPlanePoints(h, k, l, a, b, c, d, maxIndexSymbol, hInit, kInit, lInit ){
 
     if(h <= 1 && k <= 1 && l <= 1 ){
       return [];
     }
-
+     
     var yAxesX0Z1, 
         xAxesY0Z1, 
         zAxesY0X1, 
@@ -2619,6 +2517,88 @@ define([
         }
         else{
           points.push(a);
+        } 
+         
+        if(b.y > 1 && points[0] !== undefined  && points[1] !== undefined  && points[2] !== undefined ){
+
+          var tempPoints = [];
+          var middlePoints = [];
+          
+          for (var i = points.length - 1; i >= 0; i--) {
+            if(points[i].y < 1 ){
+              middlePoints.push(points[i]);
+            }
+          };
+           
+
+          var plane = new THREE.Plane( new THREE.Vector3(0,1,0), -1 ); 
+
+          // right point
+          var line1 = new THREE.Line3(points[2].clone(), points[3].clone()); 
+          var temp1 = planoref.intersectLine(line1);
+          if(temp1 !== undefined){  
+            tempPoints.push(temp1);
+          }
+
+          var line2 = new THREE.Line3(points[0].clone(), points[3].clone()); 
+          var temp2 = plane.intersectLine(line2);
+          if(temp2 !== undefined){ 
+            tempPoints.push(temp2);
+          }
+ 
+          // left point
+          var line3 = new THREE.Line3(points[0].clone(), points[1].clone()); 
+          var temp3 = plane.intersectLine(line3);
+          if(temp3 !== undefined){ 
+            tempPoints.push(temp3);
+          }
+
+          var line4 = new THREE.Line3(points[1].clone(), points[2].clone()); 
+          var temp4 = plane.intersectLine(line4);
+          if(temp4 !== undefined){ 
+            tempPoints.push(temp4);
+          }  
+ 
+          for (var i = tempPoints.length - 1; i >= 0; i--) {
+            for (var j = tempPoints.length - 1; j >= 0; j--) { 
+              if(tempPoints[i].equals(tempPoints[j]) && j !== i ){ 
+                tempPoints[i] = new THREE.Vector3(-1,-1,-1) ;
+              }
+            }
+          };
+
+          var finalPoints = [];
+
+          for (var j = tempPoints.length - 1; j >= 0; j--) { 
+            if(tempPoints[j].x !== -1){   
+              finalPoints.push(tempPoints[j]);
+            }
+          }
+           
+          for (var i = middlePoints.length - 1; i >= 0; i--) {
+
+            var copy = true;
+
+            for (var j = finalPoints.length - 1; j >= 0; j--) {
+              if(finalPoints[j].equals(middlePoints[i])){
+                copy = false;
+              }
+            };
+            if(copy) {
+              finalPoints.push(middlePoints[i]);
+            }
+          };
+          
+          console.log(finalPoints);
+          console.log(finalPoints);
+
+          if(finalPoints.length <= 2){ 
+            var outside = [];
+            outside[10] = 1;
+            return outside;
+          }
+
+          return finalPoints;
         } 
       }
       else if(maxIndexSymbol === 'h'){ //////////////////////////////////////////////////////
@@ -2799,12 +2779,23 @@ define([
             points.push(c);
             points.push(d);
           }
-        }
-
-      }
-
+        } 
+      } 
     }
-    return points;
+ 
+
+    /*f(checkIfOutOfBox(a,b,c,d,e) === true){
+      var x = [];
+      x[10] = 1;
+      return x;
+    }*/
+
+    if(points[2] === undefined){
+        return undefined;
+    }
+    else{
+        return points;
+    } 
   }
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
@@ -2815,7 +2806,8 @@ define([
     var id;  
     var maxIndex = Math.max(Math.abs(hInit), Math.abs(kInit), Math.abs(lInit));  
     var maxIndexSymbol ;
-    
+    var finished = false ;
+     
     if(Math.abs(hInit) >= Math.abs(kInit) && Math.abs(hInit) >= Math.abs(lInit)){
       maxIndexSymbol = 'h';
     }
@@ -2825,10 +2817,13 @@ define([
     else if(Math.abs(lInit) >= Math.abs(hInit) && Math.abs(lInit) >= Math.abs(kInit)){
       maxIndexSymbol = 'l';
     }
+    
+    var planeNum = ((maxIndex) *2 + 1);
+    var m = 1;
 
-
-    for (var m = 1; m <= maxIndex*2 - 1; m++)  {
-       
+    while(finished === false){
+      if(m > 30) finished = true;
+      var visible = (m === 1) ? true : false;
       var h = ( hInit !== 0 ) ? (1/hInit)*m : 0 ;  
       var k = ( kInit !== 0 ) ? (1/kInit)*m : 0 ;
       var l = ( lInit !== 0 ) ? (1/lInit)*m : 0 ;
@@ -2854,133 +2849,145 @@ define([
           
           var d,e;
 
-          var points =  findPlanePoints(h, k, l, a, b, c, undefined, maxIndexSymbol, hInit, kInit, lInit );
-              
-          if( points.length > 0){
-            a = points[0];
-            b = points[1];
-            c = points[2];
-            d = points[3];
-            e = points[4];
-          }
+          var points = findPlanePoints(h, k, l, a, b, c, undefined, maxIndexSymbol, hInit, kInit, lInit );
+            
+          //provlima 1 : me ti methodo aporipsis planes pou nai entelws ektos xanoume planes 
+          // methodos : xtupa me line ta planes kai ama de xtupane pote poulo
+          //to icon visibility
 
-          _.times(parameters.repeatX , function(_x) {
-            _.times(parameters.repeatY , function(_y) {
-              _.times(parameters.repeatZ , function(_z) {        
-                
-                var a_ = new THREE.Vector3(a.x + _x, a.y + _y, a.z + _z);
-                var b_ = new THREE.Vector3(b.x + _x, b.y + _y, b.z + _z);
-                var c_ = new THREE.Vector3(c.x + _x, c.y + _y, c.z + _z);
-                var d_,e_;
+          if(points !== undefined){  
+            if( points.length > 0){
+              a = points[0];
+              b = points[1];
+              c = points[2];
+              d = points[3];
+              e = points[4];
+            }  
+            
+            if(points[10] === undefined){ 
+                _.times(parameters.repeatX , function(_x) {
+                  _.times(parameters.repeatY , function(_y) {
+                    _.times(parameters.repeatZ , function(_z) {        
+                      
+                      var a_ = new THREE.Vector3(a.x + _x, a.y + _y, a.z + _z);
+                      var b_ = new THREE.Vector3(b.x + _x, b.y + _y, b.z + _z);
+                      var c_ = new THREE.Vector3(c.x + _x, c.y + _y, c.z + _z);
+                      var d_,e_;
 
-                if(d !== undefined){
-                  var d_ = new THREE.Vector3(d.x + _x, d.y + _y, d.z + _z);
-                }
-
-                if(e !== undefined){
-                  var e_ = new THREE.Vector3(e.x + _x, e.y + _y, e.z + _z);
-                }
-
-                var x =  new MillerPlane(a_, b_, c_, d_, e_, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor );
-                  
-                id = _this.generatePlaneKey();
-
-                if(!temp){ 
-                  _this.millerPlanes[id] = {
-                    visible: true,
-                    plane : x, 
-                    a : a_, 
-                    b : b_, 
-                    c : c_, 
-                    d : d_, 
-                    e : e_, 
-                    parallel : m,
-                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                    h : parseInt(millerParameters.millerH),
-                    k : parseInt(millerParameters.millerK),
-                    l : parseInt(millerParameters.millerL),
-                    planeOpacity : parseInt(millerParameters.planeOpacity),
-                    planeColor : millerParameters.planeColor,
-                    planeName : millerParameters.planeName,
-                    lastSaved : { 
-                      visible: true,  
-                      a : a_, 
-                      b : b_, 
-                      c : c_, 
-                      d : d_, 
-                      e : e_,
-                      parallel : m,
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName
-                    }
-                  };  
-                  _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
-                }
-                else{ 
-                  if(_lastSaved !== undefined){
-                    _this.tempPlanes.push({
-                      visible: true,
-                      plane : x, 
-                      a : a_, 
-                      b : b_, 
-                      c : c_, 
-                      d : d_, 
-                      e : e_, 
-                      parallel : m,
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName,
-                      lastSaved : { 
-                        visible: true, 
-                        a : a_, 
-                      b : b_, 
-                      c : c_, 
-                      d : d_, 
-                      e : e_, 
-                        parallel : m,
-                        id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                        h : parseInt(millerParameters.millerH),
-                        k : parseInt(millerParameters.millerK),
-                        l : parseInt(millerParameters.millerL),
-                        planeOpacity : parseInt(millerParameters.planeOpacity),
-                        planeColor : millerParameters.planeColor,
-                        planeName : millerParameters.planeName
+                      if(d !== undefined){
+                        var d_ = new THREE.Vector3(d.x + _x, d.y + _y, d.z + _z);
                       }
-                    }); 
-                  }
-                  else{ 
-                    _this.tempPlanes.push({
-                      visible: true,
-                      plane : x, 
-                      a : a_, 
-                      b : b_, 
-                      c : c_, 
-                      d : d_, 
-                      e : e_, 
-                      parallel : m,
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName,
-                    }); 
-                  }
-                  _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);  
-                }
-              });
-            });
-          });
+
+                      if(e !== undefined){
+                        var e_ = new THREE.Vector3(e.x + _x, e.y + _y, e.z + _z);
+                      }
+
+
+                      var x =  new MillerPlane(a_, b_, c_, d_, e_, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor, visible );
+                        
+                      id = _this.generatePlaneKey();
+
+                      if(!temp){ 
+                        _this.millerPlanes[id] = {
+                          visible: true,
+                          plane : x, 
+                          a : a_, 
+                          b : b_, 
+                          c : c_, 
+                          d : d_, 
+                          e : e_, 
+                          parallel : m,
+                          id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                          h : parseInt(millerParameters.millerH),
+                          k : parseInt(millerParameters.millerK),
+                          l : parseInt(millerParameters.millerL),
+                          planeOpacity : parseInt(millerParameters.planeOpacity),
+                          planeColor : millerParameters.planeColor,
+                          planeName : millerParameters.planeName,
+                          lastSaved : { 
+                            visible: true,  
+                            a : a_, 
+                            b : b_, 
+                            c : c_, 
+                            d : d_, 
+                            e : e_,
+                            parallel : m,
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName
+                          }
+                        };  
+                        _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
+                      }
+                      else{ 
+                        if(_lastSaved !== undefined){
+                          _this.tempPlanes.push({
+                            visible: true,
+                            plane : x, 
+                            a : a_, 
+                            b : b_, 
+                            c : c_, 
+                            d : d_, 
+                            e : e_, 
+                            parallel : m,
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName,
+                            lastSaved : { 
+                              visible: true, 
+                              a : a_, 
+                            b : b_, 
+                            c : c_, 
+                            d : d_, 
+                            e : e_, 
+                              parallel : m,
+                              id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                              h : parseInt(millerParameters.millerH),
+                              k : parseInt(millerParameters.millerK),
+                              l : parseInt(millerParameters.millerL),
+                              planeOpacity : parseInt(millerParameters.planeOpacity),
+                              planeColor : millerParameters.planeColor,
+                              planeName : millerParameters.planeName
+                            }
+                          }); 
+                        }
+                        else{ 
+                          _this.tempPlanes.push({
+                            visible: true,
+                            plane : x, 
+                            a : a_, 
+                            b : b_, 
+                            c : c_, 
+                            d : d_, 
+                            e : e_, 
+                            parallel : m,
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName,
+                          }); 
+                        }
+                        _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);  
+                      }
+                    });
+                  });
+                }); 
+            }
+            else{
+
+            }  
+          }
         }
         else{ 
           var a = new THREE.Vector3(0,0,0), 
@@ -3065,121 +3072,129 @@ define([
           var d,e;
 
           var points =  findPlanePoints(h, k, l, a, b, c, d, maxIndexSymbol, hInit, kInit, lInit );
-              
-          if( points.length > 0){
-            a = points[0];
-            b = points[1];
-            c = points[2];
-            d = points[3];
-            e = points[4];
-          }
-
-          _.times(parameters.repeatX , function(_x) {
-            _.times(parameters.repeatY , function(_y) {
-              _.times(parameters.repeatZ , function(_z) {
-               
-                var _a = new THREE.Vector3(a.x + _x , a.y + _y, a.z + _z);
-                var _b = new THREE.Vector3(b.x + _x , b.y + _y, b.z + _z);
-                var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
-                var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
-             
-                var x = new MillerPlane(_a,_b,_c,_d, undefined, millerParameters.planeOpacity , millerParameters.planeColor );
-                id = _this.generatePlaneKey();
-                if(!temp){ 
-                  _this.millerPlanes[id] = {
-                    visible: true,
-                    plane : x, 
-                    a : _a, 
-                    b : _b, 
-                    c : _c , 
-                    d : _d , 
-                    parallel : m,
-                    id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                    h : parseInt(millerParameters.millerH),
-                    k : parseInt(millerParameters.millerK),
-                    l : parseInt(millerParameters.millerL),
-                    planeOpacity : parseInt(millerParameters.planeOpacity),
-                    planeColor : millerParameters.planeColor,
-                    planeName : millerParameters.planeName,
-                    lastSaved : { 
-                      visible: true,  
-                      a : _a, 
-                      b : _b, 
-                      c : _c, 
-                      d : _d,
-                      parallel : m,
-                      l : parseInt(millerParameters.millerL),
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName
-                    }
-                  }; 
-                  _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
-                }
-                else{
-                  if(_lastSaved !== undefined){ 
-                    _this.tempPlanes.push({
-                      visible: true,
-                      plane : x, 
-                      a : _a, 
-                      b : _b, 
-                      c : _c , 
-                      d : _d ,
-                      parallel : m, 
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName,
-                      lastSaved : { 
-                        visible: true,  
-                        a : _a, 
-                        b : _b, 
-                        c : _c , 
-                        d : _d ,
-                        parallel : m,
-                        l : parseInt(millerParameters.millerL),
-                        id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                        h : parseInt(millerParameters.millerH),
-                        k : parseInt(millerParameters.millerK),
-                        l : parseInt(millerParameters.millerL),
-                        planeOpacity : parseInt(millerParameters.planeOpacity),
-                        planeColor : millerParameters.planeColor,
-                        planeName : millerParameters.planeName
+          
+          if(points !== undefined){
+            if( points.length > 0){
+              a = points[0];
+              b = points[1];
+              c = points[2];
+              d = points[3];
+              e = points[4];
+            }
+            
+            if(points[10] === undefined){ 
+                _.times(parameters.repeatX , function(_x) {
+                  _.times(parameters.repeatY , function(_y) {
+                    _.times(parameters.repeatZ , function(_z) {
+                     
+                      var _a = new THREE.Vector3(a.x + _x , a.y + _y, a.z + _z);
+                      var _b = new THREE.Vector3(b.x + _x , b.y + _y, b.z + _z);
+                      var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
+                      var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
+                   
+                      var x = new MillerPlane(_a,_b,_c,_d, undefined, millerParameters.planeOpacity , millerParameters.planeColor, visible );
+                      id = _this.generatePlaneKey();
+                      if(!temp){ 
+                        _this.millerPlanes[id] = {
+                          visible: true,
+                          plane : x, 
+                          a : _a, 
+                          b : _b, 
+                          c : _c , 
+                          d : _d , 
+                          parallel : m,
+                          id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                          h : parseInt(millerParameters.millerH),
+                          k : parseInt(millerParameters.millerK),
+                          l : parseInt(millerParameters.millerL),
+                          planeOpacity : parseInt(millerParameters.planeOpacity),
+                          planeColor : millerParameters.planeColor,
+                          planeName : millerParameters.planeName,
+                          lastSaved : { 
+                            visible: true,  
+                            a : _a, 
+                            b : _b, 
+                            c : _c, 
+                            d : _d,
+                            parallel : m,
+                            l : parseInt(millerParameters.millerL),
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName
+                          }
+                        }; 
+                        _this.forwardTransformationsMiller(_this.millerPlanes[id]); 
                       }
-                    }); 
-                  }
-                  else{
-                    _this.tempPlanes.push({
-                      visible: true,
-                      plane : x, 
-                      a : _a, 
-                      b : _b, 
-                      c : _c , 
-                      d : _d ,
-                      parallel : m,
-                      id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
-                      h : parseInt(millerParameters.millerH),
-                      k : parseInt(millerParameters.millerK),
-                      l : parseInt(millerParameters.millerL),
-                      planeOpacity : parseInt(millerParameters.planeOpacity),
-                      planeColor : millerParameters.planeColor,
-                      planeName : millerParameters.planeName
-                    }); 
-                  }
-                  _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);
-                }
-              });
-            });
-          });
+                      else{
+                        if(_lastSaved !== undefined){ 
+                          _this.tempPlanes.push({
+                            visible: true,
+                            plane : x, 
+                            a : _a, 
+                            b : _b, 
+                            c : _c , 
+                            d : _d ,
+                            parallel : m, 
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName,
+                            lastSaved : { 
+                              visible: true,  
+                              a : _a, 
+                              b : _b, 
+                              c : _c , 
+                              d : _d ,
+                              parallel : m,
+                              l : parseInt(millerParameters.millerL),
+                              id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                              h : parseInt(millerParameters.millerH),
+                              k : parseInt(millerParameters.millerK),
+                              l : parseInt(millerParameters.millerL),
+                              planeOpacity : parseInt(millerParameters.planeOpacity),
+                              planeColor : millerParameters.planeColor,
+                              planeName : millerParameters.planeName
+                            }
+                          }); 
+                        }
+                        else{
+                          _this.tempPlanes.push({
+                            visible: true,
+                            plane : x, 
+                            a : _a, 
+                            b : _b, 
+                            c : _c , 
+                            d : _d ,
+                            parallel : m,
+                            id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
+                            h : parseInt(millerParameters.millerH),
+                            k : parseInt(millerParameters.millerK),
+                            l : parseInt(millerParameters.millerL),
+                            planeOpacity : parseInt(millerParameters.planeOpacity),
+                            planeColor : millerParameters.planeColor,
+                            planeName : millerParameters.planeName
+                          }); 
+                        }
+                        _this.forwardTransformationsMiller(_this.tempPlanes[_this.tempPlanes.length-1]);
+                      }
+                    });
+                  });
+                });
+            }
+            else{
+                finished = true;
+            }
+          }
         }
       }  
+       m++; 
     };
      
     if(this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal'){
@@ -3191,7 +3206,7 @@ define([
               var b = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x,  (l<0 ? (1+l) : l ) + _y, (h<0 ? 1 : 0) + _z ); 
               var c = new THREE.Vector3( (k<0 ? 1 : 0 ) + _x, (l<0 ? 1 : 0 ) + _y, (h<0 ? (1+h) : h) + _z );
               
-              var x =  new MillerPlane(a, b, c, undefined, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor );
+              var x =  new MillerPlane(a, b, c, undefined, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor, visible );
             
               id = _this.generatePlaneKey();
               if(!temp){ 
@@ -3361,7 +3376,7 @@ define([
               var _b = new THREE.Vector3(b.x + _x , b.y + _y, b.z + _z);
               var _c = new THREE.Vector3(c.x + _x , c.y + _y, c.z + _z);
               var _d = new THREE.Vector3(d.x + _x , d.y + _y, d.z + _z);
-              var x = new MillerPlane(_a,_b,_c,_d, millerParameters.planeOpacity , millerParameters.planeColor );
+              var x = new MillerPlane(_a,_b,_c,_d, millerParameters.planeOpacity , millerParameters.planeColor, visible );
               id = _this.generatePlaneKey();
               if(!temp){ 
                 _this.millerPlanes[id] = {
@@ -3451,6 +3466,8 @@ define([
         });
       }
     }  
+
+
   };  
   Lattice.prototype._planeState = function (state){ 
     var _this = this ;
@@ -3549,8 +3566,7 @@ define([
     }
     else if(this.confirmationFunction.object === 'direction'){
       this.confirmDirection(arg);
-    }
-
+    } 
   };
   Lattice.prototype.confirmDirection = function (arg){
 
