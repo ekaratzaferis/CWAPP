@@ -157,13 +157,13 @@ define([
             if (!(helpTab.hasClass('disabled'))) $userDialog.showInfoDialog({ messageID: 4 });
         });
         
-        /*// Block Tabs
+        // Block Tabs
         disableTab({'tab':'motifTab','value':true});
         blockTab({'tab':'motifTab','value':true});
         disableTab({'tab':'pndTab','value':true});
         blockTab({'tab':'pndTab','value':true});
         disableTab({'tab':'visualTab','value':true});
-        blockTab({'tab':'visualTab','value':true});*/
+        blockTab({'tab':'visualTab','value':true});
         
         // Top Menu Button
         $menuToggler.on('click', function(){
