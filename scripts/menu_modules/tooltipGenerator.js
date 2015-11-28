@@ -38,11 +38,12 @@ define([
     };
     
     tooltipGenerator.prototype.addOnHoverTooltip = function(argument){
-        if (!(_.isUndefined(argument.target))) target = jQuery('#'+argument['target']);
+        if (!(_.isUndefined(argument.target))) target = jQuery('#'+argument.target);
+        else if (!(_.isUndefined(argument.other))) target = argument.other;
         else return false;
-        if (!(_.isUndefined(argument.message))) message = argument['message'];
+        if (!(_.isUndefined(argument.message))) message = argument.message;
         else return false;
-        if (!(_.isUndefined(argument.placement))) placement = argument['placement'];
+        if (!(_.isUndefined(argument.placement))) placement = argument.placement;
         else return false;
         
         if (target.length > 0) {

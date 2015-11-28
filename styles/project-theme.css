@@ -3134,42 +3134,48 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     cursor:pointer;
     overflow: hidden;
 }
-#noteWrapper{
+.noteWrapper{
+    cursor: move;
     display: none;
     z-index:9999;
     color:black;
     border-radius: 10px;
     background-color: white;
     position: fixed;
+    overflow: auto;
     margin-top: 10%;
     margin-left:18%;
     min-height: 85px;
     min-width: 250px;}
-#notes{
+.wordwrap{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.notes{
     color:#43464b;
     background-color: white;
+    padding-left: 7px;
+    padding-right: 7px;
     border: none;
-    font-size: 12px;
-    overflow-y: auto;
-    overflow-x: hidden;}
-#notesScroll{
-    border: none;
-    width:100%;
-    padding-left: 10px;
-    overflow: auto;}
-#noteBar{
+    overflow-x: hidden;
+    max-width: 250px;
+    height: 100%;
+    font-size: 12px;}
+.noteBar{
     font-size: 16.68px;
     font-weight: 700;
     color:#2F3238;
     padding-left: 10px;
-    padding-top: 5px;
+    padding-top: 4px;
+    padding-bottom: 2px;
 }
-#noteBar img{
+.noteBar img{
     margin-top: 4px;
+    cursor: pointer;
     margin-right: 10px;
     float: right;
     height: 10px;}
-#noteBar img:hover{cursor: pointer;}
+.noteBar img:hover{cursor: pointer;}
 #screenWrapper{
     float: left;
     position: relative;
@@ -3289,8 +3295,8 @@ html,body {
 .list-title{color: #aaa !important; padding-bottom:5px;}
 
 .lightTheme{background: #34373e;}
-.lightTheme:hover{background: #555; cursor: pointer;}
-.lightTheme.lightThemeActive{ background: #777;}
+.lightTheme:hover{background: #777; cursor: pointer;}
+.lightTheme.lightThemeActive{ background: #34373e;}
 .lightTheme.lightThemeActive:hover{background: #777;}
 
 .toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
@@ -3505,7 +3511,7 @@ input.disabled[type="text"]{ background-color: black; }
 #Aa, #Ab, #Ac { padding-left: 2px; padding-right: 2px; font-size: 13px!important;}
 #atomPosX, #atomPosY, #atomPosZ, #millerH, #millerK, #millerL, #millerI, #millerT, #millerU, #millerV, #millerW { padding-left: 2px; padding-right: 2px; font-size: 14px!important;}
 
-#helpModal,#notesButton{ cursor: pointer; }
+#helpTab,#notesTab{ cursor: pointer; }
 #notesButton a{padding-left: 26px;}
 
 .sk-cube-grid {
@@ -3856,5 +3862,17 @@ input.disabled[type="text"]{ background-color: black; }
 }
 
 .highlight {
-  animation: highlight 3s;
+  animation: highlight 2s infinite;
+}
+#notesTab a img.hover{ margin-left: -18px;}
+#noteBody{ min-height: 120px; resize: none; width:  260px; padding-bottom: 2px; }
+.note-name {
+    padding: 17px!important;
+    padding-left: 15px!important;
+    padding-right: 1px!important;
+    font-family: "Open Sans"!important, sans-serif!important;
+    font-size: 14px!important;
+    font-weight: 400!important;
+    line-height: 16px!important;
+    color: #fff!important; 
 }

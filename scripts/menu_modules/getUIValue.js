@@ -20,13 +20,17 @@ define([
 ) 
 {    
     
-    // Variables
+    // Variables //
     var $selector = undefined;
     
+    // Modules References //
+    var $stringEditor = undefined;
     
     // Contructor //
-    function getUIValue() {
-        
+    function getUIValue(argument) {
+        // Acquire Module References //
+        if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
+        else return false;
     };
     
     function retrieveValue(index,selector){
@@ -36,7 +40,133 @@ define([
     };
     function retrieveValueFromID(index){
         switch(index){
+            
+            // Motif Tab
+            case 'tangency':{
+                if (jQuery('#tangency').parent().hasClass('purpleThemeActive')) return true;
+                else return false;
+            }
+            case 'atomOpacity':{
+                return $stringEditor.inputIsNumber(jQuery('#atomOpacity').val());
+            }
+            case 'atomColor':{
+                return jQuery('#atomColor').spectrum('get').toHex();
+            }
+            case 'atomPosX':{
+                return $stringEditor.inputIsNumber(jQuery('#atomPosX').val());
+            }
+            case 'atomPosY':{
+                return $stringEditor.inputIsNumber(jQuery('#atomPosY').val());
+            }
+            case 'atomPosZ':{
+                return $stringEditor.inputIsNumber(jQuery('#atomPosZ').val());
+            }
+            case 'rotAngleTheta':{
+                return jQuery('#rotAngleTheta').val();
+            }
+            case 'rotAnglePhi':{
+                return jQuery('#rotAnglePhi').val();
+            }
+            case 'tangentR':{
+                return jQuery('#tangentR').val();
+            }
+            case 'rotAngleX':{
+                return jQuery('#rotAngleX').text();
+            }
+            case 'rotAngleY':{
+                return jQuery('#rotAngleY').text();
+            }
+            case 'rotAngleZ':{
+                return jQuery('#rotAngleZ').text();
+            }
+            case 'cellVolume':{
+                return $stringEditor.inputIsNumber(jQuery('#cellVolume').val());  
+            }
+            case 'atomPositioningABC':{
+                if (jQuery('#atomPositioningABC').hasClass('buttonPressed')) return true;
+                else return false;
+            }
+            case 'atomPositioningXYZ':{
+                if (jQuery('#atomPositioningXYZ').hasClass('buttonPressed')) return true;
+                else return false;
+            }
+            case 'atomName':{
+                return jQuery('.element-symbol-container').find('a').html();
+            }
                 
+            // Lattice Tab
+            case 'repeatX':{
+                return $stringEditor.inputIsInteger(jQuery('#repeatX').val());
+            }
+            case 'repeatY':{
+                return $stringEditor.inputIsInteger(jQuery('#repeatY').val());
+            }
+            case 'repeatZ':{
+                return $stringEditor.inputIsInteger(jQuery('#repeatZ').val());
+            }
+            case 'scaleX':{
+                return $stringEditor.inputIsNumber(jQuery('#scaleX').val());
+            }
+            case 'scaleY':{
+                return $stringEditor.inputIsNumber(jQuery('#scaleY').val());
+            }
+            case 'scaleZ':{
+                return $stringEditor.inputIsNumber(jQuery('#scaleZ').val());
+            }
+            case 'alpha':{
+                return $stringEditor.inputIsNumber(jQuery('#alpha').val());
+            }
+            case 'beta':{
+                return $stringEditor.inputIsNumber(jQuery('#beta').val());
+            }
+            case 'gamma':{
+                return $stringEditor.inputIsNumber(jQuery('#gamma').val());
+            }
+                
+            // PnD Tab
+            case 'planeColor':{
+                return jQuery('#planeColor').spectrum('get').toHex();
+            }
+            case 'planeName':{
+                return jQuery('#planeName').val();
+            }
+            case 'planeOpacity':{
+                return $stringEditor.inputIsNumber(jQuery('#planeOpacity').val());
+            }
+            case 'millerH':{
+                return $stringEditor.inputIsInteger(jQuery('#millerH').val());
+            }
+            case 'millerK':{
+                return $stringEditor.inputIsInteger(jQuery('#millerK').val());
+            }
+            case 'millerL':{
+                return $stringEditor.inputIsInteger(jQuery('#millerL').val());
+            }
+            case 'millerI':{
+                return $stringEditor.inputIsInteger(jQuery('#millerI').val());
+            }
+            case 'directionColor':{
+                return jQuery('#directionColor').spectrum('get').toHex();
+            }
+            case 'directionName':{
+                return jQuery('#directionName').val();
+            }
+            case 'dirRadius':{
+                return $stringEditor.divide10(jQuery('#dirRadius').val());
+            }
+            case 'millerU':{
+                return $stringEditor.inputIsInteger(jQuery('#millerU').val());
+            }
+            case 'millerV':{
+                return $stringEditor.inputIsInteger(jQuery('#millerV').val());
+            }
+            case 'millerW':{
+                return $stringEditor.inputIsInteger(jQuery('#millerW').val());
+            }
+            case 'millerT':{
+                return $stringEditor.inputIsInteger(jQuery('#millerT').val());
+            }
+            
             // Visual Tab
             case 'wireframe':{
                 if (jQuery('#wireframe').hasClass('active')) return true;
