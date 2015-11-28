@@ -1480,59 +1480,59 @@ define([
                 
             // PnD Tab
             case 'planesColor':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'planesOpacity':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'planesName':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerH':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerK':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerL':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerI':{
-                PubSub.publish(events.MILLER_PLANE_SUBMIT, value);
+                PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
             case 'directionColor':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'dirRadius':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'directionName':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerU':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerV':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerW':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'millerT':{
-                PubSub.publish(events.MILLER_DIRECTIONAL_SUBMIT, value);
+                PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
             case 'selectPlane':{
