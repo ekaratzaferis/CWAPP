@@ -74,18 +74,6 @@
     
         <!-- Main Screen -->
         <div id="screenWrapper">
-            <!-- Notes -->
-            <div id="noteWrapper">
-                <div id="noteBar">
-                    Notes
-                    <img src="Images/close.png" />
-                </div>
-                <div id="notesScroll" class="custom_scrollbar">
-                    <div id="notes" contenteditable="true">
-                        Start Typing...
-                    </div>
-                </div>
-            </div>
             <!-- Canvasses -->
             <main id="cnt_main_screen" class="main-screen-container">
                 <div id="app-container">
@@ -270,8 +258,8 @@
 													<img src="Images/lattice-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
 											</li>
-											<li role="presentation" class="disabled blocked" id="motifLI">
-												<a href="" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
+											<li role="presentation" class="" id="motifLI">
+												<a href="#scrn_motif" class="control-open" aria-controls="scrn_motif" role="tab" data-toggle="tab">
 													<img src="Images/motif-icon.png" class="img-responsive" alt=""/>
 													<img src="Images/motif-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
@@ -288,9 +276,10 @@
 													<img src="Images/pnd-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
 											</li>
-                                            <li role="presentation" class="" id="notesButton">
-												<a id="" class="">
+                                            <li role="presentation" class="" id="notesTab">
+												<a href="#notes_tab" class="control-open" aria-controls="notes_tab" role="tab" data-toggle="tab">
 													<img src="Images/notes-icon.png" class="img-responsive" alt=""/>
+                                                    <img src="Images/notes-icon-purple.png" class="img-responsive hover" alt=""/>
 												</a>
 											</li>
 											<li role="presentation" class="" id="publicTab">
@@ -299,7 +288,7 @@
 													<img src="Images/public-library-icon-hover.png" class="img-responsive hover" alt=""/>
 												</a>
 											</li>
-                                            <li role="presentation" class="" id="helpModal">
+                                            <li role="presentation" class="" id="helpTab">
 												<a id="" class="">
 													<img src="Images/help.png" class="img-responsive" alt=""/>
 												</a>
@@ -1459,6 +1448,137 @@
 											</div>
 										</div>
 									</div>
+                                    
+									<div role="tabpanel" class="tab-pane pnd-tab-pane fade" id="notes_tab">
+										<div class="tab-title">
+											<h2> Notes </h2>
+										</div>
+										<div class="tab-content-container">
+											<div class="tab-content-section-container">
+												<div class="tab-section-title">
+													<h3>Database</h3>
+												</div>
+												<div class="tab-blocks-container">
+													<div class="tab-block">
+														<div class="tab-boxes-container">
+															
+															<div class="tab-box">
+																<div class="box-head">
+																	<div class="pnd-top-action-bar-container">
+																		<div id="newNote" class="action action-add-new">
+																			<a><img src="Images/addNote.png" class="img-responsive" alt=""/></a>
+																		</div>
+																	</div>
+																</div>
+																<div class="box-body">
+																	<div class="row row-nopad">
+																		
+																		<div class="col col-sm-10">
+																			<div class="coordinates-pnd-blocks-container mh_pnd_para_box" data-mh="mh_pnd_para_box" data-toggle="tooltip" data-placement="top">
+                                                                                <div class="pnd-detail-block">
+																					<div class="block-content">
+																						<div class="pnd-detail-container">
+																							<div class="row row-2">
+																								
+																								<div class="col col-sm-6">
+																									<div class="pnd-group theme-light">
+																										<div class="pnd-label form-group-label">
+																											<label for="txt_pnd_name">Title</label>
+																										</div>
+																										<div class="pnd-input form-group-input theme-light">
+																											<input type="text" name="txt_pnd_name" id="noteTitle" class="form-control"/>
+																										</div>
+																									</div>
+																								</div>
+																								<div class="col col-sm-6">
+																									<div class="row row-2">
+																										
+																										<div class="col col-sm-5">
+																											<div class="color-picker-container">
+																												<div class="color-label form-group-label">
+																													<label for="txt_color">Color</label>
+																												</div>
+																												<div id="noteColor" class="color-picker color-picker-lg theme-01 bg-transparent ">
+																													<div class="color"></div>
+																												</div>
+																											</div>
+																										</div>
+																										<div class="col col-sm-7">
+																											<div class="pnd-group theme-light">
+																												<div class="pnd-label form-group-label">
+																													<label for="txt_pnd_opacity">Opacity</label>
+																												</div>
+																												<div class="pnd-select form-group-input theme-light">
+																													<select id="noteOpacity" class="select-picker">
+																														
+																													</select>
+																												</div>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+                                                                                <div class="pnd-detail-block">
+																					<div class="block-content">
+																						<div class="pnd-detail-container">
+																							<div class="row row-2">
+																								
+																								<div class="col col-sm-12">
+																									<div class="pnd-group theme-light">
+																										<div class="pnd-label form-group-label">
+																											<label for="txt_pnd_name">Note</label>
+																										</div>
+																										<div class="pnd-input form-group-input theme-light">
+																											<textarea class="form-control" id="noteBody"></textarea>
+																										</div>
+																									</div>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+                                                                        
+																		<div class="col col-sm-2">
+																			<div id="saveNote" class="disabled action action-save">
+																				<a class="mh_pnd_para_box" data-mh="mh_pnd_para_box"><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="box-footer">
+
+																</div>
+															</div>
+															<div class="tab-box pnd-box" id="notesTable">
+																<div class="box-body">
+																	<div class="pnd-table-wrapper custom_scrollbar" id="pnd_table_wrapper">
+																		<div class="pnd-table-container">
+																			<table class="table pnd-table">
+																				<tbody></tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+																<div class="box-footer">
+																	<div class="item-table-action">
+																		<div id="deleteNote" class="disabled action action-delete">
+																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																		</div>
+																	</div>
+																</div>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
 
 									<div role="tabpanel" class="tab-pane public-library-tab-pane fade" id="scrn_public_library">
 										<div class="tab-title">
@@ -1481,7 +1601,7 @@
 																	</div>
 																	<div class="project-actions-container">
 																		<div class="btn-action">
-																			<a class="btn btn-dark">
+																			<a id="downloadProject" class="btn btn-dark">
 																				<span class="btn-image"><img src="Images/download-icon.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Download to your PC</span>
 																			</a>
@@ -1496,13 +1616,13 @@
 																	<div class="actions-alternative-container" id="cnt_alternate_actions">
 																		<div class="actions-alternative-inner">
 																			<div class="btn-qr action-alt">
-																				<a class="btn btn-purple-dark" data-toggle="modal" data-target="#qr_scan_modal"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
+																				<a id="openQR" class="btn btn-purple-dark" data-toggle="modal" data-target="#qr_scan_modal"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
 																			</div>
-																			<div class="btn-link action-alt">
+																			<div id="selectLink" class="btn-link action-alt">
 																				<label for="txt_link" class="btn btn-purple-dark"><img src="Images/attachment-icon.png" class="img-responsive" alt=""/></label>
 																			</div>
 																			<div class="txt-link action-alt">
-																				<input type="url" class="form-control" name="txt_link" id="txt_link" value="cw.gl/GUY5"/>
+																				<input id="saveOnlineLink" type="url" class="form-control" name="txt_link" id="txt_link"/>
 																			</div>
 																		</div>
 																	</div>
@@ -1518,7 +1638,7 @@
 																		<form action="#">
 																			<div class="form-group">
 																				<label for="project_name">Name</label>
-																				<input type="text" class="form-control" id="project_name" name="project_name" placeholder="My Project Name"/>
+																				<input id="projectName" type="text" class="form-control" id="project_name" name="project_name" placeholder="My Project Name"/>
 																			</div>
 																			<div class="form-group">
 																				<label for="tags">Tags</label>
@@ -1530,11 +1650,11 @@
 																			</div>
 																			<div class="form-group">
 																				<label for="description">Description</label>
-																				<textarea name="description" id="description" class="form-control" placeholder="Write here a brief description..."></textarea>
+																				<textarea id="projectDescription" name="description" id="description" class="form-control" placeholder="Write here a brief description..."></textarea>
 																			</div>
 																			<div class="btn-save">
-																				<div class="btn-wrapper">
-																					<button type="submit" class="btn btn-block btn-purple">Save</button>
+																				<div id="saveProject" class="btn-wrapper">
+																					<button class="btn btn-block btn-purple">Save</button>
 																				</div>
 																			</div>
 																		</form>
@@ -1720,9 +1840,13 @@
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="3D" class="btn btn-light">
-																	<img src="Images/3DIcon.png" class="img-responsive" alt=""/>
-																	<img src="Images/3DIcon-hover.png" class="img-responsive hover" alt=""/>
+                                                                <label id="3DsideBySide" class="btn btn-light">
+																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
+																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="3DonTop" class="btn btn-light">
+																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
+																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
 																</label>
 															</div>
 														</div>
@@ -1838,6 +1962,7 @@
 															<h3>Menu Zoom</h3>
 														</div>
 														<div class="block-content zoomOption">
+                                                            <label id="autoZoom" class="btn btn-light">Auto</label>
                                                             <label id="zoom100" class="btn btn-light active">100%</label>
                                                             <label id="zoom90" class="btn btn-light">90%</label>
                                                             <label id="zoom80" class="btn btn-light">80%</label>
@@ -2026,7 +2151,7 @@
 																</div>
 																<div class="block-content">
 																	<div class="btn-reset">
-																		<a class="btn btn-primary-dark"><img src="Images/reset-icon.png" class="img-responsive" alt=""/></a>
+																		<a id="reset" class="btn btn-primary-dark"><img src="Images/reset-icon.png" class="img-responsive" alt=""/></a>
 																	</div>
 																</div>
 															</div>
@@ -2685,20 +2810,20 @@
 									
 									<div class="col col-sm-6">
 										<div class="qr-image-container">
-											<img src="Images/qr-icon-purple-lg.png" class="img-responsive img-fullwidth" alt=""/>
+											<img id="QRImage" src="Images/qr-icon-purple-lg.png" class="img-responsive img-fullwidth" alt=""/>
 										</div>
 									</div>
 									<div class="col col-sm-6">
 										<div class="qr-actions-container">
 											<div class="btn-save">
-												<a class="btn btn-dark-02">Save Image</a>
+												<a id="downloadQR" class="btn btn-dark-02">Save Image</a>
 											</div>
 											<div class="alternate-actions">
-												<div class="btn-link action-alt">
+												<div id="selectLinkQR" class="btn-link action-alt">
 													<label for="txt_link_popup" class="btn btn-purple-dark"><img src="Images/attachment-icon.png" class="img-responsive" alt=""/></label>
 												</div>
 												<div class="txt-link action-alt">
-													<input type="url" class="form-control" name="txt_link_popup" id="txt_link_popup" value="cw.gl/GUY5"/>
+													<input id="saveOnlineLinkQR" type="url" class="form-control" name="txt_link_popup" id="txt_link_popup"/>
 												</div>
 											</div>
 										</div>

@@ -24,8 +24,6 @@ define([
        
   };
     
-  
-    
   SceneResizer.prototype.resize = function(state){
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
