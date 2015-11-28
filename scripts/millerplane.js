@@ -56,7 +56,7 @@ define([
 
     geom.mergeVertices();
 
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( { side:  THREE.DoubleSide, color: color,opacity:opacity/10,  transparent: true } ) );
+    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( {  /*depthWrite: false, depthTest: false ,*/ side:  THREE.DoubleSide, color: color,opacity:opacity/10, transparent: true } ) );
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
     mesh.visible = visible; 

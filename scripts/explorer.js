@@ -39,7 +39,7 @@ define([
     var _this = this;
      
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    this.light.position.set( 300, 300, 60 );
+    this.light.position.set( -300, -300, -60 );
     this.light.castShadow = true;
     this.light.shadowMapWidth = 1024;    // power of 2
     this.light.shadowMapHeight = 1024;
