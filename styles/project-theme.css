@@ -1496,6 +1496,8 @@ width: 70px;}
       background: #fff; }
     .controller-tab-controls .main-tab-nav-container .nav li:hover a, .controller-tab-controls .main-tab-nav-container .nav li:active a, .controller-tab-controls .main-tab-nav-container .nav li:focus a {
       background: #08090b; }
+    .controller-tab-controls .main-tab-nav-container .nav li.disabled:hover a, .controller-tab-controls .main-tab-nav-container .nav li.disabled:active a, .controller-tab-controls .main-tab-nav-container .nav li.disabled:focus a {
+    background: #34373e;}
 
 /*==========  Toggle Controls  ==========*/
 .controller-toggle-controls {
@@ -3875,4 +3877,7 @@ input.disabled[type="text"]{ background-color: black; }
     font-weight: 400!important;
     line-height: 16px!important;
     color: #fff!important; 
+}
+li[role='presentation'].disabled{
+    background-color: #34373e;
 }
