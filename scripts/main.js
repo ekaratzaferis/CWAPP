@@ -41,7 +41,8 @@ require.config({
     'notesTab': 'menu_modules/notesTab',
     'menuRibbon': 'menu_modules/menuRibbon',
     'userDialog': 'menu_modules/userDialog',
-    'modals': 'menu_modules/modals'
+    'modals': 'menu_modules/modals',
+    'dynamictexture': '../vendor/dynamictexture'
 
   },
   shim: {
@@ -52,7 +53,8 @@ require.config({
     'scg': { deps: [ 'three' ] },
     'threeCSG': { deps: [ 'three' ] },
     'rStats': { deps: [ 'three' ] },
-    'STLExporter': { deps: [ 'three' ] }
+    'STLExporter': { deps: [ 'three' ] },
+    'dynamictexture': { deps: [ 'three' ] }
   }
 });
 
@@ -95,7 +97,9 @@ require([
   'atomCustomizer',
   'STLExporter',
   'FileSaver',
-  'individualAtomController'  
+  'individualAtomController',
+  'atomMaterialManager',  
+  'atomRelationshipManager'  
 
 ], function(
   PubSub, 
@@ -136,8 +140,11 @@ require([
   AtomCustomizer,
   STLExporter,
   FileSaver,
-  IndividualAtomController 
+  IndividualAtomController,
+  AtomMaterialManager,  
+  AtomRelationshipManager 
 ) {
+
   var menu = new Menu();
   
   // Scenes 
@@ -270,7 +277,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance();  
   crystalRenderer.setDoll(dollScene.object3d ); 
-  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour);
+  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   dollEditor.rePosition(); 
   
@@ -304,11 +311,19 @@ require([
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
   var tabActionsManager = new TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour);
 
+  // material manager
+  var crystalScene = Explorer.getInstance();
+
+  var atomMaterialManager = AtomMaterialManager.getInstance(lattice, motifEditor);
+  var atomRelationshipManager =  new AtomRelationshipManager(lattice, motifEditor);
+   
+  motifEditor.atomRelationshipManager = atomRelationshipManager;
+  lattice.atomRelationshipManager = atomRelationshipManager;
    
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
-    dollGearBarME.walkStep = 2;
+    dollGearBarME.setWalkStep(2);
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
     if(gearTour.state !== 1){
@@ -393,7 +408,7 @@ require([
     if(arg.swap === 'latticeTab'){ 
       crystalScreenEvents.state = 'default';
     }
-    else if(arg.swap === 'motifLI'){
+    else if(arg.swap === 'motifTab'){
       crystalScreenEvents.state = 'motifScreen';
     } 
   });
@@ -442,7 +457,7 @@ require([
     } 
   });
   menu.onRendererColorChange(function(message, arg) { 
-
+     
     if(!_.isUndefined(arg.crystalScreenColor)){ 
       crystalRenderer.backgroundColor = ('#'+arg.crystalScreenColor);
     }
@@ -468,11 +483,15 @@ require([
     motifEditor.selectElem(arg); 
     var parameters = motifEditor.getDimensions() ;
     lattice.setMotif(motifEditor.getMotif(), parameters) ;
-    dollGearBarME.walkStep = 3;
+    dollGearBarME.setWalkStep(3);
     dollEditor.levelLabels[2].allowed = true;
     dollEditor.levelLabels[3].allowed = true;
     dollEditor.levelLabels[4].allowed = true;
     dollEditor.levelLabels[5].allowed = true;
+
+    atomRelationshipManager.checkCrystalforOverlap(); 
+    motifEditor.checkCellForCollisions();
+    motifEditor.checkMotifForCollisions();
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -520,6 +539,10 @@ require([
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
     } 
+
+    motifEditor.checkCellForCollisions();
+    atomRelationshipManager.checkCrystalforOverlap();
+    motifEditor.checkMotifForCollisions();
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -604,8 +627,11 @@ require([
     hudArrows.updateAngles(params); 
     hudArrows.setVisibility();
     hudCube.updateAngles(params);
-    crystalScene.updateAbcAxes(params,crystalRenderer.getMainCamera());
+    crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
 
+    atomRelationshipManager.checkCrystalforOverlap();
+    motifEditor.checkCellForCollisions();
+     
   });
   menu.setDragMode(function(message, param){
     motifEditor.setDraggableAtom(param)  ;
@@ -736,7 +762,18 @@ require([
       dollEditor.levelLabels[1].allowed = true;
     }
   });
-  
+  menu.onLabelToggle(function(message, arg) { 
+    atomMaterialManager.setLabels(arg);
+  });
+  menu.onHighlightTangency(function(message, arg) { 
+    atomRelationshipManager.checkForOverlap(arg); 
+  });
+
+
+  ///////////////////////
+  ///////////////////////
+  ///////////////////////
+
   // to read the json file
   var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   

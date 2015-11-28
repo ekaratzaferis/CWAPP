@@ -1,7 +1,11 @@
  
-na kleinei to atom menu otan o xristis patisei sto doll
-cached atoms 
-
+    So currently, if the  "Highlight Overlapped atoms" is ON, it rusn in these points :
+  for Crystal : every time the crystal is refreshed in any way.
+  for Cell : 1.every time the user drags and leaves an atom,  2. every time he uses the length/angle sliders, 3. every time an atom is deleted/added
+  for Motif : 1.every time the user drags and leaves an atom,  2.. every time an atom is deleted/added
+ 
+-- na kleinei me to parallel koumpi 
+-- arnitika
 
 [6:53:45 μμ] alexandros: onPlaneParallel
 [6:53:49 μμ] alexandros: onPlaneInterception
@@ -11,13 +15,13 @@ closeAtomCustomizer()
 [7:15:40 μμ] alexandros: interception = 'active'
 
   
- 3. na dw ti paizei me grids faces.
- 4. thelw gia to progres bar mia sunarthsh pou na to tleeiwnei ksafnika
+ 3. na dw ti paizei me grids faces. 
 5. fps drop in unit cell renderern motif renderer
   6. suggest merge in crystal because atoms do not move.
 7. kleidwma geometriwn gia performance
 8. share material by atom for better perf
  small todo : 
+ 
  /* allages se updateDirectionList kai na kaleitai mono auti kai selectDirection
     setPlaneEntryVisibility
     setDirectionEntryVisibility

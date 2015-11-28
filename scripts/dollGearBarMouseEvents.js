@@ -44,6 +44,8 @@ define([
     this.crystalOrbit = crystalOrbit;
     this.tooltipMem;
     this.walkStep = 1;
+    this.tooltipIsVisible = false;
+    this.firstTimeEnded = false;
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -59,17 +61,21 @@ define([
     
     document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false); 
     document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
+    
+    document.body.addEventListener('click', function myClick(event) 
+      {  
+        _this.firstTimeEnded = true;
+        _this.menu.canvasTooltip({ 
+          'show':false
+        });
+        document.body.removeEventListener('click', myClick);  
+      } 
+    );
 
-    this.menu.canvasTooltip({
-        'message':' ',
-        'x':0,
-        'y':0  
-    }); 
-    this.menu.canvasTooltip({
-      'show': false
-    });
-
-  };  
+  }; 
+  function myClick(event) { 
+    document.body.removeEventListener('click', myClick);  
+  } 
   DollGearBarMouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 
      
@@ -130,29 +136,28 @@ define([
         clickedOnMe = true;
         this.soundMachine.play('dollHolder'); // to change 
          
-        if(this.dollEditor.gearState > 1 ){
-
+        if(this.dollEditor.gearState > 1 ){ 
           if(this.dollEditor.levelLabels[this.dollEditor.gearState-2].allowed === true){
 
             this.dollEditor.gearState--; 
+
             this.menu.canvasTooltip({
-                'message':levelNames[this.dollEditor.gearState-1],
-                'x':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.x,
-                'y':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.y  
-            }); 
-            
-            this.menu.canvasTooltip({
+              'message':levelNames[this.dollEditor.gearState-1],
+              'x':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.x,
+              'y':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.y,
               'show':true
             }); 
 
             clearTimeout(this.tooltipMem);
-
+ 
             this.tooltipMem = setTimeout(function() {
               _this.menu.canvasTooltip({
                 'show':false
-              });
-              _this.tooltipExists = false;
-            }, 1500);
+              }); 
+              _this.tooltipIsVisible = false;
+            }, 1000);
+ 
+
             this.dollEditor.gearBarSlider.position.y = yPosGearSlider[this.dollEditor.gearState-1];
             this.gearTour.setState(this.dollEditor.gearState);
           }
@@ -162,28 +167,25 @@ define([
         clickedOnMe = true;
         this.soundMachine.play('dollHolder'); //to change 
 
-        if(this.dollEditor.levelLabels[this.dollEditor.gearState].allowed === true){ 
-          if(this.dollEditor.gearState < 6 ){
+        if(this.dollEditor.gearState < 6 ){ 
+          if(this.dollEditor.levelLabels[this.dollEditor.gearState].allowed === true){
             this.dollEditor.gearState++;
             
             this.menu.canvasTooltip({
-                'message':levelNames[this.dollEditor.gearState-1],
-                'x':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.x,
-                'y':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.y  
-            }); 
-            
-            this.menu.canvasTooltip({
+              'message':levelNames[this.dollEditor.gearState-1],
+              'x':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.x,
+              'y':this.dollEditor.levelLabels[this.dollEditor.gearState-1].position.y,
               'show':true
             });
-             
+
             clearTimeout(this.tooltipMem);
 
             this.tooltipMem = setTimeout(function() {
               _this.menu.canvasTooltip({
                 'show':false
-              }); 
-            }, 1500);
-
+              });  
+            }, 1000);
+             
             this.dollEditor.gearBarSlider.position.y = yPosGearSlider[this.dollEditor.gearState-1];
             this.gearTour.setState(this.dollEditor.gearState);
           } 
@@ -215,6 +217,23 @@ define([
     return clickedOnMe; 
   }; 
   
+  DollGearBarMouseEvents.prototype.setWalkStep = function(num){ 
+    this.walkStep = num;
+    
+    if(num === 2){
+        
+      this.dollEditor.gearBarSliderLevels.children[0].material.color.setHex(0xA19EA1);
+      this.dollEditor.gearBarSliderLevels.children[1].material.color.setHex(0xA19EA1);
+      this.dollEditor.gearBarSlider.position.y = -5.7;
+    }
+    else if(num === 3){
+      for (var i = 0; i < 6; i++) {
+        this.dollEditor.gearBarSliderLevels.children[i].material.color.setHex(0xA19EA1);
+      };
+       
+      this.dollEditor.gearBarSlider.position.y = -0.30;
+    }
+  }; 
   DollGearBarMouseEvents.prototype.walkTourSet = function(clickedLevel){  
   
     if(this.walkStep === 1 && clickedLevel === 0){
@@ -280,6 +299,7 @@ define([
     var intersects2 = raycaster.intersectObjects( this.dollEditor.objsToIntersect, true );
 
     var entered = false;
+    var overGearLevels = false;
 
     for (var i = intersects2.length - 1; i >= 0; i--) {  
       if ( this.INTERSECTED !== intersects2[i].object && intersects2[i].object.name === 'doll') {
@@ -303,19 +323,16 @@ define([
       // gear tour levels
       if((intersects2[i].object.name === 0) || (intersects2[i].object.name === 1) || (intersects2[i].object.name === 2) || (intersects2[i].object.name === 3) || (intersects2[i].object.name === 4) || (intersects2[i].object.name === 5) ){
  
-        entered = true;
-
+        entered = true ;
+  
         if(this.dollEditor.levelLabels[intersects2[i].object.name].allowed === true){ 
           intersects2[i].object.visible = true; 
-
+          clearTimeout(this.tooltipMem);
           this.menu.canvasTooltip({
-              'message':levelNames[intersects2[i].object.name],
-              'x':this.dollEditor.levelLabels[intersects2[i].object.name].position.x,
-              'y':this.dollEditor.levelLabels[intersects2[i].object.name].position.y  
-          }); 
-          
-          this.menu.canvasTooltip({
-           'show':true
+            'message':levelNames[intersects2[i].object.name],
+            'x':this.dollEditor.levelLabels[intersects2[i].object.name].position.x,
+            'y':this.dollEditor.levelLabels[intersects2[i].object.name].position.y,
+            'show':true
           });
 
           document.getElementById(this.container).style.cursor = 'pointer';
@@ -335,8 +352,17 @@ define([
         intersects2[i].object.material.color.setHex(0x6F6299); 
       }   
     };
+     
     if(entered === false ){
-
+      
+      if(this.firstTimeEnded === true){
+        this.tooltipIsVisible = false; 
+ 
+        this.menu.canvasTooltip({ 
+          'show':false
+        });
+      }
+       
       this.INTERSECTED = null; 
       document.getElementById(this.container).style.cursor = 'auto';  
       this.dollEditor.gearBar.children[1].material.color.setHex(0xA19EA1);
@@ -344,11 +370,7 @@ define([
       this.dollEditor.dollHolder.children[0].material.color.setHex(0xA19EA1);
       this.dollEditor.dollHolder.children[2].material.color.setHex(0xA19EA1);
       this.dollEditor.dollHolder.children[3].material.color.setHex(0xA19EA1);
-
-      this.menu.canvasTooltip({
-        'show':false
-      }); 
-
+  
       for (var f = this.dollEditor.levels.length - 1; f >= 0; f--) { 
         this.dollEditor.levels[f].visible = false; 
       };

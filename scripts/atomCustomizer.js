@@ -68,7 +68,7 @@ define([
       }
       else{
         var arg = {   
-          'color' : '#0xCC2EFA',
+          'color' : '#CC2EFA',
           'opacity' : 1,
           'visibility' : true,
           'single' : !ctrl
@@ -77,7 +77,7 @@ define([
       }
     }
     else{ 
-
+       
       if(this.singleAtom !== undefined){
         this.singleAtom.setColorMaterial();
         this.closeAtomMenu();
@@ -116,11 +116,17 @@ define([
 
     var _this = this;
 
-    for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
-      this.lattice.actualAtoms[i].setColorMaterial(this.lattice.actualAtoms[i].cachedColor);
+    for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) {
+      var c = this.lattice.actualAtoms[i].object3d.children[0].material.color;
+      if(c.r !== 1 && c.g !== 0 && c.b !== 0){ 
+        this.lattice.actualAtoms[i].setColorMaterial(this.lattice.actualAtoms[i].cachedColor);
+      }
     }
     for (var i = this.lattice.cachedAtoms.length - 1; i >= 0; i--) { 
-      this.lattice.cachedAtoms[i].setColorMaterial(this.lattice.cachedAtoms[i].cachedColor);
+      var c = this.lattice.cachedAtoms[i].object3d.children[0].material.color;
+      if(c.r !== 1 && c.g !== 0 && c.b !== 0){ 
+        this.lattice.cachedAtoms[i].setColorMaterial(this.lattice.cachedAtoms[i].cachedColor);
+      }
     }
  
     this.singleAtom = undefined;
@@ -130,7 +136,7 @@ define([
   };
   AtomCustomizer.prototype.customizeAtom = function(arg){ 
     var _this = this;
-    
+   
     if(arg.finish !== undefined){
       this.closeAtomMenu(arg);
       return;
