@@ -1256,6 +1256,10 @@ define([
             case 'reset':{
                 takeAction('selectedLattice',jQuery('#selected_lattice'),$messages.getMessage(18));
                 takeAction('latticePadlock',jQuery('#latticePadlock'),false);
+                takeAction('repeatX',jQuery('#repeatX'),1);
+                takeAction('repeatY',jQuery('#repeatY'),1);
+                takeAction('repeatZ',jQuery('#repeatZ'),1);
+                break;
             }
                 
         };
@@ -1480,6 +1484,7 @@ define([
                 
             // PnD Tab
             case 'planesColor':{
+                console.log('asd');
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
