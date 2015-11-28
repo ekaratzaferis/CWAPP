@@ -386,7 +386,9 @@ define([
                 jQuery('body').mCustomScrollbar("scrollTo",'top');
             },200);
             $setUI.setValue({
-                reset: true 
+                reset: {
+                    value: true
+                }
             });
         });
     };

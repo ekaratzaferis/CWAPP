@@ -34,8 +34,20 @@ define([
     };
     
     function retrieveValue(index,selector){
+        
         switch(index){
-            
+            case 'planeVisibility':{
+                if (jQuery('#planesTable').find('#'+selector).find('.planeButton').hasClass('visible')) return true;
+                else return false;
+            }
+            case 'parallel':{
+                if (jQuery('#planesTable').find('#'+selector).find('.parallel').hasClass('active')) return true;
+                else return false;
+            }
+            case 'interception':{
+                if (jQuery('#planesTable').find('#'+selector).find('.interception').hasClass('active')) return true;
+                else return false;
+            }
         };
     };
     function retrieveValueFromID(index){

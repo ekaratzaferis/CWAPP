@@ -1484,7 +1484,6 @@ define([
                 
             // PnD Tab
             case 'planesColor':{
-                console.log('asd');
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
