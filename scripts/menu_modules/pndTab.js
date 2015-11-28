@@ -335,6 +335,10 @@ define([
         if ( argument['i'] === undefined ) parameters = '['+argument['h']+','+argument['k']+','+argument['l']+']';
         else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
         
+        // Buttons //
+        if (!(_.isUndefined(argument.parallel))) (argument.parallel) ? argument.parallel = 'active' : argument.parallel = '';
+        if (!(_.isUndefined(argument.interception))) (argument.interception) ? argument.interception = 'active' : argument.interception = '';
+        
         // Add,Edit,Remove Entry //
         switch(argument['action']){
             case 'save':

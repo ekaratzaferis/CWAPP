@@ -85,12 +85,12 @@ define([
         // Cancel Animation //
         jQuery('body').on('click', function(){
             if (!(_.isUndefined($animating))){
+                console.log($animating);
                 if ($animating.hasClass('stop')){
                     $animating.removeClass('highlight');
                     $animating.removeClass('animating');
                     $animating.removeClass('stop');
                     $animating.stop();
-                    $animating = undefined;
                 }
                 if ($animating.hasClass('animating')) $animating.addClass('stop');
                 if ($animating.hasClass('highlight')) $animating.addClass('animating');
