@@ -368,6 +368,8 @@ define([
         });
 
 
+        console.log(this.getPlaneToggles(0));
+        
         /*$
 
         _.each(fixedDimensions, function($parameter, k) {
@@ -604,6 +606,13 @@ define([
             millerL: {id:'millerL'}, 
             millerI: {id:'millerI'}
         });
+    };
+    Menu.prototype.getPlaneToggles = function(id){
+        return getUIValueModule.getValue({
+            planeVisibility: {id:'planeVisibility', selector: id}, 
+            parallel: {id:'parallel', selector: id}, 
+            interception: {id:'interception', selector: id}
+        });   
     };
     Menu.prototype.disablePlaneInputs = function(values){
         var argument = {};
