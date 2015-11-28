@@ -67,6 +67,10 @@ define([
             // Enable Motif Tab //
             $menuRibbon.disableTab({ 'motifTab': false });
             $menuRibbon.blockTab({ 'motifTab': false });
+            $menuRibbon.disableTab({ 'pndTab': false });
+            $menuRibbon.blockTab({ 'pndTab': false });
+            $menuRibbon.disableTab({ 'visualTab': false });
+            $menuRibbon.blockTab({ 'visualTab': false });
             
             // Enable Lattice Padlock
             $disableUIElement.disableElement({
