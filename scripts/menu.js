@@ -367,8 +367,6 @@ define([
             i++;
         });
 
-
-        console.log(this.getPlaneToggles(0));
         
         /*$
 
