@@ -125,8 +125,8 @@ define([
                     var argument = {};
                     argument[k] = {
                         value: $parameter.val(),
-                        publish: publish[k]
-                    }
+                        publish: publish
+                    };
                     $setUIValue.setValue(argument);
                 });   
             }
@@ -174,7 +174,7 @@ define([
                     var argument = {};
                     argument[k] = {
                         value: $parameter.val(),
-                        publish: publish[k]
+                        publish: publish
                     }
                     $setUIValue.setValue(argument);
 
