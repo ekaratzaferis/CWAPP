@@ -561,16 +561,16 @@ define([
             }
                 
             // PnD Tab
-            case 'planesColor':{
+            case 'planeColor':{
                 selector.spectrum('set',value);
                 selector.children().css('background',value);
                 break;
             }
-            case 'planesOpacity':{
+            case 'planeOpacity':{
                 selector.val(value);
                 break;
             }
-            case 'planesName':{
+            case 'planeName':{
                 selector.val(value);
                 break;
             }
@@ -1483,15 +1483,15 @@ define([
             }
                 
             // PnD Tab
-            case 'planesColor':{
+            case 'planeColor':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
-            case 'planesOpacity':{
+            case 'planeOpacity':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
-            case 'planesName':{
+            case 'planeName':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
@@ -1516,6 +1516,7 @@ define([
                 break;
             }
             case 'dirRadius':{
+                value.dirRadius = $stringEditor.divide10(value.dirRadius).toString();
                 PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
@@ -1560,6 +1561,7 @@ define([
                 break;
             }
             case 'directionVisibility':{
+                console.log(value);
                 PubSub.publish(events.DIRECTION_VISIBILITY, value);
                 break;
             }

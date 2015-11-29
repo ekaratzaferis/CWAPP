@@ -92,7 +92,7 @@ define([
                     cancelText: "Close",
                     move: function(){
                         $setUIValue.setValue({
-                            planesColor:{
+                            planeColor:{
                                 other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
@@ -101,7 +101,7 @@ define([
                     },
                     change: function(){
                         $setUIValue.setValue({
-                            planesColor:{
+                            planeColor:{
                                 other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
@@ -144,7 +144,7 @@ define([
                         $setUIValue.setValue({
                             directionColor:{
                                 other: $parameter,
-                                publish:{directionColor:'#'+$parameter.spectrum('get').toHex()},
+                                publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
                         });
@@ -153,7 +153,7 @@ define([
                         $setUIValue.setValue({
                             directionColor:{
                                 other: $parameter,
-                                publish:{directionColor:'#'+$parameter.spectrum('get').toHex()},
+                                publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
                         });

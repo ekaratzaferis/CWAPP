@@ -30,7 +30,9 @@ define([
     'latticeTab',
     'motifTab',
     'libraryTab',
-    'notesTab'
+    'notesTab',
+    'tag-it.min',
+    'jquery.qrcode-0.12.0.min'
 ], function(
     jQuery,
     jQuery_ui,
@@ -58,7 +60,9 @@ define([
     latticeTab,
     motifTab,
     libraryTab,
-    notesTab
+    notesTab,
+    tagIt,
+    qrCode
 ) 
 {
 

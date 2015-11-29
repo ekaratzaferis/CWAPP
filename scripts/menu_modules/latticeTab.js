@@ -537,14 +537,9 @@ define([
                 removeLatticeRestrictions();
                 
                 // Motif Padlock //
-                if (!($motifPadlock.children().addClass('active'))) $motifPadlock.find('a').button('toggle');
-                $motifPadlock.children().addClass('active');
-                
-                // Turn off tangency //
                 $setUIValue.setValue({
-                    tangency: {
-                        value: true,
-                        publish:{button:'tangency',tangency:false},
+                    motifPadlock:{
+                        publish: { padlock: true }
                     }
                 });
                 
@@ -707,6 +702,10 @@ define([
         });
     };
     function unlockMotifPadlock(){
+        
+        if (!($motifPadlock.children().addClass('active'))) $motifPadlock.find('a').button('toggle');
+        $motifPadlock.children().addClass('active');
+        
         // Turn off tangency //
         $setUIValue.setValue({
             tangency: {
@@ -729,6 +728,10 @@ define([
         $userDialog.showInfoDialog({ messageID : 2 });
     };
     function lockMotifPadlock(){
+        
+        if ($motifPadlock.children().addClass('active')) $motifPadlock.find('a').button('toggle');
+        $motifPadlock.children().removeClass('active');
+        
         // Turn on tangency //
         $setUIValue.setValue({
             tangency: {
