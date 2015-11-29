@@ -83,7 +83,7 @@ define([
 
   };
   MillerPlane.prototype.setOpacity = function( opacity) {
-      
+      console.log(opacity);
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity;
     this.object3d.material.needsUpdate = true;

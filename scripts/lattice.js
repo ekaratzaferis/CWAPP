@@ -1,5 +1,5 @@
-'use strict';
 
+'use strict';
 define([
   'pubsub', 'three', 'underscore',
   'point', 'grid','face','millervector','millerplane', 'crystalAtom', 'explorer'
@@ -959,8 +959,7 @@ define([
 
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
   
-          var vertexIndex = this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1;
-          var atomCentre = this.actualAtoms[i].object3d.position.clone();
+          var vertexIndex = this.actualAtoms[i].object3d.children[0].geometry.vertices.length-1; 
 
           while( vertexIndex >= 0 )
           {     
@@ -1011,8 +1010,7 @@ define([
 
         if(collisionResultsF.length !== 1){ // case its center is not fully inside (if it is nothing happens and it remains visible)
   
-          var vertexIndex = this.cachedAtoms[i].object3d.children[0].geometry.vertices.length-1;
-          var atomCentre = this.cachedAtoms[i].object3d.position.clone();
+          var vertexIndex = this.cachedAtoms[i].object3d.children[0].geometry.vertices.length-1; 
 
           while( vertexIndex >= 0 )
           {     
@@ -1139,22 +1137,20 @@ define([
 
   };
   var bbHelper = [];
+
+  var tt=true;
   Lattice.prototype.lineHelper = function(a,b, color, pass){
-     
+    if(tt){
+      tt=false;
+      return;
+    }
+    else{
+      tt = true; 
+    }
     var material = [ new THREE.LineBasicMaterial({ color: color  }) ];
     var geometry = new THREE.Geometry();
     
     var scene = Explorer.getInstance().object3d;
-    
-     
-    var g=0;
-    if(pass === 8) {  
-      while(g<bbHelper.length) {   
-        scene.remove(bbHelper[g] );
-        g++;
-      }
-      bbHelper.splice(0);
-    } 
      
 
     geometry.vertices.push( a, b );
@@ -2053,7 +2049,7 @@ define([
   Lattice.prototype.planeParameterChange = function(arg) {
 
     var checkParams = this.menu.getPlaneInputs();
-       
+         
     if(checkParams.millerH.length === 0 || checkParams.millerK.length === 0 || checkParams.millerL.length === 0){ 
       return;
     }
@@ -2089,9 +2085,10 @@ define([
         millerL: $('#millerL').val(),
         planeColor: '#'+($('#planeColor').spectrum("get").toHex()), //alex fix
         planeName: "",
-        planeOpacity: $('#planeOpacity').val() 
+        planeOpacity: $('#planeOpacity').val(),
+        parallel: arg.parallel
       }
-
+ 
       for (var i = 0; i < this.tempPlanes.length; i++) {
         this.tempPlanes[i].plane.destroy(); 
       };  
@@ -2345,8 +2342,11 @@ define([
         millerI : plane.i,
         planeColor : plane.planeColor,
         planeOpacity : plane.planeOpacity,
-        planeName : plane.planeName  
+        planeName : plane.planeName,  
+        parallel : plane.parallel,  
+        interception : plane.interception  
       };    
+
       this.createMillerPlane(params, false, true);   
     }
     
@@ -2420,23 +2420,78 @@ define([
     var visible = arg.parallel;
 
     if(arg.id === 'current'){
-        id = ("_"+($('#millerH').val())+""+($('#millerK').val())+""+($('#millerL').val())+"");
+      id = ("_"+($('#millerH').val())+""+($('#millerK').val())+""+($('#millerL').val())+"");
     } 
     for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
-        if(this.millerPlanes[i].id === id && this.millerPlanes[i].parallel !== 1 ){
-            this.millerPlanes[i].plane.setVisible(arg.parallel);
-        }
-        
+      if(this.millerPlanes[i].id === id && this.millerPlanes[i].parallelIndex !== 1 ){
+        this.millerPlanes[i].plane.setVisible(arg.parallel);
+        this.millerPlanes[i].parallel = arg.parallel ;
+      } 
     };
     for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
-        if(this.tempPlanes[i].id === id && this.tempPlanes[i].parallel !== 1 ){
-            this.tempPlanes[i].plane.setVisible(arg.parallel);
-        }
-        
+      if(this.tempPlanes[i].id === id && this.tempPlanes[i].parallelIndex !== 1 ){
+        this.tempPlanes[i].plane.setVisible(arg.parallel);
+        this.tempPlanes[i].parallel = arg.parallel ;
+      } 
     };
   };
   Lattice.prototype.interceptedPlane = function(arg) {
-    console.log(arg);
+    var plane;
+    if(arg.interception === true){  
+      if(arg.id === 'current'){
+        for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
+          if( this.tempPlanes[i].parallelIndex === 1){
+            plane = this.tempPlanes[i];
+          }
+        };
+      }
+      else{ 
+        for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
+          if(this.millerPlanes[i].id === arg.id && this.millerPlanes[i].parallelIndex === 1){
+            plane = this.millerPlanes[i];
+          }
+        }; 
+      }
+
+      for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+
+        var originPointF = this.actualAtoms[i].object3d.position.clone();
+        var radius = this.actualAtoms[i].getRadius();
+        var collided = false;
+
+        for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
+          var v = (plane.plane.object3d.geometry.vertices[j].add(plane.plane.object3d.position.clone())).distanceTo(originPointF) ; 
+          if( v <= radius){
+            collided = true;
+            this.actualAtoms[i].cachedColor === this.actualAtoms[i].color;
+            this.actualAtoms[i].setColorMaterial(0xff0000 );
+          }
+        };
+        if(collided === false){ 
+          for (var vertexIndex = 0; vertexIndex < this.actualAtoms[i].object3d.children[0].geometry.vertices.length; vertexIndex++)
+          {       
+            var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+            var globalVertex = localVertex.applyMatrix4(this.actualAtoms[i].object3d.children[0].matrixWorld);
+            var directionVector = globalVertex.sub( originPointF );     
+            //this.lineHelper(originPointF.clone(), (localVertex.clone()).add(originPointF.clone()), 0xFFFFFF);
+            var ray = new THREE.Raycaster( originPointF, localVertex.clone().normalize() );
+             
+            var collisionResults = ray.intersectObjects( [plane.plane.object3d] );
+
+            if ( collisionResults.length > 0 && collisionResults[0].distance < radius ) 
+            { 
+              this.actualAtoms[i].cachedColor === this.actualAtoms[i].color;
+              this.actualAtoms[i].setColorMaterial(0xff0000 );
+            }
+          }
+        }
+      }
+    }
+    else{
+      this.actualAtoms.forEach(function(atom, i) {   
+        atom.setColorMaterial(atom.cachedColor) ;
+      });
+    }
   };
   function identicalPoints(a,b){
 
@@ -2711,6 +2766,7 @@ define([
   } 
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
+     
     var parameters = this.parameters ;
     var hInit = parseInt(millerParameters.millerH); 
     var kInit = parseInt(millerParameters.millerK); 
@@ -2738,7 +2794,15 @@ define([
         // infinite loop stopper
         finished = true;
       }
-      var visible = (m === 1) ? true : false;
+
+      var visible;
+      if(m === 1 || millerParameters.parallel === true){
+        visible = true;
+      }
+      else{
+        visible = false;
+      }
+
       var h = ( hInit !== 0 ) ? (1/hInit)*m : 0 ;  
       var k = ( kInit !== 0 ) ? (1/kInit)*m : 0 ;
       var l = ( lInit !== 0 ) ? (1/lInit)*m : 0 ;
@@ -2808,14 +2872,15 @@ define([
 
                   if(!temp){ 
                     _this.millerPlanes[id] = {
-                      visible: true,
+                      visible: visible,
                       plane : x, 
                       a : a_, 
                       b : b_, 
                       c : c_, 
                       d : d_, 
                       e : e_, 
-                      parallel : m,
+                      parallelIndex : m,
+                      parallel : millerParameters.parallel,
                       id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                       h : parseInt(millerParameters.millerH),
                       k : parseInt(millerParameters.millerK),
@@ -2824,13 +2889,14 @@ define([
                       planeColor : millerParameters.planeColor,
                       planeName : millerParameters.planeName,
                       lastSaved : { 
-                        visible: true,  
+                        visible: visible,  
                         a : a_, 
                         b : b_, 
                         c : c_, 
                         d : d_, 
                         e : e_,
-                        parallel : m,
+                        parallelIndex : m,
+                        parallel : millerParameters.parallel,
                         id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                         h : parseInt(millerParameters.millerH),
                         k : parseInt(millerParameters.millerK),
@@ -2845,14 +2911,15 @@ define([
                   else{ 
                     if(_lastSaved !== undefined){
                       _this.tempPlanes.push({
-                        visible: true,
+                        visible: visible,
                         plane : x, 
                         a : a_, 
                         b : b_, 
                         c : c_, 
                         d : d_, 
                         e : e_, 
-                        parallel : m,
+                        parallelIndex : m,
+                        parallel : millerParameters.parallel,
                         id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                         h : parseInt(millerParameters.millerH),
                         k : parseInt(millerParameters.millerK),
@@ -2861,13 +2928,14 @@ define([
                         planeColor : millerParameters.planeColor,
                         planeName : millerParameters.planeName,
                         lastSaved : { 
-                          visible: true, 
+                          visible: visible, 
                           a : a_, 
                         b : b_, 
                         c : c_, 
                         d : d_, 
                         e : e_, 
-                          parallel : m,
+                          parallelIndex : m,
+                          parallel : millerParameters.parallel,
                           id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                           h : parseInt(millerParameters.millerH),
                           k : parseInt(millerParameters.millerK),
@@ -2880,14 +2948,15 @@ define([
                     }
                     else{ 
                       _this.tempPlanes.push({
-                        visible: true,
+                        visible: visible,
                         plane : x, 
                         a : a_, 
                         b : b_, 
                         c : c_, 
                         d : d_, 
                         e : e_, 
-                        parallel : m,
+                        parallelIndex : m,
+                        parallel : millerParameters.parallel,
                         id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                         h : parseInt(millerParameters.millerH),
                         k : parseInt(millerParameters.millerK),
@@ -3019,13 +3088,14 @@ define([
                     id = _this.generatePlaneKey();
                     if(!temp){ 
                       _this.millerPlanes[id] = {
-                        visible: true,
+                        visible: visible,
                         plane : x, 
                         a : _a, 
                         b : _b, 
                         c : _c , 
                         d : _d , 
-                        parallel : m,
+                        parallelIndex : m,
+                        parallel : millerParameters.parallel,
                         id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                         h : parseInt(millerParameters.millerH),
                         k : parseInt(millerParameters.millerK),
@@ -3034,12 +3104,13 @@ define([
                         planeColor : millerParameters.planeColor,
                         planeName : millerParameters.planeName,
                         lastSaved : { 
-                          visible: true,  
+                          visible: visible,  
                           a : _a, 
                           b : _b, 
                           c : _c, 
                           d : _d,
-                          parallel : m,
+                          parallelIndex : m,
+                          parallel : millerParameters.parallel,
                           l : parseInt(millerParameters.millerL),
                           id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                           h : parseInt(millerParameters.millerH),
@@ -3055,13 +3126,14 @@ define([
                     else{
                       if(_lastSaved !== undefined){ 
                         _this.tempPlanes.push({
-                          visible: true,
+                          visible: visible,
                           plane : x, 
                           a : _a, 
                           b : _b, 
                           c : _c , 
                           d : _d ,
-                          parallel : m, 
+                          parallelIndex : m,
+                          parallel : millerParameters.parallel, 
                           id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                           h : parseInt(millerParameters.millerH),
                           k : parseInt(millerParameters.millerK),
@@ -3070,12 +3142,13 @@ define([
                           planeColor : millerParameters.planeColor,
                           planeName : millerParameters.planeName,
                           lastSaved : { 
-                            visible: true,  
+                            visible: visible,  
                             a : _a, 
                             b : _b, 
                             c : _c , 
                             d : _d ,
-                            parallel : m,
+                            parallelIndex : m,
+                            parallel : millerParameters.parallel,
                             l : parseInt(millerParameters.millerL),
                             id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                             h : parseInt(millerParameters.millerH),
@@ -3089,13 +3162,14 @@ define([
                       }
                       else{
                         _this.tempPlanes.push({
-                          visible: true,
+                          visible: visible,
                           plane : x, 
                           a : _a, 
                           b : _b, 
                           c : _c , 
                           d : _d ,
-                          parallel : m,
+                          parallelIndex : m,
+                          parallel : millerParameters.parallel,
                           id : ("_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+""),
                           h : parseInt(millerParameters.millerH),
                           k : parseInt(millerParameters.millerK),
@@ -3545,7 +3619,9 @@ define([
               'millerL' : this.tempPlanes[0].lastSaved.l,
               'planeColor' : this.tempPlanes[0].lastSaved.planeColor,
               'planeOpacity' : this.tempPlanes[0].lastSaved.planeOpacity,
-              'planeName' : this.tempPlanes[0].lastSaved.planeName   
+              'planeName' : this.tempPlanes[0].lastSaved.planeName,   
+              'parallel' : this.tempPlanes[0].lastSaved.parallel,   
+              'interception' : this.tempPlanes[0].lastSaved.interception   
             }, 
             false, 
             false, 
@@ -3558,7 +3634,9 @@ define([
               'millerL' : this.tempPlanes[0].lastSaved.l,
               'planeColor' : this.tempPlanes[0].lastSaved.planeColor,
               'planeOpacity' : this.tempPlanes[0].lastSaved.planeOpacity, 
-              'planeName' : this.tempPlanes[0].lastSaved.planeName  
+              'planeName' : this.tempPlanes[0].lastSaved.planeName,  
+              'parallel' : this.tempPlanes[0].lastSaved.parallel,  
+              'interception' : this.tempPlanes[0].lastSaved.interception  
             }, 
             this.planeState.editing, 
             'edit'
@@ -3580,7 +3658,7 @@ define([
     if(this.planeState.editing !== '-' && alreadyExists !== true){
       this.updatePlaneList(undefined, this.planeState.editing, 'delete');  
     }
-    var h,k,l,name,color,visible, opacity, index, cnt = 0; 
+    var h,k,l,name,color,visible, opacity,parallel, interception, index, cnt = 0; 
   
     for (var j = 0; j < this.millerPlanes.length; j++) {  
       if(this.millerPlanes[j].id === which) { 
@@ -3591,6 +3669,8 @@ define([
           name = this.millerPlanes[j].planeName;
           color =  this.millerPlanes[j].planeColor;
           opacity =  this.millerPlanes[j].planeOpacity;   
+          parallel =  this.millerPlanes[j].parallel;   
+          interception =  this.millerPlanes[j].interception;   
         }
         this.millerPlanes[j].plane.destroy(); 
         cnt++;
@@ -3606,7 +3686,9 @@ define([
         'millerL' : l,
         'planeColor' : color,
         'planeOpacity' : opacity,
-        'planeName' : name
+        'planeName' : name,
+        'parallel' : parallel,
+        'interception' : interception
       }, 
       true, 
       false, 
@@ -3636,6 +3718,9 @@ define([
     }
    
     var params = this.menu.getPlaneInputs();
+    var toggles = this.menu.getPlaneToggles(which);
+
+    for (var attrname in toggles) { params[attrname] = toggles[attrname]; }
 
     if ( isNaN(params.millerH) || isNaN(params.millerK) || isNaN(params.millerL) ) {
       return;
@@ -3682,7 +3767,7 @@ define([
             'millerL' : '',
             'millerI' : '',
             'planeName' : '',  
-            'planeColor' : '#1F2227'
+            'planeColor' : '#1F2227' 
           } , 
           'current', 
           'save'
@@ -3790,7 +3875,9 @@ define([
             'name' : millerParameters.planeName,
             'id' : id,
             'oldId' : oldId,
-            'color' : millerParameters.planeColor
+            'color' : millerParameters.planeColor,
+            'parallel' : millerParameters.parallel,
+            'interception' : millerParameters.interception
           } 
         );
       }
@@ -4400,9 +4487,9 @@ define([
     return l;
   };
   Lattice.prototype.atomToggle = function(arg){ 
-    var visible = arg.atomToggle ;
-    this.actualAtoms.forEach(function(atom, i) {  
-      atom.object3d.visible = visible ;
+    var visible = arg.atomToggle ; 
+    this.actualAtoms.forEach(function(atom, i) {   
+      atom.setVisibility(visible) ;
     });
   };
   Lattice.prototype.planeToggle = function(arg){ 
