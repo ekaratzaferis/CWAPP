@@ -599,6 +599,9 @@ define([
         });
         setUIValueModule.setValue(argument); 
     };
+    Menu.prototype.editPlaneToggles = function(argument){
+        pndTabModule.editPlaneToggles(argument);
+    };
     Menu.prototype.getPlaneInputs = function(){
         return getUIValueModule.getValue({
             planeColor: {id:'planeColor'}, 
