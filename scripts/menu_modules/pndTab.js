@@ -312,6 +312,16 @@ define([
         return argument;
     };
     
+    pndTab.prototype.editPlaneToggles = function(argument){
+        if (!(_.isUndefined(argument.parallel))){
+            if (argument.parallel === true) $planesTable.find('#'+argument.id).find('.parallel').addClass('active');
+            else $planesTable.find('#'+argument.id).find('.parallel').removeClass('active');
+        }
+        if (!(_.isUndefined(argument.interception))){
+            if (argument.interception === true) $planesTable.find('#'+argument.id).find('.interception').addClass('active');
+            else $planesTable.find('#'+argument.id).find('.interception').removeClass('active');
+        }
+    }
     pndTab.prototype.hidePlanes = function(state){
         if (state === true){
             $planesTable.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
