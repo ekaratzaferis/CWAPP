@@ -30,7 +30,7 @@ define([
     this.opacity = opacity ; 
     this.myID = id; 
     this.elementName = elementName; 
-    this.viewMode = 'Classic' ; 
+    this.viewMode = 'cellClassic' ; 
     this.subtractedForCache = { 'object3d': undefined} ; 
     this.userOffset = {"x":0, "y":0, "z":0};
     this.helperPos = {"x":0, "y":0, "z":0};  

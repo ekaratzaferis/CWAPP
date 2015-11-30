@@ -4,6 +4,8 @@
   for Cell : 1.every time the user drags and leaves an atom,  2. every time he uses the length/angle sliders, 3. every time an atom is deleted/added
   for Motif : 1.every time the user drags and leaves an atom,  2.. every time an atom is deleted/added
  
+ ray apo point se point-fernw katheto sto plane tou triangle
+
 -- na kleinei me to parallel koumpi 
 -- arnitika
 
