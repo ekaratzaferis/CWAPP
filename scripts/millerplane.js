@@ -13,7 +13,13 @@ define([
 
   function MillerPlane( b, a, c, d, e, opacity, color, visible) {
 
-    this.color = '#'+color; 
+    if(color.charAt(0) === '#'){
+      this.color = color; 
+    }
+    else{
+      this.color = '#'+color; 
+    }
+    
     this.opacity = opacity; 
     this.visible = visible; 
 
