@@ -118,6 +118,9 @@ define([
                 }
                 // Change Handlers
                 $parameter.on('change', function() {
+                    // Disable Interception
+                    if (k!== 'planeName') $planesTable.find('.bg-light-purple').find('.interception').removeClass('active');
+                    
                     // Publish Value
                     var publish = {};
                     publish = parallelInterception(publish);

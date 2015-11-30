@@ -137,7 +137,7 @@ define([
                 
             // PnD Tab
             case 'planeColor':{
-                return jQuery('#planeColor').spectrum('get').toHex();
+                return '#'+jQuery('#planeColor').spectrum('get').toHex();
             }
             case 'planeName':{
                 return jQuery('#planeName').val();

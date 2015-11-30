@@ -197,7 +197,7 @@ define([
                 // Get //
                 var askValue = {};
                 askValue[k] = {id:k};
-                var publish = $getUIValue(askValue);
+                var publish = $getUIValue.getValue(askValue);
                 publish.trigger = 'textbox';
                 
                 // Set Value //
