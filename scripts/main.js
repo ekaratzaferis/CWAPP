@@ -600,7 +600,7 @@ require([
     var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
     var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
 
-    if(mode.distortionOn){
+    if(mode.distortion === true){
       crystalRenderer.cameras[0].fov = 75;
       var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
       var factor = distance/currDistance; 

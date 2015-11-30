@@ -22,6 +22,7 @@ define([
     this.radius = radius;  
     this.material;
     this.materialLetter;
+    this.scale = radius;
     this.identity = id ;
     this.materialls; 
     this.color = color; 
@@ -237,6 +238,14 @@ define([
     this.helperPos.z = pos.z ;
 
     this.viewMode = 'crystalSubstracted';
+  };
+  CrystalAtom.prototype.getScaledRadius = function() { 
+    return (this.radius*this.scale) ;
+  };
+  CrystalAtom.prototype.setScale = function(scale) { 
+    var ratio = this.radius * scale ; 
+    this.object3d.scale.set(ratio,ratio,ratio); 
+    this.scale = scale; 
   };
   CrystalAtom.prototype.removesubtractedForCache = function() {
     Explorer.remove({'object3d' : this.subtractedForCache.object3d});  

@@ -1165,13 +1165,11 @@ define([
   
     if(arg > 10) return ;
     var radius = arg/10;
-    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
-      var ratio = this.actualAtoms[i].radius * radius ; 
-      this.actualAtoms[i].object3d.scale.set(ratio,ratio,ratio); 
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {  
+      this.actualAtoms[i].setScale(radius);  
     };
-    for (var i = this.cachedAtoms.length - 1; i >= 0; i--) { 
-      var ratio = this.cachedAtoms[i].radius * radius ; 
-      this.cachedAtoms[i].object3d.scale.set(ratio,ratio,ratio); 
+    for (var i = this.cachedAtoms.length - 1; i >= 0; i--) {
+      this.cachedAtoms[i].setScale(radius);  
     };  
   };
   Lattice.prototype.destroyPoints = function() {
@@ -2486,13 +2484,13 @@ define([
       for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
         this.actualAtoms[i].setVisibility(false );
       };
-      
+  
       for (var m = planes.length - 1; m >= 0; m--) {
         var plane = planes[m];
         for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
           
           var originPointF = this.actualAtoms[i].object3d.position.clone();
-          var radius = this.actualAtoms[i].getRadius();
+          var radius = this.actualAtoms[i].getScaledRadius();
           var collided = false;
 
           for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
