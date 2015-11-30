@@ -123,6 +123,7 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
+                        other: $colorBorder,
                         value: $colorBorder.spectrum('get').toHex(),
                         publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
                     }
@@ -131,6 +132,7 @@ define([
             change: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
+                        other: $colorBorder,
                         value: $colorBorder.spectrum('get').toHex(),
                         publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
                     }
@@ -146,6 +148,7 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     faceColor:{
+                        other: $colorFilled,
                         value: $colorFilled.spectrum('get').toHex(),
                         publish: { faceColor: $colorFilled.spectrum('get').toHex() }
                     }
@@ -154,6 +157,7 @@ define([
             change: function(){
                 $setUIValue.setValue({
                     faceColor:{
+                        other: $colorFilled,
                         value: $colorFilled.spectrum('get').toHex(),
                         publish: { faceColor: $colorFilled.spectrum('get').toHex() }
                     }
@@ -473,7 +477,12 @@ define([
         });
         $latticePadlock.on('click', function() {
             if (!($latticePadlock.hasClass('disabled'))) latticePadlock();
-        });  
+        }); 
+        $latticePadlock.on('reset',function(){
+            // Clear Lattice Restrictions //
+            removeLatticeRestrictions();
+            localRestrictions = undefined;
+        });
         $motifPadlock.on('click', function() {
             if (!($motifPadlock.hasClass('disabled'))) {
                 if (!($motifPadlock.children().hasClass('active'))) {

@@ -294,6 +294,14 @@ define([
                 }
             });
         });
+        
+        // Reset //
+        $planesTable.on('reset', function(){
+             $planesTable.find('tbody').html('');
+        });
+        $directionTable.on('reset', function(){
+             $directionTable.find('tbody').html('');
+        });
     };
     
     function parallelInterception(argument){
@@ -330,7 +338,6 @@ define([
     };
     pndTab.prototype.editPlane = function(argument){
         var parameters;
-        
         // Parameters [,,,,] //
         if ( argument['i'] === undefined ) parameters = '['+argument['h']+','+argument['k']+','+argument['l']+']';
         else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';

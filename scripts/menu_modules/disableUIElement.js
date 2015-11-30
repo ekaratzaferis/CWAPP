@@ -46,7 +46,6 @@ define([
     function takeAction(index,selector,value){
         switch(index){
             
-            
             // Lattice Tab //
             case 'latticePadlock':{
                 if (value === false){
@@ -377,7 +376,7 @@ define([
                 break;   
             }
                 
-            // Library Tab
+            // Note Tab
             case 'noteOpacity':{
                 selector.prop('disabled', value);
                 break;
@@ -555,6 +554,66 @@ define([
                     selector.removeClass('disabled');
                 }
                 break;   
+            }
+                
+            // Reset
+            case 'reset':{
+                
+                // Lattice
+                takeAction('latticeRefreshButtons',jQuery('.latticeButtons'),true);
+                takeAction('latticePadlock',jQuery('#latticePadlock'),true);
+                takeAction('motifPadlock',jQuery('#motifPadlock'),true);
+                
+                // Motif
+                takeAction('atomPalette',jQuery('#atomPalette'),false);
+                takeAction('saveAtomChanges ',jQuery('.saveAtomChanges'),true);
+                takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),true);
+                takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),true);
+                takeAction('atomPosX',jQuery('#atomPosX'),true);
+                takeAction('atomPosXSlider',jQuery('#atomPosXSlider'),true);
+                takeAction('atomPosY',jQuery('#atomPosY'),true);
+                takeAction('atomPosYSlider',jQuery('#atomPosYSlider'),true);
+                takeAction('atomPosZ',jQuery('#atomPosZ'),true);
+                takeAction('atomPosZSlider',jQuery('#atomPosZSlider'),true);
+                takeAction('atomColor',jQuery('#atomColor'),true);
+                takeAction('atomOpacity',jQuery('#atomOpacity'),true);
+                takeAction('atomOpacitySlider',jQuery('#atomOpacitySlider'),true);
+                takeAction('rotAngleSection','',false);
+                jQuery('#atomTable').hide();
+                
+                // PnD
+                takeAction('newPlane',jQuery('#newPlane'),false);
+                takeAction('savePlane',jQuery('#savePlane'),true);
+                takeAction('deletePlane',jQuery('#deletePlane'),true);
+                takeAction('millerH',jQuery('#millerH'),true);
+                takeAction('millerK',jQuery('#millerK'),true);
+                takeAction('millerL',jQuery('#millerL'),true);
+                takeAction('millerI',jQuery('#millerI'),true);
+                takeAction('planeColor',jQuery('#planeColor'),true);
+                takeAction('planeName',jQuery('#planeName'),true);
+                takeAction('planeOpacity',jQuery('#planeOpacity'),true);
+                jQuery('#planesTable').hide();
+                takeAction('newDirection',jQuery('#newDirection'),false);
+                takeAction('saveDirection',jQuery('#saveDirection'),true);
+                takeAction('deleteDirection',jQuery('#deleteDirection'),true);
+                takeAction('millerU',jQuery('#millerU'),true);
+                takeAction('millerV',jQuery('#millerV'),true);
+                takeAction('millerW',jQuery('#millerW'),true);
+                takeAction('millerT',jQuery('#millerT'),true);
+                takeAction('directionColor',jQuery('#directionColor'),true);
+                takeAction('directionName',jQuery('#directionName'),true);
+                takeAction('dirRadius',jQuery('#dirRadius'),true);
+                jQuery('#directionTable').hide();
+                
+                // Notes
+                takeAction('newNote',jQuery('#newNote'),false);
+                takeAction('saveNote',jQuery('#saveNote'),true);
+                takeAction('deleteNote',jQuery('#deleteNote'),true);
+                takeAction('noteTitle',jQuery('#noteTitle'),true);
+                takeAction('noteOpacity',jQuery('#noteOpacity'),true);
+                takeAction('noteBody',jQuery('#noteBody'),true);
+                takeAction('noteColor',jQuery('#noteColor'),true);
+                jQuery('#notesTable').hide();
             }
         };
     };
