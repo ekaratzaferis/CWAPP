@@ -1622,6 +1622,7 @@ define([
   };
   Lattice.prototype.recreateMotif = function() {
     
+    this.resetPlaneToggles();
     var _this = this;
      
     if(_this.currentMotif.length === 0 ) return ;
@@ -2049,12 +2050,13 @@ define([
   Lattice.prototype.planeParameterChange = function(arg) {
 
     var checkParams = this.menu.getPlaneInputs();
-         
+    
     if(checkParams.millerH.length === 0 || checkParams.millerK.length === 0 || checkParams.millerL.length === 0){ 
       return;
     }
     else if(this.planeState.state === 'creating'){
       this.planePreview('current');
+
       PubSub.publish(events.PLANE_STATE,"editing");
       return; 
     }
@@ -2072,13 +2074,13 @@ define([
       });
     } 
     else if( !_.isUndefined(arg.millerH) || !_.isUndefined(arg.millerK) || !_.isUndefined(arg.millerL) || !_.isUndefined(arg.millerI) ) { 
-      var counter = 0 ;
+      var counter = 0 ; 
       var hInit = parseInt(($('#millerH').val())); 
       var kInit = parseInt(($('#millerK').val())); 
       var lInit = parseInt(($('#millerL').val())); 
       var iInit = parseInt(($('#millerI').val())); 
- 
-      var arg = {
+      
+      var args = {
         millerH: $('#millerH').val(),
         millerI: "",
         millerK: $('#millerK').val(),
@@ -2088,12 +2090,12 @@ define([
         planeOpacity: $('#planeOpacity').val(),
         parallel: arg.parallel
       }
- 
+       
       for (var i = 0; i < this.tempPlanes.length; i++) {
         this.tempPlanes[i].plane.destroy(); 
       };  
       this.tempPlanes.splice(0); 
-      this.createMillerPlane(arg, true, false);
+      this.createMillerPlane(args, true, false);
         
     }   
         
@@ -2312,7 +2314,7 @@ define([
     this.updateLatticeTypeRL(); 
     
     this.menu.progressBarFinish();
-  
+    this.resetPlaneToggles();
   };
   Lattice.prototype.getParameters = function() {
     return this.parameters ;
@@ -2435,63 +2437,101 @@ define([
       } 
     };
   };
+  Lattice.prototype.resetPlaneToggles = function(ids) {
+    var _this = this;
+ 
+    if(ids === undefined){  
+      for (var prop in this.planeList) {
+        this.menu.editPlaneToggles({id : this.planeList[prop].id, /*parallel:false,*/ interception:false});
+      }
+      this.menu.editPlaneToggles({id : 'current', /*parallel:false,*/ interception:false});
+      this.actualAtoms.forEach(function(atom, i) {   
+        atom.setVisibility(true );
+      });
+    }
+    else{
+      for (var i = ids.length - 1; i >= 0; i--) { 
+        var found;
+        if(ids[i] !== undefined)
+        {
+          found = _.find(_this.planeList, function(plane){ if( plane.id === ids[i]) {return plane;}else{return undefined;} });
+        }
+        if(found !== undefined){
+          this.menu.editPlaneToggles({id : found.id, /*parallel:false,*/ interception:false});
+        }
+      };
+      
+    }
+
+  };
   Lattice.prototype.interceptedPlane = function(arg) {
-    var plane;
+    var planes = []; 
+
     if(arg.interception === true){  
       if(arg.id === 'current'){
         for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
           if( this.tempPlanes[i].parallelIndex === 1){
-            plane = this.tempPlanes[i];
+            planes.push(this.tempPlanes[i]);
           }
         };
       }
       else{ 
         for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
           if(this.millerPlanes[i].id === arg.id && this.millerPlanes[i].parallelIndex === 1){
-            plane = this.millerPlanes[i];
+            planes.push(this.millerPlanes[i]);
           }
         }; 
       }
 
       for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+        this.actualAtoms[i].setVisibility(false );
+      };
+      
+      for (var m = planes.length - 1; m >= 0; m--) {
+        var plane = planes[m];
+        for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+          
+          var originPointF = this.actualAtoms[i].object3d.position.clone();
+          var radius = this.actualAtoms[i].getRadius();
+          var collided = false;
 
-        var originPointF = this.actualAtoms[i].object3d.position.clone();
-        var radius = this.actualAtoms[i].getRadius();
-        var collided = false;
-
-        for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
-          var v = (plane.plane.object3d.geometry.vertices[j].add(plane.plane.object3d.position.clone())).distanceTo(originPointF) ; 
-          if( v <= radius){
-            collided = true;
-            this.actualAtoms[i].cachedColor === this.actualAtoms[i].color;
-            this.actualAtoms[i].setColorMaterial(0xff0000 );
-          }
-        };
-        if(collided === false){ 
-          for (var vertexIndex = 0; vertexIndex < this.actualAtoms[i].object3d.children[0].geometry.vertices.length; vertexIndex++)
-          {       
-            var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
-            var globalVertex = localVertex.applyMatrix4(this.actualAtoms[i].object3d.children[0].matrixWorld);
-            var directionVector = globalVertex.sub( originPointF );     
-            //this.lineHelper(originPointF.clone(), (localVertex.clone()).add(originPointF.clone()), 0xFFFFFF);
-            var ray = new THREE.Raycaster( originPointF, localVertex.clone().normalize() );
-             
-            var collisionResults = ray.intersectObjects( [plane.plane.object3d] );
-
-            if ( collisionResults.length > 0 && collisionResults[0].distance < radius ) 
-            { 
-              this.actualAtoms[i].cachedColor === this.actualAtoms[i].color;
-              this.actualAtoms[i].setColorMaterial(0xff0000 );
+          for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
+            var v = (plane.plane.object3d.geometry.vertices[j].add(plane.plane.object3d.position.clone())).distanceTo(originPointF) ; 
+            if( v <= radius){
+              collided = true; 
             }
+          };
+          if(collided === false){ 
+            for (var vertexIndex = 0; vertexIndex < this.actualAtoms[i].object3d.children[0].geometry.vertices.length; vertexIndex++)
+            {       
+              var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
+              var globalVertex = localVertex.applyMatrix4(this.actualAtoms[i].object3d.children[0].matrixWorld);
+              var directionVector = globalVertex.sub( originPointF );     
+              //this.lineHelper(originPointF.clone(), (localVertex.clone()).add(originPointF.clone()), 0xFFFFFF);
+              var ray = new THREE.Raycaster( originPointF, localVertex.clone().normalize() );
+               
+              var collisionResults = ray.intersectObjects( [plane.plane.object3d] );
+
+              if ( collisionResults.length > 0 && collisionResults[0].distance < radius ) 
+              {  
+                collided = true;
+              }
+            }
+          }
+
+          if(collided === true){
+            this.actualAtoms[i].setVisibility(true ); 
           }
         }
       }
+  
     }
     else{
       this.actualAtoms.forEach(function(atom, i) {   
-        atom.setColorMaterial(atom.cachedColor) ;
+        atom.setVisibility(true );
       });
     }
+
   };
   function identicalPoints(a,b){
 
@@ -2766,7 +2806,7 @@ define([
   } 
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
-     
+
     var parameters = this.parameters ;
     var hInit = parseInt(millerParameters.millerH); 
     var kInit = parseInt(millerParameters.millerK); 

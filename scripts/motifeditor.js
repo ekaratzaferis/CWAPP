@@ -1122,8 +1122,7 @@ define([
       }
       spHelper.splice(0);
     } 
-      
-    
+       
     var scene = UnitCellExplorer.getInstance().object3d;
 
     var mesh = new THREE.Mesh(geometry, material[0]);
@@ -5631,9 +5630,13 @@ define([
     var r = _.min(this.motifsAtoms, function(atom){ return (atom.getRadius()); });  
     return r.getRadius() ;
   };
+  Motifeditor.prototype.setTangency = function(arg){
+    this.globalTangency = (arg.tangency);
+    console.log();
+  };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
-      
+      console.log(arg);
     this.padlock = !(arg.padlock);
     this.globalTangency = !(arg.padlock);
       

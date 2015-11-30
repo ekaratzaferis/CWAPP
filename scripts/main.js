@@ -42,7 +42,9 @@ require.config({
     'menuRibbon': 'menu_modules/menuRibbon',
     'userDialog': 'menu_modules/userDialog',
     'modals': 'menu_modules/modals',
-    'dynamictexture': '../vendor/dynamictexture'
+    'dynamictexture': '../vendor/dynamictexture',
+    'tag-it.min': '../vendor/tag-it.min',
+    'jquery.qrcode-0.12.0.min': '../vendor/jquery.qrcode-0.12.0.min'
 
   },
   shim: {
@@ -319,7 +321,10 @@ require([
    
   motifEditor.atomRelationshipManager = atomRelationshipManager;
   lattice.atomRelationshipManager = atomRelationshipManager;
-   
+  
+  // restoring
+  var storeRestoreMech = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
+  
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -589,13 +594,13 @@ require([
       orbitUnitCell.syncCams(false);
     }
   });  
-  menu.onCameraDistortionChange(function(message, mode){ 
+  menu.onCameraDistortionChange(function(message, mode){ console.log(mode);
     var cPos = crystalRenderer.cameras[0].position ;
     var currDistance = (crystalRenderer.cameras[0].position).distanceTo(new THREE.Vector3(0,0,0)) ;
     var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
     var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
 
-    if(mode.distortion){
+    if(mode.distortionOn){
       crystalRenderer.cameras[0].fov = 75;
       var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
       var factor = distance/currDistance; 
@@ -726,6 +731,9 @@ require([
   menu.onPlaneParallel(function(message, arg) { 
     lattice.parallelPlane(arg);
   }); 
+  menu.onAtomTangencyChange(function(message, arg) { 
+    motifEditor.setTangency(arg);
+  });
   menu.onPlaneInterception(function(message, arg) { 
     lattice.interceptedPlane(arg);
   }); 
@@ -764,18 +772,19 @@ require([
   });
   menu.onLabelToggle(function(message, arg) { 
     atomMaterialManager.setLabels(arg);
-  });
+  }); 
   menu.onHighlightTangency(function(message, arg) { 
     atomRelationshipManager.checkForOverlap(arg); 
+  }); 
+  menu.onReset(function(message, arg) { 
+    storeRestoreMech.globalReset(arg); 
   });
-
-
+  
   ///////////////////////
   ///////////////////////
   ///////////////////////
 
   // to read the json file
-  var restore = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
   //document.getElementById('localJSON').addEventListener('change', parseJSON, false);
 
@@ -786,7 +795,7 @@ require([
       var r = new FileReader();
       r.onload = function(e) {  
         var st = JSON.parse(e.target.result);  
-        restore.configureState(st);
+        storeRestoreMech.configureState(st);
 
       }
       r.readAsText(f);
@@ -811,7 +820,7 @@ require([
       }
     })
     .done(function(res) {  
-      restore.configureState(res.data);
+      storeRestoreMech.configureState(res.data);
     }); 
   } 
   

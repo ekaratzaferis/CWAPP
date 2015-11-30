@@ -13,7 +13,7 @@ define([
 
   function MillerPlane( b, a, c, d, e, opacity, color, visible) {
 
-    this.color = color; 
+    this.color = '#'+color; 
     this.opacity = opacity; 
     this.visible = visible; 
 
@@ -56,7 +56,7 @@ define([
 
     geom.mergeVertices();
 
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( {  /*depthWrite: false, depthTest: false ,*/ side:  THREE.DoubleSide, color: color,opacity:opacity/10, transparent: true } ) );
+    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( {  /*depthWrite: false, depthTest: false ,*/ side:  THREE.DoubleSide, color: this.color,opacity:opacity/10, transparent: true } ) );
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
     mesh.visible = visible; 
