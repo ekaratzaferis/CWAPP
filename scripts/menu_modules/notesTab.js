@@ -188,7 +188,12 @@ define([
                     value: true   
                 }
             });
-        });        
+        });
+        
+        // Reset //
+        $notesTable.on('reset', function(){
+             $notesTable.find('tbody').html('');
+        });
     };
     
     function addNote(newID){

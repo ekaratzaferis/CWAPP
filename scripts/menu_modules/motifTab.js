@@ -91,6 +91,11 @@ define([
         if (!(_.isUndefined(argument.latticeTab))) $latticeTab = argument.latticeTab;
         else return false;
         
+        // Reset
+        $atomTable.on('reset',function(){
+            $atomTable.find('tbody').html('');
+        });
+        
         // Input Handlers
         $atomOpacitySlider.slider({
             value: 10,

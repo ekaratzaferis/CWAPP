@@ -123,6 +123,7 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
+                        other: $colorBorder,
                         value: $colorBorder.spectrum('get').toHex(),
                         publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
                     }
@@ -131,6 +132,7 @@ define([
             change: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
+                        other: $colorBorder,
                         value: $colorBorder.spectrum('get').toHex(),
                         publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
                     }
@@ -146,6 +148,7 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     faceColor:{
+                        other: $colorFilled,
                         value: $colorFilled.spectrum('get').toHex(),
                         publish: { faceColor: $colorFilled.spectrum('get').toHex() }
                     }
@@ -154,6 +157,7 @@ define([
             change: function(){
                 $setUIValue.setValue({
                     faceColor:{
+                        other: $colorFilled,
                         value: $colorFilled.spectrum('get').toHex(),
                         publish: { faceColor: $colorFilled.spectrum('get').toHex() }
                     }
@@ -473,7 +477,12 @@ define([
         });
         $latticePadlock.on('click', function() {
             if (!($latticePadlock.hasClass('disabled'))) latticePadlock();
-        });  
+        }); 
+        $latticePadlock.on('reset',function(){
+            // Clear Lattice Restrictions //
+            removeLatticeRestrictions();
+            localRestrictions = undefined;
+        });
         $motifPadlock.on('click', function() {
             if (!($motifPadlock.hasClass('disabled'))) {
                 if (!($motifPadlock.children().hasClass('active'))) {
@@ -537,14 +546,9 @@ define([
                 removeLatticeRestrictions();
                 
                 // Motif Padlock //
-                if (!($motifPadlock.children().addClass('active'))) $motifPadlock.find('a').button('toggle');
-                $motifPadlock.children().addClass('active');
-                
-                // Turn off tangency //
                 $setUIValue.setValue({
-                    tangency: {
-                        value: true,
-                        publish:{button:'tangency',tangency:false},
+                    motifPadlock:{
+                        publish: { padlock: true }
                     }
                 });
                 
@@ -707,6 +711,10 @@ define([
         });
     };
     function unlockMotifPadlock(){
+        
+        if (!($motifPadlock.children().addClass('active'))) $motifPadlock.find('a').button('toggle');
+        $motifPadlock.children().addClass('active');
+        
         // Turn off tangency //
         $setUIValue.setValue({
             tangency: {
@@ -729,6 +737,10 @@ define([
         $userDialog.showInfoDialog({ messageID : 2 });
     };
     function lockMotifPadlock(){
+        
+        if ($motifPadlock.children().addClass('active')) $motifPadlock.find('a').button('toggle');
+        $motifPadlock.children().removeClass('active');
+        
         // Turn on tangency //
         $setUIValue.setValue({
             tangency: {

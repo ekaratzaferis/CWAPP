@@ -297,6 +297,9 @@ define([
                 }
             });
         });
+        $fogCheckbox.on('reset',function(){
+            
+        });
         $fogDensity.val(1);
         $fogDensity.on('change',function(){
             $setUI.setValue({
@@ -381,11 +384,13 @@ define([
             });
         });
         $reset.on('click',function(){
-            jQuery('#latticeTab').find('a').trigger('click');
-            setTimeout(function(){
-                jQuery('body').mCustomScrollbar("scrollTo",'top');
-            },200);
             $setUI.setValue({
+                reset: {
+                    value: true,
+                    publish: true
+                }
+            });
+            $disableUIElement.disableElement({
                 reset: {
                     value: true
                 }

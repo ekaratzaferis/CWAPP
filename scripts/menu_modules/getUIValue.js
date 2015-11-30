@@ -164,7 +164,7 @@ define([
                 return jQuery('#directionName').val();
             }
             case 'dirRadius':{
-                return $stringEditor.divide10(jQuery('#dirRadius').val());
+                return $stringEditor.divide10(jQuery('#dirRadius').val()).toString();
             }
             case 'millerU':{
                 return $stringEditor.inputIsInteger(jQuery('#millerU').val());

@@ -92,7 +92,7 @@ define([
                     cancelText: "Close",
                     move: function(){
                         $setUIValue.setValue({
-                            planesColor:{
+                            planeColor:{
                                 other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
@@ -101,7 +101,7 @@ define([
                     },
                     change: function(){
                         $setUIValue.setValue({
-                            planesColor:{
+                            planeColor:{
                                 other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
@@ -144,7 +144,7 @@ define([
                         $setUIValue.setValue({
                             directionColor:{
                                 other: $parameter,
-                                publish:{directionColor:'#'+$parameter.spectrum('get').toHex()},
+                                publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
                         });
@@ -153,7 +153,7 @@ define([
                         $setUIValue.setValue({
                             directionColor:{
                                 other: $parameter,
-                                publish:{directionColor:'#'+$parameter.spectrum('get').toHex()},
+                                publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
                         });
@@ -294,6 +294,14 @@ define([
                 }
             });
         });
+        
+        // Reset //
+        $planesTable.on('reset', function(){
+             $planesTable.find('tbody').html('');
+        });
+        $directionTable.on('reset', function(){
+             $directionTable.find('tbody').html('');
+        });
     };
     
     function parallelInterception(argument){
@@ -330,7 +338,6 @@ define([
     };
     pndTab.prototype.editPlane = function(argument){
         var parameters;
-        
         // Parameters [,,,,] //
         if ( argument['i'] === undefined ) parameters = '['+argument['h']+','+argument['k']+','+argument['l']+']';
         else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';

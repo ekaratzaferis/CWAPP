@@ -165,6 +165,20 @@ define([
         disableTab({'tab':'visualTab','value':true});
         blockTab({'tab':'visualTab','value':true});
         
+        // Reset Handler
+        $menu.on('reset',function(){
+            disableTab({'tab':'motifTab','value':true});
+            blockTab({'tab':'motifTab','value':true});
+            disableTab({'tab':'pndTab','value':true});
+            blockTab({'tab':'pndTab','value':true});
+            disableTab({'tab':'visualTab','value':true});
+            blockTab({'tab':'visualTab','value':true});
+            latticeTab.find('a').trigger('click');
+            setTimeout(function(){
+                jQuery('body').mCustomScrollbar("scrollTo",'top');
+            },200);
+        });
+        
         // Top Menu Button
         $menuToggler.on('click', function(){
             if ($menu.hasClass('controls-open')) $interfaceResizer.closeMenu();

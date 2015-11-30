@@ -72,6 +72,7 @@ define([
     // Published Events
     var events = {
         AUTO_UPDATE: 'menu.auto_update',
+        RESET: 'menu.reset',
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
         OPEN_QR: 'menu.open_qr',
@@ -264,6 +265,17 @@ define([
             
             // Lattice Tab
             case 'latticePadlock':{
+                if (value === true) {
+                    if (!(selector.children().addClass('active'))) selector.find('a').button('toggle');
+                    selector.children().addClass('active');
+                }
+                else {
+                    if (selector.children().addClass('active')) selector.find('a').button('toggle');
+                    selector.children().removeClass('active');
+                }
+                break;
+            }
+            case 'motifPadlock':{
                 if (value === true) {
                     if (!(selector.children().addClass('active'))) selector.find('a').button('toggle');
                     selector.children().addClass('active');
@@ -561,16 +573,16 @@ define([
             }
                 
             // PnD Tab
-            case 'planesColor':{
+            case 'planeColor':{
                 selector.spectrum('set',value);
                 selector.children().css('background',value);
                 break;
             }
-            case 'planesOpacity':{
-                selector.val(value);
+            case 'planeOpacity':{
+                selector.selectpicker('val',value);
                 break;
             }
-            case 'planesName':{
+            case 'planeName':{
                 selector.val(value);
                 break;
             }
@@ -636,7 +648,7 @@ define([
                 break;
             }
             case 'dirRadius':{
-                selector.val(value);
+                selector.selectpicker('val',value);
                 break;
             }
             case 'directionName':{
@@ -823,7 +835,10 @@ define([
                 var tangency = $getUIValue.getValue({ 'tangency': { 'id': 'tangency' } });
                 if (newVal !== false){
                     if (tangency.tangency === true){
-                        if (newVal > 90) takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                        if (newVal > 90) {
+                            selector.val(newVal);
+                            takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                        }
                         else {
                             $tooltipGenerator.showTooltip({
                                 'target': index,
@@ -835,7 +850,10 @@ define([
                             success = false;
                         }
                     }
-                    else if (newVal > 0) takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                    else if (newVal > 0) {
+                        selector.val(newVal);
+                        takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                    }
                     else {
                         $tooltipGenerator.showTooltip({
                             'target': index,
@@ -1145,11 +1163,11 @@ define([
             case 'fog':{
                 if (value === true) {
                     selector.addClass('active');
-                    selector.icheck('check');
+                    selector.iCheck('check');
                 }
                 else {
                     selector.addClass('active');
-                    selector.icheck('uncheck');
+                    selector.iCheck('uncheck');
                 }
                 break;
             }
@@ -1208,6 +1226,25 @@ define([
                 selector.children().css('background',value);
                 break;
             }
+            
+            // Note Tab
+            case 'noteTitle':{
+                selector.val(value);
+                break;
+            }
+            case 'noteBody':{
+                selector.val(value);
+                break;
+            }
+            case 'noteOpacity':{
+                selector.selectpicker('val',value);
+                break;
+            }
+            case 'noteColor':{
+                selector.spectrum('set',value);
+                selector.children().css('background',value);
+                break;
+            }
                 
             // Library Tab
             case 'noteColor':{
@@ -1254,11 +1291,94 @@ define([
             }
             
             case 'reset':{
+                
+                // Tabs //
+                jQuery('#main_controls_container').trigger('reset'); // Lock tabs
+                
+                // Toggles //
+                takeAction('latticePoints',jQuery('#latticePoints'),true);
+                takeAction('edges',jQuery('#edges'),false);
+                takeAction('faces',jQuery('#faces'),false);
+                takeAction('xyzAxes',jQuery('#xyzAxes'),true);
+                takeAction('abcAxes',jQuery('#abcAxes'),false);
+                takeAction('unitCellViewport',jQuery('#unitCellViewport'),false);
+                takeAction('planes',jQuery('#planes'),true);
+                takeAction('directions',jQuery('#directions'),true);
+                takeAction('atomRadius',jQuery('#atomRadius'),false);
+                takeAction('atomToggle',jQuery('#atomToggle'),true);
+                takeAction('labelToggle',jQuery('#labelToggle'),false);
+                takeAction('highlightTangency',jQuery('#highlightTangency'),false);
+                
+                // Lattice //
                 takeAction('selectedLattice',jQuery('#selected_lattice'),$messages.getMessage(18));
                 takeAction('latticePadlock',jQuery('#latticePadlock'),false);
                 takeAction('repeatX',jQuery('#repeatX'),1);
                 takeAction('repeatY',jQuery('#repeatY'),1);
                 takeAction('repeatZ',jQuery('#repeatZ'),1);
+                takeAction('scaleX',jQuery('#scaleX'),1);
+                takeAction('scaleY',jQuery('#scaleY'),1);
+                takeAction('scaleZ',jQuery('#scaleZ'),1);
+                takeAction('alpha',jQuery('#alpha'),90);
+                takeAction('beta',jQuery('#beta'),90);
+                takeAction('gamma',jQuery('#gamma'),90);
+                takeAction('motifPadlock',jQuery('#motifPadlock'),false);
+                takeAction('cylinderColor',jQuery('#cube_color_border'),'A19EA1');
+                takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
+                takeAction('radius',jQuery('#radius'),'2');
+                takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
+                jQuery('#latticePadlock').trigger('reset'); // Restrictions
+                
+                // Motif //
+                takeAction('tangency',jQuery('#tangency'),false);
+                takeAction('cellVolume',jQuery('#cellVolume'),'100');
+                jQuery('#atomTable').trigger('reset');
+                
+                // Visual //
+                takeAction('realistic',jQuery('#realistic'),true);
+                takeAction('lights',jQuery('#lights'),true);
+                takeAction('distortionOff',jQuery('#distortionOff'),true);
+                takeAction('anaglyph',jQuery('#anaglyph'),false);
+                takeAction('oculus',jQuery('#oculus'),false);
+                takeAction('sideBySide',jQuery('#3DsideBySide'),false);
+                takeAction('onTop',jQuery('#3DonTop'),false);
+                takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),true);
+                takeAction('leapMotion',jQuery('#leapMotion'),false);
+                takeAction('crystalClassic',jQuery('#crystalClassic'),true);
+                takeAction('cellClassic',jQuery('#cellClassic'),true);
+                takeAction('fog',jQuery('input[name="fog"]'),false);
+                takeAction('fogDensity',jQuery('#fogDensity'),1);
+                takeAction('fogColor',jQuery('#fogColor'),'transparent');
+                takeAction('sounds',jQuery('#sounds'),false);
+                takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),'#74629c');
+                takeAction('cellScreenColor',jQuery('#cellScreenColor'),'#74629c');
+                takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),'#74629c');
+                takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),'#74629c');
+                takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),'#74629c');
+                
+                // PnD //
+                takeAction('planeOpacity',jQuery('#planeOpacity'),'6');
+                takeAction('millerH',jQuery('#millerH'),'');
+                takeAction('millerK',jQuery('#millerK'),'');
+                takeAction('millerL',jQuery('#millerL'),'');
+                takeAction('millerI',jQuery('#millerI'),'');
+                takeAction('planeName',jQuery('#planeName'),'');
+                takeAction('planeColor',jQuery('#planeColor'),'transparent');
+                takeAction('directionColor',jQuery('#directionColor'),'transparent');
+                takeAction('millerU',jQuery('#millerU'),'');
+                takeAction('millerV',jQuery('#millerV'),'');
+                takeAction('millerW',jQuery('#millerW'),'');
+                takeAction('millerT',jQuery('#millerT'),'');
+                takeAction('directionName',jQuery('#directionName'),'');
+                takeAction('dirRadius',jQuery('#dirRadius'),'10');
+                jQuery('#planesTable').trigger('reset'); // Empty Table
+                jQuery('#directionTable').trigger('reset'); // Empty Table
+
+                // Notes //
+                takeAction('noteTitle',jQuery('#noteTitle'),'');
+                takeAction('noteOpacity',jQuery('#noteOpacity'),'10');
+                takeAction('noteBody',jQuery('#noteBody'),'');
+                takeAction('noteColor',jQuery('#noteColor'),'transparent');
+                jQuery('#notesTable').trigger('reset');
                 break;
             }
                 
@@ -1483,15 +1603,15 @@ define([
             }
                 
             // PnD Tab
-            case 'planesColor':{
+            case 'planeColor':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
-            case 'planesOpacity':{
+            case 'planeOpacity':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
-            case 'planesName':{
+            case 'planeName':{
                 PubSub.publish(events.PLANE_PARAMETER_CHANGE, value);
                 break;
             }
@@ -1516,6 +1636,7 @@ define([
                 break;
             }
             case 'dirRadius':{
+                value.dirRadius = $stringEditor.divide10(value.dirRadius).toString();
                 PubSub.publish(events.DIRECTION_PARAMETER_CHANGE, value);
                 break;
             }
@@ -1560,6 +1681,7 @@ define([
                 break;
             }
             case 'directionVisibility':{
+                console.log(value);
                 PubSub.publish(events.DIRECTION_VISIBILITY, value);
                 break;
             }
@@ -1742,6 +1864,10 @@ define([
                 break;
             }
 
+            case 'reset':{
+                PubSub.publish(events.RESET, value); 
+                break;
+            }
         };
     };
     

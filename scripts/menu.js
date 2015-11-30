@@ -31,6 +31,8 @@ define([
     'motifTab',
     'libraryTab',
     'notesTab'
+    //'tag-it.min',
+   // 'jquery.qrcode-0.12.0.min'
 ], function(
     jQuery,
     jQuery_ui,
@@ -59,6 +61,8 @@ define([
     motifTab,
     libraryTab,
     notesTab
+    //tagIt,
+    //qrCode
 ) 
 {
 
@@ -85,6 +89,7 @@ define([
     var events = {
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
+        RESET: 'menu.reset',
         DOWNLOAD_PROJECT: 'menu.download_project',
         AUTO_UPDATE: 'menu.auto_update',
         OPEN_QR: 'menu.open_qr',
@@ -967,6 +972,9 @@ define([
     };
     Menu.prototype.onOnTop3D = function(callback){
         PubSub.subscribe(events.ON_TOP_3D, callback);
+    };
+    Menu.prototype.onReset = function(callback){
+        PubSub.subscribe(events.RESET, callback);
     };
 
     return Menu;
