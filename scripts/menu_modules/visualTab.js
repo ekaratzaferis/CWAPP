@@ -133,7 +133,7 @@ define([
             if (value === true){
                 $setUI.setValue({
                     distortionOn:{
-                        publish:{distortionOn:value},
+                        publish:{distortion:true},
                         value:value
                     }
                 });  
@@ -144,7 +144,7 @@ define([
             if (value === true){
                 $setUI.setValue({
                     distortionOff:{
-                        publish:{distortionOff:value},
+                        publish:{distortion:false},
                         value:value
                     }
                 });

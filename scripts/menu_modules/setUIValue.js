@@ -1201,6 +1201,10 @@ define([
                 else selector.slider('disable');
                 break;
             }
+            case 'soundSlider':{
+                selector.slider('value',value);
+                break;
+            }
             case 'crystalScreenColor':{
                 selector.spectrum('set',value);
                 selector.children().css('background',value);
@@ -1332,6 +1336,15 @@ define([
                 takeAction('tangency',jQuery('#tangency'),false);
                 takeAction('cellVolume',jQuery('#cellVolume'),'100');
                 jQuery('#atomTable').trigger('reset');
+                takeAction('atomPosX',jQuery('#atomPosX'),0);
+                takeAction('atomPosY',jQuery('#atomPosY'),0);
+                takeAction('atomPosZ',jQuery('#atomPosZ'),0);
+                takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),{value:false,toggle:true});
+                takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),{value:false,toggle:true});
+                jQuery('.element-symbol-container').hide();
+                jQuery('label[for=txt_coordinates_x]').html('x');
+                jQuery('label[for=txt_coordinates_y]').html('y');
+                jQuery('label[for=txt_coordinates_z]').html('z');
                 
                 // Visual //
                 takeAction('realistic',jQuery('#realistic'),true);
@@ -1349,6 +1362,7 @@ define([
                 takeAction('fogDensity',jQuery('#fogDensity'),1);
                 takeAction('fogColor',jQuery('#fogColor'),'transparent');
                 takeAction('sounds',jQuery('#sounds'),false);
+                takeAction('soundSlider',jQuery('#soundSlider'),75);
                 takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),'#74629c');
                 takeAction('cellScreenColor',jQuery('#cellScreenColor'),'#74629c');
                 takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),'#74629c');
