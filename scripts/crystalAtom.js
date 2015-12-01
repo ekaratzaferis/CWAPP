@@ -22,7 +22,7 @@ define([
     this.radius = radius;  
     this.material;
     this.materialLetter;
-    this.scale = radius;
+    this.scale = 1;
     this.identity = id ;
     this.materialls; 
     this.color = color; 

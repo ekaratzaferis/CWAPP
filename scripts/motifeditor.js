@@ -1719,8 +1719,7 @@ define([
         } 
          
         this.menu.disableMEButtons(
-          {
-            'atomPalette' : true,
+          { 
             'saveAtomChanges' : false,  
             'deleteAtom' : false 
           }
@@ -1766,8 +1765,7 @@ define([
           pos.z = pos.z/ parseFloat(this.cellParameters.scaleZ);
         }  
         this.menu.disableMEButtons(
-          {
-            'atomPalette' : true,
+          { 
             'saveAtomChanges' : false, 
             'deleteAtom' : false 
           }
@@ -5631,12 +5629,10 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.setTangency = function(arg){
-    this.globalTangency = (arg.tangency);
-    console.log();
+    this.globalTangency = (arg.tangency); 
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
-      console.log(arg);
     this.padlock = !(arg.padlock);
     this.globalTangency = !(arg.padlock);
       

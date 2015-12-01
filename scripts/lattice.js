@@ -1824,8 +1824,22 @@ define([
           vertex.applyMatrix4(matrix); 
         });
       }); 
+
+      _.each(_this.tempPlanes, function(plane, reference) { 
+        plane.plane.object3d.geometry.verticesNeedUpdate = true ;
+        var vertices = plane.plane.object3d.geometry.vertices;
+        _.each(vertices, function(vertex , k){  
+          vertex.applyMatrix4(matrix); 
+        });
+      }); 
  
       _.each(_this.millerDirections, function(directional, reference) {
+        directional.startPoint.applyMatrix4(matrix);
+        directional.endpointPoint.applyMatrix4(matrix)
+        updateMillerVector(directional);   
+      }); 
+
+      _.each(_this.tempDirs, function(directional, reference) {
         directional.startPoint.applyMatrix4(matrix);
         directional.endpointPoint.applyMatrix4(matrix)
         updateMillerVector(directional);   
@@ -2465,32 +2479,44 @@ define([
   Lattice.prototype.interceptedPlane = function(arg) {
     var planes = []; 
 
+    // TODO  ray from point of triangle to other points and check collision. create plaen of triangle and take distance to plaen from sphere center, if it is a trinagles point, interception
+ 
     if(arg.interception === true){  
-      if(arg.id === 'current'){
-        for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
-          if( this.tempPlanes[i].parallelIndex === 1){
-            planes.push(this.tempPlanes[i]);
-          }
+       
+
+      var planeFound = false;
+      for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
+        if(this.millerPlanes[i].id === arg.id){ 
+
+          planeFound = true;
+
+          if(this.millerPlanes[i].visible === true){ 
+            planes.push(this.millerPlanes[i]);
+          } 
+        } 
+      }; 
+        
+      if(planeFound === false){ 
+        for (var j = this.tempPlanes.length - 1; j >= 0; j--) { 
+          if( this.tempPlanes[j].plane.visible === true ){ 
+            planes.push(this.tempPlanes[j]);
+          } 
         };
       }
-      else{ 
-        for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
-          if(this.millerPlanes[i].id === arg.id && this.millerPlanes[i].parallelIndex === 1){
-            planes.push(this.millerPlanes[i]);
-          }
-        }; 
-      }
-
+       
       for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
         this.actualAtoms[i].setVisibility(false );
-      };
-  
+      }; 
+
       for (var m = planes.length - 1; m >= 0; m--) {
+
         var plane = planes[m];
+
         for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
           
           var originPointF = this.actualAtoms[i].object3d.position.clone();
           var radius = this.actualAtoms[i].getScaledRadius();
+
           var collided = false;
 
           for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
