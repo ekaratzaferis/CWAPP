@@ -27,6 +27,7 @@
 		<link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css"/>
         <link rel="stylesheet" href="styles/project-theme.css"/>
         <link rel="stylesheet" href="styles/spectrum.css"/>
+        <link rel="stylesheet" href="styles/jquery.tagit.css"/>
 		
         <!-- Main Script -->
         <script data-main="scripts/main" src="vendor/require.js"></script> <!-- loads main.js file -->
@@ -459,7 +460,10 @@
                                                                                     </div>
                                                                                     <div class="col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="scaleZSlider"></div>
+                                                                                            <div class="slider" id="scaleZSlider">
+                                                                                                <div id="scaleZShift"></div>
+                                                                                                <div id="scaleZCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -481,7 +485,10 @@
 
                                                                                     <div class="col col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="scaleXSlider"></div>
+                                                                                            <div class="slider" id="scaleXSlider">
+                                                                                                <div id="scaleXShift"></div>
+                                                                                                <div id="scaleXCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -502,7 +509,10 @@
                                                                                     </div>
                                                                                     <div class="col col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="scaleYSlider"></div>
+                                                                                            <div class="slider" id="scaleYSlider">
+                                                                                                <div id="scaleYShift"></div>
+                                                                                                <div id="scaleYCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -530,7 +540,10 @@
                                                                                     </div>
                                                                                     <div class="col col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="betaSlider"></div>
+                                                                                            <div class="slider" id="betaSlider">
+                                                                                                <div id="betaShift"></div>
+                                                                                                <div id="betaCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -551,7 +564,10 @@
                                                                                     </div>
                                                                                     <div class="col col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="alphaSlider"></div>
+                                                                                            <div class="slider" id="alphaSlider">
+                                                                                                <div id="alphaShift"></div>
+                                                                                                <div id="alphaCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -572,7 +588,10 @@
                                                                                     </div>
                                                                                     <div class="col col-sm-8">
                                                                                         <div class="slider-control slider-control-lg">
-                                                                                            <div class="slider" id="gammaSlider"></div>
+                                                                                            <div class="slider" id="gammaSlider">
+                                                                                                <div id="gammaShift"></div>
+                                                                                                <div id="gammaCollision"></div>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -751,7 +770,10 @@
 																							</div>
 																							<div class="col col-sm-7">
 																								<div class="slider-control slider-control-sm">
-																									<div class="slider" id="atomPosZSlider"></div>
+																									<div class="slider" id="atomPosZSlider">
+                                                                                                        <div id="atomPosZShift"></div>
+                                                                                                        <div id="atomPosZCollision"></div>
+                                                                                                    </div>
 																								</div>
 																							</div>
 
@@ -773,7 +795,10 @@
 
 																							<div class="col col-sm-7">
 																								<div class="slider-control slider-control-sm">
-																									<div class="slider" id="atomPosXSlider"></div>
+																									<div class="slider" id="atomPosXSlider">
+                                                                                                        <div id="atomPosXShift"></div>
+                                                                                                        <div id="atomPosXCollision"></div>
+                                                                                                    </div>
 																								</div>
 																							</div>
 
@@ -794,7 +819,10 @@
 																							</div>
 																							<div class="col col-sm-7">
 																								<div class="slider-control slider-control-sm">
-																									<div class="slider" id="atomPosYSlider"></div>
+																									<div class="slider" id="atomPosYSlider">
+                                                                                                        <div id="atomPosYShift"></div>
+                                                                                                        <div id="atomPosYCollision"></div>
+                                                                                                    </div>
 																								</div>
 																							</div>
 
@@ -1635,29 +1663,23 @@
 																</div>
 																<div class="box-body">
 																	<div class="project-save-form-container">
-																		<form action="#">
-																			<div class="form-group">
-																				<label for="project_name">Name</label>
-																				<input id="projectName" type="text" class="form-control" id="project_name" name="project_name" placeholder="My Project Name"/>
-																			</div>
-																			<div class="form-group">
-																				<label for="tags">Tags</label>
-																				<div class="tag-container">
-																					<a class="tag tag-dark">NaCl</a>
-																					<a class="tag tag-dark">Tag 1</a>
-																					<a class="tag tag-dark">Dark Crystal</a>
-																				</div>
-																			</div>
-																			<div class="form-group">
-																				<label for="description">Description</label>
-																				<textarea id="projectDescription" name="description" id="description" class="form-control" placeholder="Write here a brief description..."></textarea>
-																			</div>
-																			<div class="btn-save">
-																				<div id="saveProject" class="btn-wrapper">
-																					<button class="btn btn-block btn-purple">Save</button>
-																				</div>
-																			</div>
-																		</form>
+                                                                        <div class="form-group">
+                                                                            <label for="project_name">Name</label>
+                                                                            <input id="projectName" type="text" class="form-control" name="project_name" placeholder="My Project Name"/>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="tags">Tags</label>
+                                                                            <input id="projectTags" type="text" class="form-control" name="project_name" placeholder="Tags"/>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="description">Description</label>
+                                                                            <textarea id="projectDescription" name="description" class="form-control" placeholder="Write here a brief description..."></textarea>
+                                                                        </div>
+                                                                        <div class="btn-save">
+                                                                            <div id="saveProject" class="btn-wrapper">
+                                                                                <button class="btn btn-block btn-purple">Save</button>
+                                                                            </div>
+                                                                        </div>
 																	</div>
 																</div>
 															</div>
@@ -2809,14 +2831,14 @@
 								<div class="row row-5">
 									
 									<div class="col col-sm-6">
-										<div class="qr-image-container">
-											<img id="QRImage" src="Images/qr-icon-purple-lg.png" class="img-responsive img-fullwidth" alt=""/>
+										<div id="QRImage" class="qr-image-container">
+											
 										</div>
 									</div>
 									<div class="col col-sm-6">
 										<div class="qr-actions-container">
 											<div class="btn-save">
-												<a id="downloadQR" class="btn btn-dark-02">Save Image</a>
+												<a href="" id="downloadQR" download="QRImage" class="btn btn-dark-02">Save Image</a>
 											</div>
 											<div class="alternate-actions">
 												<div id="selectLinkQR" class="btn-link action-alt">

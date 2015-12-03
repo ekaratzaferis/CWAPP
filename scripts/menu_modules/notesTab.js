@@ -20,6 +20,7 @@ define([
     // Variables
     var target = undefined;
     var notes = {};
+    var idCounter = 0;
     
     // Module References
     var $setUIValue = undefined;
@@ -106,9 +107,10 @@ define([
         
         // Buttons //
         $newNote.on('click',function(){
-            highlightNote(notes.activeEntry,false);
-            highlightNote(addNote(),true);
-            $disableUIElement.disableElement({
+            if (!($newNote.hasClass('disabled'))){
+                highlightNote(notes.activeEntry,false);
+                highlightNote(addNote(),true);
+                $disableUIElement.disableElement({
                 noteTitle:{
                     value: false    
                 },
@@ -131,15 +133,18 @@ define([
                     value: false   
                 }
             });
+            }
         });
         $saveNote.on('click',function(){
-            editNote({
-                title: $noteTitle.val(),
-                body: $noteBody.val(),
-                color: '#'+$noteColor.spectrum('get').toHex(),
-                opacity: $noteOpacity.val()
-            });
-            $disableUIElement.disableElement({
+            if (!($saveNote.hasClass('disabled'))){
+                editNote({
+                    title: $noteTitle.val(),
+                    body: $noteBody.val(),
+                    color: '#'+$noteColor.spectrum('get').toHex(),
+                    opacity: $noteOpacity.val(),
+                    atomNote: notes[notes.activeEntry].atomNote
+                });
+                $disableUIElement.disableElement({
                 noteTitle:{
                     value: true    
                 },
@@ -162,10 +167,12 @@ define([
                     value: true   
                 }
             });
+            }
         });
         $deleteNote.on('click',function(){
-            deleteNote();
-            $disableUIElement.disableElement({
+            if (!($deleteNote.hasClass('disabled'))){
+                deleteNote();
+                $disableUIElement.disableElement({
                 noteTitle:{
                     value: true    
                 },
@@ -188,6 +195,7 @@ define([
                     value: true   
                 }
             });
+            }
         });
         
         // Reset //
@@ -198,10 +206,23 @@ define([
     
     function addNote(newID){
         var id = undefined;
+        var atomNote = false;
+        
+        // Clear Forms
+        $noteTitle.val('');
+        $noteBody.val('');
+        $noteOpacity.selectpicker('val','10');
+        $noteColor.children().css('background','transparent');
         
         // Add Note //
-        if (_.isUndefined(newID)) id = 'note'+Object.keys(notes).length;
-        else id = newID;
+        if (_.isUndefined(newID)) {
+            id = 'note'+idCounter;
+            idCounter++;
+        }
+        else {
+            atomNote = true;
+            id = newID;
+        }
         $notesTable.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
         $notesTable.show('slow');
         
@@ -210,7 +231,8 @@ define([
             title: '',
             body: '',
             color: '',
-            opacity: ''
+            opacity: '',
+            atomNote: atomNote 
         };
         createCanvasNote(id);
         
@@ -227,6 +249,13 @@ define([
                     other: $notesTable.find('#'+id)
                 }
             });
+            if (notes[id].atomNote === true) {
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        publish: {id:id, visible: value, x: parseInt($screen.find('#'+id).css('left'),10), y: parseInt($screen.find('#'+id).css('top'),10)}
+                    }
+                });
+            }
             showCanvasNote(id,value);
         });
         $setUIValue.setValue({
@@ -235,7 +264,11 @@ define([
                 other: $notesTable.find('#'+id)
             }
         });
-
+        
+        if (atomNote === true) $setUIValue.setValue({
+            atomNoteTable: { publish: getAtomNoteTable() } 
+        });
+        
         return id;
     };
     function editNote(note){
@@ -258,14 +291,23 @@ define([
         $noteColor.children().css('background','transparent');
     };
     function deleteNote(){
+        
         // Update Database //
-        if (notes.activeEntry !== false) notes[notes.activeEntry] = '';
+        if (notes.activeEntry !== false) {
+            if (notes[notes.activeEntry].atomNote === true) {
+                delete notes[notes.activeEntry];
+                $setUIValue.setValue({
+                    atomNoteTable: { publish: getAtomNoteTable() } 
+                });
+            }
+            else delete notes[notes.activeEntry];
+        }
         else return false;
         
         // Remove Entry //
         $notesTable.find('#'+notes.activeEntry).remove();
         deleteCanvasNote(notes.activeEntry);
-        highlightNote('',false);
+        highlightNote('q',false);
         
         // Clear Forms
         $noteTitle.val('');
@@ -277,8 +319,8 @@ define([
         highlightNote(notes.activeEntry,false);
         $noteTitle.val(notes[id].title);
         $noteBody.val(notes[id].body);
-        $noteColor.spectrum('set',notes[id].color);
-        $noteOpacity.selectpicker('val',notes[id].opacity);
+        if (notes[id].color !== '') $noteColor.spectrum('set',notes[id].color);
+        if (notes[id].opacity !== '') $noteOpacity.selectpicker('val',notes[id].opacity);
         highlightNote(id,true);
         $disableUIElement.disableElement({
             noteTitle:{
@@ -320,7 +362,14 @@ define([
         var notepad = $screen.find('#'+id);
         notepad.hide();
         notepad.draggable({
-            scroll: false
+            scroll: false,
+            drag: function(event, ui){
+                $setUIValue.setValue({
+                    noteMovement:{
+                        publish: { id: id, x: ui.position.left, y: ui.position.top }   
+                    }
+                });
+            }
         });
         notepad.find('img').on('click',function(){
             showCanvasNote(id,false);
@@ -330,10 +379,24 @@ define([
                     other: $notesTable.find('#'+id)
                 }
             });
+            if (notes[id].atomNote === true) {
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        publish: {id:id, visible: false, x: parseInt($screen.find('#'+id).css('left'),10), y: parseInt($screen.find('#'+id).css('top'),10)}
+                    }
+                });
+            }
         });  
     };
     function deleteCanvasNote(id){
         $screen.find('#'+id).remove();
+    };
+    function getAtomNoteTable(){
+        var table = [];
+        _.each(notes, function($parameter,k){
+            if ($parameter.atomNote === true) table.push(k);
+        });
+        return table;
     };
     
     notesTab.prototype.moveToNote = function(id){
@@ -366,6 +429,9 @@ define([
             });
         }
         else selectNote(id);
+    };
+    notesTab.getAtomNoteTable = function(){
+        return getAtomNoteTable();  
     };
     
     return notesTab;

@@ -30,9 +30,9 @@ define([
     'latticeTab',
     'motifTab',
     'libraryTab',
-    'notesTab'
-    //'tag-it.min',
-   // 'jquery.qrcode-0.12.0.min'
+    'notesTab',
+    'tag-it.min',
+    'jquery.qrcode-0.12.0.min'
 ], function(
     jQuery,
     jQuery_ui,
@@ -60,9 +60,9 @@ define([
     latticeTab,
     motifTab,
     libraryTab,
-    notesTab
-    //tagIt,
-    //qrCode
+    notesTab,
+    tagIt,
+    qrCode
 ) 
 {
 
@@ -90,10 +90,10 @@ define([
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
         RESET: 'menu.reset',
+        NOTE_MOVEMENT: 'menu.note_movement',
         DOWNLOAD_PROJECT: 'menu.download_project',
         AUTO_UPDATE: 'menu.auto_update',
-        OPEN_QR: 'menu.open_qr',
-        DOWNLOAD_QR: 'menu.download_qr',
+        NOTE_VISIBILITY: 'menu.note_visibility',
         PLANE_INTERCEPTION: 'menu.plane_interception',
         PLANE_PARALLEL: 'menu.plane_parallel',
         THREE_D_PRINTING: 'menu.three_d_printing',
@@ -409,6 +409,9 @@ define([
                 value: state   
             }
         });
+    };
+    Menu.prototype.getAtomNoteTable = function(){
+        return notesTabModule.getAtomNoteTable();
     };
 
     // Tooltips //
@@ -964,12 +967,6 @@ define([
     Menu.prototype.onDownloadProject = function(callback){
         PubSub.subscribe(events.DOWNLOAD_PROJECT, callback);
     };
-    Menu.prototype.onDownloadQR = function(callback){
-        PubSub.subscribe(events.DOWNLOAD_QR, callback);
-    };
-    Menu.prototype.onOpenQR = function(callback){
-        PubSub.subscribe(events.OPEN_QR, callback);
-    };
     Menu.prototype.onSideBySide3D = function(callback){
         PubSub.subscribe(events.SIDE_BY_SIDE_3D, callback);
     };
@@ -978,6 +975,12 @@ define([
     };
     Menu.prototype.onReset = function(callback){
         PubSub.subscribe(events.RESET, callback);
+    };
+    Menu.prototype.onNoteVisibility = function(callback){
+        PubSub.subscribe(events.NOTE_VISIBILITY, callback);
+    };
+    Menu.prototype.onNoteMovement = function(callback){
+        PubSub.subscribe(events.NOTE_MOVEMENT, callback);
     };
 
     return Menu;

@@ -41,6 +41,7 @@ define([
     var $downloadQR = jQuery('#downloadQR');
     var $QRImage = jQuery('#QRImage');
     var $projectName = jQuery('#projectName');
+    var $projectTags = jQuery('#projectTags');
     var $projectDescription = jQuery('#projectDescription');
     var $saveProject = jQuery('#saveProject');
     
@@ -74,6 +75,20 @@ define([
         });
         
         // Buttons //
+        
+        $downloadProject.on('click', function(){
+            $setUIValue.setValue({
+                downloadProject:{
+                    publish: true   
+                }
+            });
+        });     
+        $selectLink.on('click', function(){
+            $saveOnlineLink.focus();
+        });
+        $selectLinkQR.on('click', function(){
+            $saveOnlineLinkQR.focus();
+        });
         $alt_atn_toggler.on('click', function(){
             if ($alt_atn_target.is(':visible'))
             {
@@ -97,34 +112,25 @@ define([
             }
             else
             {
+                // SET LINKS AND GENERATE NEW QR CODE
+                $QRImage.qrcode({
+                    render: 'image',
+                    size: 174,
+                    fill: '#6f6299',
+                    text: 'thano mpine'
+                }); 
                 $cnt_form.slideDown('fast');
                 jQuery(this).addClass('open');
             }
 
             return false;
         });
-        $downloadProject.on('click', function(){
-            $setUIValue.setValue({
-                downloadProject:{
-                    publish: true   
-                }
-            });
-        });
-        $downloadQR.on('click', function(){
-            $setUIValue.setValue({
-                downloadQR:{
-                    publish: true   
-                }
-            });
-        });
-        $selectLink.on('click', function(){
-            $saveOnlineLink.focus();
-        });
-        $selectLinkQR.on('click', function(){
-            $saveOnlineLinkQR.focus();
-        });
-        $saveProject.on('click', function(){
-            console.log('asd'); 
+        $projectTags.tagit();
+        $projectTags.tagit("createTag", "CrystalWalk");
+        $saveProject.on('click',function(){
+            console.log($projectName.val());
+            console.log($projectTags.tagit('assignedTags'));
+            console.log($projectDescription.val());
         });
     };
     
