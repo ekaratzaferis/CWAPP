@@ -30,6 +30,8 @@ define([
     var $preview = jQuery('#tempSelection').find('p');
     var $atomsData = undefined;
     var $QRModal = jQuery('#openQR');
+    var $downloadQR = jQuery('#downloadQR');
+    var $QRImage = jQuery('#QRImage');
     
     // Contructor //
     function modals(argument) {
@@ -210,11 +212,7 @@ define([
             $menuRibbon.setSwapButtonState(true);
         });
         $QRModal.on('click', function(){
-            $setUIValue.setValue({
-                openQRModal:{
-                    publish: true   
-                }
-            });
+            $downloadQR.attr('href',$QRImage.find('img').attr('src'));
         });
     };
     function elementPreview(caller){

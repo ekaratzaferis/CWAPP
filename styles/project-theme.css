@@ -2283,10 +2283,12 @@ width: 70px;}
     display: none; }
     .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container {
       padding: 10px 60px;
-      padding-bottom: 25px; }
-      .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group {
+      padding-bottom: 25px; 
+    display: inline-block;
+    width: 100%;}
+      .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group {
         margin-bottom: 7px; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group label {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group label {
           display: block;
           padding-bottom: 5px;
           text-transform: uppercase;
@@ -2295,7 +2297,7 @@ width: 70px;}
           font-weight: 900;
           line-height: 15.4px;
           color: #6a6a6e; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .form-control {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .form-control {
           padding: 10px;
           height: 44px;
           border: 3px solid #1c1d21;
@@ -2304,35 +2306,35 @@ width: 70px;}
           font-weight: 400;
           line-height: 21px;
           color: #6a6a6e; }
-          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .form-control:focus::-moz-placeholder {
+          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .form-control:focus::-moz-placeholder {
             color: transparent;
             opacity: 1; }
-          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .form-control:focus:-ms-input-placeholder {
+          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .form-control:focus:-ms-input-placeholder {
             color: transparent; }
-          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .form-control:focus::-webkit-input-placeholder {
+          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .form-control:focus::-webkit-input-placeholder {
             color: transparent; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .tag-container {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .tag-container {
           padding: 5px 8px;
           background: #fff;
           border: 3px solid #1c1d21; }
-          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group .tag-container .tag {
+          .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group .tag-container .tag {
             margin: 5px 2px; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .form-group textarea.form-control {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .form-group textarea.form-control {
           height: auto;
           min-height: 130px;
           font-style: italic; }
-      .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save {
+      .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .btn-save {
         margin-top: 5px; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save:before, .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save:after {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .btn-save:before, .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save:after {
           content: " ";
           display: table; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save:after {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .btn-save:after {
           clear: both; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save .btn-wrapper {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .btn-save .btn-wrapper {
           float: right;
           max-width: 150px;
           width: 100%; }
-        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container form .btn-save .btn {
+        .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container .btn-save .btn {
           padding: 15px;
           text-transform: uppercase;
           font-family: "Open Sans", sans-serif;
@@ -3144,9 +3146,9 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     border-radius: 10px;
     background-color: white;
     position: fixed;
+    top: 0px;
+    left: 0px;
     overflow: auto;
-    margin-top: 10%;
-    margin-left:18%;
     min-height: 85px;
     min-width: 250px;}
 .wordwrap{
@@ -3881,3 +3883,21 @@ input.disabled[type="text"]{ background-color: black; }
 li[role='presentation'].disabled{
     background-color: #34373e;
 }
+#scaleZCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleZShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleYCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleYShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleXCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleXShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#alphaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#alphaShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#betaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#betaShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#gammaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
+#gammaShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#atomPosZCollision{ background-color: white; width: 30px; height: 4px; float: left; }
+#atomPosZShift{ background-color: white; width: 30px; height: 4px; float: left; }
+#atomPosXCollision{ background-color: white; width: 30px; height: 4px; float: left; }
+#atomPosXShift{ background-color: white; width: 30px; height: 4px; float: left; }
+#atomPosYCollision{ background-color: white; width: 30px; height: 4px; float: left; }
+#atomPosYShift{ background-color: white; width: 30px; height: 4px; float: left; }

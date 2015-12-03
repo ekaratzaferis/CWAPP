@@ -75,7 +75,6 @@ define([
         RESET: 'menu.reset',
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
-        OPEN_QR: 'menu.open_qr',
         PLANE_INTERCEPTION: 'menu.plane_interception',
         PLANE_PARALLEL: 'menu.plane_parallel',
         THREE_D_PRINTING: 'menu.three_d_printing',
@@ -141,7 +140,8 @@ define([
         DIALOG_RESULT: 'menu.dialog_result',
         LABEL_TOGGLE: 'menu.label_toggle',
         DOWNLOAD_PROJECT: 'menu.download_project',
-        DOWNLOAD_QR: 'menu.download_qr',
+        NOTE_VISIBILITY: 'menu.note_visibility',
+        NOTE_MOVEMENT: 'menu.note_movement',
         HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
     }; 
     
@@ -1843,12 +1843,18 @@ define([
                 PubSub.publish(events.DOWNLOAD_PROJECT, value);
                 break;
             }
-            case 'downloadQR':{
-                PubSub.publish(events.DOWNLOAD_QR, value);
+                
+            // Notes Tab
+            case 'atomNoteTable':{
+                PubSub.publish(events.UPDATE_NOTES, value);
                 break;
             }
-            case 'openQRModal':{
-                PubSub.publish(events.OPEN_QR, value);
+            case 'noteVisibility':{
+                PubSub.publish(events.NOTE_VISIBILITY, value);
+                break;
+            }
+            case 'noteMovement':{
+                PubSub.publish(events.NOTE_MOVEMENT, value);
                 break;
             }
                 
