@@ -2540,7 +2540,7 @@ define([
         return true;
       } 
     }
- 
+    
 
     // when none of the lines are overlapping
 
@@ -2662,6 +2662,18 @@ define([
       });
     }
 
+    var vis=0,notvis=0;
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+      if(this.actualAtoms[i].visibility == true){
+        vis++;
+      }
+      else{
+        notvis++;
+      }
+    };
+
+    console.log('viss '+vis);
+    console.log('notvis '+notvis);
   };
   function identicalPoints(a,b){
 
