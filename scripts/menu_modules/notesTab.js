@@ -435,7 +435,7 @@ define([
         }
         else selectNote(id);
     };
-    notesTab.getAtomNoteTable = function(){
+    notesTab.prototype.getAtomNoteTable = function(){
         return getAtomNoteTable();  
     };
     
