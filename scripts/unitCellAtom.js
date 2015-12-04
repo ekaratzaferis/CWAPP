@@ -232,7 +232,7 @@ define([
 
       this.object3d.children[2].material.opacity = labelOp ;  
       this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.map.needsUpdate = true;
+      this.object3d.children[2].material.needsUpdate = true;
     } 
   };
   UnitCellAtom.prototype.setLabeling = function(bool){
@@ -241,12 +241,12 @@ define([
     if(this.labeling === true){
       this.object3d.children[2].material.opacity = this.opacity ;  
       this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.map.needsUpdate = true;
+      this.object3d.children[2].material.needsUpdate = true;
     }
     else if(this.labeling === false){
       this.object3d.children[2].material.opacity = 0 ;  
       this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.map.needsUpdate = true;
+      this.object3d.children[2].material.needsUpdate = true;
     }
   };
   UnitCellAtom.prototype.flatMode = function(bool){
@@ -258,7 +258,7 @@ define([
 
     this.object3d.children[2].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
     this.object3d.children[2].material.needsUpdate = true;  
-    this.object3d.children[2].material.map.needsUpdate = true;  
+    this.object3d.children[2].material.needsUpdate = true;  
   };
   UnitCellAtom.prototype.realisticMode = function(bool){
 

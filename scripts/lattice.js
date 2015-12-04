@@ -2604,16 +2604,12 @@ define([
     }
 
     return false;
-  };
-
+  };  
+  
   Lattice.prototype.interceptedPlane = function(arg) {
-    var planes = []; 
-
-    // TODO  ray from point of triangle to other points and check collision. create plaen of triangle and take distance to plaen from sphere center, if it is a trinagles point, interception
- 
+    var planes = [];  
     if(arg.interception === true){  
-       
-
+        
       var planeFound = false;
       for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
         if(this.millerPlanes[i].id === arg.id){ 
@@ -2663,6 +2659,7 @@ define([
     }
 
     var vis=0,notvis=0;
+
     for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
       if(this.actualAtoms[i].visibility == true){
         vis++;
@@ -2672,7 +2669,7 @@ define([
       }
     };
 
-    console.log('viss '+vis);
+    console.log('vis '+vis);
     console.log('notvis '+notvis);
   };
   function identicalPoints(a,b){

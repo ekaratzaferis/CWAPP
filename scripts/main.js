@@ -101,7 +101,8 @@ require([
   'FileSaver',
   'individualAtomController',
   'atomMaterialManager',  
-  'atomRelationshipManager'  
+  'atomRelationshipManager', 
+  'noteManager' 
 
 ], function(
   PubSub, 
@@ -144,7 +145,8 @@ require([
   FileSaver,
   IndividualAtomController,
   AtomMaterialManager,  
-  AtomRelationshipManager 
+  AtomRelationshipManager,
+  NoteManager
 ) {
 
   var menu = new Menu();
@@ -325,6 +327,9 @@ require([
   // restoring
   var storeRestoreMech = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
+  // NoteManager
+  var noteManager = new NoteManager(lattice, menu, crystalRenderer.getMainCamera());
+
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -778,6 +783,15 @@ require([
   }); 
   menu.onReset(function(message, arg) { 
     storeRestoreMech.globalReset(arg); 
+  });
+  menu.updateNotes(function(message, arg) { 
+    noteManager.outlineAtomsWithNotes(arg); 
+  });
+  menu.onNoteVisibility(function(message, arg) { 
+    noteManager.noteInitiator(arg); 
+  });
+  menu.onNoteMovement(function(message, arg) { 
+    noteManager.noteMove(arg); 
   });
   
   ///////////////////////
