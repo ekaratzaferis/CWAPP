@@ -404,8 +404,8 @@ define([
         var table = [];
         _.each(notes, function($parameter,k){
             if ($parameter.atomNote === true) {
-                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                var x = parseInt($screen.find('#'+k).css('left'),10) + parseInt($screen.find('#'+k).css('width'),10) / 2;
+                var y = parseInt($screen.find('#'+k).css('top'),10) + parseInt($screen.find('#'+k).css('height'),10) / 2;
                 table.push({
                     id: k,
                     x: x,
