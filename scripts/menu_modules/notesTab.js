@@ -268,7 +268,12 @@ define([
         });
         
         if (atomNote === true) $setUIValue.setValue({
-            atomNoteTable: { publish: getAtomNoteTable() } 
+            atomNoteTable: { 
+                publish: {
+                    id: id,
+                    add: true
+                }          
+            } 
         });
         
         return id;
@@ -299,7 +304,12 @@ define([
             if (notes[notes.activeEntry].atomNote === true) {
                 delete notes[notes.activeEntry];
                 $setUIValue.setValue({
-                    atomNoteTable: { publish: getAtomNoteTable() } 
+                    atomNoteTable: { 
+                        publish: {
+                            id: notes.activeEntry,
+                            add: false
+                        }          
+                    }  
                 });
             }
             else delete notes[notes.activeEntry];
