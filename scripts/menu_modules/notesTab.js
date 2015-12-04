@@ -250,9 +250,11 @@ define([
                 }
             });
             if (notes[id].atomNote === true) {
+                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
                 $setUIValue.setValue({
                     noteVisibility:{
-                        publish: {id:id, visible: value, x: parseInt($screen.find('#'+id).css('left'),10), y: parseInt($screen.find('#'+id).css('top'),10)}
+                        publish: {id:id, visible: value, x: x, y: y}
                     }
                 });
             }
@@ -385,9 +387,11 @@ define([
                 }
             });
             if (notes[id].atomNote === true) {
+                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
                 $setUIValue.setValue({
                     noteVisibility:{
-                        publish: {id:id, visible: false, x: parseInt($screen.find('#'+id).css('left'),10), y: parseInt($screen.find('#'+id).css('top'),10)}
+                        publish: {id:id, visible: false, x: x, y: y}
                     }
                 });
             }
@@ -399,7 +403,15 @@ define([
     function getAtomNoteTable(){
         var table = [];
         _.each(notes, function($parameter,k){
-            if ($parameter.atomNote === true) table.push(k);
+            if ($parameter.atomNote === true) {
+                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                table.push({
+                    id: k,
+                    x: x,
+                    y: y
+                });
+            }
         });
         return table;
     };
