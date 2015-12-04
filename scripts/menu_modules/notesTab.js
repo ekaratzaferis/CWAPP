@@ -364,12 +364,17 @@ define([
         notepad.draggable({
             scroll: false,
             drag: function(event, ui){
-                $setUIValue.setValue({
-                    noteMovement:{
-                        publish: { id: id, x: ui.position.left, y: ui.position.top }   
-                    }
-                });
-            }
+                if (notes[id].atomNote === true){
+                    var x = parseInt(ui.position.left) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                    var y = parseInt(ui.position.top) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    $setUIValue.setValue({
+                        noteMovement:{
+                            publish: { id: id, x: x, y: y }   
+                        }
+                    });
+                }
+            },
+            containment: jQuery('#app-container')
         });
         notepad.find('img').on('click',function(){
             showCanvasNote(id,false);
