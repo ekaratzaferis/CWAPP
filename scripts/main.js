@@ -356,9 +356,10 @@ require([
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) { 
     lattice.setGrade(gradeParameters);
+    noteManager.setLineRadius(gradeParameters);
   });
   menu.onGradeChoices(function(message, gradeChoices) {
-    lattice.setGradeChoices(gradeChoices);
+    lattice.setGradeChoices(gradeChoices); 
   });
 
   // miller
@@ -791,7 +792,7 @@ require([
     noteManager.addNote(arg); 
   });
   menu.onNoteVisibility(function(message, arg) { 
-    noteManager.noteInitiator(arg); 
+    noteManager.noteVisibility(arg); 
   });
   menu.onNoteMovement(function(message, arg) { 
     noteManager.noteMove(arg, 'note'); 

@@ -17,6 +17,7 @@ define([
     this.explorer = explorer;  
     this.camera = camera;  
     this.noteLinesMeshes = [];
+    this.lineWeight = 1;
   };
   function updateLine (pointA, pointB, line) {
      
@@ -32,30 +33,43 @@ define([
 
     line.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
   
-    line.scale.y = distance/2 ; 
+    line.scale.y = distance ; 
     line.position.set(newPoint.x,newPoint.y,newPoint.z);
 
   }; 
+  NoteManager.prototype.setLineRadius = function(arg) {
+
+    if(_.isUndefined(arg) || arg.radius === undefined) return;
+ 
+    this.lineWeight = parseInt(arg.radius); 
+
+    for (var prop in this.noteLinesMeshes) {  
+
+      this.noteLinesMeshes[prop].scale.x = this.lineWeight;
+      this.noteLinesMeshes[prop].scale.z = this.lineWeight;
+    }  
+  };
+  NoteManager.prototype.setLineColor = function(arg) { 
+    this.noteLinesMeshes[arg.id].material.color.setHex( "0x"+arg.color );
+  };
   NoteManager.prototype.addNote = function(arg) {
      
     var _this = this;
     var scene = Explorer.getInstance().object3d; 
-    
+    var color = arg.color;
+
     if(arg.add === true){  
       var scene = Explorer.getInstance().object3d;
+  
+      var meshGeometry = new THREE.CylinderGeometry(  0.01, 0.01, 1, 8, 8 ); 
 
-      /*
-      var material = new THREE.LineBasicMaterial({ color: 0xFFFFFF  }) ;
-      var geometry = new THREE.Geometry();
-       
-      geometry.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0.000001) );
-       
-      var mesh = new THREE.Line(geometry, material);*/
+      if(color === undefined) color = 0xA19EA1;
 
-      var meshGeometry = new THREE.CylinderGeometry(  0.01, 0.01, 2, 8, 8 ); 
-      var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( {   color: 0xA19EA1 } ) );
+      var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( {   color: color } ) );
 
       mesh.rotation.set(0,1,0);
+      mesh.scale.z = this.lineWeight; 
+      mesh.scale.x = this.lineWeight; 
       mesh.scale.y = 1; 
       mesh.position.set(0,0,0);
 
@@ -105,7 +119,7 @@ define([
     
     this.explorer.plane.object3d.lookAt(this.camera.position);
     var cameToCenterScaled = this.camera.position.clone();
-    cameToCenterScaled.setLength(cameToCenterScaled.length()*0.5);
+    cameToCenterScaled.setLength(cameToCenterScaled.length()*0.75);
     this.explorer.plane.object3d.position.set(cameToCenterScaled.x, cameToCenterScaled.y, cameToCenterScaled.z);
     this.explorer.plane.object3d.updateMatrixWorld();
 
@@ -124,6 +138,9 @@ define([
     }
     
     var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; }); 
+
+    if(atom === undefined) return;
+
     var atomPos = atom.object3d.position.clone();
   
     var notePos = this.findNotePoint(arg.x, arg.y); 
@@ -131,7 +148,7 @@ define([
     updateLine(atomPos, notePos, this.noteLinesMeshes[arg.id]); 
  
   };
-  NoteManager.prototype.noteInitiator = function(arg) {
+  NoteManager.prototype.noteVisibility = function(arg) {
      
     var _this = this;
 

@@ -17,6 +17,7 @@ define([
     mesh.name = 'grid';
     this.object3d = mesh; 
     Explorer.add(this);
+    this.scale = 2;
 
   }
 
@@ -25,7 +26,7 @@ define([
   };
  
   Grid.prototype.setRadius = function( scale) {
-    
+
     if(_.isUndefined(scale)) return;
     this.scale = scale; 
     this.object3d.scale.x = scale;
