@@ -12,16 +12,19 @@ define([
 ) {
   var mutualCamPosParam = new THREE.Vector3();
 
-  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras ) {
+  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras, explorer ) {
     var $rendererContainer = jQuery(domElement);
     this.sync = false;
     this.camera = camera; 
     this.camName = camName; 
     this.hudCameras = hudCameras; 
+    this.explorer = explorer; 
     this.theta = 0; 
     this.phi = 0;   
     this.currPos = new THREE.Vector3(0,0,0); 
     this.disableUpdate = false;
+
+    this.externalFunctions = []; 
 
     if(type == "perspective" ) {
       if( camName === 'hud') { 
@@ -31,7 +34,7 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
       }
       else{
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, syncedCamera);
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, explorer);
       }
     }
     else if (type === "orthographic"){
@@ -87,15 +90,23 @@ define([
        
     if( this.camName === 'crystal'){
        
-      for (var i = this.hudCameras.length - 1; i >= 0; i--) { 
+      var offset = this.getCamPosition().clone();  
  
-        var offset = this.getCamPosition().clone();  
-        var targ = this.getTarget() ; 
-        offset.sub( targ );
+      if(offset.equals(this.currPos)){
+        return;
+      }
+      this.currPos.copy(offset);
+ 
+      var targ = this.getTarget() ; 
+      offset.sub( targ );
 
-        var theta = Math.atan2( offset.x, offset.z );  
-        var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
-        phi = Math.max( 0.01, Math.min( Math.PI - 0.01, phi ) );
+      var theta = Math.atan2( offset.x, offset.z );  
+      var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+      phi = Math.max( 0.01, Math.min( Math.PI - 0.01, phi ) );
+
+      
+      for (var i = this.hudCameras.length - 1; i >= 0; i--) { 
+         
         var r = this.hudCameras[i].position.length() ;
         var newOffset = new THREE.Vector3();
 
@@ -113,6 +124,8 @@ define([
         this.hudCameras[i].lookAt( new THREE.Vector3(0,0,0) );
 
       }; 
+ 
+      
     }
   }; 
   return Orbit;

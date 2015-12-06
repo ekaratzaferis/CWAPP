@@ -233,8 +233,9 @@ require([
     false, 
     'crystal', 
     undefined,
-    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()]
-    ); 
+    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
+    crystalScene
+  ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
@@ -328,7 +329,9 @@ require([
   var storeRestoreMech = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
   // NoteManager
-  var noteManager = new NoteManager(lattice, menu, crystalRenderer.getMainCamera());
+  var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
+
+  crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -785,13 +788,13 @@ require([
     storeRestoreMech.globalReset(arg); 
   });
   menu.updateNotes(function(message, arg) { 
-    noteManager.outlineAtomsWithNotes(arg); 
+    noteManager.addNote(arg); 
   });
   menu.onNoteVisibility(function(message, arg) { 
     noteManager.noteInitiator(arg); 
   });
   menu.onNoteMovement(function(message, arg) { 
-    noteManager.noteMove(arg); 
+    noteManager.noteMove(arg, 'note'); 
   });
   
   ///////////////////////

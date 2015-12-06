@@ -10,101 +10,158 @@ define([
   _
 ) { 
  
-  function NoteManager(lattice, menu, crystalCamera) { 
+  function NoteManager(lattice, menu, explorer, camera) { 
       
     this.lattice = lattice ; 
     this.menu = menu; 
-    this.crystalCamera = crystalCamera;  
+    this.explorer = explorer;  
+    this.camera = camera;  
+    this.noteLinesMeshes = [];
   };
   
-  NoteManager.prototype.outlineAtoms = function(arg) {
-
+  NoteManager.prototype.addNote = function(arg) {
+     
     var _this = this;
     var scene = Explorer.getInstance().object3d; 
     
+    if(arg.add === true){  
+      var scene = Explorer.getInstance().object3d;
+
+      var material = new THREE.LineBasicMaterial({ color: 0xFFFFFF  }) ;
+      var geometry = new THREE.Geometry();
+       
+      geometry.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0.000001) );
+       
+      var mesh = new THREE.Line(geometry, material);
+
+      this.noteLinesMeshes[arg.id] = mesh;
+      this.noteLinesMeshes[arg.id].visible = false;
+      scene.add(mesh);
+    }
+    else if(arg.add === false){
+      scene.remove(this.noteLinesMeshes[arg.id]); 
+    }
+
     for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
       if(this.lattice.actualAtoms[i].outlineMesh !== undefined){
         scene.remove(this.lattice.actualAtoms[i].outlineMesh);
         this.lattice.actualAtoms[i].outlineMesh = undefined;
       }
     };
+ 
+    for (var prop in this.noteLinesMeshes) { 
 
-    for (var i = arg.length - 1; i >= 0; i--) {
-      var id = parseInt(arg[i]);
-      for (var j = this.lattice.actualAtoms.length - 1; j >= 0; j--) {
-        
-        if(this.lattice.actualAtoms[j].uniqueID === id){ 
-          var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0x0040FF, side: THREE.BackSide } );
-          var outlineMesh1 = new THREE.Mesh( this.lattice.actualAtoms[j].object3d.children[0].geometry.clone(), outlineMaterial1 );
-          outlineMesh1.position.set(this.lattice.actualAtoms[j].object3d.position.x, this.lattice.actualAtoms[j].object3d.position.y, this.lattice.actualAtoms[j].object3d.position.z);
-          var sc = this.lattice.actualAtoms[j].getScaledRadius();
-          outlineMesh1.scale.set( sc , sc , sc );  
-          outlineMesh1.scale.multiplyScalar(1.05);
-          this.lattice.actualAtoms[j].outlineMesh = outlineMesh1 ;
-          scene.add( this.lattice.actualAtoms[j].outlineMesh ); 
-        }
+      var id = parseInt(prop);
+
+      if(arg.id !== id || arg.add === true){ 
+        for (var j = this.lattice.actualAtoms.length - 1; j >= 0; j--) {
+          
+          if(this.lattice.actualAtoms[j].uniqueID === id){ 
+            var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0x0040FF, side: THREE.BackSide } );
+            var outlineMesh1 = new THREE.Mesh( this.lattice.actualAtoms[j].object3d.children[0].geometry.clone(), outlineMaterial1 );
+            outlineMesh1.position.set(this.lattice.actualAtoms[j].object3d.position.x, this.lattice.actualAtoms[j].object3d.position.y, this.lattice.actualAtoms[j].object3d.position.z);
+            
+            var sc = this.lattice.actualAtoms[j].getScaledRadius();
+            outlineMesh1.scale.set( sc , sc , sc );  
+            outlineMesh1.scale.multiplyScalar(1.05);
+            this.lattice.actualAtoms[j].outlineMesh = outlineMesh1 ;
+            scene.add( this.lattice.actualAtoms[j].outlineMesh ); 
+          }
+        } 
       } 
-    };
+    }  
+    if(arg.add === false){
+      this.noteLinesMeshes[arg.id] = undefined;
+    }
   };
-  NoteManager.prototype.noteMove = function(arg) {
-    console.log(arg);
-  };
-  NoteManager.prototype.noteInitiator = function(arg) {
-    console.log(arg);
+  NoteManager.prototype.updateNotesPositions = function(arg) { 
+    
+    this.camera.updateMatrixWorld();
+    this.explorer.plane.object3d.lookAt(this.camera.position);
+    var cameToCenterScaled = this.camera.position.clone();
+    cameToCenterScaled.setLength(cameToCenterScaled.length()*0.9);
+    this.explorer.plane.object3d.position.set(cameToCenterScaled.x, cameToCenterScaled.y, cameToCenterScaled.z);
+    this.explorer.plane.object3d.updateMatrixWorld();
 
+    var notes = this.menu.getAtomNoteTable();
+    for (var i = notes.length - 1; i >= 0; i--) { 
+      this.noteMove({ id : parseInt(notes[i].id), x : notes[i].x, y : notes[i].y }, 'camera');
+    };
+
+  };
+  NoteManager.prototype.noteMove = function(arg, whatMoved) { 
+ 
     var _this = this;
 
-    var scene = Explorer.getInstance().object3d;
-
-    var material = new THREE.LineBasicMaterial({ color: 0xFFFFFF  }) ;
-    var geometry = new THREE.Geometry();
-    
-    var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; });
-
-    if(atom === undefined){
+    if(this.noteLinesMeshes[arg.id] === undefined){
       return;
     }
-    var atomPos = atom.object3d.position.clone();
-    var notePos = this.findNotePoint(arg.x, arg.y);
-    geometry.vertices.push( atomPos, notePos );
+ 
+    if(whatMoved === 'camera'){ 
+      var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; }); 
+      var atomPos = atom.object3d.position.clone();
+      this.noteLinesMeshes[arg.id].geometry.vertices[ 0 ].set(atomPos.x, atomPos.y, atomPos.z) ; 
+    } 
+    var notePos = this.findNotePoint(arg.x, arg.y); 
+    this.noteLinesMeshes[arg.id].geometry.vertices[ 1 ].set(notePos.x, notePos.y, notePos.z) ;
+
+    this.noteLinesMeshes[arg.id].geometry.verticesNeedUpdate = true; 
+ 
+  };
+  NoteManager.prototype.noteInitiator = function(arg) {
      
-    var mesh = new THREE.Line(geometry, material);
+    var _this = this;
 
-    scene.add(mesh);
+    if(arg.visible === true){ 
+       
+      var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; });
 
-  };
-  NoteManager.prototype.outlineAtomsWithNotes = function(arg) {
-    this.outlineAtoms(arg);
-  };
-  NoteManager.prototype.setVisibilityOfOutliners = function(bool) {
-    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
-      if(this.actualAtoms[i].outlineMesh !== undefined){ 
-        this.actualAtoms[i].outlineMesh.visible = bool;
+      if(atom === undefined){
+        return;
       }
-    };
+ 
+      var atomPos = atom.object3d.position.clone();
+      var notePos = this.findNotePoint(arg.x, arg.y);
+      
+      this.noteLinesMeshes[arg.id].geometry.vertices[ 0 ].set(atomPos.x, atomPos.y, atomPos.z) ;  
+      this.noteLinesMeshes[arg.id].geometry.vertices[ 1 ].set(notePos.x, notePos.y, notePos.z) ;  
+      
+      this.noteLinesMeshes[arg.id].geometry.verticesNeedUpdate = true;
+      this.noteLinesMeshes[arg.id].visible = true;
+    } 
+    else if(arg.visible === false){
+      this.noteLinesMeshes[arg.id].visible = false; 
+    } 
   };
-  
+  NoteManager.prototype.visibilityOfLine = function(arg) {
+
+  };  
   NoteManager.prototype.findNotePoint = function(x,y){  
-    
+     
     var width = jQuery('#app-container').width() ;
     var height = $(window).height() ;
 
-    var vector = new THREE.Vector3();
+    var raycaster = new THREE.Raycaster(); 
 
-    vector.set(
-        (x/width) * 2 - 1,
-        (y/height) * 2 + 1,
-        0.5 );
+    var x_ = (x/width)*2 - 1 ;
+    var y_ = -1*(y/height)*2 + 1 ;
+    
+    this.camera.updateMatrixWorld();
+    raycaster.setFromCamera( new THREE.Vector2( x_, y_ ) , this.camera ); 
+  
+    var intersects = raycaster.intersectObject( this.explorer.plane.object3d );
+    
+    var notePos;
 
-    vector.unproject( this.crystalCamera );
-
-    var dir = vector.sub( this.crystalCamera.position ).normalize();
-
-    var distance = - this.crystalCamera.position.z / dir.z;
-
-    var pos = this.crystalCamera.position.clone().add( dir.multiplyScalar( distance ) );
+    if(intersects.length > 0){  
+      notePos = intersects[0].point.clone() ;
+    }
+    else{ 
+      notePos = new THREE.Vector3(0,0,0);
+    }
  
-    return pos;
+    return notePos ;
+ 
   };  
   return NoteManager;
 
