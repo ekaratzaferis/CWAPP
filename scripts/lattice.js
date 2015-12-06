@@ -4737,6 +4737,10 @@ define([
     _grid.scale.y = distance/0.001; //distance/grid.geometry.parameters.height;
     _grid.position.set(newPoint.x,newPoint.y,newPoint.z);
 
+    var _grid = undefined;
+    var pointA = undefined;
+    var pointB = undefined; 
+
   }; 
   Lattice.prototype.generatePlaneKey = function() {
     return (this.millerPlanes.length); 

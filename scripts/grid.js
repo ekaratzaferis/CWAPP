@@ -25,7 +25,7 @@ define([
   };
  
   Grid.prototype.setRadius = function( scale) {
-
+    
     if(_.isUndefined(scale)) return;
     this.scale = scale; 
     this.object3d.scale.x = scale;
@@ -37,8 +37,7 @@ define([
 
   Grid.prototype.setColor = function(color) {
 
-    if(_.isUndefined(color)) return;
-    this.object3d.material.needsUpdate = true;
+    if(_.isUndefined(color)) return; 
     this.object3d.material.color.setHex( "0x"+color );
     this.setRadius(this.scale);
 

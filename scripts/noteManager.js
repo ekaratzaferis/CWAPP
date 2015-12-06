@@ -18,7 +18,24 @@ define([
     this.camera = camera;  
     this.noteLinesMeshes = [];
   };
+  function updateLine (pointA, pointB, line) {
+     
+    var distance = pointA.distanceTo(pointB) ; 
+    var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
+
+    var newPoint =  pointA.clone().add(dir) ;  
+    var direction = new THREE.Vector3().subVectors( pointB, newPoint );
+    var direcNorm = direction;
+    direcNorm.normalize(); 
+
+    var arrow = new THREE.ArrowHelper( direcNorm ,newPoint );
+
+    line.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
   
+    line.scale.y = distance/2 ; 
+    line.position.set(newPoint.x,newPoint.y,newPoint.z);
+
+  }; 
   NoteManager.prototype.addNote = function(arg) {
      
     var _this = this;
@@ -27,12 +44,20 @@ define([
     if(arg.add === true){  
       var scene = Explorer.getInstance().object3d;
 
+      /*
       var material = new THREE.LineBasicMaterial({ color: 0xFFFFFF  }) ;
       var geometry = new THREE.Geometry();
        
       geometry.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,0.000001) );
        
-      var mesh = new THREE.Line(geometry, material);
+      var mesh = new THREE.Line(geometry, material);*/
+
+      var meshGeometry = new THREE.CylinderGeometry(  0.01, 0.01, 2, 8, 8 ); 
+      var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( {   color: 0xA19EA1 } ) );
+
+      mesh.rotation.set(0,1,0);
+      mesh.scale.y = 1; 
+      mesh.position.set(0,0,0);
 
       this.noteLinesMeshes[arg.id] = mesh;
       this.noteLinesMeshes[arg.id].visible = false;
@@ -77,9 +102,10 @@ define([
   NoteManager.prototype.updateNotesPositions = function(arg) { 
     
     this.camera.updateMatrixWorld();
+    
     this.explorer.plane.object3d.lookAt(this.camera.position);
     var cameToCenterScaled = this.camera.position.clone();
-    cameToCenterScaled.setLength(cameToCenterScaled.length()*0.9);
+    cameToCenterScaled.setLength(cameToCenterScaled.length()*0.5);
     this.explorer.plane.object3d.position.set(cameToCenterScaled.x, cameToCenterScaled.y, cameToCenterScaled.z);
     this.explorer.plane.object3d.updateMatrixWorld();
 
@@ -96,16 +122,13 @@ define([
     if(this.noteLinesMeshes[arg.id] === undefined){
       return;
     }
- 
-    if(whatMoved === 'camera'){ 
-      var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; }); 
-      var atomPos = atom.object3d.position.clone();
-      this.noteLinesMeshes[arg.id].geometry.vertices[ 0 ].set(atomPos.x, atomPos.y, atomPos.z) ; 
-    } 
+    
+    var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; }); 
+    var atomPos = atom.object3d.position.clone();
+  
     var notePos = this.findNotePoint(arg.x, arg.y); 
-    this.noteLinesMeshes[arg.id].geometry.vertices[ 1 ].set(notePos.x, notePos.y, notePos.z) ;
 
-    this.noteLinesMeshes[arg.id].geometry.verticesNeedUpdate = true; 
+    updateLine(atomPos, notePos, this.noteLinesMeshes[arg.id]); 
  
   };
   NoteManager.prototype.noteInitiator = function(arg) {
@@ -122,11 +145,7 @@ define([
  
       var atomPos = atom.object3d.position.clone();
       var notePos = this.findNotePoint(arg.x, arg.y);
-      
-      this.noteLinesMeshes[arg.id].geometry.vertices[ 0 ].set(atomPos.x, atomPos.y, atomPos.z) ;  
-      this.noteLinesMeshes[arg.id].geometry.vertices[ 1 ].set(notePos.x, notePos.y, notePos.z) ;  
-      
-      this.noteLinesMeshes[arg.id].geometry.verticesNeedUpdate = true;
+      updateLine(atomPos, atomPos, this.noteLinesMeshes[arg.id])
       this.noteLinesMeshes[arg.id].visible = true;
     } 
     else if(arg.visible === false){
