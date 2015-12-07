@@ -72,7 +72,7 @@ define([
                 $setUIValue.setValue({
                     noteColor:{
                         other: $noteColor,
-                        publish: { id: notes[notes.activeEntry], color: '#'+$noteColor.spectrum('get').toHex() },
+                        publish: { id: notes.activeEntry, color: '#'+$noteColor.spectrum('get').toHex() },
                         value: '#'+$noteColor.spectrum('get').toHex()
                     }
                 });
@@ -83,7 +83,7 @@ define([
                 $setUIValue.setValue({
                     noteColor:{
                         other: $noteColor,
-                        publish: { id: notes[notes.activeEntry], color: '#'+$noteColor.spectrum('get').toHex() },
+                        publish: { id: notes.activeEntry, color: '#'+$noteColor.spectrum('get').toHex() },
                         value: '#'+$noteColor.spectrum('get').toHex()
                     }
                 });
@@ -463,7 +463,7 @@ define([
         return getAtomNoteTable();  
     };
     notesTab.prototype.focusNote = function(id){
-        if(_.isUndefined(notes[id])) return false;
+        if(_.isUndefined(notes[id.toString()])) return false;
         else{
             // Save active note if any
             if (notes.activeEntry !== false) {
@@ -475,8 +475,8 @@ define([
                     atomNote: notes[notes.activeEntry].atomNote
                 });   
             }
-            selectNote(id);
-            return notes[id];
+            selectNote(id.toString());
+            return notes[id.toString()];
         };
     };
     
