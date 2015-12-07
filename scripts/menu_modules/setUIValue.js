@@ -142,6 +142,7 @@ define([
         DOWNLOAD_PROJECT: 'menu.download_project',
         NOTE_VISIBILITY: 'menu.note_visibility',
         NOTE_MOVEMENT: 'menu.note_movement',
+        NOTE_COLOR: 'menu.note_color',
         HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
     }; 
     
@@ -1249,13 +1250,6 @@ define([
                 selector.children().css('background',value);
                 break;
             }
-                
-            // Library Tab
-            case 'noteColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
-                break;
-            }
             case 'noteVisibility':{
                 if (value === false) {
                     selector.find('.noteButton').find('img').attr('src','Images/hidden-icon-sm.png');
@@ -1855,6 +1849,10 @@ define([
             }
             case 'noteMovement':{
                 PubSub.publish(events.NOTE_MOVEMENT, value);
+                break;
+            }
+            case 'noteColor':{
+                PubSub.publish(events.NOTE_COLOR, value);
                 break;
             }
                 

@@ -91,6 +91,7 @@ define([
         ON_TOP_3D: 'menu.on_top_3d',
         RESET: 'menu.reset',
         NOTE_MOVEMENT: 'menu.note_movement',
+        NOTE_COLOR: 'menu.note_color',
         DOWNLOAD_PROJECT: 'menu.download_project',
         AUTO_UPDATE: 'menu.auto_update',
         NOTE_VISIBILITY: 'menu.note_visibility',
@@ -412,6 +413,11 @@ define([
     };
     Menu.prototype.getAtomNoteTable = function(){
         return notesTabModule.getAtomNoteTable();
+    };
+    Menu.prototype.focusNote = function(id){
+        var result = notesTabModule.focusNote(id);
+        if (result !== false) menuRibbonModule.switchTab('notesTab');
+        return result;
     };
 
     // Tooltips //
@@ -981,6 +987,9 @@ define([
     };
     Menu.prototype.onNoteMovement = function(callback){
         PubSub.subscribe(events.NOTE_MOVEMENT, callback);
+    };
+    Menu.prototype.onNoteColor = function(callback){
+        PubSub.subscribe(events.NOTE_COLOR, callback);
     };
 
     return Menu;

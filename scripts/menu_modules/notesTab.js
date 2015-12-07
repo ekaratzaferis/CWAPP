@@ -72,6 +72,7 @@ define([
                 $setUIValue.setValue({
                     noteColor:{
                         other: $noteColor,
+                        publish: { id: notes[notes.activeEntry], color: '#'+$noteColor.spectrum('get').toHex() },
                         value: '#'+$noteColor.spectrum('get').toHex()
                     }
                 });
@@ -82,6 +83,7 @@ define([
                 $setUIValue.setValue({
                     noteColor:{
                         other: $noteColor,
+                        publish: { id: notes[notes.activeEntry], color: '#'+$noteColor.spectrum('get').toHex() },
                         value: '#'+$noteColor.spectrum('get').toHex()
                     }
                 });
@@ -230,7 +232,7 @@ define([
         notes[id] = {
             title: '',
             body: '',
-            color: '',
+            color: '#FFFFFF',
             opacity: '',
             atomNote: atomNote 
         };
@@ -254,7 +256,7 @@ define([
                 var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
                 $setUIValue.setValue({
                     noteVisibility:{
-                        publish: {id:id, visible: value, x: x, y: y}
+                        publish: {id:id, visible: value, x: x, y: y, color: notes[id].color}
                     }
                 });
             }
@@ -401,7 +403,7 @@ define([
                 var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
                 $setUIValue.setValue({
                     noteVisibility:{
-                        publish: {id:id, visible: false, x: x, y: y}
+                        publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
                     }
                 });
             }
@@ -459,6 +461,23 @@ define([
     };
     notesTab.prototype.getAtomNoteTable = function(){
         return getAtomNoteTable();  
+    };
+    notesTab.prototype.focusNote = function(id){
+        if(_.isUndefined(notes[id])) return false;
+        else{
+            // Save active note if any
+            if (notes.activeEntry !== false) {
+                editNote({
+                    title: $noteTitle.val(),
+                    body: $noteBody.val(),
+                    color: '#'+$noteColor.spectrum('get').toHex(),
+                    opacity: $noteOpacity.val(),
+                    atomNote: notes[notes.activeEntry].atomNote
+                });   
+            }
+            selectNote(id);
+            return notes[id];
+        };
     };
     
     return notesTab;
