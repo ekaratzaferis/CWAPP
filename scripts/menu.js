@@ -415,9 +415,7 @@ define([
         return notesTabModule.getAtomNoteTable();
     };
     Menu.prototype.focusNote = function(id){
-        var result = notesTabModule.focusNote(id);
-        if (result !== false) menuRibbonModule.switchTab('notesTab');
-        return result;
+        notesTabModule.focusNote(id);
     };
 
     // Tooltips //

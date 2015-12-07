@@ -262,6 +262,31 @@ define([
             }
             showCanvasNote(id,value);
         });
+        $notesTable.find('#'+id).on('hide',function(){
+            if(_.isUndefined(notes[id].temp)) return false;
+            else{
+                if (notes[id].temp === true){
+                    // UI //
+                    $setUIValue.setValue({
+                        noteVisibility:{
+                            value: false,
+                            other: $notesTable.find('#'+id)
+                        }
+                    });
+                    showCanvasNote(id.toString(),false);
+                    notes[id].temp = undefined;
+                    
+                    // System //
+                    var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                    var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    $setUIValue.setValue({
+                        noteVisibility:{
+                            publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
+                        }
+                    });
+                }
+            }
+        });
         $setUIValue.setValue({
             noteVisibility:{
                 value: false,
@@ -465,18 +490,26 @@ define([
     notesTab.prototype.focusNote = function(id){
         if(_.isUndefined(notes[id.toString()])) return false;
         else{
-            // Save active note if any
-            if (notes.activeEntry !== false) {
-                editNote({
-                    title: $noteTitle.val(),
-                    body: $noteBody.val(),
-                    color: '#'+$noteColor.spectrum('get').toHex(),
-                    opacity: $noteOpacity.val(),
-                    atomNote: notes[notes.activeEntry].atomNote
-                });   
+            if($notesTable.find('#'+id).find('.noteButton').hasClass('visible')) return true;
+            else {
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        value: true,
+                        other: $notesTable.find('#'+id)
+                    }
+                });
+                showCanvasNote(id.toString(),true);
+                // Mark to close
+                notes[id.toString()].temp = true;
+                // System //
+                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
+                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        publish: {id:id, visible: true, x: x, y: y, color: notes[id.toString()].color}
+                    }
+                });
             }
-            selectNote(id.toString());
-            return notes[id.toString()];
         };
     };
     
