@@ -105,6 +105,9 @@ define([
           'single' : !ctrl
         } 
         this.menu.openAtomCustomizer(arg);
+        console.log(atom_.uniqueID);
+        this.menu.focusNote(atom_.uniqueID);
+
       }
     }
 

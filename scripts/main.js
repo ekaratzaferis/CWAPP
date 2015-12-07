@@ -797,6 +797,9 @@ require([
   menu.onNoteMovement(function(message, arg) { 
     noteManager.noteMove(arg, 'note'); 
   });
+  menu.onNoteColor(function(message, arg) { 
+    noteManager.setLineColor(arg ); 
+  });
   
   ///////////////////////
   ///////////////////////

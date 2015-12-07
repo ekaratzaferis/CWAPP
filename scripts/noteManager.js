@@ -51,7 +51,7 @@ define([
   };
   NoteManager.prototype.setLineColor = function(arg) { 
     console.log(arg);
-    this.noteLinesMeshes[arg.id].material.color.setHex( "0x"+arg.color );
+    this.noteLinesMeshes[arg.id].material.color.set( arg.color );
   };
   NoteManager.prototype.addNote = function(arg) {
      
@@ -64,7 +64,7 @@ define([
   
       var meshGeometry = new THREE.CylinderGeometry(  0.01, 0.01, 1, 8, 8 ); 
 
-      if(color === undefined) color = 0xA19EA1;
+      if(color === undefined) color = '#ffffff';
 
       var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( {   color: color } ) );
 
