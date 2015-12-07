@@ -199,6 +199,7 @@ define([
         }
     };
     function closeBox(){
+        jQuery('#notesTable').find('#'+$atomID).trigger('hide');
         $atomID = undefined;
         $box.hide('slow');
         boxOn = false;

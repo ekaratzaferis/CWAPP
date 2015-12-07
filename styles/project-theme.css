@@ -3901,3 +3901,8 @@ li[role='presentation'].disabled{
 #atomPosXShift{ background-color: white; width: 30px; height: 4px; float: left; }
 #atomPosYCollision{ background-color: white; width: 30px; height: 4px; float: left; }
 #atomPosYShift{ background-color: white; width: 30px; height: 4px; float: left; }
+
+#iacBody{
+    padding: 5px;
+    padding-left: 25px;
+}
