@@ -25,13 +25,15 @@ define([
   //
 
   function CrystalMouseEvents( client, _camera, domElement, state, dollEditor, atomCustomizer, keyboard ) {
-    this.plane = {'object3d' : undefined} ;
+    
+    var _this =this ;
+    
     this.camera = _camera;
     this.container = domElement; 
     this.motifEditorAtms = [] ; 
     this.client = client ;
     this.state = state ;
-    var _this =this ;
+    
     this.dollEditor = dollEditor;
     this.atomCustomizer = atomCustomizer;
     this.offset = new THREE.Vector3(); 
@@ -185,7 +187,7 @@ define([
       }
     });
 
-    return crystalPlanes
+    return crystalPlanes;
   };
   CrystalMouseEvents.prototype.getCrystalObjects = function() {  
     var _this = this;

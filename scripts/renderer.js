@@ -26,7 +26,7 @@ define([
     this.rstatsON = false;
     this.containerWidth = width ;
     this.containerHeight = height ;
-    this.scene = scene.object3d;
+    this.explorer = scene;
     this.doll;
     this.viewportColors = ['#0B0800', '#000600', '#08000A'];
     this.cameras = [];
@@ -121,6 +121,11 @@ define([
     if (this.animationIsActive === false) {
       return;
     }
+
+    for (var i = 0; i < this.externalFunctions.length ; i++) {
+      this.externalFunctions[i]();
+    };
+
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
@@ -155,12 +160,12 @@ define([
       this.cameras[0].updateProjectionMatrix();  
 
       if(this.anaglyph){  
-        this.effect.render( this.scene, this.cameras[0] );
+        this.effect.render( this.explorer.object3d, this.cameras[0] );
       }
       else{  
         if(this.container === 'crystalRenderer') {
-         
-          this.renderer.render( this.scene, this.cameras[0], undefined, true);
+ 
+          this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
 
           if(this.doll !== undefined){  
             this.renderer.clearDepth(); // celar depth buffer to have gear bar and doll on top
@@ -170,12 +175,11 @@ define([
             this.dollCamera.updateProjectionMatrix();  
             this.renderer.render( this.dollScene, this.dollCamera);        
           }
-
-        }
-        else if(this.container === 'unitCellRenderer') {
           
+        }
+        else if(this.container === 'unitCellRenderer') { 
           this.renderer.setClearColor( this.backgroundColor );
-          this.renderer.render( this.scene, this.cameras[0] );
+          this.renderer.render( this.explorer.object3d, this.cameras[0] );
         }
       } 
 
@@ -246,7 +250,7 @@ define([
         camera.aspect =this.containerWidth/(3*this.containerHeight); 
 
         if(this.anaglyph){     
-          this.effect.render( this.scene, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
+          this.effect.render( this.explorer.object3d, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
         }
         else{ 
           this.renderer.setViewport( 1/3 *i * this.containerWidth, 0,  this.containerWidth/3, this.containerHeight );
@@ -258,7 +262,7 @@ define([
           camera.updateProjectionMatrix();
 
           this.renderer.clear(); 
-          this.renderer.render( this.scene, camera);
+          this.renderer.render( this.explorer.object3d, camera);
         }
       }
     }  
@@ -278,10 +282,7 @@ define([
       this.rS().update();
       this.rS( 'rStats' ).end();
     }
-
-    for (var i = 0; i < this.externalFunctions.length ; i++) {
-      this.externalFunctions[i]();
-    }; 
+  
   };
   Renderer.prototype.setUCviewport = function(bool) { 
     this.ucViewport = bool;

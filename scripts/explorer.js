@@ -139,7 +139,16 @@ define([
     this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
     this.helper.visible = false;
     this.object3d.add( this.helper );
-  
+    
+    this.plane = {object3d : undefined};
+    this.plane.object3d = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
+      new THREE.MeshBasicMaterial( { transparent: true, opacity : 0.1   } )
+    ); 
+    this.plane.object3d.visible = false;  
+ 
+    this.object3d.add(this.plane.object3d);
+
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
     });

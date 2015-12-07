@@ -1165,13 +1165,11 @@ define([
   
     if(arg > 10) return ;
     var radius = arg/10;
-    for (var i = this.actualAtoms.length - 1; i >= 0; i--) { 
-      var ratio = this.actualAtoms[i].radius * radius ; 
-      this.actualAtoms[i].object3d.scale.set(ratio,ratio,ratio); 
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {  
+      this.actualAtoms[i].setScale(radius);  
     };
-    for (var i = this.cachedAtoms.length - 1; i >= 0; i--) { 
-      var ratio = this.cachedAtoms[i].radius * radius ; 
-      this.cachedAtoms[i].object3d.scale.set(ratio,ratio,ratio); 
+    for (var i = this.cachedAtoms.length - 1; i >= 0; i--) {
+      this.cachedAtoms[i].setScale(radius);  
     };  
   };
   Lattice.prototype.destroyPoints = function() {
@@ -1826,8 +1824,22 @@ define([
           vertex.applyMatrix4(matrix); 
         });
       }); 
+
+      _.each(_this.tempPlanes, function(plane, reference) { 
+        plane.plane.object3d.geometry.verticesNeedUpdate = true ;
+        var vertices = plane.plane.object3d.geometry.vertices;
+        _.each(vertices, function(vertex , k){  
+          vertex.applyMatrix4(matrix); 
+        });
+      }); 
  
       _.each(_this.millerDirections, function(directional, reference) {
+        directional.startPoint.applyMatrix4(matrix);
+        directional.endpointPoint.applyMatrix4(matrix)
+        updateMillerVector(directional);   
+      }); 
+
+      _.each(_this.tempDirs, function(directional, reference) {
         directional.startPoint.applyMatrix4(matrix);
         directional.endpointPoint.applyMatrix4(matrix)
         updateMillerVector(directional);   
@@ -2464,60 +2476,174 @@ define([
     }
 
   };
-  Lattice.prototype.interceptedPlane = function(arg) {
-    var planes = []; 
 
+  function checkSphereTriangleOverlap(a,b,c,d,e, center, radius){
+    
+     
+    var line = new THREE.Line3(a,b); 
+    var closestPoint = line.closestPointToPoint(center, true);
+    var distToCenter = closestPoint.distanceTo(center);
+
+    if(distToCenter <= radius){ 
+      return true;
+    }
+    
+    line = new THREE.Line3(a,c); 
+    closestPoint = line.closestPointToPoint(center, true);
+    distToCenter = closestPoint.distanceTo(center);
+    if(distToCenter <= radius){ 
+      return true;
+    }
+    
+    line = new THREE.Line3(b,c); 
+    closestPoint = line.closestPointToPoint(center, true);
+    distToCenter = closestPoint.distanceTo(center);
+    if(distToCenter <= radius){ 
+      return true;
+    }
+
+    if(e !== undefined){
+      line = new THREE.Line3(d,c); 
+      closestPoint = line.closestPointToPoint(center, true);
+      distToCenter = closestPoint.distanceTo(center);
+      if(distToCenter <= radius){ 
+        return true;
+      } 
+
+      line = new THREE.Line3(d,e); 
+      closestPoint = line.closestPointToPoint(center, true);
+      distToCenter = closestPoint.distanceTo(center);
+      if(distToCenter <= radius){ 
+        return true;
+      } 
+
+      line = new THREE.Line3(e,b); 
+      closestPoint = line.closestPointToPoint(center, true);
+      distToCenter = closestPoint.distanceTo(center);
+      if(distToCenter <= radius){ 
+        return true;
+      } 
+    }
+
+    if(d !== undefined){
+      line = new THREE.Line3(d,c); 
+      closestPoint = line.closestPointToPoint(center, true);
+      distToCenter = closestPoint.distanceTo(center);
+      if(distToCenter <= radius){ 
+        return true;
+      } 
+
+      line = new THREE.Line3(d,b); 
+      closestPoint = line.closestPointToPoint(center, true);
+      distToCenter = closestPoint.distanceTo(center);
+      if(distToCenter <= radius){ 
+        return true;
+      } 
+    }
+    
+
+    // when none of the lines are overlapping
+
+    var triangle = new THREE.Triangle( a,b,c );
+    var plane = triangle.plane();
+    var pp, cp;
+
+    var dp = Math.abs(plane.distanceToPoint(center)); 
+
+    if(dp <= radius){ 
+      pp = plane.projectPoint(center);
+      cp = triangle.containsPoint(pp);
+      
+      if(cp === true){
+        return true;
+      }
+    } 
+ 
+    if(e !== undefined){
+ 
+      triangle = new THREE.Triangle( b,c,d );
+      plane = triangle.plane();
+      
+      dp = Math.abs(plane.distanceToPoint(center)); 
+      if(dp <= radius){ 
+        pp = plane.projectPoint(center);
+        cp = triangle.containsPoint(pp); 
+        if(cp === true){
+          return true;
+        }
+      } 
+
+      triangle = new THREE.Triangle( b,d,e );
+      plane = triangle.plane();
+      
+      dp = Math.abs(plane.distanceToPoint(center)); 
+      if(dp <= radius){ 
+        pp = plane.projectPoint(center);
+        cp = triangle.containsPoint(pp);
+        
+        if(cp === true){
+          return true;
+        }
+      }  
+    }
+
+    if(d !== undefined){
+ 
+      triangle = new THREE.Triangle( b,d,c );
+      plane = triangle.plane();
+      
+      dp = Math.abs(plane.distanceToPoint(center)); 
+      if(dp <= radius){ 
+        pp = plane.projectPoint(center);
+        cp = triangle.containsPoint(pp);
+        
+        if(cp === true){
+          return true;
+        }
+      } 
+    }
+
+    return false;
+  };  
+  
+  Lattice.prototype.interceptedPlane = function(arg) {
+    var planes = [];  
     if(arg.interception === true){  
-      if(arg.id === 'current'){
-        for (var i = this.tempPlanes.length - 1; i >= 0; i--) {
-          if( this.tempPlanes[i].parallelIndex === 1){
-            planes.push(this.tempPlanes[i]);
-          }
+        
+      var planeFound = false;
+      for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
+        if(this.millerPlanes[i].id === arg.id){ 
+
+          planeFound = true;
+
+          if(this.millerPlanes[i].visible === true){ 
+            planes.push(this.millerPlanes[i]);
+          } 
+        } 
+      }; 
+        
+      if(planeFound === false){ 
+        for (var j = this.tempPlanes.length - 1; j >= 0; j--) { 
+          if( this.tempPlanes[j].plane.visible === true ){ 
+            planes.push(this.tempPlanes[j]);
+          } 
         };
       }
-      else{ 
-        for (var i = this.millerPlanes.length - 1; i >= 0; i--) {
-          if(this.millerPlanes[i].id === arg.id && this.millerPlanes[i].parallelIndex === 1){
-            planes.push(this.millerPlanes[i]);
-          }
-        }; 
-      }
-
+       
       for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
         this.actualAtoms[i].setVisibility(false );
-      };
-      
+      }; 
+
       for (var m = planes.length - 1; m >= 0; m--) {
+
         var plane = planes[m];
+        var verts = plane.plane.object3d.geometry.vertices;
         for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
           
           var originPointF = this.actualAtoms[i].object3d.position.clone();
-          var radius = this.actualAtoms[i].getRadius();
-          var collided = false;
+          var radius = this.actualAtoms[i].getScaledRadius();
 
-          for (var j = plane.plane.object3d.geometry.vertices.length - 1; j >= 0; j--) {
-            var v = (plane.plane.object3d.geometry.vertices[j].add(plane.plane.object3d.position.clone())).distanceTo(originPointF) ; 
-            if( v <= radius){
-              collided = true; 
-            }
-          };
-          if(collided === false){ 
-            for (var vertexIndex = 0; vertexIndex < this.actualAtoms[i].object3d.children[0].geometry.vertices.length; vertexIndex++)
-            {       
-              var localVertex = this.actualAtoms[i].object3d.children[0].geometry.vertices[vertexIndex].clone();
-              var globalVertex = localVertex.applyMatrix4(this.actualAtoms[i].object3d.children[0].matrixWorld);
-              var directionVector = globalVertex.sub( originPointF );     
-              //this.lineHelper(originPointF.clone(), (localVertex.clone()).add(originPointF.clone()), 0xFFFFFF);
-              var ray = new THREE.Raycaster( originPointF, localVertex.clone().normalize() );
-               
-              var collisionResults = ray.intersectObjects( [plane.plane.object3d] );
-
-              if ( collisionResults.length > 0 && collisionResults[0].distance < radius ) 
-              {  
-                collided = true;
-              }
-            }
-          }
+          var collided = checkSphereTriangleOverlap(verts[0], verts[1], verts[2], verts[3], verts[4], originPointF, radius );
 
           if(collided === true){
             this.actualAtoms[i].setVisibility(true ); 
@@ -2532,6 +2658,19 @@ define([
       });
     }
 
+    var vis=0,notvis=0;
+
+    for (var i = this.actualAtoms.length - 1; i >= 0; i--) {
+      if(this.actualAtoms[i].visibility == true){
+        vis++;
+      }
+      else{
+        notvis++;
+      }
+    };
+
+    console.log('vis '+vis);
+    console.log('notvis '+notvis);
   };
   function identicalPoints(a,b){
 
@@ -4597,6 +4736,10 @@ define([
     _grid.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
     _grid.scale.y = distance/0.001; //distance/grid.geometry.parameters.height;
     _grid.position.set(newPoint.x,newPoint.y,newPoint.z);
+
+    var _grid = undefined;
+    var pointA = undefined;
+    var pointB = undefined; 
 
   }; 
   Lattice.prototype.generatePlaneKey = function() {

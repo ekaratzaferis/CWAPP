@@ -85,11 +85,11 @@ define([
   MillerPlane.prototype.setVisible = function(bool) {
       
     this.object3d.visible = bool ;
-    this.visible = bool ;
+    this.visible = bool ; 
 
   };
   MillerPlane.prototype.setOpacity = function( opacity) {
-      console.log(opacity);
+  
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity;
     this.object3d.material.needsUpdate = true;
@@ -120,9 +120,7 @@ define([
 
   MillerPlane.prototype.destroy = function() {
     Explorer.remove(this);
-  };
-
-
+  }; 
 
   return MillerPlane;
 

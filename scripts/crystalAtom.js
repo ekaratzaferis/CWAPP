@@ -22,6 +22,7 @@ define([
     this.radius = radius;  
     this.material;
     this.materialLetter;
+    this.scale = 1;
     this.identity = id ;
     this.materialls; 
     this.color = color; 
@@ -41,6 +42,7 @@ define([
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
     this.uniqueID = uniqueID(); 
     this.materialLetter;
+    this.outlineMesh;
 
     this.labeling = labeling;
 
@@ -60,6 +62,10 @@ define([
 
     this.visibility = bool;  
     this.object3d.visible = bool;
+
+    if(this.outlineMesh !== undefined){
+      this.outlineMesh.visible = bool;
+    }
 
   };
   CrystalAtom.prototype.setOpacity = function( opacity) {
@@ -168,7 +174,7 @@ define([
 
     this.object3d.children[2].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
     this.object3d.children[2].material.needsUpdate = true; 
-    this.object3d.children[2].material.map.needsUpdate = true;     
+    this.object3d.children[2].material.needsUpdate = true;     
   };
   CrystalAtom.prototype.setLabeling = function(bool){
  
@@ -177,12 +183,12 @@ define([
     if(this.labeling === true){
       this.object3d.children[2].material.opacity = this.opacity ;  
       this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.map.needsUpdate = true;
+      this.object3d.children[2].material.needsUpdate = true;
     }
     else if(this.labeling === false){
       this.object3d.children[2].material.opacity = 0 ;  
       this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.map.needsUpdate = true;
+      this.object3d.children[2].material.needsUpdate = true;
     }
   };
 
@@ -195,7 +201,7 @@ define([
 
     this.object3d.children[2].material.opacity = labelOp;  
     this.object3d.children[2].material.needsUpdate = true; 
-    this.object3d.children[2].material.map.needsUpdate = true;   
+    this.object3d.children[2].material.needsUpdate = true;   
   }; 
   CrystalAtom.prototype.GradeLimited = function() {
     this.viewMode = 'crystalGradeLimited' ; 
@@ -237,6 +243,14 @@ define([
     this.helperPos.z = pos.z ;
 
     this.viewMode = 'crystalSubstracted';
+  };
+  CrystalAtom.prototype.getScaledRadius = function() { 
+    return (this.radius*this.scale) ;
+  };
+  CrystalAtom.prototype.setScale = function(scale) { 
+    var ratio = this.radius * scale ; 
+    this.object3d.scale.set(ratio,ratio,ratio); 
+    this.scale = scale; 
   };
   CrystalAtom.prototype.removesubtractedForCache = function() {
     Explorer.remove({'object3d' : this.subtractedForCache.object3d});  

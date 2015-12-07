@@ -101,7 +101,8 @@ require([
   'FileSaver',
   'individualAtomController',
   'atomMaterialManager',  
-  'atomRelationshipManager'  
+  'atomRelationshipManager', 
+  'noteManager' 
 
 ], function(
   PubSub, 
@@ -144,7 +145,8 @@ require([
   FileSaver,
   IndividualAtomController,
   AtomMaterialManager,  
-  AtomRelationshipManager 
+  AtomRelationshipManager,
+  NoteManager
 ) {
 
   var menu = new Menu();
@@ -231,8 +233,9 @@ require([
     false, 
     'crystal', 
     undefined,
-    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()]
-    ); 
+    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
+    crystalScene
+  ); 
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
@@ -325,6 +328,11 @@ require([
   // restoring
   var storeRestoreMech = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine );
   
+  // NoteManager
+  var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
+
+  crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
+
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
@@ -348,9 +356,10 @@ require([
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) { 
     lattice.setGrade(gradeParameters);
+    noteManager.setLineRadius(gradeParameters);
   });
   menu.onGradeChoices(function(message, gradeChoices) {
-    lattice.setGradeChoices(gradeChoices);
+    lattice.setGradeChoices(gradeChoices); 
   });
 
   // miller
@@ -600,7 +609,7 @@ require([
     var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
     var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
 
-    if(mode.distortionOn){
+    if(mode.distortion === true){
       crystalRenderer.cameras[0].fov = 75;
       var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
       var factor = distance/currDistance; 
@@ -778,6 +787,15 @@ require([
   }); 
   menu.onReset(function(message, arg) { 
     storeRestoreMech.globalReset(arg); 
+  });
+  menu.updateNotes(function(message, arg) { 
+    noteManager.addNote(arg); 
+  });
+  menu.onNoteVisibility(function(message, arg) { 
+    noteManager.noteVisibility(arg); 
+  });
+  menu.onNoteMovement(function(message, arg) { 
+    noteManager.noteMove(arg, 'note'); 
   });
   
   ///////////////////////

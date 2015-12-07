@@ -17,6 +17,7 @@ define([
     mesh.name = 'grid';
     this.object3d = mesh; 
     Explorer.add(this);
+    this.scale = 2;
 
   }
 
@@ -37,8 +38,7 @@ define([
 
   Grid.prototype.setColor = function(color) {
 
-    if(_.isUndefined(color)) return;
-    this.object3d.material.needsUpdate = true;
+    if(_.isUndefined(color)) return; 
     this.object3d.material.color.setHex( "0x"+color );
     this.setRadius(this.scale);
 
