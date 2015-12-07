@@ -50,6 +50,7 @@ define([
     }  
   };
   NoteManager.prototype.setLineColor = function(arg) { 
+    console.log(arg);
     this.noteLinesMeshes[arg.id].material.color.setHex( "0x"+arg.color );
   };
   NoteManager.prototype.addNote = function(arg) {
