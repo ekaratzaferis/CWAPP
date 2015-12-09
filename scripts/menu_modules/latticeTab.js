@@ -21,6 +21,9 @@ define([
     var value = undefined;
     var localRestrictions = undefined;
     var restrictionList = {};
+    var collisionDetection = false;
+    var collisionTooltip = false;
+    var lastValidValue = 1;
     
     // Grouping //
     var conditions = {
@@ -278,14 +281,17 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                sendValue.value = value;
+                if (collisionDetection === false) sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                LastLatticeParameters[name] = value;
-                jQuery('#'+name).val(value);
+                if (collisionDetection === true) jQuery('#'+name).val(lastValidValue);
+                else {
+                    LastLatticeParameters[name] = value;
+                    jQuery('#'+name).val(value);
+                }
             });
             jQuery('#'+name+'Slider').on('undo', function(event, value){
                 jQuery('#'+name+'Slider').trigger('fail',[value]);
@@ -298,25 +304,30 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                sendValue.value = value;
+                if (collisionDetection === false) sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                LastLatticeParameters[name] = value;
-                jQuery('#'+name).val(value);
+                if (collisionDetection === true) jQuery('#'+name).val(lastValidValue);
+                else {
+                    LastLatticeParameters[name] = value;
+                    jQuery('#'+name).val(value);
+                }
             });
             jQuery('#'+name+'Slider').slider({
                 value: 1,
                 min: 1,
                 max: 20,
-                step: 0.1,
+                step: 0.01,
                 animate: true,
                 slide: function(event, ui){
                     var argument = {};
                     var value = {};
                     var publish = {};
+                    
+                    // Pass Restrictions //
                     _.each(latticeParameters, function($parameter,k){
                         if (k === name) {
                             applyRestrictions(k+'Slider',ui.value.toString(),true);
@@ -328,7 +339,26 @@ define([
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
-                    jQuery('#'+name).val(ui.value);
+                    
+                    // Pass Collistion Detection //                    
+                    if (collisionDetection === true) {
+                        if (collisionTooltip === false){
+                            $tooltipGenerator.addStaticTooltip({
+                                'target': name+'Slider',
+                                'placement': 'top',
+                                'message': $messages.getMessage(24)
+                            });
+                            collisionTooltip = true;
+                        }
+                        jQuery('#'+name).val(lastValidValue);
+                        return false;
+                    }
+                    else {
+                        collisionTooltip = false;
+                        jQuery('#'+name+'Slider').tooltip('destroy');
+                        lastValidValue = ui.value;
+                        jQuery('#'+name).val(ui.value);
+                    }
                 },
                 stop: function(event,ui){
                     if (conditions.autoRefresh === true){
@@ -338,6 +368,7 @@ define([
                             }
                         });
                     }
+                    jQuery('#'+name+'Slider').tooltip('destroy');
                 }
             });
         });
@@ -390,6 +421,7 @@ define([
                     var argument = {};
                     var value = {};
                     var publish = {};
+                    // Pass Restrictions //
                     _.each(latticeParameters, function($parameter,k){
                         if (k === name) {
                             applyRestrictions(k+'Slider',ui.value.toString(),true);
@@ -864,6 +896,12 @@ define([
             if ( (k !== 'alpha') && (k !== 'beta') && (k !== 'gamma') ) $parameter.text(labelLength+'Å'); 
             else $parameter.text(labelAngle+'°'); 
         });
+    };
+    latticeTab.prototype.sliderSnap = function(state){
+        // Read state from argument //
+        if (_.isUndefined(state)) return false;
+        else collisionDetection = state;
+        return true;
     };
     
     return latticeTab;
