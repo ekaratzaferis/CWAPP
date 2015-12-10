@@ -272,11 +272,8 @@ define([
             'repeatX':'top',
             'repeatY':'top',
             'scaleZ':'top',
-            'scaleZSlider':'top',
             'scaleX':'top',
-            'scaleXSlider':'top',
             'scaleY':'top',
-            'scaleYSlider':'top',
             'beta':'top',
             'betaSlider':'top',
             'alpha':'top',
@@ -387,7 +384,7 @@ define([
         $storeState.on('click', function() {
           PubSub.publish(events.STORE_PROJECT, argument);   
         });
-        */
+        */   
 
     };
 
@@ -751,6 +748,12 @@ define([
     Menu.prototype.forceToLooseEvent = function(name) {
         var sliderName = name+'Slider';
         $('#'+sliderName).trigger($.Event( "mouseup", { which: 1 } ));
+    };
+    Menu.prototype.forceToLooseLatticeEvent = function(state){
+        latticeTabModule.sliderSnap(state);  
+    };
+    Menu.prototype.forceToLooseMotifEvent = function(state){
+        motifTabModule.sliderSnap(state);  
     };
     Menu.prototype.setSliderValue = function(name, val) {
         var sliderName = name+'Slider';

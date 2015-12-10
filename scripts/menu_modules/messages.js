@@ -38,6 +38,7 @@ define([
         21:'User Custom Defined',
         22:'Out of bounds value',
         23:'Press CTRL+C to copy the link',
+        24:'Collision Detected',
         cubic_primitive:'Cubic Simple',
         cubic_body_centered:'Cubic Body Centered',
         cubic_face_centered:'Cubic Face Centered',

@@ -17,6 +17,11 @@ define([
     bootstrap
 ) 
 {
+    // Variables //
+    var collisionDetection = false;
+    var collisionTooltip = false;
+    var lastValidValue = 1;
+    
     // Module References //
     var $messages = undefined;
     var $getUIValue = undefined;
@@ -232,6 +237,29 @@ define([
                     argument[k] = {publish: publish};
                     $setUIValue.setValue(argument);
                     motifInputs[k].val(ui.value);
+                    
+                    // Collision Detection //                    
+                    if (collisionDetection === true) {
+                        if (collisionTooltip === false){
+                            $tooltipGenerator.addStaticTooltip({
+                                'target': k+'Slider',
+                                'placement': 'top',
+                                'message': $messages.getMessage(24)
+                            });
+                            collisionTooltip = true;
+                        }
+                        motifInputs[k].val(lastValidValue);
+                        return false;
+                    }
+                    else {
+                        collisionTooltip = false;
+                        jQuery('#'+k+'Slider').tooltip('destroy');
+                        lastValidValue = ui.value;
+                        motifInputs[k].val(ui.value);
+                    }
+                },
+                stop: function(){
+                   jQuery('#'+k+'Slider').tooltip('destroy');    
                 }
             });
         });
@@ -746,6 +774,12 @@ define([
     };
     motifTab.prototype.getChainLevel = function(id){
         return getChainLevel(id);  
+    };
+    motifTab.prototype.sliderSnap = function(state){
+        // Read state from argument //
+        if (_.isUndefined(state)) return false;
+        else collisionDetection = state;
+        return true;
     };
     
     return motifTab;

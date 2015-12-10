@@ -37,6 +37,28 @@ define([
         });
     };
     
+    tooltipGenerator.prototype.addStaticTooltip = function(argument){
+        if (!(_.isUndefined(argument.target))) target = jQuery('#'+argument.target);
+        else if (!(_.isUndefined(argument.other))) target = argument.other;
+        else return false;
+        if (!(_.isUndefined(argument.message))) message = argument.message;
+        else return false;
+        if (!(_.isUndefined(argument.placement))) placement = argument.placement;
+        else return false;
+        
+        if (target.length > 0) {
+            target.attr('data-original-title', message);
+            target.tooltip({
+                container : 'body',
+                placement : placement,
+                trigger: 'manual',
+                title: message
+            });
+        }
+        else return false;
+        target.tooltip('show');
+        return true; 
+    };
     tooltipGenerator.prototype.addOnHoverTooltip = function(argument){
         if (!(_.isUndefined(argument.target))) target = jQuery('#'+argument.target);
         else if (!(_.isUndefined(argument.other))) target = argument.other;
