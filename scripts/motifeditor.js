@@ -832,7 +832,11 @@ define([
     this.cellMutex = false ;
     var axis = 'none' ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
- 
+
+    this.menu.forceToLooseLatticeEvent(false);
+
+    console.log(this.globalTangency);
+
     while(moreCollisions === true && counterHelper < 10 ){
        
       if(aScale != undefined){ 
@@ -847,7 +851,7 @@ define([
           
           if(aScale != offset ) {   
              
-            this.menu.forceToLooseEvent('scaleZ');
+            this.menu.forceToLooseLatticeEvent(true); //
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
             this.menu.setSliderValue("scaleZ", offset); 
@@ -867,7 +871,7 @@ define([
           this.cellParameters.scaleX = offset ;
             
           if(bScale != offset ) {   
-            this.menu.forceToLooseEvent('scaleX');
+            this.menu.forceToLooseLatticeEvent(true);
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
             this.menu.setSliderValue("scaleX", offset); 
@@ -885,7 +889,7 @@ define([
           var offset = this.checkInterMotifCollision('y', cScale ); 
           this.cellParameters.scaleY = offset ;
           if(cScale != offset ) {
-            this.menu.forceToLooseEvent('scaleY');
+            this.menu.forceToLooseLatticeEvent(true);
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
             this.menu.setSliderValue("scaleY", offset); 
@@ -1333,14 +1337,14 @@ define([
         // tangency check
          
         this.configureCellPoints('manual');  
-       
-        if(this.globalTangency){ 
+ 
+        if(this.globalTangency === true){ 
           var offset = this.checkInterMotifCollision('alpha', alpha);
 
           this.cellParameters.alpha = offset.newVal ;
 
           if(alpha != offset.newVal ) { 
-            this.menu.forceToLooseEvent('cellAlpha');
+            this.menu.forceToLooseLatticeEvent(true);
             this.menu.setSliderValue("cellAlpha", offset.newVal); 
           } 
         } 
@@ -1355,7 +1359,7 @@ define([
           this.cellParameters.beta = offset.newVal ;
            
           if(par.cellBeta != offset.newVal ) { 
-            this.menu.forceToLooseEvent('cellBeta');
+            this.menu.forceToLooseLatticeEvent(true);
             this.menu.setSliderValue("cellBeta", offset.newVal);
             $('#cellBeta').val(offset.newVal);
           } 
@@ -1370,7 +1374,7 @@ define([
           this.cellParameters.gamma = offset.newVal ;
 
           if(par.cellGamma != offset.newVal ) { 
-            this.menu.forceToLooseEvent('cellGamma');
+            this.menu.forceToLooseLatticeEvent(true);
             this.menu.setSliderValue("cellGamma", offset.newVal);
             $('#cellGamma').val(offset.newVal);
           } 
@@ -5629,7 +5633,7 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.setTangency = function(arg){
-    this.globalTangency = (arg.tangency); 
+    this.globalTangency = !(arg.tangency); 
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
