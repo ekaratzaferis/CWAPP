@@ -385,6 +385,15 @@ define([
           PubSub.publish(events.STORE_PROJECT, argument);   
         });
         */   
+        
+        this.forceToLooseLatticeEvent({
+            slider: 'gamma',
+            limit: 70
+        });
+        this.forceToLooseMotifEvent({
+            slider: 'atomPosX',
+            limit: 0.2
+        });
 
     };
 
@@ -749,11 +758,11 @@ define([
         var sliderName = name+'Slider';
         $('#'+sliderName).trigger($.Event( "mouseup", { which: 1 } ));
     };
-    Menu.prototype.forceToLooseLatticeEvent = function(state){
-        latticeTabModule.sliderSnap(state);  
+    Menu.prototype.forceToLooseLatticeEvent = function(argument){
+        latticeTabModule.stickySlider(argument);  
     };
-    Menu.prototype.forceToLooseMotifEvent = function(state){
-        motifTabModule.sliderSnap(state);  
+    Menu.prototype.forceToLooseMotifEvent = function(argument){
+        motifTabModule.stickySlider(argument);  
     };
     Menu.prototype.setSliderValue = function(name, val) {
         var sliderName = name+'Slider';

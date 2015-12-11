@@ -18,9 +18,8 @@ define([
 ) 
 {
     // Variables //
-    var collisionDetection = false;
+    var collisions = {};
     var collisionTooltip = false;
-    var lastValidValue = 1;
     
     // Module References //
     var $messages = undefined;
@@ -238,25 +237,26 @@ define([
                     $setUIValue.setValue(argument);
                     motifInputs[k].val(ui.value);
                     
-                    // Collision Detection //                    
-                    if (collisionDetection === true) {
-                        if (collisionTooltip === false){
-                            $tooltipGenerator.addStaticTooltip({
-                                'target': k+'Slider',
-                                'placement': 'top',
-                                'message': $messages.getMessage(24)
-                            });
-                            collisionTooltip = true;
-                        }
-                        motifInputs[k].val(lastValidValue);
-                        return false;
+                    // Pass Collistion Detection //
+                    if (!(_.isUndefined(collisions[k]))){
+                        if (collision(ui.value,collisions[k]) === true){
+                            if (collisionTooltip === false){
+                                $tooltipGenerator.addStaticTooltip({
+                                    'target': name+'Slider',
+                                    'placement': 'top',
+                                    'message': $messages.getMessage(24)
+                                });
+                                collisionTooltip = true;
+                            }
+                            jQuery('#'+k).val(collisions[k]);
+                            jQuery('#'+k+'Slider').slider('value',collisions[k]);
+                            return false; 
+                        } 
                     }
-                    else {
-                        collisionTooltip = false;
-                        jQuery('#'+k+'Slider').tooltip('destroy');
-                        lastValidValue = ui.value;
-                        motifInputs[k].val(ui.value);
-                    }
+                    // Collision Passed //
+                    collisionTooltip = false;
+                    jQuery('#'+k+'Slider').tooltip('destroy');
+                    jQuery('#'+k).val(ui.value);
                 },
                 stop: function(){
                    jQuery('#'+k+'Slider').tooltip('destroy');    
@@ -608,6 +608,12 @@ define([
             jQuery(this).find('.chain').find('a').html(getChainLevel(jQuery(this).attr('id')));
         });
     };
+    function collision(value,limit){
+        var upper = limit + 0.5;
+        var lower = limit - 0.5; 
+        if ( (value > lower) && (value < upper) ) return true;
+        else return false;
+    };
     
     motifTab.prototype.toggleExtraParameter = function(choice,action){
         if ( (choice === 'i') && (action === 'block') ) jQuery('#hexICoord').show('fast');
@@ -775,10 +781,13 @@ define([
     motifTab.prototype.getChainLevel = function(id){
         return getChainLevel(id);  
     };
-    motifTab.prototype.sliderSnap = function(state){
+    motifTab.prototype.stickySlider = function(argument){
         // Read state from argument //
-        if (_.isUndefined(state)) return false;
-        else collisionDetection = state;
+        if (_.isUndefined(argument)) return false;
+        else {
+            if (_.isUndefined(argument.limit)) delete collisions[argument.slider];
+            else collisions[argument.slider] = argument.limit;
+        }
         return true;
     };
     
