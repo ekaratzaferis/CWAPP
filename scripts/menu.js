@@ -87,6 +87,8 @@ define([
 
     // Events //
     var events = {
+        SET_SSAO: 'menu.set_ssao',
+        SET_SHADOWS: 'menu.set_shadows',
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
         RESET: 'menu.reset',
@@ -386,14 +388,16 @@ define([
         });
         */   
         
-        this.forceToLooseLatticeEvent({
-            slider: 'gamma',
-            limit: 70
+        /*this.setLatticeCollision({
+            alpha: 50,
+            beta: 50,
+            gamma: 50
         });
-        this.forceToLooseMotifEvent({
-            slider: 'atomPosX',
-            limit: 0.2
-        });
+        
+        this.setMotifCollision({
+            atomPosX: 0.2,
+            atomPosZ: 0.2
+        });*/
 
     };
 
@@ -758,10 +762,10 @@ define([
         var sliderName = name+'Slider';
         $('#'+sliderName).trigger($.Event( "mouseup", { which: 1 } ));
     };
-    Menu.prototype.forceToLooseLatticeEvent = function(argument){
+    Menu.prototype.setLatticeCollision = function(argument){
         latticeTabModule.stickySlider(argument);  
     };
-    Menu.prototype.forceToLooseMotifEvent = function(argument){
+    Menu.prototype.setMotifCollision = function(argument){
         motifTabModule.stickySlider(argument);  
     };
     Menu.prototype.setSliderValue = function(name, val) {
@@ -1000,6 +1004,12 @@ define([
     };
     Menu.prototype.onNoteColor = function(callback){
         PubSub.subscribe(events.NOTE_COLOR, callback);
+    };
+    Menu.prototype.onSSAOChange = function(callback){
+        PubSub.subscribe(events.SET_SSAO, callback);
+    };
+    Menu.prototype.onShadowsChange = function(callback){
+        PubSub.subscribe(events.SET_SHADOWS, callback);
     };
 
     return Menu;

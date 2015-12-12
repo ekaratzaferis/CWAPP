@@ -280,25 +280,14 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === false) sendValue.value = value;
-                }
-                else sendValue.value = value;
+                sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === true) {
-                        jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                        jQuery('#'+name).val(collisions[name]);
-                    }
-                }
-                else {
-                    LastLatticeParameters[name] = value;
-                    jQuery('#'+name).val(value);
-                }
+                LastLatticeParameters[name] = value;
+                jQuery('#'+name).val(value);
             });
             jQuery('#'+name+'Slider').on('undo', function(event, value){
                 jQuery('#'+name+'Slider').trigger('fail',[value]);
@@ -311,25 +300,14 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === false) sendValue.value = value;
-                }
-                else sendValue.value = value;
+                sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === true) {
-                        jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                        jQuery('#'+name).val(collisions[name]);
-                    }
-                }
-                else {
-                    LastLatticeParameters[name] = value;
-                    jQuery('#'+name).val(value);
-                }
+                LastLatticeParameters[name] = value;
+                jQuery('#'+name).val(value);
             });
             jQuery('#'+name+'Slider').slider({
                 value: 1,
@@ -341,6 +319,35 @@ define([
                     var argument = {};
                     var value = {};
                     var publish = {};
+                    
+                    // Pass Collistion Detection //
+                    if (!(_.isUndefined(collisions[name]))){
+                        if (collision(ui.value,collisions[name],0.25) === true){
+                            if (collisionTooltip === false){
+                                $tooltipGenerator.addStaticTooltip({
+                                    'target': name+'Slider',
+                                    'placement': 'top',
+                                    'message': $messages.getMessage(24)
+                                });
+                                collisionTooltip = true;
+                                // Publish only once //
+                                _.each(latticeParameters, function($parameter,k){
+                                    if (k === name) {
+                                        applyRestrictions(k+'Slider',collisions[name].toString(),true);
+                                        publish[name] = collisions[name];
+                                    }
+                                });
+                                value.publish = publish;
+                                value.other = jQuery('#name');
+                                if (conditions.atomAdded === false) argument[name] = value;
+                                else argument[name+'Motif'] = value;
+                                $setUIValue.setValue(argument);
+                            }
+                            jQuery('#'+name).val(collisions[name]);
+                            jQuery('#'+name+'Slider').slider('value',collisions[name]);
+                            return false; 
+                        } 
+                    }
                     
                     // Pass Restrictions //
                     _.each(latticeParameters, function($parameter,k){
@@ -354,24 +361,6 @@ define([
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
-                    
-                    // Pass Collistion Detection //
-                    if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name]) === true){
-                            if (collisionTooltip === false){
-                                $tooltipGenerator.addStaticTooltip({
-                                    'target': name+'Slider',
-                                    'placement': 'top',
-                                    'message': $messages.getMessage(24)
-                                });
-                                collisionTooltip = true;
-                            }
-                            jQuery('#'+name).val(collisions[name]);
-                            jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                            return false; 
-                        } 
-                    }
-                    // Collision Passed //
                     collisionTooltip = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     jQuery('#'+name).val(ui.value);
@@ -399,25 +388,14 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === false) sendValue.value = value;
-                }
-                else sendValue.value = value;
+                sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === true) {
-                        jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                        jQuery('#'+name).val(collisions[name]);
-                    }
-                }
-                else {
-                    LastLatticeParameters[name] = value;
-                    jQuery('#'+name).val(value);
-                }
+                LastLatticeParameters[name] = value;
+                jQuery('#'+name).val(value);
             });
             jQuery('#'+name+'Slider').on('undo', function(event, value){
                 jQuery('#'+name+'Slider').trigger('fail',[value]);
@@ -430,25 +408,14 @@ define([
                 // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === false) sendValue.value = value;
-                }
-                else sendValue.value = value;
+                sendValue.value = value;
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
                 // Update latest value //
-                if (!(_.isUndefined(collisions[name]))){
-                    if (collision(value,collisions[name]) === true) {
-                        jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                        jQuery('#'+name).val(collisions[name]);
-                    }
-                }
-                else {
-                    LastLatticeParameters[name] = value;
-                    jQuery('#'+name).val(value);
-                }
+                LastLatticeParameters[name] = value;
+                jQuery('#'+name).val(value);
             });
             jQuery('#'+name+'Slider').slider({
                 value: 90,
@@ -460,6 +427,35 @@ define([
                     var argument = {};
                     var value = {};
                     var publish = {};
+                    
+                    // Pass Collistion Detection //
+                    if (!(_.isUndefined(collisions[name]))){
+                        if (collision(ui.value,collisions[name],10) === true){
+                            if (collisionTooltip === false){
+                                $tooltipGenerator.addStaticTooltip({
+                                    'target': name+'Slider',
+                                    'placement': 'top',
+                                    'message': $messages.getMessage(24)
+                                });
+                                collisionTooltip = true;
+                                // Publish only once //
+                                _.each(latticeParameters, function($parameter,k){
+                                    if (k === name) {
+                                        applyRestrictions(k+'Slider',collisions[name].toString(),true);
+                                        publish[name] = collisions[name];
+                                    }
+                                });
+                                value.publish = publish;
+                                value.other = jQuery('#name');
+                                if (conditions.atomAdded === false) argument[name] = value;
+                                else argument[name+'Motif'] = value;
+                                $setUIValue.setValue(argument);
+                            }
+                            jQuery('#'+name).val(collisions[name]);
+                            jQuery('#'+name+'Slider').slider('value',collisions[name]);
+                            return false; 
+                        } 
+                    }
                     
                     // Pass Restrictions //
                     _.each(latticeParameters, function($parameter,k){
@@ -473,24 +469,6 @@ define([
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
-                    
-                    // Pass Collistion Detection //
-                    if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name]) === true){
-                            if (collisionTooltip === false){
-                                $tooltipGenerator.addStaticTooltip({
-                                    'target': name+'Slider',
-                                    'placement': 'top',
-                                    'message': $messages.getMessage(24)
-                                });
-                                collisionTooltip = true;
-                            }
-                            jQuery('#'+name).val(collisions[name]);
-                            jQuery('#'+name+'Slider').slider('value',collisions[name]);
-                            return false; 
-                        } 
-                    }
-                    // Collision Passed //
                     collisionTooltip = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     jQuery('#'+name).val(ui.value);
@@ -904,9 +882,9 @@ define([
         }
         return returnValue;
     };
-    function collision(value,limit){
-        var upper = limit + 3;
-        var lower = limit - 3; 
+    function collision(value,limit,range){
+        var upper = limit + range;
+        var lower = limit - range; 
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
@@ -970,8 +948,10 @@ define([
         // Read state from argument //
         if (_.isUndefined(argument)) return false;
         else {
-            if (_.isUndefined(argument.limit)) delete collisions[argument.slider];
-            else collisions[argument.slider] = argument.limit;
+            _.each(argument, function($parameter,k){
+                if ($parameter === false) delete collisions[k];
+                else collisions[k] = $parameter;
+            });
         }
         return true;
     };
