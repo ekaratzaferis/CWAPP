@@ -1028,7 +1028,7 @@ define([
       moreCollisions = this.checkForMoreColls(); 
       counterHelper++;  
     } 
-    
+    // simantiko to pote svinei to collision line  : se kathe kinisi
     if(collisionHappened === true ){
       if(aScale !== undefined){ 
         this.menu.forceToLooseLatticeEvent({

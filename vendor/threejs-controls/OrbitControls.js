@@ -21,9 +21,10 @@
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
 
-THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) {
+THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, which ) {
 	this.updating = false ;
 	this.object = object;
+	this.which = which;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
  
 	this.leapMotion = false ; // enable control of camera by leap motion device
@@ -342,7 +343,11 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation ) 
 			lastPosition.copy( this.object.position );
 
 		} 
-		 
+		
+		if ( this.autoRotate === true && this.which === 'crystal' && this.syncCams === true) {
+			this.syncedControl.camera.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
+			this.syncedControl.update(); 
+		}
 	};
 
 	this.setRotationManually = function(theta, phi ){
