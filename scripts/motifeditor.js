@@ -813,8 +813,125 @@ define([
     }
     this.configureCellPoints();
   };
+  Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
+    if(aScale !== undefined){
+      this.cellParameters.scaleZ = aScale ;  
+      this.configureCellPoints('manual');
+    }
+    else if(bScale !== undefined){
+      this.cellParameters.scaleX = bScale ;  
+      this.configureCellPoints('manual');
+    }
+    else if(cScale !== undefined){
+      this.cellParameters.scaleY = cScale ;  
+      this.configureCellPoints('manual');
+    }
+
+    var axis = 'none' ;
+    var collisionHappened = false ;
+    var counterHelper = 0; // help exit infinite loops in case of a bug
+ 
+    while(moreCollisions === true && counterHelper < 10 ){
+       
+      if(aScale != undefined){ 
+        this.cellParameters.scaleZ = aScale ; 
+        // tangency check
+          
+        this.configureCellPoints('manual');
+         
+        var offset = this.checkInterMotifCollision('z', aScale );
+        this.cellParameters.scaleZ = offset ; 
+        
+        if(aScale != offset ) {   
+          collisionHappened = true ;
+          this.menu.forceToLooseEvent('scaleZ');
+          this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
+          this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
+          this.menu.setSliderValue("scaleZ", offset); 
+        } 
+        
+        aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
+        
+      }
+      else if(bScale != undefined){  
+        this.cellParameters.scaleX = bScale ;
+        // tangency check
+
+        this.configureCellPoints('manual');   
+        
+        var offset = this.checkInterMotifCollision('x', bScale ); 
+        
+        this.cellParameters.scaleX = offset ;
+          
+        if(bScale != offset ) {  
+          collisionHappened = true ; 
+          this.menu.forceToLooseEvent('scaleX');
+          this.menu.forceToLooseEvent('cellVolume');
+          this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
+          this.menu.setSliderValue("scaleX", offset); 
+        }
+             
+        bScale = this.cellParameters.scaleX ; // for recurrency of collision checks
+
+      }
+      else if(cScale != undefined){ 
+        this.cellParameters.scaleY = cScale ;
+        // tangency check
+        this.configureCellPoints('manual');
+      
+        var offset = this.checkInterMotifCollision('y', cScale ); 
+        this.cellParameters.scaleY = offset ;
+        if(cScale != offset ) {
+          collisionHappened = true ;
+          this.menu.forceToLooseEvent('scaleY');
+          this.menu.forceToLooseEvent('cellVolume');
+          this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
+          this.menu.setSliderValue("scaleY", offset); 
+        }
+         
+        cScale = this.cellParameters.scaleY ; // for recurrency of collision checks
+      } 
+      this.configureCellPoints('manual'); //second time
+      this.updateLatticeTypeRL();
+
+      moreCollisions = this.checkForMoreColls(); 
+      counterHelper++;  
+    } 
+    
+    if(collisionHappened === true ){
+      if(aScale !== undefined){ 
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleZ',
+          limit: aScale
+        });
+      }
+      else if(bScale !== undefined){
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleX',
+          limit: bScale
+        });
+      }
+      else if(cScale !== undefined){
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleY',
+          limit: cScale
+        });
+      }
+    }
+    if(this.latticeSystem === 'hexagonal' && this.latticeType === 'hexagonal'){  
+
+      if(aScale !== undefined){
+        this.cellParameters.scaleX = aScale ; 
+        this.menu.setSliderValue("scaleX", aScale); 
+      }
+      else if(bScale !== undefined){
+        this.cellParameters.scaleZ = bScale ;
+        this.menu.setSliderValue("scaleZ", bScale);  
+      }
+    }
+  };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
-     
+      
     if(this.cellMutex === false) {
       return ;
     }
@@ -822,21 +939,27 @@ define([
     var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
     var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
     var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
-  
+    
+    var storeInps = {aScale : aScale, bScale : bScale, cScale : cScale};
+
     if(this.editorState.atomPosMode === 'relative'){ 
       this.scaleRelative(par);
+      return;
+    }
+
+    if(this.globalTangency === false && false){
+      this.setManuallyCellLengthsNoTangency(aScale, bScale, cScale);
+      this.cellMutex = true ;
       return;
     }
     var moreCollisions = true;
 
     this.cellMutex = false ;
+
     var axis = 'none' ;
+    var collisionHappened = false ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
-
-    this.menu.forceToLooseLatticeEvent(false);
-
-    console.log(this.globalTangency);
-
+ 
     while(moreCollisions === true && counterHelper < 10 ){
        
       if(aScale != undefined){ 
@@ -845,16 +968,16 @@ define([
           
         this.configureCellPoints('manual');
         
-        if(this.globalTangency){ 
+        if(true){ 
           var offset = this.checkInterMotifCollision('z', aScale );
           this.cellParameters.scaleZ = offset ; 
           
           if(aScale != offset ) {   
-             
-            this.menu.forceToLooseLatticeEvent(true); //
+            collisionHappened = true ;
+            this.menu.forceToLooseEvent('scaleZ');
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
-            this.menu.setSliderValue("scaleZ", offset); 
+            if(this.globalTangency === true) this.menu.setSliderValue("scaleZ", offset); 
           } 
         }
         aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
@@ -865,16 +988,17 @@ define([
         // tangency check
 
         this.configureCellPoints('manual');   
-        if(this.globalTangency){ 
+        if(true){ 
           var offset = this.checkInterMotifCollision('x', bScale ); 
           
           this.cellParameters.scaleX = offset ;
             
-          if(bScale != offset ) {   
-            this.menu.forceToLooseLatticeEvent(true);
+          if(bScale != offset ) {  
+            collisionHappened = true ; 
+            this.menu.forceToLooseEvent('scaleX');
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
-            this.menu.setSliderValue("scaleX", offset); 
+            if(this.globalTangency === true) this.menu.setSliderValue("scaleX", offset); 
           }
            
         }
@@ -885,14 +1009,15 @@ define([
         this.cellParameters.scaleY = cScale ;
         // tangency check
         this.configureCellPoints('manual');
-        if(this.globalTangency){    
+        if(true){ 
           var offset = this.checkInterMotifCollision('y', cScale ); 
           this.cellParameters.scaleY = offset ;
           if(cScale != offset ) {
-            this.menu.forceToLooseLatticeEvent(true);
+            collisionHappened = true ;
+            this.menu.forceToLooseEvent('scaleY');
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
-            this.menu.setSliderValue("scaleY", offset); 
+            if(this.globalTangency === true) this.menu.setSliderValue("scaleY", offset); 
           }
         }
         cScale = this.cellParameters.scaleY ; // for recurrency of collision checks
@@ -904,6 +1029,40 @@ define([
       counterHelper++;  
     } 
     
+    if(collisionHappened === true ){
+      if(aScale !== undefined){ 
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleZ',
+          limit: aScale
+        });
+      }
+      else if(bScale !== undefined){
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleX',
+          limit: bScale
+        });
+      }
+      else if(cScale !== undefined){
+        this.menu.forceToLooseLatticeEvent({
+          slider: 'scaleY',
+          limit: cScale
+        });
+      }
+
+      if(this.globalTangency === false){
+        if(aScale !== undefined){ 
+          this.cellParameters.scaleZ = aScale;
+        }
+        else if(bScale !== undefined){
+          this.cellParameters.scaleX = bScale;
+        }
+        else if(cScale !== undefined){
+          this.cellParameters.scaleY = cScale;
+        }
+        this.configureCellPoints('manual');
+      }
+    }
+     
     if(this.latticeSystem === 'hexagonal' && this.latticeType === 'hexagonal'){  
 
       if(aScale !== undefined){
@@ -1343,8 +1502,7 @@ define([
 
           this.cellParameters.alpha = offset.newVal ;
 
-          if(alpha != offset.newVal ) { 
-            this.menu.forceToLooseLatticeEvent(true);
+          if(alpha != offset.newVal ) {  
             this.menu.setSliderValue("cellAlpha", offset.newVal); 
           } 
         } 
@@ -1358,8 +1516,7 @@ define([
           var offset = this.checkInterMotifCollision('beta', beta);
           this.cellParameters.beta = offset.newVal ;
            
-          if(par.cellBeta != offset.newVal ) { 
-            this.menu.forceToLooseLatticeEvent(true);
+          if(par.cellBeta != offset.newVal ) {  
             this.menu.setSliderValue("cellBeta", offset.newVal);
             $('#cellBeta').val(offset.newVal);
           } 
@@ -1373,8 +1530,7 @@ define([
           var offset = this.checkInterMotifCollision('gamma', gamma );
           this.cellParameters.gamma = offset.newVal ;
 
-          if(par.cellGamma != offset.newVal ) { 
-            this.menu.forceToLooseLatticeEvent(true);
+          if(par.cellGamma != offset.newVal ) {  
             this.menu.setSliderValue("cellGamma", offset.newVal);
             $('#cellGamma').val(offset.newVal);
           } 
@@ -1599,7 +1755,15 @@ define([
             this.lastSphereAdded = undefined ;
             this.isEmpty = true ; 
           }
-          
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleX' 
+          });
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleY' 
+          });
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleZ' 
+          });
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.initVolumeState(); 
@@ -1652,6 +1816,15 @@ define([
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});  
           this.initVolumeState(); 
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleX' 
+          });
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleY' 
+          });
+          this.menu.forceToLooseLatticeEvent({
+            slider: 'scaleZ' 
+          });
           break; 
       }
     }  
@@ -2745,7 +2918,16 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore, ionicIndex){  
     var _this = this;  
     var dimensions, identity ;
-     
+    this.menu.forceToLooseLatticeEvent({
+      slider: 'scaleX' 
+    });
+    this.menu.forceToLooseLatticeEvent({
+      slider: 'scaleY' 
+    });
+    this.menu.forceToLooseLatticeEvent({
+      slider: 'scaleZ' 
+    });
+
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
       dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
     } 
@@ -3740,7 +3922,7 @@ define([
       this.motifsAtoms.pop();
     }
     
-    if(this.editorState.atomPosMode === 'absolute'){
+    if(this.editorState.atomPosMode === 'absolute' && false){
 
       this.menu.setSliderMin('atomPosX',-1*cell.xDim);
       this.menu.setSliderMin('atomPosY',-1*cell.yDim);
