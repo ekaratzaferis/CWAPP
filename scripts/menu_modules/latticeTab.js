@@ -322,7 +322,7 @@ define([
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name],0.25) === true){
+                        if (collision(ui.value,collisions[name],0.5) === true){
                             if (collisionTooltip === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
@@ -430,7 +430,7 @@ define([
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name],10) === true){
+                        if (collision(ui.value,collisions[name],3) === true){
                             if (collisionTooltip === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
@@ -791,7 +791,7 @@ define([
         // Turn off tangency //
         $setUIValue.setValue({
             tangency: {
-                value: true
+                value: false
             }
         });
         
@@ -817,7 +817,7 @@ define([
         // Turn on tangency //
         $setUIValue.setValue({
             tangency: {
-                value: false
+                value: true
             }
         });
         

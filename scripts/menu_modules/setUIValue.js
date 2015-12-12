@@ -885,7 +885,7 @@ define([
                 break;   
             }
             case 'tangency':{
-                if (value === true) selector.parent().removeClass('purpleThemeActive');
+                if (value === false) selector.parent().removeClass('purpleThemeActive');
                 else selector.parent().addClass('purpleThemeActive');
                 break;   
             }
