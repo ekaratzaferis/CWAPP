@@ -230,23 +230,24 @@ define([
                 step: 0.001,
                 animate: true,
                 slide: function(event, ui){
-                    var publish = {};
-                    publish[k] = ui.value;
-                    var argument = {};
-                    argument[k] = {publish: publish};
-                    $setUIValue.setValue(argument);
-                    motifInputs[k].val(ui.value);
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[k]))){
-                        if (collision(ui.value,collisions[k]) === true){
+                        if (collision(ui.value,collisions[k],0.1) === true){
                             if (collisionTooltip === false){
                                 $tooltipGenerator.addStaticTooltip({
-                                    'target': name+'Slider',
+                                    'target': k+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
                                 collisionTooltip = true;
+                                // Publish event only once //
+                                var publish = {};
+                                publish[k] = collisions[k];
+                                var argument = {};
+                                argument[k] = {publish: publish};
+                                $setUIValue.setValue(argument);
+                                motifInputs[k].val(ui.value);
                             }
                             jQuery('#'+k).val(collisions[k]);
                             jQuery('#'+k+'Slider').slider('value',collisions[k]);
@@ -254,6 +255,12 @@ define([
                         } 
                     }
                     // Collision Passed //
+                    var publish = {};
+                    publish[k] = ui.value;
+                    var argument = {};
+                    argument[k] = {publish: publish};
+                    $setUIValue.setValue(argument);
+                    motifInputs[k].val(ui.value);
                     collisionTooltip = false;
                     jQuery('#'+k+'Slider').tooltip('destroy');
                     jQuery('#'+k).val(ui.value);
@@ -608,9 +615,9 @@ define([
             jQuery(this).find('.chain').find('a').html(getChainLevel(jQuery(this).attr('id')));
         });
     };
-    function collision(value,limit){
-        var upper = limit + 0.5;
-        var lower = limit - 0.5; 
+    function collision(value,limit,range){
+        var upper = limit + range;
+        var lower = limit - range; 
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
@@ -785,8 +792,10 @@ define([
         // Read state from argument //
         if (_.isUndefined(argument)) return false;
         else {
-            if (_.isUndefined(argument.limit)) delete collisions[argument.slider];
-            else collisions[argument.slider] = argument.limit;
+            _.each(argument, function($parameter,k){
+                if ($parameter === false) delete collisions[k];
+                else collisions[k] = $parameter;
+            });
         }
         return true;
     };

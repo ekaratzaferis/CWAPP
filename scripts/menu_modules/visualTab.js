@@ -39,6 +39,8 @@ define([
     // Buttons
     var $sounds = jQuery('#sounds');
     var $lights = jQuery('#lights');
+    var $ssao = jQuery('#ssao');
+    var $shadows = jQuery('#shadows');
     var $fullScreen = jQuery('#fullScreen');
     var $leapMotion = $('#leapMotion');
     var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
@@ -124,6 +126,24 @@ define([
             $setUI.setValue({
                 lights:{
                     publish:{lights:value},
+                    value:value
+                }
+            });
+        });
+        $ssao.on('click', function(){
+            ($ssao.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                ssao:{
+                    publish:{ssao:value},
+                    value:value
+                }
+            });
+        });
+        $shadows.on('click', function(){
+            ($shadows.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                shadows:{
+                    publish:{shadows:value},
                     value:value
                 }
             });

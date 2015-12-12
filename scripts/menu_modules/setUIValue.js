@@ -72,6 +72,8 @@ define([
     // Published Events
     var events = {
         AUTO_UPDATE: 'menu.auto_update',
+        SET_SSAO: 'menu.set_ssao',
+        SET_SHADOWS: 'menu.set_shadows',
         RESET: 'menu.reset',
         SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
         ON_TOP_3D: 'menu.on_top_3d',
@@ -1010,6 +1012,16 @@ define([
                 else selector.removeClass('active');
                 break;
             }
+            case 'ssao':{
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                break;
+            }
+            case 'shadows':{
+                if (value === true) selector.addClass('active');
+                else selector.removeClass('active');
+                break;
+            }
             case 'distortionOn':{
                 if (value === true) {
                     selector.addClass('active');
@@ -1713,6 +1725,14 @@ define([
             }
             case 'lights':{
                 PubSub.publish(events.SET_LIGHTS, value);
+                break;
+            }
+            case 'ssao':{
+                PubSub.publish(events.SET_SSAO, value);
+                break;
+            }
+            case 'shadows':{
+                PubSub.publish(events.SET_SHADOWS, value);
                 break;
             }
             case 'distortionOn':{
