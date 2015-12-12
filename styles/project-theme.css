@@ -3883,8 +3883,9 @@ input.disabled[type="text"]{ background-color: black; }
 li[role='presentation'].disabled{
     background-color: #34373e;
 }
+/* #6f6299 */
 #scaleZCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleZShift{ background-color: white; width: 30px; height: 6px; float: left; }
+#scaleZShift{ background-color: white; width: 15%; height: 6px; float: left; }
 #scaleYCollision{ background-color: white; width: 30px; height: 6px; float: left; }
 #scaleYShift{ background-color: white; width: 30px; height: 6px; float: left; }
 #scaleXCollision{ background-color: white; width: 30px; height: 6px; float: left; }

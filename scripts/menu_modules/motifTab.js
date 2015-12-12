@@ -307,14 +307,14 @@ define([
         $tangency.on('click',function(){
             var value = undefined;
             if ( !($tangency.parent().hasClass('disabled')) ){
-                ($tangency.parent().hasClass('purpleThemeActive')) ? value = true : value = false;
+                ($tangency.parent().hasClass('purpleThemeActive')) ? value = false : value = true;
                 $setUIValue.setValue({
                     tangency:{
                         publish:{button:'tangency',tangency:value},
                         value:value
                     }
                 });
-                if (value === false) {
+                if (value === true) {
                     $setUIValue.setValue({
                         cellVolume:{
                             value: 100,
