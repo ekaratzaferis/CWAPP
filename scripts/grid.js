@@ -15,6 +15,8 @@ define([
     var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( { color: 0xA19EA1 } ) ); 
     mesh.visible = visibility;
     mesh.name = 'grid';
+    mesh.scale.x = 2;
+    mesh.scale.z = 2;
     this.object3d = mesh; 
     Explorer.add(this);
     this.scale = 2;

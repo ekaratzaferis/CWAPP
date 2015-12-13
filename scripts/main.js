@@ -44,7 +44,13 @@ require.config({
     'modals': 'menu_modules/modals',
     'dynamictexture': '../vendor/dynamictexture',
     'tag-it.min': '../vendor/tag-it.min',
-    'jquery.qrcode-0.12.0.min': '../vendor/jquery.qrcode-0.12.0.min'
+    'jquery.qrcode-0.12.0.min': '../vendor/jquery.qrcode-0.12.0.min',
+    'SSAOShader': '../vendor/ssao/SSAOShader',
+    'CopyShader': '../vendor/ssao/CopyShader',
+    'RenderPass': '../vendor/ssao/RenderPass',
+    'MaskPass': '../vendor/ssao/MaskPass',
+    'ShaderPass': '../vendor/ssao/ShaderPass',
+    'EffectComposer': '../vendor/ssao/EffectComposer'
 
   },
   shim: {
@@ -56,7 +62,13 @@ require.config({
     'threeCSG': { deps: [ 'three' ] },
     'rStats': { deps: [ 'three' ] },
     'STLExporter': { deps: [ 'three' ] },
-    'dynamictexture': { deps: [ 'three' ] }
+    'dynamictexture': { deps: [ 'three' ] },
+    'SSAOShader': { deps: [ 'three' ] },
+    'EffectComposer': { deps: [ 'three' ] },
+    'ShaderPass': { deps: [ 'three' ] },
+    'RenderPass': { deps: [ 'three' ] },
+    'MaskPass': { deps: [ 'three' ] },
+    'CopyShader': { deps: [ 'three' ] }
   }
 });
 
@@ -102,7 +114,13 @@ require([
   'individualAtomController',
   'atomMaterialManager',  
   'atomRelationshipManager', 
-  'noteManager' 
+  'noteManager',
+  'SSAOShader',
+  'EffectComposer',
+  'ShaderPass',
+  'RenderPass',
+  'MaskPass',
+  'CopyShader'
 
 ], function(
   PubSub, 
@@ -146,7 +164,14 @@ require([
   IndividualAtomController,
   AtomMaterialManager,  
   AtomRelationshipManager,
-  NoteManager
+  NoteManager,
+  SSAOShader,
+  EffectComposer, 
+  ShaderPass,
+  RenderPass,
+  MaskPass,
+  CopyShader
+
 ) {
 
   var menu = new Menu();
@@ -159,7 +184,7 @@ require([
   var motifScene = MotifExplorer.getInstance();
  
   var height,width;
-
+ 
   var crystalRenderer = new Renderer(crystalScene, 'crystalRenderer', 'crystal' ); 
   crystalRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
   
@@ -799,6 +824,12 @@ require([
   });
   menu.onNoteColor(function(message, arg) { 
     noteManager.setLineColor(arg ); 
+  });
+  menu.onShadowsChange(function(message, arg) { 
+    crystalRenderer.shadowing(arg);
+  });
+  menu.onSSAOChange(function(message, arg) { 
+    crystalRenderer.ssaoEffect(arg);
   });
   
   ///////////////////////

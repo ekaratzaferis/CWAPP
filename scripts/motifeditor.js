@@ -451,7 +451,7 @@ define([
   Motifeditor.prototype.setAtomsPosition = function(param){ 
     
     var _this = this;  
-    console.log(param);
+     
     var oldX,oldY,oldZ;
     var stillColliding = true, doNotOverlap = this.globalTangency ;
     var xFactor = 1;
@@ -608,6 +608,13 @@ define([
       }
     }
     this.configureCellPoints();
+
+    this.menu.setLatticeCollision({
+      scaleY: false, 
+      scaleZ: false, 
+      scaleX: false
+    });
+
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -814,19 +821,19 @@ define([
     this.configureCellPoints();
   };
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
+    
     if(aScale !== undefined){
-      this.cellParameters.scaleZ = aScale ;  
-      this.configureCellPoints('manual');
+      this.cellParameters.scaleZ = aScale ;   
     }
     else if(bScale !== undefined){
-      this.cellParameters.scaleX = bScale ;  
-      this.configureCellPoints('manual');
+      this.cellParameters.scaleX = bScale ; 
     }
     else if(cScale !== undefined){
-      this.cellParameters.scaleY = cScale ;  
-      this.configureCellPoints('manual');
+      this.cellParameters.scaleY = cScale ;   
     }
+    this.configureCellPoints('manual');
 
+    /*
     var axis = 'none' ;
     var collisionHappened = false ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
@@ -900,24 +907,22 @@ define([
     
     if(collisionHappened === true ){
       if(aScale !== undefined){ 
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleZ',
-          limit: aScale
+        this.menu.setLatticeCollision({
+          scaleZ: aScale 
         });
       }
       else if(bScale !== undefined){
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleX',
-          limit: bScale
+        this.menu.setLatticeCollision({
+          scaleX: bScale 
         });
       }
       else if(cScale !== undefined){
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleY',
-          limit: cScale
+        this.menu.setLatticeCollision({
+          scaleY: cScale 
         });
       }
     }
+
     if(this.latticeSystem === 'hexagonal' && this.latticeType === 'hexagonal'){  
 
       if(aScale !== undefined){
@@ -928,7 +933,7 @@ define([
         this.cellParameters.scaleZ = bScale ;
         this.menu.setSliderValue("scaleZ", bScale);  
       }
-    }
+    }*/
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
       
@@ -936,10 +941,32 @@ define([
       return ;
     }
     
-    var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
-    var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
-    var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
-    
+    var aScale, bScale, cScale;
+
+    if(par.scaleZ !== undefined) {
+      aScale = parseFloat(par.scaleZ) ;
+      this.menu.setLatticeCollision({
+        scaleY: false, 
+        scaleX: false
+      });
+    } 
+
+    if(par.scaleX !== undefined) {
+      bScale = parseFloat(par.scaleX) ;
+      this.menu.setLatticeCollision({
+        scaleY: false, 
+        scaleZ: false
+      });
+    } 
+
+    if(par.scaleY !== undefined) {
+      cScale = parseFloat(par.scaleY) ;
+      this.menu.setLatticeCollision({
+        scaleZ: false, 
+        scaleX: false
+      });
+    } 
+ 
     var storeInps = {aScale : aScale, bScale : bScale, cScale : cScale};
 
     if(this.editorState.atomPosMode === 'relative'){ 
@@ -947,7 +974,7 @@ define([
       return;
     }
 
-    if(this.globalTangency === false && false){
+    if(this.globalTangency === false){
       this.setManuallyCellLengthsNoTangency(aScale, bScale, cScale);
       this.cellMutex = true ;
       return;
@@ -973,8 +1000,10 @@ define([
           this.cellParameters.scaleZ = offset ; 
           
           if(aScale != offset ) {   
-            collisionHappened = true ;
-            this.menu.forceToLooseEvent('scaleZ');
+            collisionHappened = true ; 
+            if(this.globalTangency === true){
+              this.menu.forceToLooseEvent('scaleZ');
+            }
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
             if(this.globalTangency === true) this.menu.setSliderValue("scaleZ", offset); 
@@ -994,8 +1023,10 @@ define([
           this.cellParameters.scaleX = offset ;
             
           if(bScale != offset ) {  
-            collisionHappened = true ; 
-            this.menu.forceToLooseEvent('scaleX');
+            collisionHappened = true ;  
+            if(this.globalTangency === true){
+              this.menu.forceToLooseEvent('scaleX');
+            }
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
             if(this.globalTangency === true) this.menu.setSliderValue("scaleX", offset); 
@@ -1006,6 +1037,7 @@ define([
 
       }
       else if(cScale != undefined){ 
+
         this.cellParameters.scaleY = cScale ;
         // tangency check
         this.configureCellPoints('manual');
@@ -1014,7 +1046,9 @@ define([
           this.cellParameters.scaleY = offset ;
           if(cScale != offset ) {
             collisionHappened = true ;
-            this.menu.forceToLooseEvent('scaleY');
+            if(this.globalTangency === true){
+              this.menu.forceToLooseEvent('scaleY');
+            }
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
             if(this.globalTangency === true) this.menu.setSliderValue("scaleY", offset); 
@@ -1028,24 +1062,21 @@ define([
       moreCollisions = this.checkForMoreColls(); 
       counterHelper++;  
     } 
-    // simantiko to pote svinei to collision line  : se kathe kinisi
+     
     if(collisionHappened === true ){
       if(aScale !== undefined){ 
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleZ',
-          limit: aScale
+        this.menu.setLatticeCollision({
+          scaleZ: aScale 
         });
       }
       else if(bScale !== undefined){
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleX',
-          limit: bScale
+        this.menu.setLatticeCollision({
+          scaleX: bScale 
         });
       }
       else if(cScale !== undefined){
-        this.menu.forceToLooseLatticeEvent({
-          slider: 'scaleY',
-          limit: cScale
+        this.menu.setLatticeCollision({
+          scaleY: cScale 
         });
       }
 
@@ -1755,15 +1786,12 @@ define([
             this.lastSphereAdded = undefined ;
             this.isEmpty = true ; 
           }
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleX' 
+          this.menu.setLatticeCollision({
+            scaleX: false,
+            scaleY: false, 
+            scaleZ: false 
           });
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleY' 
-          });
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleZ' 
-          });
+         
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
           this.initVolumeState(); 
@@ -1816,14 +1844,10 @@ define([
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});  
           this.initVolumeState(); 
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleX' 
-          });
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleY' 
-          });
-          this.menu.forceToLooseLatticeEvent({
-            slider: 'scaleZ' 
+          this.menu.setLatticeCollision({
+            scaleX: false,
+            scaleY: false, 
+            scaleZ: false 
           });
           break; 
       }
@@ -2918,14 +2942,10 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore, ionicIndex){  
     var _this = this;  
     var dimensions, identity ;
-    this.menu.forceToLooseLatticeEvent({
-      slider: 'scaleX' 
-    });
-    this.menu.forceToLooseLatticeEvent({
-      slider: 'scaleY' 
-    });
-    this.menu.forceToLooseLatticeEvent({
-      slider: 'scaleZ' 
+    this.menu.setLatticeCollision({
+      scaleX: false,
+      scaleY: false, 
+      scaleZ: false 
     });
 
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
