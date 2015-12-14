@@ -23,6 +23,14 @@ define([
     var restrictionList = {};
     var collisions = {};
     var collisionTooltip = false;
+    var collisionRange = {
+        scaleX: 0.5,
+        scaleY: 0.5,
+        scaleZ: 0.5,
+        alpha: 3,
+        beta: 3,
+        gamma: 3
+    };
     
     // Grouping //
     var conditions = {
@@ -322,7 +330,7 @@ define([
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name],0.5) === true){
+                        if (collision(ui.value,collisions[name],collisionRange[name]) === true){
                             if (collisionTooltip === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
@@ -430,7 +438,7 @@ define([
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
-                        if (collision(ui.value,collisions[name],3) === true){
+                        if (collision(ui.value,collisions[name],collisionRange[name]) === true){
                             if (collisionTooltip === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
@@ -888,6 +896,31 @@ define([
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
+    function sliderWidth(name){
+        var width = jQuery('#'+name+'Slider').width();
+        if (width > 0) return width;
+        else return 187.578;
+    };
+    function sliderStepWidth(name){
+        var range = jQuery('#'+name+'Slider').slider('option','max') - jQuery('#'+name+'Slider').slider('option','min');
+        var numberOfSteps = (range / jQuery('#'+name+'Slider').slider('option','step')) + 1;
+        return sliderWidth(name) / numberOfSteps;
+    };
+    function countSteps(step,value,min){
+        var counter = 0;
+        while(value > min) {
+            value -= step;
+            counter++;
+        }
+        return counter;
+    };
+    function refreshStickyVisuals(){
+        _.each(collisions, function($parameter,k){
+            var steps = countSteps(jQuery('#'+k+'Slider').slider('option','step'),collisions[k],jQuery('#'+k+'Slider').slider('option','min'));
+            var shift = steps*sliderStepWidth(k);
+            jQuery('#'+k+'Shift').css('width',shift+'px');
+        });
+    };
     
     latticeTab.prototype.setLatticeRestrictions = function(argument){
         setLatticeRestrictions(argument);  
@@ -949,11 +982,19 @@ define([
         if (_.isUndefined(argument)) return false;
         else {
             _.each(argument, function($parameter,k){
-                if ($parameter === false) delete collisions[k];
+                if ($parameter === false) {
+                    delete collisions[k];
+                    jQuery('#'+k+'Collision').css('background-color','white');
+                }
                 else collisions[k] = $parameter;
+                jQuery('#'+k+'Collision').css('background-color','#6f6299');
             });
+            refreshStickyVisuals();
         }
         return true;
+    };
+    latticeTab.prototype.refreshStickyVisuals = function(){
+        refreshStickyVisuals();
     };
     
     return latticeTab;

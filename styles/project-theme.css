@@ -3884,24 +3884,24 @@ li[role='presentation'].disabled{
     background-color: #34373e;
 }
 /* #6f6299 */
-#scaleZCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleZShift{ background-color: white; width: 15%; height: 6px; float: left; }
-#scaleYCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleYShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleXCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleXShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#alphaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#alphaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#betaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#betaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#gammaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#gammaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#atomPosZCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosZShift{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosXCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosXShift{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosYCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosYShift{ background-color: white; width: 30px; height: 4px; float: left; }
+#scaleZCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleZShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleYCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleYShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleXCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleXShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#alphaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#alphaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#betaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#betaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#gammaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#gammaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#atomPosZCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosZShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosXCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosXShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosYCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosYShift{ background-color: white; width: 10px; height: 4px; float: left; }
 
 #iacBody{
     padding: 5px;
