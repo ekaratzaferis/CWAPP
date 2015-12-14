@@ -667,8 +667,8 @@ define([
     var val = (par.step === undefined) ? parseFloat(par.cellVolume) : parseFloat(par.step);
 
     var newVals = {x : 1, y : 1, z : 1};
-  
-    val /=100;
+   
+    val /= 100;
     
     newVals.x = val*this.cellVolume.xInitVal; 
     newVals.y = val*this.cellVolume.yInitVal;
@@ -680,15 +680,15 @@ define([
 
     var newValA = newVals.z ;  
 
-    this.setManuallyCellLengths({'scaleZ' : newValA }, 'volume');
+    this.setManuallyCellLengths({'scaleZ' : newValA }, 'volume', par.trigger);
     this.menu.setSliderValue("scaleZ", newValA); 
       
     var newValB = newVals.x ;
-    this.setManuallyCellLengths({'scaleX' : newValB }, 'volume');
+    this.setManuallyCellLengths({'scaleX' : newValB }, 'volume', par.trigger);
     this.menu.setSliderValue("scaleX", newValB);
      
     var newValC = newVals.y ;
-    this.setManuallyCellLengths({'scaleY' : newValC }, 'volume');
+    this.setManuallyCellLengths({'scaleY' : newValC }, 'volume', par.trigger);
     this.menu.setSliderValue("scaleY", newValC); 
      
     if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
@@ -821,7 +821,7 @@ define([
     this.configureCellPoints();
   };
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
-    
+     
     if(aScale !== undefined){
       this.cellParameters.scaleZ = aScale ;   
     }
@@ -832,6 +832,7 @@ define([
       this.cellParameters.scaleY = cScale ;   
     }
     this.configureCellPoints('manual');
+
 
     /*
     var axis = 'none' ;
@@ -935,7 +936,7 @@ define([
       }
     }*/
   };
-  Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF){
+  Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF, reducing){
       
     if(this.cellMutex === false) {
       return ;
@@ -974,7 +975,7 @@ define([
       return;
     }
 
-    if(this.globalTangency === false){
+    if(this.globalTangency === false && reducing === undefined){
       this.setManuallyCellLengthsNoTangency(aScale, bScale, cScale);
       this.cellMutex = true ;
       return;
@@ -1080,7 +1081,7 @@ define([
         });
       }
 
-      if(this.globalTangency === false){
+      if(this.globalTangency === false && reducing === undefined){
         if(aScale !== undefined){ 
           this.cellParameters.scaleZ = aScale;
         }
@@ -5835,7 +5836,8 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.setTangency = function(arg){
-    this.globalTangency = !(arg.tangency); 
+ 
+    this.globalTangency =  arg.tangency ; 
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
