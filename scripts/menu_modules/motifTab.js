@@ -621,6 +621,32 @@ define([
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
+    function sliderWidth(name){
+        var width = jQuery('#'+name+'Slider').width();
+        if (width > 0) return width;
+        else return 122.906;
+    };
+    function sliderStepWidth(name){
+        var range = jQuery('#'+name+'Slider').slider('option','max') - jQuery('#'+name+'Slider').slider('option','min');
+        var numberOfSteps = (range / jQuery('#'+name+'Slider').slider('option','step')) + 1;
+        return sliderWidth(name) / numberOfSteps;
+    };
+    function countSteps(step,value,min){
+        var counter = 0;
+        while(value > min) {
+            value -= step;
+            counter++;
+        }
+        return counter;
+    };
+    function refreshStickyVisuals(){
+        _.each(collisions, function($parameter,k){
+            var steps = countSteps(jQuery('#'+k+'Slider').slider('option','step'),collisions[k],jQuery('#'+k+'Slider').slider('option','min'));
+            var shift = steps*sliderStepWidth(k);
+            shift -=5;
+            jQuery('#'+k+'Shift').css('width',shift+'px');
+        });
+    };
     
     motifTab.prototype.toggleExtraParameter = function(choice,action){
         if ( (choice === 'i') && (action === 'block') ) jQuery('#hexICoord').show('fast');
@@ -793,11 +819,19 @@ define([
         if (_.isUndefined(argument)) return false;
         else {
             _.each(argument, function($parameter,k){
-                if ($parameter === false) delete collisions[k];
+                if ($parameter === false) {
+                    delete collisions[k];
+                    jQuery('#'+k+'Collision').css('background-color','white');
+                }
                 else collisions[k] = $parameter;
+                jQuery('#'+k+'Collision').css('background-color','#6f6299');
             });
+            refreshStickyVisuals();
         }
         return true;
+    };
+    motifTab.prototype.refreshStickyVisuals = function(){
+        refreshStickyVisuals();
     };
     
     return motifTab;
