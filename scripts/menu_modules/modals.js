@@ -175,14 +175,21 @@ define([
                 }
             });
             
-            // Unlock motif padlock and disable lattice parameters //
+    
+            // Enable motif padlock //
             if (!(jQuery('#latticePadlock').hasClass('disabled'))){
                 $disableUIElement.disableElement({
                     motifPadlock:{
                         value: false   
-                    },
+                    }
+                });
+            }
+            
+            // Disable lattice parameters //
+            if (!(jQuery('#motifPadlock').find('a').hasClass('active'))){
+                $disableUIElement.disableElement({
                     latticeParameters:{
-                        value: true   
+                        value: true
                     }
                 });
             }

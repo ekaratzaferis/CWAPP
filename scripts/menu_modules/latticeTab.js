@@ -22,7 +22,14 @@ define([
     var localRestrictions = undefined;
     var restrictionList = {};
     var collisions = {};
-    var collisionTooltip = false;
+    var collisionTooltip = {
+        scaleX: false,   
+        scaleY: false,   
+        scaleZ: false,   
+        alpha: false,   
+        beta: false,   
+        gamma: false 
+    };
     var collisionRange = {
         scaleX: 0.5,
         scaleY: 0.5,
@@ -331,13 +338,13 @@ define([
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
                         if (collision(ui.value,collisions[name],collisionRange[name]) === true){
-                            if (collisionTooltip === false){
+                            if (collisionTooltip[name] === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
-                                collisionTooltip = true;
+                                collisionTooltip[name] = true;
                                 // Publish only once //
                                 _.each(latticeParameters, function($parameter,k){
                                     if (k === name) {
@@ -369,7 +376,7 @@ define([
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
-                    collisionTooltip = false;
+                    collisionTooltip[name] = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     jQuery('#'+name).val(ui.value);
                 },
@@ -382,7 +389,7 @@ define([
                         });
                     }
                     jQuery('#'+name+'Slider').tooltip('destroy');
-                    collisionTooltip = false;
+                    collisionTooltip[name] = false;
                 }
             });
         });
@@ -439,13 +446,13 @@ define([
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[name]))){
                         if (collision(ui.value,collisions[name],collisionRange[name]) === true){
-                            if (collisionTooltip === false){
+                            if (collisionTooltip[name] === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
-                                collisionTooltip = true;
+                                collisionTooltip[name] = true;
                                 // Publish only once //
                                 _.each(latticeParameters, function($parameter,k){
                                     if (k === name) {
@@ -477,7 +484,7 @@ define([
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
-                    collisionTooltip = false;
+                    collisionTooltip[name] = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     jQuery('#'+name).val(ui.value);
                     
@@ -491,7 +498,7 @@ define([
                         });
                     }
                     jQuery('#'+name+'Slider').tooltip('destroy');
-                    collisionTooltip = false;
+                    collisionTooltip[name] = false;
                 }
             });
         });
@@ -563,6 +570,13 @@ define([
             // Clear Lattice Restrictions //
             removeLatticeRestrictions();
             localRestrictions = undefined;
+        });
+        $latticePadlock.on('resetCollision',function(){
+            // Clear Collision //
+            _.each(collisions, function($parameter,k){
+                jQuery('#'+k+'Collision').css('background-color','white'); 
+                delete collisions[k];
+            });
         });
         $motifPadlock.on('click', function() {
             if (!($motifPadlock.hasClass('disabled'))) {
