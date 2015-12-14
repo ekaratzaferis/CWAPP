@@ -54,7 +54,13 @@ define([
     this.renderer.shadowMapHeight = 1024; 
     this.renderer.autoClear = false; // 2 scenes render 
     this.animationIsActive = false;
-    
+
+    this.depthTarget; 
+    this.depthMaterial;
+    this.depthMaterial;
+    this.ssao = false;
+    this.composer;
+
     this.effect = new THREE.AnaglyphEffect( this.renderer  ); 
     this.anaglyph = false;
     this.container = container;
@@ -79,6 +85,60 @@ define([
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);
     
+  };
+  Renderer.prototype.shadowing = function(arg){  
+ 
+
+    if(arg.shadows === false){
+      this.renderer.shadowMapAutoUpdate = false;
+      this.explorer.light.castShadow = false; 
+      this.renderer.clearTarget( this.explorer.light.shadowMap );
+ 
+    }
+    else{
+      this.explorer.light.castShadow = true; 
+      this.renderer.shadowMapAutoUpdate = true;
+    }
+
+    this.explorer.object3d.traverse (function (object) {
+      if (object instanceof THREE.Mesh)
+      {  
+        object.receiveShadow = arg.shadows;
+        object.castShadow = arg.shadows;
+        object.material.needsUpdate = true;
+      }
+    });
+    
+  };
+  Renderer.prototype.ssaoEffect = function(arg){  
+
+    this.ssao = arg.ssao;
+
+    if(this.ssao === false){ 
+      return;
+    }
+    // depth
+        
+    var depthShader = THREE.ShaderLib[ "depthRGBA" ];
+    var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
+    
+    this.depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
+    this.depthMaterial.blending = THREE.NoBlending;
+
+    // postprocessing
+    
+    this.composer = new THREE.EffectComposer( this.renderer );
+    this.composer.addPass( new THREE.RenderPass( this.explorer.object3d, this.cameras[0] ) );
+
+    this.depthTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat } );
+    
+    var effect = new THREE.ShaderPass( THREE.SSAOShader );
+    effect.uniforms[ 'tDepth' ].value = this.depthTarget;
+    effect.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
+    effect.uniforms[ 'cameraNear' ].value = this.cameras[0].near;
+    effect.uniforms[ 'cameraFar' ].value = this.cameras[0].far;
+    effect.renderToScreen = true;
+    this.composer.addPass( effect );
   };
   Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){  
     var viewSize = 50 ;
@@ -164,8 +224,17 @@ define([
       }
       else{  
         if(this.container === 'crystalRenderer') {
- 
-          this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
+          
+          if(this.ssao === true && this.composer !== undefined){  
+            this.explorer.object3d.overrideMaterial = this.depthMaterial;
+            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget );
+
+            this.explorer.object3d.overrideMaterial = null;
+            this.composer.render();
+          }
+          else{ 
+            this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
+          }
 
           if(this.doll !== undefined){  
             this.renderer.clearDepth(); // celar depth buffer to have gear bar and doll on top

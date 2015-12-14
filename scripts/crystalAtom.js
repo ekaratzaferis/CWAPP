@@ -311,6 +311,9 @@ define([
   };  
   CrystalAtom.prototype.destroy = function() {  
     Explorer.remove(this);  
+    if(this.outlineMesh !== undefined){
+      Explorer.remove({ object3d : this.outlineMesh});
+    }
   };
   function assignUVs( geometry ){ //todo maybe it doesn't work right
      

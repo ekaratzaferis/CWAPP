@@ -43,8 +43,8 @@ define([
   function downloadCanvas(link,  filename) {
     theRenderer.renderer.clear();
     theRenderer.renderer.render( theRenderer.scene, theRenderer.cameras[0] );
-    link.href = document.getElementsByTagName("canvas")[0].toDataURL( ); 
-    link.download = filename; 
+    link.href = document.getElementsByTagName("canvas")[0].toDataURL(); 
+    link.download = filename;
   };
 
   function addLogo(){

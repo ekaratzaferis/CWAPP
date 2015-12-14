@@ -12,13 +12,12 @@ define([
 ) {
   var mutualCamPosParam = new THREE.Vector3();
 
-  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras, explorer ) {
+  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras ) {
     var $rendererContainer = jQuery(domElement);
     this.sync = false;
     this.camera = camera; 
     this.camName = camName; 
     this.hudCameras = hudCameras; 
-    this.explorer = explorer; 
     this.theta = 0; 
     this.phi = 0;   
     this.currPos = new THREE.Vector3(0,0,0); 
@@ -28,13 +27,13 @@ define([
 
     if(type == "perspective" ) {
       if( camName === 'hud') { 
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1);
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, 1, 'hud');
       } 
       else if( camName === 'motif'){
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate);
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, explorer);
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
     }
     else if (type === "orthographic"){
