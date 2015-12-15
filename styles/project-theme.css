@@ -3298,12 +3298,14 @@ html,body {
 }
 .list-title{color: #aaa !important; padding-bottom:5px;}
 
-.lightTheme{background: #34373e;}
+.lightTheme{background: #34373e; max-height: 40px; padding-left: 19px!important;}
 .lightTheme:hover{background: #777; cursor: pointer;}
 .lightTheme.lightThemeActive{ background: #34373e;}
 .lightTheme.lightThemeActive:hover{background: #777;}
 
-.toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
+.lightTheme .toggleButton{ background-size: 80%; }
+
+.toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png'); }
 .toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 .toggle_menu.lightThemeActive #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 
@@ -3902,6 +3904,8 @@ li[role='presentation'].disabled{
 #atomPosXShift{ background-color: white; width: 10px; height: 4px; float: left; }
 #atomPosYCollision{ background-color: white; width: 10px; height: 4px; float: left; }
 #atomPosYShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#cellVolumeCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#cellVolumeShift{ background-color: white; width: 10px; height: 4px; float: left; }
 
 #iacBody{
     padding: 5px;

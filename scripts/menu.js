@@ -387,6 +387,18 @@ define([
           PubSub.publish(events.STORE_PROJECT, argument);   
         });
         */   
+        
+        /*this.setLatticeCollision({
+            scaleX: 7,
+            scaleZ: 7,
+            beta: 50,
+            gamma: 50
+        });
+        
+        this.setMotifCollision({
+            cellVolume: 140,
+            atomPosZ: 0.2
+        });*/
 
     };
 
