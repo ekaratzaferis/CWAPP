@@ -19,7 +19,12 @@ define([
 {
     // Variables //
     var collisions = {};
-    var collisionTooltip = false;
+    var collisionTooltip = {
+        cellVolume: false,
+        atomPosX: false,
+        atomPosY: false,
+        atomPosZ: false
+    };
     
     // Module References //
     var $messages = undefined;
@@ -47,6 +52,7 @@ define([
     var $lockCameras = jQuery('#lockCameraIcon');
     var $swapButton = jQuery('#swapBtn');
     var $atomColor = jQuery('#atomColor');
+    var $motifPadlock = jQuery('#motifPadlock');
     
     // Grouping //
     var atomParameters = {
@@ -124,6 +130,30 @@ define([
             animate: true,
             slide: function(event, ui){
                 var value = ui.value;
+                // Pass Collistion Detection //
+                if (!(_.isUndefined(collisions.cellVolume))){
+                    if (collision(ui.value,collisions.cellVolume,2) === true){
+                        if (collisionTooltip.cellVolume === false){
+                            $tooltipGenerator.addStaticTooltip({
+                                'target': 'cellVolumeSlider',
+                                'placement': 'top',
+                                'message': $messages.getMessage(24)
+                            });
+                            collisionTooltip.cellVolume = true;
+                            // Publish event only once //
+                            var publish = {};
+                            publish.cellVolume = collisions.cellVolume;
+                            var argument = {};
+                            argument.cellVolume = {publish: publish};
+                            $setUIValue.setValue(argument);
+                        }
+                        $cellVolume.val(collisions.cellVolume);
+                        $cellVolumeSlider.slider('value',collisions.cellVolume);
+                        return false; 
+                    } 
+                }
+                collisionTooltip.cellVolume = false;
+                $cellVolumeSlider.tooltip('destroy');
                 var tangency = $getUIValue.getValue({tangency: {id:'tangency'}});
                 if (tangency.tangency === true){
                     if (value < 100) {
@@ -149,6 +179,9 @@ define([
                     }
                 });
                 $cellVolume.val(value);
+            },
+            stop: function(){
+                $cellVolumeSlider.tooltip('destroy');   
             }
         });
         $cellVolume.on('change', function() {
@@ -234,13 +267,13 @@ define([
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[k]))){
                         if (collision(ui.value,collisions[k],0.1) === true){
-                            if (collisionTooltip === false){
+                            if (collisionTooltip[k] === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': k+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
-                                collisionTooltip = true;
+                                collisionTooltip[k] = true;
                                 // Publish event only once //
                                 var publish = {};
                                 publish[k] = collisions[k];
@@ -261,7 +294,7 @@ define([
                     argument[k] = {publish: publish};
                     $setUIValue.setValue(argument);
                     motifInputs[k].val(ui.value);
-                    collisionTooltip = false;
+                    collisionTooltip[k] = false;
                     jQuery('#'+k+'Slider').tooltip('destroy');
                     jQuery('#'+k).val(ui.value);
                 },
@@ -435,6 +468,13 @@ define([
                     publish:{swap:swap},
                     value:value
                 }
+            });
+        });
+        $motifPadlock.on('resetCollision',function(){
+            // Clear Collision //
+            _.each(collisions, function($parameter,k){
+                jQuery('#'+k+'Collision').css('background-color','white'); 
+                delete collisions[k];
             });
         });
         
@@ -621,6 +661,32 @@ define([
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
+    function sliderWidth(name){
+        var width = jQuery('#'+name+'Slider').width();
+        if (width > 0) return width;
+        else return 122.906;
+    };
+    function sliderStepWidth(name){
+        var range = jQuery('#'+name+'Slider').slider('option','max') - jQuery('#'+name+'Slider').slider('option','min');
+        var numberOfSteps = (range / jQuery('#'+name+'Slider').slider('option','step')) + 1;
+        return sliderWidth(name) / numberOfSteps;
+    };
+    function countSteps(step,value,min){
+        var counter = 0;
+        while(value > min) {
+            value -= step;
+            counter++;
+        }
+        return counter;
+    };
+    function refreshStickyVisuals(){
+        _.each(collisions, function($parameter,k){
+            var steps = countSteps(jQuery('#'+k+'Slider').slider('option','step'),collisions[k],jQuery('#'+k+'Slider').slider('option','min'));
+            var shift = steps*sliderStepWidth(k);
+            shift -=5;
+            jQuery('#'+k+'Shift').css('width',shift+'px');
+        });
+    };
     
     motifTab.prototype.toggleExtraParameter = function(choice,action){
         if ( (choice === 'i') && (action === 'block') ) jQuery('#hexICoord').show('fast');
@@ -793,11 +859,19 @@ define([
         if (_.isUndefined(argument)) return false;
         else {
             _.each(argument, function($parameter,k){
-                if ($parameter === false) delete collisions[k];
+                if ($parameter === false) {
+                    delete collisions[k];
+                    jQuery('#'+k+'Collision').css('background-color','white');
+                }
                 else collisions[k] = $parameter;
+                jQuery('#'+k+'Collision').css('background-color','#6f6299');
             });
+            refreshStickyVisuals();
         }
         return true;
+    };
+    motifTab.prototype.refreshStickyVisuals = function(){
+        refreshStickyVisuals();
     };
     
     return motifTab;

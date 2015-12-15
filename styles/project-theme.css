@@ -3298,12 +3298,14 @@ html,body {
 }
 .list-title{color: #aaa !important; padding-bottom:5px;}
 
-.lightTheme{background: #34373e;}
+.lightTheme{background: #34373e; max-height: 40px; padding-left: 19px!important;}
 .lightTheme:hover{background: #777; cursor: pointer;}
 .lightTheme.lightThemeActive{ background: #34373e;}
 .lightTheme.lightThemeActive:hover{background: #777;}
 
-.toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png');}
+.lightTheme .toggleButton{ background-size: 80%; }
+
+.toggle_menu #latticePoints{ height: 40px; width: 48px; background-image: url('../Images/toggle-icon-01.png'); }
 .toggle_menu:hover #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 .toggle_menu.lightThemeActive #latticePoints{background-image: url('../Images/toggle-icon-active-01.png');}
 
@@ -3884,24 +3886,26 @@ li[role='presentation'].disabled{
     background-color: #34373e;
 }
 /* #6f6299 */
-#scaleZCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleZShift{ background-color: white; width: 15%; height: 6px; float: left; }
-#scaleYCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleYShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleXCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#scaleXShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#alphaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#alphaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#betaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#betaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#gammaCollision{ background-color: white; width: 30px; height: 6px; float: left; }
-#gammaShift{ background-color: white; width: 30px; height: 6px; float: left; }
-#atomPosZCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosZShift{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosXCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosXShift{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosYCollision{ background-color: white; width: 30px; height: 4px; float: left; }
-#atomPosYShift{ background-color: white; width: 30px; height: 4px; float: left; }
+#scaleZCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleZShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleYCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleYShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleXCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#scaleXShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#alphaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#alphaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#betaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#betaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#gammaCollision{ background-color: white; width: 10px; height: 6px; float: left; }
+#gammaShift{ background-color: white; width: 10px; height: 6px; float: left; }
+#atomPosZCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosZShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosXCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosXShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosYCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#atomPosYShift{ background-color: white; width: 10px; height: 4px; float: left; }
+#cellVolumeCollision{ background-color: white; width: 10px; height: 4px; float: left; }
+#cellVolumeShift{ background-color: white; width: 10px; height: 4px; float: left; }
 
 #iacBody{
     padding: 5px;

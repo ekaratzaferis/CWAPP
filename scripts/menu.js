@@ -389,13 +389,14 @@ define([
         */   
         
         /*this.setLatticeCollision({
-            alpha: 50,
+            scaleX: 7,
+            scaleZ: 7,
             beta: 50,
             gamma: 50
         });
         
         this.setMotifCollision({
-            atomPosX: 0.2,
+            cellVolume: 140,
             atomPosZ: 0.2
         });*/
 
@@ -749,14 +750,20 @@ define([
     Menu.prototype.setSliderMin = function(name, val) {
         var sliderName = name+'Slider';
         $('#'+sliderName).slider('option','min',val);
+        latticeTabModule.refreshStickyVisuals();
+        motifTabModule.refreshStickyVisuals();
     };
     Menu.prototype.setSliderMax = function(name, val) {
         var sliderName = name+'Slider';
         $('#'+sliderName).slider('option','max',val);
+        latticeTabModule.refreshStickyVisuals();
+        motifTabModule.refreshStickyVisuals();
     };
     Menu.prototype.setSliderStep = function(name, val){
         var sliderName = name+'Slider';
         $('#'+sliderName).slider('option','step',val);
+        latticeTabModule.refreshStickyVisuals();
+        motifTabModule.refreshStickyVisuals();
     }
     Menu.prototype.forceToLooseEvent = function(name) {
         var sliderName = name+'Slider';

@@ -1337,6 +1337,7 @@ define([
                 takeAction('radius',jQuery('#radius'),'2');
                 takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
                 jQuery('#latticePadlock').trigger('reset'); // Restrictions
+                jQuery('#latticePadlock').trigger('resetCollision'); // Collisions
                 
                 // Motif //
                 takeAction('tangency',jQuery('#tangency'),false);
@@ -1351,10 +1352,13 @@ define([
                 jQuery('label[for=txt_coordinates_x]').html('x');
                 jQuery('label[for=txt_coordinates_y]').html('y');
                 jQuery('label[for=txt_coordinates_z]').html('z');
+                jQuery('#motifPadlock').trigger('resetCollision');
                 
                 // Visual //
                 takeAction('realistic',jQuery('#realistic'),true);
                 takeAction('lights',jQuery('#lights'),true);
+                takeAction('ssao',jQuery('#ssao'),false);
+                takeAction('shadows',jQuery('#shadows'),true);
                 takeAction('distortionOff',jQuery('#distortionOff'),true);
                 takeAction('anaglyph',jQuery('#anaglyph'),false);
                 takeAction('oculus',jQuery('#oculus'),false);
