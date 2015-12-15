@@ -25,10 +25,14 @@ define([
     
     // Toggable DIV from the Save Online Button [Public Library]
     var $alt_atn_target = jQuery('#cnt_alternate_actions');
+    var $alt_png_target = jQuery('#png_alternate_actions');
+    var $alt_stl_target = jQuery('#stl_alternate_actions');
     
     // [Public Library]
     /* Save Online */
     var $alt_atn_toggler = jQuery('.btn_alternate_action_toggler');
+    var $alt_png_toggler = jQuery('.btn_alternate_png_toggler');
+    var $alt_stl_toggler = jQuery('.btn_alternate_stl_toggler');
     /* Save to Public Library */
     var $btn_form_toggler = jQuery('.btn_form_toggler');
     
@@ -44,6 +48,9 @@ define([
     var $projectTags = jQuery('#projectTags');
     var $projectDescription = jQuery('#projectDescription');
     var $saveProject = jQuery('#saveProject');
+    var $lowResolution = jQuery('#lowPNG');
+    var $mediumResolution = jQuery('#mediumPNG');
+    var $highResolution = jQuery('#highPNG');
     
     // Contructor //
     function libraryTab(argument) {
@@ -54,7 +61,36 @@ define([
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
         
-        // Inputs //
+        // Save Project Section //
+        // Download to your PC //
+        $downloadProject.on('click', function(){
+            $setUIValue.setValue({
+                downloadProject:{
+                    publish: true   
+                }
+            });
+        }); 
+        
+        // Save Online //
+        $alt_atn_toggler.on('click', function(){
+            if ($alt_atn_target.is(':visible'))
+            {
+                $alt_atn_target.slideUp('fast');
+                jQuery(this).removeClass('active');
+            }
+            else
+            {
+                $alt_atn_target.slideDown('fast');
+                jQuery(this).addClass('active');
+            }
+            return false;
+        });
+        $selectLink.on('click', function(){
+            $saveOnlineLink.focus();
+        });
+        $selectLinkQR.on('click', function(){
+            $saveOnlineLinkQR.focus();
+        });
         $saveOnlineLink.val('cwgl.com/105/');
         $saveOnlineLinkQR.val('cwgl.com/105/');
         $saveOnlineLink.focus(function(){
@@ -74,34 +110,67 @@ define([
             });
         });
         
-        // Buttons //
-        
-        $downloadProject.on('click', function(){
-            $setUIValue.setValue({
-                downloadProject:{
-                    publish: true   
-                }
-            });
-        });     
-        $selectLink.on('click', function(){
-            $saveOnlineLink.focus();
-        });
-        $selectLinkQR.on('click', function(){
-            $saveOnlineLinkQR.focus();
-        });
-        $alt_atn_toggler.on('click', function(){
-            if ($alt_atn_target.is(':visible'))
+        // SnapShot //
+        $alt_png_toggler.on('click', function(){
+            if ($alt_png_target.is(':visible'))
             {
-                $alt_atn_target.slideUp('fast');
+                $alt_png_target.slideUp('fast');
                 jQuery(this).removeClass('active');
             }
             else
             {
-                $alt_atn_target.slideDown('fast');
+                $alt_png_target.slideDown('fast');
                 jQuery(this).addClass('active');
             }
             return false;
         });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'lowPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(25)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'mediumPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(26)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'highPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(27)
+        });
+        
+        // STL //
+        $alt_stl_toggler.on('click', function(){
+            if ($alt_stl_target.is(':visible'))
+            {
+                $alt_stl_target.slideUp('fast');
+                jQuery(this).removeClass('active');
+            }
+            else
+            {
+                $alt_stl_target.slideDown('fast');
+                jQuery(this).addClass('active');
+            }
+            return false;
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'lowSTL',
+            'placement': 'top',
+            'message': $messages.getMessage(25)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'mediumSTL',
+            'placement': 'top',
+            'message': $messages.getMessage(26)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'highSTL',
+            'placement': 'top',
+            'message': $messages.getMessage(27)
+        });
+        
+        // Save to Public //
         $btn_form_toggler.on('click', function(){
             var $cnt_form = jQuery(this).closest('.save-public-library-box').find('.box-body');
 
@@ -128,9 +197,7 @@ define([
         $projectTags.tagit();
         $projectTags.tagit("createTag", "CrystalWalk");
         $saveProject.on('click',function(){
-            console.log($projectName.val());
-            console.log($projectTags.tagit('assignedTags'));
-            console.log($projectDescription.val());
+            
         });
     };
     
