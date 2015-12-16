@@ -1623,13 +1623,30 @@
 												<div class="tab-blocks-container">
 													<div class="tab-block">
 														<div class="tab-boxes-container">
-															
+															<div class="tab-box save-public-library-box">
+																<div class="box-head">
+																	<a class="btn_form_toggler"><span>Enter Project Details</span></a>
+																</div>
+																<div class="box-body">
+																	<div class="project-save-form-container">
+                                                                        <div class="form-group">
+                                                                            <label for="project_name">Name</label>
+                                                                            <input id="projectName" type="text" class="form-control" name="project_name" placeholder="My Project Name"/>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="tags">Tags</label>
+                                                                            <input id="projectTags" type="text" class="form-control" name="project_name" placeholder="Tags"/>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="description">Description</label>
+                                                                            <textarea id="projectDescription" name="description" class="form-control" placeholder="Write here a brief description..."></textarea>
+                                                                        </div>
+																	</div>
+																</div>
+															</div>
 															<div class="tab-box save-project-box">
 																<div class="box-head"></div>
 																<div class="box-body">
-																	<div class="project-screenshot-area-container">
-																		<img src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
-																	</div>
 																	<div class="project-actions-container">
 																		<div class="btn-action">
 																			<a id="downloadProject" class="btn btn-dark">
@@ -1708,33 +1725,6 @@
 																</div>
 																<div class="box-footer"></div>
 															</div>
-															<div class="tab-box save-public-library-box">
-																<div class="box-head">
-																	<a class="btn_form_toggler"><span>Save to the Public Library</span></a>
-																</div>
-																<div class="box-body">
-																	<div class="project-save-form-container">
-                                                                        <div class="form-group">
-                                                                            <label for="project_name">Name</label>
-                                                                            <input id="projectName" type="text" class="form-control" name="project_name" placeholder="My Project Name"/>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label for="tags">Tags</label>
-                                                                            <input id="projectTags" type="text" class="form-control" name="project_name" placeholder="Tags"/>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label for="description">Description</label>
-                                                                            <textarea id="projectDescription" name="description" class="form-control" placeholder="Write here a brief description..."></textarea>
-                                                                        </div>
-                                                                        <div class="btn-save">
-                                                                            <div id="saveProject" class="btn-wrapper">
-                                                                                <button class="btn btn-block btn-purple">Save</button>
-                                                                            </div>
-                                                                        </div>
-																	</div>
-																</div>
-															</div>
-
 														</div>
 													</div>
 												</div>
