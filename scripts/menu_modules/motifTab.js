@@ -863,8 +863,10 @@ define([
                     delete collisions[k];
                     jQuery('#'+k+'Collision').css('background-color','white');
                 }
-                else collisions[k] = $parameter;
-                jQuery('#'+k+'Collision').css('background-color','#6f6299');
+                else {
+                    collisions[k] = $parameter;
+                    jQuery('#'+k+'Collision').css('background-color','#6f6299');
+                }
             });
             refreshStickyVisuals();
         }
