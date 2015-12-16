@@ -2230,8 +2230,8 @@ width: 70px;}
           line-height: 17.6px;
           color: #6a6a6e; }
 .public-library-tab-pane .tab-boxes-container .save-public-library-box {
-  margin-bottom: 60px;
-  background: #25272b; }
+  margin-bottom: -25px;
+  background: #2c2e33; }
   .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-head a {
     display: block;
     padding: 8px 40px;
@@ -2280,7 +2280,7 @@ width: 70px;}
       text-decoration: none;
       background: #645889; }
   .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body {
-    display: none; }
+    display: block; }
     .public-library-tab-pane .tab-boxes-container .save-public-library-box .box-body .project-save-form-container {
       padding: 10px 60px;
       padding-bottom: 25px; 
