@@ -33,8 +33,6 @@ define([
     var $alt_atn_toggler = jQuery('.btn_alternate_action_toggler');
     var $alt_png_toggler = jQuery('.btn_alternate_png_toggler');
     var $alt_stl_toggler = jQuery('.btn_alternate_stl_toggler');
-    /* Save to Public Library */
-    var $btn_form_toggler = jQuery('.btn_form_toggler');
     
     // Selectors //
     var $downloadProject = jQuery('#downloadProject');
@@ -170,30 +168,13 @@ define([
             'message': $messages.getMessage(27)
         });
         
-        // Save to Public //
-        $btn_form_toggler.on('click', function(){
-            var $cnt_form = jQuery(this).closest('.save-public-library-box').find('.box-body');
-
-            if ($cnt_form.is(':visible'))
-            {
-                $cnt_form.slideUp('fast');
-                jQuery(this).removeClass('open');
-            }
-            else
-            {
-                // SET LINKS AND GENERATE NEW QR CODE
-                $QRImage.qrcode({
-                    render: 'image',
-                    size: 174,
-                    fill: '#6f6299',
-                    text: 'thano mpine'
-                }); 
-                $cnt_form.slideDown('fast');
-                jQuery(this).addClass('open');
-            }
-
-            return false;
-        });
+        // Detail Forms //
+        $QRImage.qrcode({
+            render: 'image',
+            size: 174,
+            fill: '#6f6299',
+            text: 'thano mpine'
+        }); 
         $projectTags.tagit();
         $projectTags.tagit("createTag", "CrystalWalk");
         $saveProject.on('click',function(){
