@@ -997,11 +997,13 @@ define([
         else {
             _.each(argument, function($parameter,k){
                 if ($parameter === false) {
-                    delete collisions[k];
                     jQuery('#'+k+'Collision').css('background-color','white');
+                    delete collisions[k];
                 }
-                else collisions[k] = $parameter;
-                jQuery('#'+k+'Collision').css('background-color','#6f6299');
+                else {
+                    collisions[k] = $parameter;
+                    jQuery('#'+k+'Collision').css('background-color','#6f6299');
+                }
             });
             refreshStickyVisuals();
         }
