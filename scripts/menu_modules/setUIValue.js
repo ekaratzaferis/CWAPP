@@ -1856,12 +1856,6 @@ define([
                 break;
             }
                 
-            // Public Library Tab
-            case 'downloadProject':{
-                PubSub.publish(events.DOWNLOAD_PROJECT, value);
-                break;
-            }
-                
             // Notes Tab
             case 'atomNoteTable':{
                 PubSub.publish(events.UPDATE_NOTES, value);
