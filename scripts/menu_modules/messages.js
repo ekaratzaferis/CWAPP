@@ -42,6 +42,7 @@ define([
         25:'800 x 600',
         26:'1024 x 768',
         27:'1366 x 768',
+        28:'Insert Name',
         cubic_primitive:'Cubic Simple',
         cubic_body_centered:'Cubic Body Centered',
         cubic_face_centered:'Cubic Face Centered',

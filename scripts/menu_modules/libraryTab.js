@@ -17,6 +17,8 @@ define([
     bootstrap
 ) 
 {
+    // Variables //
+    var projectLink = undefined;
     
     // Module References //
     var $setUIValue = undefined;
@@ -36,11 +38,11 @@ define([
     
     // Selectors //
     var $downloadProject = jQuery('#downloadProject');
+    var $exportJSON = jQuery('#exportJSON');
     var $saveOnlineLink = jQuery('#saveOnlineLink');
     var $selectLink = jQuery('#selectLink');
     var $saveOnlineLinkQR = jQuery('#saveOnlineLinkQR');
     var $selectLinkQR = jQuery('#selectLinkQR');
-    var $downloadQR = jQuery('#downloadQR');
     var $QRImage = jQuery('#QRImage');
     var $projectName = jQuery('#projectName');
     var $projectTags = jQuery('#projectTags');
@@ -60,13 +62,23 @@ define([
         else return false;
         
         // Save Project Section //
+        var projectLink = 'http://crystalwalk.herokuapp.com/'+createRandomName();
+        
+        // Tags //
+        $projectTags.tagit({
+            placeholderText: 'Type your tags'   
+        });
+        
         // Download to your PC //
         $downloadProject.on('click', function(){
-            $setUIValue.setValue({
-                downloadProject:{
-                    publish: true   
-                }
-            });
+            var details = readDetails();
+            if (details !== false) PubSub.publish('menu.download_project', details);
+        });
+        
+        // Export JSON //
+        $exportJSON.on('click', function(){
+            var details = readDetails();
+            if (details !== false) PubSub.publish('menu.export_json', details);
         }); 
         
         // Save Online //
@@ -78,19 +90,30 @@ define([
             }
             else
             {
-                $alt_atn_target.slideDown('fast');
-                jQuery(this).addClass('active');
+                var details = readDetails();
+                if (details !== false) {
+                    PubSub.publish('menu.save_online', details);
+                    $QRImage.empty();
+                    $QRImage.qrcode({
+                        render: 'image',
+                        size: 174,
+                        fill: '#6f6299',
+                        text: details.link
+                    });
+                    $saveOnlineLink.val(details.link);
+                    $saveOnlineLinkQR.val(details.link);
+                    $alt_atn_target.slideDown('fast');
+                    jQuery(this).addClass('active');
+                }
             }
             return false;
-        });
+        });   
         $selectLink.on('click', function(){
             $saveOnlineLink.focus();
         });
         $selectLinkQR.on('click', function(){
             $saveOnlineLinkQR.focus();
         });
-        $saveOnlineLink.val('cwgl.com/105/');
-        $saveOnlineLinkQR.val('cwgl.com/105/');
         $saveOnlineLink.focus(function(){
             $saveOnlineLink.select();
             $tooltipGenerator.showTooltip({
@@ -168,26 +191,30 @@ define([
             'message': $messages.getMessage(27)
         });
         
-        // Detail Forms //
-        $QRImage.qrcode({
-            render: 'image',
-            size: 174,
-            fill: '#6f6299',
-            text: 'thano mpine'
-        }); 
-        $projectTags.tagit();
-        $projectTags.tagit("createTag", "CrystalWalk");
-        $saveProject.on('click',function(){
-            
-        });
     };
-    
-    libraryTab.prototype.setSaveOnlineLink = function(link){
-        $saveOnlineLink.val(link);  
-        $saveOnlineLinkQR.val(link);  
+    function readDetails(){
+        var details = {};
+        details.name = $projectName.val();
+        details.description = $projectDescription.val();
+        details.tags = $projectTags.tagit("assignedTags");
+        details.link = projectLink;
+        if (details.name !== '') return details;
+        else {
+            $tooltipGenerator.showTooltip({
+                'target': 'projectName',
+                'placement': 'top',
+                'message': $messages.getMessage(28)
+            });
+            $projectName.focus();
+            return false;
+        }
     };
-    libraryTab.prototype.setQRImage = function(imgLink){
-        $QRImage.attr('src',imgLink);  
+    function createRandomName() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( var i=0; i < 5; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        return text;
     };
     
     return libraryTab;

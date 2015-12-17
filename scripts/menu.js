@@ -95,6 +95,10 @@ define([
         NOTE_MOVEMENT: 'menu.note_movement',
         NOTE_COLOR: 'menu.note_color',
         DOWNLOAD_PROJECT: 'menu.download_project',
+        EXPORT_JSON: 'menu.export_json',
+        EXPORT_PNG: 'menu.export_png',
+        EXPORT_STL: 'menu.export_stl',
+        SAVE_ONLINE: 'menu.save_online',
         AUTO_UPDATE: 'menu.auto_update',
         NOTE_VISIBILITY: 'menu.note_visibility',
         PLANE_INTERCEPTION: 'menu.plane_interception',
@@ -993,6 +997,18 @@ define([
     };
     Menu.prototype.onDownloadProject = function(callback){
         PubSub.subscribe(events.DOWNLOAD_PROJECT, callback);
+    };
+    Menu.prototype.onExportJSON = function(callback){
+        PubSub.subscribe(events.EXPORT_JSON, callback);
+    };
+    Menu.prototype.onExportPNG = function(callback){
+        PubSub.subscribe(events.EXPORT_PNG, callback);
+    };
+    Menu.prototype.onExportSTL = function(callback){
+        PubSub.subscribe(events.EXPORT_STL, callback);
+    };
+    Menu.prototype.onSaveOnline = function(callback){
+        PubSub.subscribe(events.SAVE_ONLINE, callback);
     };
     Menu.prototype.onSideBySide3D = function(callback){
         PubSub.subscribe(events.SIDE_BY_SIDE_3D, callback);
