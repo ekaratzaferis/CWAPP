@@ -51,7 +51,6 @@ define([
     var $3DonTop = jQuery('#3DonTop');
     var $distortionOn = jQuery('#distortionOn');
     var $distortionOff = jQuery('#distortionOff');
-    var $3DPrinting = jQuery('#DDDprinting');
     var $reset = jQuery('#reset');
     
     // Grouping
@@ -393,13 +392,6 @@ define([
                     };
                     $setUI.setValue(argument);
                     $parameter.children().css('background','#'+$parameter.spectrum("get").toHex());
-                }
-            });
-        });
-        $3DPrinting.on('click',function(){
-            $setUI.setValue({
-                '3DPrinting':{
-                    publish:{threeD:true}
                 }
             });
         });
