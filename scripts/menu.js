@@ -97,7 +97,6 @@ define([
         DOWNLOAD_PROJECT: 'menu.download_project',
         EXPORT_JSON: 'menu.export_json',
         EXPORT_PNG: 'menu.export_png',
-        EXPORT_STL: 'menu.export_stl',
         SAVE_ONLINE: 'menu.save_online',
         AUTO_UPDATE: 'menu.auto_update',
         NOTE_VISIBILITY: 'menu.note_visibility',
@@ -1003,9 +1002,6 @@ define([
     };
     Menu.prototype.onExportPNG = function(callback){
         PubSub.subscribe(events.EXPORT_PNG, callback);
-    };
-    Menu.prototype.onExportSTL = function(callback){
-        PubSub.subscribe(events.EXPORT_STL, callback);
     };
     Menu.prototype.onSaveOnline = function(callback){
         PubSub.subscribe(events.SAVE_ONLINE, callback);

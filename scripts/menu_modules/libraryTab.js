@@ -48,9 +48,12 @@ define([
     var $projectTags = jQuery('#projectTags');
     var $projectDescription = jQuery('#projectDescription');
     var $saveProject = jQuery('#saveProject');
-    var $lowResolution = jQuery('#lowPNG');
-    var $mediumResolution = jQuery('#mediumPNG');
-    var $highResolution = jQuery('#highPNG');
+    var $lowResPNG = jQuery('#lowPNG');
+    var $mediumResPNG = jQuery('#mediumPNG');
+    var $highResPNG = jQuery('#highPNG');
+    var $lowResSTL = jQuery('#lowSTL');
+    var $mediumResSTL = jQuery('#mediumSTL');
+    var $highResSTL = jQuery('#highSTL');
     
     // Contructor //
     function libraryTab(argument) {
@@ -62,7 +65,7 @@ define([
         else return false;
         
         // Save Project Section //
-        var projectLink = 'http://crystalwalk.herokuapp.com/'+createRandomName();
+        projectLink = 'http://crystalwalk.herokuapp.com/'+createRandomName();
         
         // Tags //
         $projectTags.tagit({
@@ -174,6 +177,37 @@ define([
                 jQuery(this).addClass('active');
             }
             return false;
+        });
+        $lowResSTL.on('click',function(){
+            $setUIValue.setValue({
+                '3DPrinting':{
+                    publish:{
+                        threeD:true,
+                        resolution: 'low'
+                    }
+                }
+            });
+        });
+        $mediumResSTL.on('click',function(){
+            $setUIValue.setValue({
+                '3DPrinting':{
+                    publish:{
+                        threeD:true,
+                        resolution: 'medium'
+                    }
+                }
+            });
+            console.log(stlFileType);
+        });
+        $highResSTL.on('click',function(){
+            $setUIValue.setValue({
+                '3DPrinting':{
+                    publish:{
+                        threeD:true,
+                        resolution: 'high'
+                    }
+                }
+            });
         });
         $tooltipGenerator.addOnHoverTooltip({
             'target': 'lowSTL',
