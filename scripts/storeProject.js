@@ -28,8 +28,7 @@ define([
         for( var i=0; i < 5; i++ )
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
-    };
-    
+    }; 
     StoreProject.prototype.downloadProject = function(argument){
         console.log(argument);  
     };
@@ -38,8 +37,7 @@ define([
     };
     StoreProject.prototype.exportJSON = function(argument){
         console.log(argument);  
-    };
-    
+    }; 
     StoreProject.prototype.createJSONfile = function() {
         var _this = this ;
         if(!this.idle){   
@@ -164,8 +162,7 @@ define([
 
             });
 
-        }
-
+        } 
     }; 
     StoreProject.prototype.createJsonVisualizationParams = function() {
         var text =[];

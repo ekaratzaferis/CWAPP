@@ -55,8 +55,7 @@ define([
     this.renderer.autoClear = false; // 2 scenes render 
     this.animationIsActive = false;
 
-    this.depthTarget; 
-    this.depthMaterial;
+    this.depthTarget;  
     this.depthMaterial;
     this.ssao = false;
     this.composer;
@@ -227,7 +226,7 @@ define([
           
           if(this.ssao === true && this.composer !== undefined){  
             this.explorer.object3d.overrideMaterial = this.depthMaterial;
-            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget );
+            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget, true );
 
             this.explorer.object3d.overrideMaterial = null;
             this.composer.render();

@@ -755,10 +755,7 @@ require([
   }); 
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);
-  }); 
-  menu.storeProject(function(message, arg) { 
-    storingMachine.createJSONfile();
-  }); 
+  });  
   menu.onLeapTrackingSystemChange(function(message, arg) { 
     leapM.selectTS(arg);
   });  
@@ -830,6 +827,16 @@ require([
   });
   menu.onSSAOChange(function(message, arg) { 
     crystalRenderer.ssaoEffect(arg);
+  });
+
+  menu.onDownloadProject(function(message, arg) { 
+    storingMachine.downloadProject(arg);
+  });
+  menu.onSaveOnline(function(message, arg) { 
+    storingMachine.saveOnline(arg);
+  });
+  menu.onExportJSON(function(message, arg) { 
+    storingMachine.exportJSON(arg);
   });
   
   ///////////////////////
