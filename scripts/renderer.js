@@ -6,12 +6,14 @@ define([
   'three',
   'jquery',
   'pubsub',
-  'underscore'
+  'underscore',
+  'OculusRiftEffect'
 ], function(
   THREE,
   jQuery,
   PubSub,
-  _
+  _,
+  OculusRiftEffect
 ) {
   var events = {
     ANIMATION_UPDATE: 'renderer.animation_update'
@@ -59,6 +61,7 @@ define([
     this.depthMaterial;
     this.ssao = false;
     this.composer;
+    this.ssaoPass;
 
     this.effect = new THREE.AnaglyphEffect( this.renderer  ); 
     this.anaglyph = false;
@@ -71,6 +74,10 @@ define([
     // stats
     this.glS;
     this.rS;
+
+    // oculus
+    this.oculusEffect;
+    this.oculusEffectActive = false;
 
     jQuery('#'+container).append(this.renderer.domElement);
  
@@ -86,8 +93,7 @@ define([
     
   };
   Renderer.prototype.shadowing = function(arg){  
- 
-
+  
     if(arg.shadows === false){
       this.renderer.shadowMapAutoUpdate = false;
       this.explorer.light.castShadow = false; 
@@ -121,23 +127,28 @@ define([
     var depthShader = THREE.ShaderLib[ "depthRGBA" ];
     var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
     
-    this.depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
-    this.depthMaterial.blending = THREE.NoBlending;
-
+    this.depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, blending: THREE.NoBlending } );
+  
     // postprocessing
     
     this.composer = new THREE.EffectComposer( this.renderer );
+    
     this.composer.addPass( new THREE.RenderPass( this.explorer.object3d, this.cameras[0] ) );
 
-    this.depthTarget = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat } );
+    this.depthTarget = new THREE.WebGLRenderTarget( this.containerWidth, this.containerHeight, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter } );
     
-    var effect = new THREE.ShaderPass( THREE.SSAOShader );
-    effect.uniforms[ 'tDepth' ].value = this.depthTarget;
-    effect.uniforms[ 'size' ].value.set( window.innerWidth, window.innerHeight );
-    effect.uniforms[ 'cameraNear' ].value = this.cameras[0].near;
-    effect.uniforms[ 'cameraFar' ].value = this.cameras[0].far;
-    effect.renderToScreen = true;
-    this.composer.addPass( effect );
+    this.ssaoPass = new THREE.ShaderPass( THREE.SSAOShader );
+    this.ssaoPass.uniforms[ 'tDepth' ].value = this.depthTarget ;
+    this.ssaoPass.uniforms[ 'size' ].value.set( this.containerWidth, this.containerHeight );
+    this.ssaoPass.uniforms[ 'cameraNear' ].value = this.cameras[0].near ;
+    this.ssaoPass.uniforms[ 'cameraFar' ].value = this.cameras[0].far ;
+    this.ssaoPass.uniforms[ 'aoClamp' ].value = 0.1;
+    this.ssaoPass.uniforms[ 'lumInfluence' ].value = 0.1;
+    this.ssaoPass.renderToScreen = true;
+
+    this.composer.addPass( this.ssaoPass );
+
+    this.changeContainerDimensions(this.containerWidth, this.containerHeight);
   };
   Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){  
     var viewSize = 50 ;
@@ -150,8 +161,28 @@ define([
   Renderer.prototype.changeContainerDimensions = function(width, height) { 
     this.containerWidth = width ;
     this.containerHeight = height ; 
-    this.renderer.setSize(width,height); 
-    this.effect.setSize( width,height );  
+     
+    this.effect.setSize( width,height ); 
+
+    if(this.depthTarget === undefined){
+      this.renderer.setSize(width,height);
+      return;
+    }
+
+    if(this.oculusEffect !== undefined){
+      this.oculusEffect.setSize(width,height);
+      return;
+    }
+
+    var pixelRatio = this.renderer.getPixelRatio();
+    var newWidth  = Math.floor( width / pixelRatio ) || 1;
+    var newHeight = Math.floor( height / pixelRatio ) || 1;
+
+    this.ssaoPass.uniforms[ 'size' ].value.set( width, height );
+    this.depthTarget.setSize( newWidth, newHeight );
+    this.composer.setSize( newWidth, newHeight );
+ 
+
   };
   Renderer.prototype.atomAnimation = function(atom) {
     this.atom = atom;
@@ -172,6 +203,26 @@ define([
       this.animate(); 
     } 
   }; 
+  Renderer.prototype.initOculusEffect = function(arg) {
+    console.log(arg);
+
+    this.oculusEffectActive = arg.oculus ;
+
+    if(this.oculusEffectActive === true){ 
+      this.renderer.sortObjects = false;
+      this.renderer.setSize( this.containerWidth, this.containerHeight );
+      this.oculusEffect = new THREE.OculusRiftEffect( this.renderer );
+      this.oculusEffect.setSize( this.containerWidth, this.containerHeight  );
+
+      // Right Oculus Parameters are yet to be determined
+      this.oculusEffect.separation = 20;
+      this.oculusEffect.distortion = 0.1;
+      this.oculusEffect.fov = 110;
+    }
+    else if(this.oculusEffectActive === false){
+
+    }
+  };
   Renderer.prototype.stopAnimation = function() {
     this.animationIsActive = false;
   }; 
@@ -180,7 +231,6 @@ define([
     if (this.animationIsActive === false) {
       return;
     }
-
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
     };
@@ -210,28 +260,33 @@ define([
       if(this.container === 'unitCellRenderer') {
         this.renderer.clear();
       }
-
-      this.cameras[0].aspect =this.containerWidth/this.containerHeight;
+ 
+      this.cameras[0].aspect = this.containerWidth/this.containerHeight;
       this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
       this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
-      this.renderer.enableScissorTest ( true );  
-      
+      this.renderer.enableScissorTest ( true );   
       this.cameras[0].updateProjectionMatrix();  
-
+       
       if(this.anaglyph){  
         this.effect.render( this.explorer.object3d, this.cameras[0] );
       }
       else{  
-        if(this.container === 'crystalRenderer') {
+        if(this.container === 'crystalRenderer') { 
           
           if(this.ssao === true && this.composer !== undefined){  
+  
             this.explorer.object3d.overrideMaterial = this.depthMaterial;
-            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget, true );
 
+            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget, true ); 
             this.explorer.object3d.overrideMaterial = null;
+            
             this.composer.render();
           }
-          else{ 
+          else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){  
+            
+            this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
+          }
+          else{
             this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
           }
 
@@ -312,7 +367,7 @@ define([
         arrowH.lookAt(this.hudCameraCube.position); 
       } 
     }
-    else if( this.cameras.length>1 ){
+    else if( this.cameras.length > 1 ){
       for ( var i = 0; i < this.cameras.length; ++i ) {
         var camera = this.cameras[i]; 
         camera.aspect =this.containerWidth/(3*this.containerHeight); 
@@ -349,8 +404,7 @@ define([
       this.rS( 'rStats' ).start();
       this.rS().update();
       this.rS( 'rStats' ).end();
-    }
-  
+    } 
   };
   Renderer.prototype.setUCviewport = function(bool) { 
     this.ucViewport = bool;

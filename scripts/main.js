@@ -50,7 +50,8 @@ require.config({
     'RenderPass': '../vendor/ssao/RenderPass',
     'MaskPass': '../vendor/ssao/MaskPass',
     'ShaderPass': '../vendor/ssao/ShaderPass',
-    'EffectComposer': '../vendor/ssao/EffectComposer'
+    'EffectComposer': '../vendor/ssao/EffectComposer',
+    'OculusRiftEffect': '../vendor/OculusRiftEffect'
 
   },
   shim: {
@@ -68,7 +69,8 @@ require.config({
     'ShaderPass': { deps: [ 'three' ] },
     'RenderPass': { deps: [ 'three' ] },
     'MaskPass': { deps: [ 'three' ] },
-    'CopyShader': { deps: [ 'three' ] }
+    'CopyShader': { deps: [ 'three' ] },
+    'OculusRiftEffect': { deps: [ 'three' ] }
   }
 });
 
@@ -837,6 +839,9 @@ require([
   });
   menu.onExportJSON(function(message, arg) { 
     storingMachine.exportJSON(arg);
+  });
+  menu.setOculus(function(message, arg) { 
+    crystalRenderer.initOculusEffect(arg);
   });
   
   ///////////////////////

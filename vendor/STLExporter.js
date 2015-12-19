@@ -10,8 +10,7 @@
 define([
   'three',
   'jquery', 
-  'underscore',
-  'explorer',
+  'underscore', 
   'explorer',
   'unitCellExplorer',
   'motifExplorer'
