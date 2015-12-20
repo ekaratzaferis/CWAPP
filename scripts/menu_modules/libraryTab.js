@@ -35,7 +35,7 @@ define([
     // [Public Library]
     /* Save Online */
     var $alt_atn_toggler = jQuery('.btn_alternate_action_toggler');
-    var $alt_png_toggler = jQuery('.btn_alternate_png_toggler');
+    var $exportPNG = jQuery('.btn_alternate_png_toggler');
     var $alt_stl_toggler = jQuery('.btn_alternate_stl_toggler');
     
     // Selectors //
@@ -50,9 +50,6 @@ define([
     var $projectTags = jQuery('#projectTags');
     var $projectDescription = jQuery('#projectDescription');
     var $saveProject = jQuery('#saveProject');
-    var $lowResPNG = jQuery('#lowPNG');
-    var $mediumResPNG = jQuery('#mediumPNG');
-    var $highResPNG = jQuery('#highPNG');
     var $lowResSTL = jQuery('#lowSTL');
     var $mediumResSTL = jQuery('#mediumSTL');
     var $highResSTL = jQuery('#highSTL');
@@ -145,18 +142,8 @@ define([
         });
         
         // SnapShot //
-        $alt_png_toggler.on('click', function(){
-            if ($alt_png_target.is(':visible'))
-            {
-                $alt_png_target.slideUp('fast');
-                jQuery(this).removeClass('active');
-            }
-            else
-            {
-                $alt_png_target.slideDown('fast');
-                jQuery(this).addClass('active');
-            }
-            return false;
+        $exportPNG.on('click', function(){
+            PubSub.publish('menu.export_png', 'png'); 
         });
         $tooltipGenerator.addOnHoverTooltip({
             'target': 'lowPNG',

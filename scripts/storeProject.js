@@ -80,14 +80,19 @@ define([
             saveAs(blob, argument.name + '.' + argument.extention);
         }
         else if (argument.extention === 'png'){
-            var canvas = document.getElementsByTagName("canvas")[1].toDataURL("image/png", 1.0);
-            var png = canvas.split(',')[1];
-            var blob = new Blob([png], {type: argument.type});
-            saveAs(blob, argument.name + '.' + argument.extention);
-        }
-        else{
-            var blob = new Blob([argument.data], {type: argument.type});
-            saveAs(blob, argument.name + '.' + argument.extention);
+            // Caprture Snapshot //
+            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL(argument.type);
+            
+            // Create Download Link //
+            var dlLink = document.createElement('a');
+            dlLink.download = argument.name + '.' + argument.extention;
+            dlLink.href = imgURL;
+            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+
+            // Trigger and Dispose Link //
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
         }
     };
     
@@ -189,8 +194,9 @@ define([
     StoreProject.prototype.exportPNG = function(argument){ 
         // Force User Download //
         downLoadfile({
+            type: 'image/png',
             extention: 'png',
-            name: 'cw_snapshot_: ' + argument.name
+            name: 'cw_snapshot'
         });
     };
     
