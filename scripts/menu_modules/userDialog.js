@@ -72,6 +72,9 @@ define([
             PubSub.publish(pubEvent, argument);
             $warningModal.caller = 'none';
         });
+        $infoModal.on('finish',function(){
+            $infoModal.modal('hide');
+        });
     };
     
     userDialog.prototype.showWarningDialog = function(argument){

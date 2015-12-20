@@ -43,6 +43,7 @@ define([
         26:'1024 x 768',
         27:'1366 x 768',
         28:'Insert Name',
+        29:'Project is being saved to our Database. <br/><br/> This window will close automatically.',
         cubic_primitive:'Cubic Simple',
         cubic_body_centered:'Cubic Body Centered',
         cubic_face_centered:'Cubic Face Centered',
