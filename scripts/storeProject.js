@@ -35,7 +35,7 @@ define([
     // Send JSON to Database - With Callback //
     function sendToDatabase(text,callback){
         
-        var obj =  JSON.parse(text) ;  
+        var obj =  JSON.parse(text);  
         var str =  JSON.stringify(obj);
             
         // Send Request //
@@ -116,12 +116,18 @@ define([
         _.each(argument.app, function($parameter,k){
             checkIteration = true;
             if ( ( k === 'motifLabels') || (k === 'tabDisable') || (k === 'toggleButtons') ){
+                var iteration = false;
                 jsonText = jsonText + '"' + k + '":{';
                 _.each($parameter, function($param,a){
-                    jsonText = jsonText + '"' + a + '":"' + $param + '",';     
+                    jsonText = jsonText + '"' + a + '":"' + $param + '",'; 
+                    iteration = true;
                 });
                 // Remove last comma //
-                jsonText = jsonText.slice(0, -1);
+                // Remove last comma //
+                if (iteration === true){
+                    jsonText = jsonText.slice(0, -1);
+                    checkIteration = false;
+                }
                 jsonText = jsonText + '},';
             }
             else jsonText = jsonText + '"' +  k + '":"' + $parameter + '",';

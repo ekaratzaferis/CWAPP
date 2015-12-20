@@ -207,7 +207,6 @@ define([
                     }
                 }
             });
-            console.log(stlFileType);
         });
         $highResSTL.on('click',function(){
             $setUIValue.setValue({
