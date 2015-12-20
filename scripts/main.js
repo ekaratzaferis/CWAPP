@@ -51,7 +51,9 @@ require.config({
     'MaskPass': '../vendor/ssao/MaskPass',
     'ShaderPass': '../vendor/ssao/ShaderPass',
     'EffectComposer': '../vendor/ssao/EffectComposer',
-    'OculusRiftEffect': '../vendor/OculusRiftEffect'
+    'OculusRiftEffect': '../vendor/OculusRiftEffect',
+    'html2canvas': '../vendor/html2canvas',
+    'jszip': '../vendor/jszip'
 
   },
   shim: {
@@ -122,7 +124,9 @@ require([
   'ShaderPass',
   'RenderPass',
   'MaskPass',
-  'CopyShader'
+  'CopyShader',
+  'html2canvas',
+  'jszip'
 
 ], function(
   PubSub, 
@@ -172,7 +176,9 @@ require([
   ShaderPass,
   RenderPass,
   MaskPass,
-  CopyShader
+  CopyShader,
+  html2canvas,
+  jszip
 
 ) {
 
@@ -842,6 +848,9 @@ require([
   });
   menu.setOculus(function(message, arg) { 
     crystalRenderer.initOculusEffect(arg);
+  });
+  menu.onExportPNG(function(message, arg) { 
+    storingMachine.exportPNG(arg);
   });
   
   ///////////////////////
