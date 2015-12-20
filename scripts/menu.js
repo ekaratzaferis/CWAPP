@@ -231,6 +231,14 @@ define([
             setUIValue:setUIValueModule,
             stringEditor:stringEditorModule
         });
+        libraryTabModule = new libraryTab({
+            setUIValue: setUIValueModule, 
+            tooltipGenerator: toolTipGeneratorModule,
+            messages: messagesModule,
+            getUIValue: getUIValueModule,
+            notesTab: notesTabModule,
+            userDialog: userDialogModule
+        });
         individualAtomControllerModule = new individualAtomController({
             stringEditor:stringEditorModule,
             tooltipGenerator:toolTipGeneratorModule,
@@ -255,11 +263,7 @@ define([
             latticeTab: latticeTabModule,
             menuRibbon: menuRibbonModule
         });
-        libraryTabModule = new libraryTab({
-            setUIValue: setUIValueModule, 
-            tooltipGenerator: toolTipGeneratorModule,
-            messages: messagesModule
-        });
+        
         
     /* --------------
        Hover Tooltips
@@ -735,14 +739,6 @@ define([
     };
     Menu.prototype.disableUnitCellButtons = function(argument){
         visualTabModule.disableUnitCellButtons(argument);
-    };
-    
-    // Public Library Tab //
-    Menu.prototype.setSaveOnlineLink = function(link){
-        libraryTabModule.setSaveOnlineLink(link);  
-    };
-    Menu.prototype.setQRImage = function(imgLink){
-        libraryTabModule.setQRImage(imgLink);  
     };
             
     // Sliders (Direct Edit) //

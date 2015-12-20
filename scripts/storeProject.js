@@ -22,22 +22,174 @@ define([
         this.camera = camera;
         this.crystalRenderer = crystalRenderer;
     };
+    
+    // Randomizer //
     function createRandomName() {
         var text = "";
         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         for( var i=0; i < 5; i++ )
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         return text;
-    }; 
+    };
+    
+    // Send JSON to Database - With Callback //
+    function sendToDatabase(text,callback){
+        
+        var obj =  JSON.parse(text) ;  
+        var str =  JSON.stringify(obj);
+            
+        // Send Request //
+        var service = 'https://cwgl.herokuapp.com';
+        var hash ='';
+
+        var data = {
+            url: document.location.origin,
+            data: str
+        };
+
+        $.ajax(service + '/add', {
+            method: 'POST',
+            data: data,
+            beforeSend: function(xmlHttpRequest) {
+                xmlHttpRequest.withCredentials = true;
+            }
+        })
+        .done(function(res) {  
+            hash = res.slug;
+            callback(hash);
+        });
+    };
+    
+    // Update Library Tab
+    function updateLibraryTab(slug){
+        var link = 'cw.gl/'+slug;
+        // Update QR //
+        jQuery('#QRImage').trigger('update',[link]);
+        // Update Links //
+        jQuery('#saveOnlineLink').val(link);
+        jQuery('#saveOnlineLinkQR').val(link);
+        jQuery('#info_modal').trigger('finish');
+    };
+    
+    // Download file
+    function downLoadfile(argument){
+        // json = application/json
+        // text = application/text        
+        if (argument.extention === 'json'){
+            var blob = new Blob([JSON.stringify(JSON.parse(argument.data),null,2)], {type: argument.type});
+            saveAs(blob, argument.name + '.' + argument.extention);
+        }
+        else if (argument.extention === 'png'){
+            var canvas = document.getElementsByTagName("canvas")[1].toDataURL("image/png", 1.0);
+            var png = canvas.split(',')[1];
+            var blob = new Blob([png], {type: argument.type});
+            saveAs(blob, argument.name + '.' + argument.extention);
+        }
+        else{
+            var blob = new Blob([argument.data], {type: argument.type});
+            saveAs(blob, argument.name + '.' + argument.extention);
+        }
+    };
+    
+    // Construct JSON File //
+    function constructJSONString(argument){
+        var checkIteration = false;
+        
+        // Start with App Details //
+        var jsonText = '{"name":"'+argument.name+'","description":"'+argument.description+'",';
+        if(argument.tags.length > 0){
+            jsonText = jsonText + '"tags":{';
+            _.each(argument.tags,function($parameter,k){
+                jsonText = jsonText + '"tag' + k + '":"' + $parameter + '",';
+                checkIteration = true;
+            });
+            // Remove last comma //
+            if (checkIteration === true){
+                jsonText = jsonText.slice(0, -1);
+                checkIteration = false;
+            }
+            jsonText = jsonText + '},';
+        }
+        
+        // App UI //
+        jsonText = jsonText + '"appUI":{';
+        _.each(argument.app, function($parameter,k){
+            checkIteration = true;
+            if ( ( k === 'motifLabels') || (k === 'tabDisable') || (k === 'toggleButtons') ){
+                jsonText = jsonText + '"' + k + '":{';
+                _.each($parameter, function($param,a){
+                    jsonText = jsonText + '"' + a + '":"' + $param + '",';     
+                });
+                // Remove last comma //
+                jsonText = jsonText.slice(0, -1);
+                jsonText = jsonText + '},';
+            }
+            else jsonText = jsonText + '"' +  k + '":"' + $parameter + '",';
+        });
+        // Remove last comma //
+        if (checkIteration === true){
+            jsonText = jsonText.slice(0, -1);
+            checkIteration = false;
+        }
+        jsonText = jsonText + '},';
+        
+        // Notes //
+        jsonText = jsonText + '"notes":{';
+        _.each(argument.notes, function($parameter,k){
+            checkIteration = true;
+            if (k === 'activeEntry') jsonText = jsonText + '"activeEntry":false,';
+            else {
+                jsonText = jsonText + '"' + k + '":{'
+                jsonText = jsonText + '"title":"' + $parameter.title + '",';
+                jsonText = jsonText + '"body":"' + $parameter.body + '",';
+                jsonText = jsonText + '"color":"' + $parameter.color + '",';
+                jsonText = jsonText + '"opacity":"' + $parameter.opacity + '",';
+                jsonText = jsonText + '"atomNote":"' + $parameter.atomNote + '",';
+                jsonText = jsonText + '"x":"' + $parameter.x + '",';
+                jsonText = jsonText + '"y":"' + $parameter.y + '"},';
+            }
+        });
+        // Remove last comma //
+        if (checkIteration === true){
+            jsonText = jsonText.slice(0, -1);
+            checkIteration = false;
+        }
+        jsonText = jsonText + '},';
+        
+        // System //
+        jsonText = jsonText + '"system":{}';
+        
+        // Close Object //
+        jsonText = jsonText + '}';
+        return jsonText;
+    };
+    
     StoreProject.prototype.downloadProject = function(argument){
-        console.log(argument);  
+        
     };
     StoreProject.prototype.saveOnline = function(argument){
-        console.log(argument);  
+        var json = constructJSONString(argument);
+        sendToDatabase(json,updateLibraryTab);
     };
-    StoreProject.prototype.exportJSON = function(argument){
-        console.log(argument);  
-    }; 
+    StoreProject.prototype.exportJSON = function(argument){ 
+        // Force User Download //
+        downLoadfile({
+            data: constructJSONString(argument),
+            type: 'application/json;charset=utf-8;',
+            extention: 'json',
+            name: 'cw_settings_: ' + argument.name
+        });
+    };
+    StoreProject.prototype.exportPNG = function(argument){ 
+        // Force User Download //
+        downLoadfile({
+            extention: 'png',
+            name: 'cw_snapshot_: ' + argument.name
+        });
+    };
+    
+    
+    
     StoreProject.prototype.createJSONfile = function() {
         var _this = this ;
         if(!this.idle){   
@@ -140,7 +292,7 @@ define([
             })
             .done(function(res) {  
                 hash = res.slug;  
-
+                
                 var blob = new Blob([str], {type: "application/json"});
                 var url  = URL.createObjectURL(blob);
 

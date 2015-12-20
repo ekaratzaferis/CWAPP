@@ -16,14 +16,16 @@ define([
     _,
     bootstrap
 ) 
-{
-    // Variables //
-    var projectLink = undefined;
+{    
     
+    var thanos = 'mpines';
     // Module References //
     var $setUIValue = undefined;
+    var $getUIValue = undefined;
     var $tooltipGenerator = undefined;
     var $messages = undefined;
+    var $notesTab = undefined;
+    var $userDialog = undefined;
     
     // Toggable DIV from the Save Online Button [Public Library]
     var $alt_atn_target = jQuery('#cnt_alternate_actions');
@@ -59,13 +61,18 @@ define([
     function libraryTab(argument) {
         if (!(_.isUndefined(argument.setUIValue))) $setUIValue = argument.setUIValue;
         else return false;
+        if (!(_.isUndefined(argument.getUIValue))) $getUIValue = argument.getUIValue;
+        else return false;
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
         else return false;
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
+        if (!(_.isUndefined(argument.notesTab))) $notesTab = argument.notesTab;
+        else return false;
+        if (!(_.isUndefined(argument.userDialog))) $userDialog = argument.userDialog;
+        else return false;
         
         // Save Project Section //
-        projectLink = 'http://crystalwalk.herokuapp.com/'+createRandomName();
         
         // Tags //
         $projectTags.tagit({
@@ -95,22 +102,25 @@ define([
             {
                 var details = readDetails();
                 if (details !== false) {
+                    $userDialog.showInfoDialog({ messageID: 29 });
                     PubSub.publish('menu.save_online', details);
-                    $QRImage.empty();
-                    $QRImage.qrcode({
-                        render: 'image',
-                        size: 174,
-                        fill: '#6f6299',
-                        text: details.link
-                    });
-                    $saveOnlineLink.val(details.link);
-                    $saveOnlineLinkQR.val(details.link);
                     $alt_atn_target.slideDown('fast');
                     jQuery(this).addClass('active');
                 }
             }
             return false;
-        });   
+        });
+        // Update QR Image //
+        $QRImage.on('update',function(event, value){
+            $QRImage.empty();
+            $QRImage.qrcode({
+                render: 'image',
+                size: 174,
+                fill: '#6f6299',
+                text: value
+            });
+        });
+        
         $selectLink.on('click', function(){
             $saveOnlineLink.focus();
         });
@@ -228,10 +238,16 @@ define([
     };
     function readDetails(){
         var details = {};
+        
+        // Gather Library Form Data //
         details.name = $projectName.val();
         details.description = $projectDescription.val();
         details.tags = $projectTags.tagit("assignedTags");
-        details.link = projectLink;
+        
+        // Gather App UI State //
+        details.app = $getUIValue.getAppState();
+        details.notes = $notesTab.getNotes();
+        
         if (details.name !== '') return details;
         else {
             $tooltipGenerator.showTooltip({
@@ -242,13 +258,6 @@ define([
             $projectName.focus();
             return false;
         }
-    };
-    function createRandomName() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for( var i=0; i < 5; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        return text;
     };
     
     return libraryTab;

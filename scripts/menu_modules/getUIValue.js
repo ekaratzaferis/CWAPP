@@ -53,6 +53,44 @@ define([
     function retrieveValueFromID(index){
         switch(index){
             
+            case 'activeTab':{
+                if (jQuery('#latticeTab').hasClass('active')) return 'latticeTab';
+                else if (jQuery('#motifLI').hasClass('active')) return 'motifTab';
+                else if (jQuery('#visualTab').hasClass('active')) return 'visualTab';
+                else if (jQuery('#millerPI').hasClass('active')) return 'pndTab';
+                else if (jQuery('#notesTab').hasClass('active')) return 'notesTab';
+                else if (jQuery('#publicTab').hasClass('active')) return 'publicTab';
+            }
+            case 'tabDisable':{
+                var result = {};
+                if (jQuery('#latticeTab').hasClass('disabled')) result.latticeTab = true;
+                if (jQuery('#motifLI').hasClass('disabled')) result.motifTab = true;
+                if (jQuery('#visualTab').hasClass('disabled')) result.visualTab = true;
+                if (jQuery('#millerPI').hasClass('disabled')) result.pndTab = true;
+                if (jQuery('#notesTab').hasClass('disabled')) result.notesTab = true;
+                if (jQuery('#publicTab').hasClass('disabled')) result.publicTab = true;
+                return result;
+            }
+            case 'toggleButtons':{
+                var result = {};
+                if (jQuery('#latticePoints').parent().hasClass('lightThemeActive')) result.latticePoints = true;
+                if (jQuery('#edges').parent().hasClass('lightThemeActive')) result.edges = true;
+                if (jQuery('#faces').parent().hasClass('lightThemeActive')) result.faces = true;
+                if (jQuery('#xyzAxes').parent().hasClass('lightThemeActive')) result.xyzAxes = true;
+                if (jQuery('#abcAxes').parent().hasClass('lightThemeActive')) result.abcAxes = true;
+                if (jQuery('#unitCellViewport').parent().hasClass('lightThemeActive')) result.unitCellViewport = true;
+                if (jQuery('#planes').parent().hasClass('lightThemeActive')) result.planes = true;
+                if (jQuery('#directions').parent().hasClass('lightThemeActive')) result.directions = true;
+                if (jQuery('#atomRadius').parent().hasClass('lightThemeActive')) {
+                    result.atomRadius = true;
+                    result.atomRadiusSlider = jQuery('#atomRadiusSlider').slider('value');
+                }
+                if (jQuery('#atomToggle').parent().hasClass('lightThemeActive')) result.atomToggle = true;
+                if (jQuery('#labelToggle').parent().hasClass('lightThemeActive')) result.labelToggle = true;
+                if (jQuery('#highlightTangency').parent().hasClass('lightThemeActive')) result.highlightTangency = true;
+                return result;
+            }
+                
             // Motif Tab
             case 'tangency':{
                 if (jQuery('#tangency').parent().hasClass('purpleThemeActive')) return true;
@@ -105,6 +143,16 @@ define([
             case 'atomName':{
                 return jQuery('.element-symbol-container').find('a').html();
             }
+            case 'motifLabels':{
+                var result = {};
+                result.a = jQuery('#meLengthA').html();
+                result.b = jQuery('#meLengthB').html();
+                result.c = jQuery('#meLengthC').html();
+                result.alpha = jQuery('#meAngleA').html();
+                result.beta = jQuery('#meAngleB').html();
+                result.gamma = jQuery('#meAngleG').html();
+                return result;
+            }
                 
             // Lattice Tab
             case 'repeatX':{
@@ -133,6 +181,29 @@ define([
             }
             case 'gamma':{
                 return $stringEditor.inputIsNumber(jQuery('#gamma').val());
+            }
+            case 'selectedLattice':{
+                return jQuery('#selected_lattice').html();
+            }
+            case 'latticePadlockDisable':{
+                if (jQuery('#latticePadlock').hasClass('disabled')) return true;
+                else return false;
+            }
+            case 'latticePadlock':{
+                if (jQuery('#latticePadlock').children().hasClass('active')) return true;
+                else return false;
+            }
+            case 'borderColor':{
+                return '#'+jQuery('#cube_color_border').spectrum('get').toHex();
+            }
+            case 'filledColor':{
+                return '#'+jQuery('#cube_color_filled').spectrum('get').toHex();
+            }
+            case 'radius':{
+                return $stringEditor.inputIsInteger(jQuery('#radius').val());
+            }
+            case 'opacity':{
+                return $stringEditor.inputIsInteger(jQuery('#faceOpacity').val());
             }
                 
             // PnD Tab
@@ -177,6 +248,14 @@ define([
             }
             case 'millerT':{
                 return $stringEditor.inputIsInteger(jQuery('#millerT').val());
+            }
+            case 'motifPadlockDisable':{
+                if (jQuery('#motifPadlock').hasClass('disabled')) return true;
+                else return false;
+            }
+            case 'motifPadlock':{
+                if (jQuery('#motifPadlock').children().hasClass('active')) return true;
+                else return false;
             }
             
             // Visual Tab
@@ -284,6 +363,10 @@ define([
                 if (jQuery('#zoom70').hasClass('active')) return true;
                 else return false;
             }
+            case 'autoZoom':{
+                if (jQuery('#autoZoom').hasClass('active')) return true;
+                else return false;
+            }
             case 'fog':{
                 if (jQuery('[name="fog"]').hasClass('active')) return true;
                 else return false;
@@ -297,7 +380,10 @@ define([
             case 'sounds':{
                 if (jQuery('#sounds').hasClass('active')) return true;
                 else return false;
-            } 
+            }
+            case 'soundVolume':{
+                return jQuery('#soundSlider').slider('value');   
+            }
             case 'crystalScreenColor':{
                 return '#'+jQuery('#crystalScreenColor').spectrum('get').toHex();
             }
@@ -317,6 +403,79 @@ define([
         };
     }
     
+    getUIValue.prototype.getAppState = function(){
+        var app = {};
+        
+        // Retrieve Menu Ribbon Values //
+        app.activeTab = retrieveValueFromID('activeTab');
+        app.tabDisable = retrieveValueFromID('tabDisable');
+        app.toggleButtons = retrieveValueFromID('toggleButtons');
+        
+        // Retrieve Lattice Tab Values //
+        app.selectedLattice = retrieveValueFromID('selectedLattice');
+        app.latticePadlockDisable = retrieveValueFromID('latticePadlockDisable');
+        app.latticePadlock = retrieveValueFromID('latticePadlock');
+        app.repeatX = retrieveValueFromID('repeatX');
+        app.repeatY = retrieveValueFromID('repeatY');
+        app.repeatZ = retrieveValueFromID('repeatZ');
+        app.motifPadlockDisable = retrieveValueFromID('motifPadlockDisable');
+        app.motifPadlock = retrieveValueFromID('motifPadlock');
+        app.scaleX = retrieveValueFromID('scaleX');
+        app.scaleY = retrieveValueFromID('scaleY');
+        app.scaleZ = retrieveValueFromID('scaleZ');
+        app.alpha = retrieveValueFromID('alpha');
+        app.beta = retrieveValueFromID('beta');
+        app.gamma = retrieveValueFromID('gamma');
+        app.borderColor = retrieveValueFromID('borderColor');
+        app.filledColor = retrieveValueFromID('filledColor');
+        app.radius = retrieveValueFromID('radius');
+        app.opacity = retrieveValueFromID('opacity');
+        
+        // Retrieve Motif Tab Values //
+        app.tangency = retrieveValueFromID('tangency');
+        app.cellVolume = retrieveValueFromID('cellVolume');
+        app.motifLabels = retrieveValueFromID('motifLabels');
+        
+        // Retrieve Visual Tab Values //
+        app.wireframe = retrieveValueFromID('wireframe');
+        app.toon = retrieveValueFromID('toon');
+        app.flat = retrieveValueFromID('flat');
+        app.realistic = retrieveValueFromID('realistic');
+        app.distortionOn = retrieveValueFromID('distortionOn');
+        app.distortionOff = retrieveValueFromID('distortionOff');
+        app.anaglyph = retrieveValueFromID('anaglyph');
+        app.oculus = retrieveValueFromID('oculus');
+        app.threeD = retrieveValueFromID('3D');
+        app.crystalCamTargetOn = retrieveValueFromID('crystalCamTargetOn');
+        app.crystalCamTargetOff = retrieveValueFromID('crystalCamTargetOff');
+        app.fullScreen = retrieveValueFromID('fullScreen');
+        app.leapMotion = retrieveValueFromID('leapMotion');
+        app.crystalClassic = retrieveValueFromID('crystalClassic');
+        app.crystalSubstracted = retrieveValueFromID('crystalSubstracted');
+        app.crystalSolidVoid = retrieveValueFromID('crystalSolidVoid');
+        app.crystalGradeLimited = retrieveValueFromID('crystalGradeLimited');
+        app.cellClassic = retrieveValueFromID('cellClassic');
+        app.cellSubstracted = retrieveValueFromID('cellSubstracted');
+        app.cellSolidVoid = retrieveValueFromID('cellSolidVoid');
+        app.cellGradeLimited = retrieveValueFromID('cellGradeLimited');
+        app.autoZoom = retrieveValueFromID('autoZoom');
+        app.zoom100 = retrieveValueFromID('zoom100');
+        app.zoom90 = retrieveValueFromID('zoom90');
+        app.zoom80 = retrieveValueFromID('zoom80');
+        app.zoom70 = retrieveValueFromID('zoom70');
+        app.fog = retrieveValueFromID('fog');
+        app.fogColor = retrieveValueFromID('fogColor');
+        app.fogDensity = retrieveValueFromID('fogDensity');
+        app.sounds = retrieveValueFromID('sounds');
+        app.soundVolume = retrieveValueFromID('soundVolume');
+        app.crystalScreenColor = retrieveValueFromID('crystalScreenColor');
+        app.cellScreenColor = retrieveValueFromID('cellScreenColor');
+        app.motifXScreenColor = retrieveValueFromID('motifXScreenColor');
+        app.motifYScreenColor = retrieveValueFromID('motifYScreenColor');
+        app.motifZScreenColor = retrieveValueFromID('motifZScreenColor');
+        
+        return app;
+    };
     getUIValue.prototype.getValue = function(argument){
         var returnObject = {};
         if (Object.keys(argument).length <= 0) return false;

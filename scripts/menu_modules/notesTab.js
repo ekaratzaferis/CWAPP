@@ -113,28 +113,28 @@ define([
                 highlightNote(notes.activeEntry,false);
                 highlightNote(addNote(),true);
                 $disableUIElement.disableElement({
-                noteTitle:{
-                    value: false    
-                },
-                noteBody:{
-                    value: false    
-                },
-                noteOpacity:{
-                    value: false    
-                },
-                noteColor:{
-                    value: false 
-                },
-                newNote:{
-                    value: true   
-                },
-                saveNote:{
-                    value: false   
-                },
-                deleteNote:{
-                    value: false   
-                }
-            });
+                    noteTitle:{
+                        value: false    
+                    },
+                    noteBody:{
+                        value: false    
+                    },
+                    noteOpacity:{
+                        value: false    
+                    },
+                    noteColor:{
+                        value: false 
+                    },
+                    newNote:{
+                        value: true   
+                    },
+                    saveNote:{
+                        value: false   
+                    },
+                    deleteNote:{
+                        value: false   
+                    }
+                });
             }
         });
         $saveNote.on('click',function(){
@@ -144,59 +144,61 @@ define([
                     body: $noteBody.val(),
                     color: '#'+$noteColor.spectrum('get').toHex(),
                     opacity: $noteOpacity.val(),
-                    atomNote: notes[notes.activeEntry].atomNote
+                    atomNote: notes[notes.activeEntry].atomNote,
+                    x: notes[notes.activeEntry].x,
+                    y: notes[notes.activeEntry].y
                 });
                 $disableUIElement.disableElement({
-                noteTitle:{
-                    value: true    
-                },
-                noteBody:{
-                    value: true    
-                },
-                noteOpacity:{
-                    value: true    
-                },
-                noteColor:{
-                    value: true 
-                },
-                newNote:{
-                    value: false   
-                },
-                saveNote:{
-                    value: true   
-                },
-                deleteNote:{
-                    value: true   
-                }
-            });
+                    noteTitle:{
+                        value: true    
+                    },
+                    noteBody:{
+                        value: true    
+                    },
+                    noteOpacity:{
+                        value: true    
+                    },
+                    noteColor:{
+                        value: true 
+                    },
+                    newNote:{
+                        value: false   
+                    },
+                    saveNote:{
+                        value: true   
+                    },
+                    deleteNote:{
+                        value: true   
+                    }
+                });
             }
         });
         $deleteNote.on('click',function(){
             if (!($deleteNote.hasClass('disabled'))){
                 deleteNote();
                 $disableUIElement.disableElement({
-                noteTitle:{
-                    value: true    
-                },
-                noteBody:{
-                    value: true    
-                },
-                noteOpacity:{
-                    value: true    
-                },
-                noteColor:{
-                    value: true 
-                },
-                newNote:{
-                    value: false   
-                },
-                saveNote:{
-                    value: true   
-                },
-                deleteNote:{
-                    value: true   
-                }
-            });
+                    noteTitle:{
+                        value: true    
+                    },
+                    noteBody:{
+                        value: true    
+                    },
+                    noteOpacity:{
+                        value: true    
+                    },
+                    noteColor:{
+                        value: true 
+                    },
+                    newNote:{
+                        value: false   
+                    },
+                    saveNote:{
+                        value: true   
+                    },
+                    deleteNote:{
+                        value: true   
+                    }
+                });
             }
         });
         
@@ -234,7 +236,9 @@ define([
             body: '',
             color: '#FFFFFF',
             opacity: '',
-            atomNote: atomNote 
+            atomNote: atomNote,
+            x: 0,
+            y: 0
         };
         createCanvasNote(id);
         
@@ -254,6 +258,8 @@ define([
             if (notes[id].atomNote === true) {
                 var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
                 var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                notes[id].x = x;
+                notes[id].y = y;
                 $setUIValue.setValue({
                     noteVisibility:{
                         publish: {id:id, visible: value, x: x, y: y, color: notes[id].color}
@@ -279,6 +285,8 @@ define([
                     // System //
                     var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
                     var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    notes[id].x = x;
+                    notes[id].y = y;
                     $setUIValue.setValue({
                         noteVisibility:{
                             publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
@@ -406,6 +414,8 @@ define([
                 if (notes[id].atomNote === true){
                     var x = parseInt(ui.position.left) + parseInt($screen.find('#'+id).css('width'),10) / 2;
                     var y = parseInt(ui.position.top) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    notes[id].x = x;
+                    notes[id].y = y;
                     $setUIValue.setValue({
                         noteMovement:{
                             publish: { id: id, x: x, y: y }   
@@ -426,6 +436,8 @@ define([
             if (notes[id].atomNote === true) {
                 var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
                 var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                notes[id].x = x;
+                notes[id].y = y;
                 $setUIValue.setValue({
                     noteVisibility:{
                         publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
@@ -443,6 +455,8 @@ define([
             if ($parameter.atomNote === true) {
                 var x = parseInt($screen.find('#'+k).css('left'),10) + parseInt($screen.find('#'+k).css('width'),10) / 2;
                 var y = parseInt($screen.find('#'+k).css('top'),10) + parseInt($screen.find('#'+k).css('height'),10) / 2;
+                notes[id].x = x;
+                notes[id].y = y;
                 table.push({
                     id: k,
                     x: x,
@@ -511,6 +525,12 @@ define([
                 });
             }
         };
+    };
+    notesTab.prototype.getNotes = function(){
+        return notes;  
+    };
+    notesTab.prototype.restoreNotes = function(notes){
+        
     };
     
     return notesTab;
