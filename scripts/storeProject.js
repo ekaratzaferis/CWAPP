@@ -100,8 +100,9 @@ define([
     function constructJSONString(argument){
         var checkIteration = false;
         
-        // Start with App Details //
-        var jsonText = '{"name":"'+argument.name+'","description":"'+argument.description+'",';
+        // Start with App Info //
+        var jsonText = '{"info":{';
+        jsonText = jsonText + '"name":"'+argument.name+'","description":"'+argument.description+'",';
         if(argument.tags.length > 0){
             jsonText = jsonText + '"tags":{';
             _.each(argument.tags,function($parameter,k){
@@ -113,6 +114,10 @@ define([
                 jsonText = jsonText.slice(0, -1);
                 checkIteration = false;
             }
+            jsonText = jsonText + '}},';
+        }
+        else {
+            jsonText = jsonText.slice(0, -1);
             jsonText = jsonText + '},';
         }
         
@@ -168,11 +173,16 @@ define([
         jsonText = jsonText + '},';
         
         // System //
-        jsonText = jsonText + '"system":{}';
+        jsonText = jsonText + '"system":{'+ configureSystemState() +'}';
         
         // Close Object //
         jsonText = jsonText + '}';
         return jsonText;
+    };
+    
+    // Configure System State //
+    function configureSystemState(){
+        return '';  
     };
     
     StoreProject.prototype.downloadProject = function(argument){
@@ -199,6 +209,10 @@ define([
             name: 'cw_snapshot'
         });
     };
+    
+    
+    
+    
     
     
     
