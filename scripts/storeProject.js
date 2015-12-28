@@ -3,15 +3,19 @@
 define([
   "three", 
   "underscore",
-  "jquery"
+  "jquery",
+  "jszip"
 ], function(
   THREE, 
   _,
-  jQuery
+  jQuery,
+  jszip
 ) {
-
+    // Zipper //
+   var zip = new jszip();
+    
     // Constructor //
-    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer) { 
+    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer,stlExporter,menu) { 
         this.idle = false;
         this.lattice = lattice;
         this.motifeditor = motifeditor;
@@ -20,7 +24,9 @@ define([
         this.motifYcam = motifYcam;
         this.motifZcam = motifZcam;
         this.camera = camera;
-        this.crystalRenderer = crystalRenderer; 
+        this.crystalRenderer = crystalRenderer;
+        this.stlExporter = stlExporter;
+        this.menu = menu;
     };
     
     // Randomizer //
@@ -69,35 +75,6 @@ define([
         jQuery('#saveOnlineLink').val(link);
         jQuery('#saveOnlineLinkQR').val(link);
         jQuery('#info_modal').trigger('finish');
-    };
-    
-    // Download file
-     StoreProject.prototype.downLoadfile = function(argument){
-        // json = application/json
-        // text = application/text        
-        if (argument.extention === 'json'){
-            var blob = new Blob([JSON.stringify(JSON.parse(argument.data),null,2)], {type: argument.type});
-            saveAs(blob, argument.name + '.' + argument.extention);
-        }
-        else if (argument.extention === 'png'){
-            // Caprture Snapshot //
-
-            this.crystalRenderer.renderer.clear();
- 
-            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
-            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
-            
-            // Create Download Link //
-            var dlLink = document.createElement('a');
-            dlLink.download = argument.name + '.' + argument.extention;
-            dlLink.href = imgURL;
-            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
-
-            // Trigger and Dispose Link //
-            document.body.appendChild(dlLink);
-            dlLink.click();
-            document.body.removeChild(dlLink);
-        }
     };
     
     // Construct JSON File //
@@ -189,8 +166,65 @@ define([
         return '';  
     };
     
+    StoreProject.prototype.downLoadfile = function(argument){
+        // json = application/json
+        // text = application/text        
+        if (argument.extention === 'json'){
+            var blob = new Blob([JSON.stringify(JSON.parse(argument.data),null,2)], {type: argument.type});
+            saveAs(blob, argument.name + '.' + argument.extention);
+        }
+        else if (argument.extention === 'png'){
+            // Caprture Snapshot //
+            this.crystalRenderer.renderer.clear();
+            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
+            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
+
+            // Create Download Link //
+            var dlLink = document.createElement('a');
+            dlLink.download = argument.name + '.' + argument.extention;
+            dlLink.href = imgURL;
+            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+
+            // Trigger and Dispose Link //
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
+        }
+        else if (argument.extention === 'zip'){
+            
+            // Gather Info //
+            var content = null;
+            var settings = JSON.stringify(JSON.parse(constructJSONString(argument.details)),null,2);
+            this.crystalRenderer.renderer.clear();
+            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
+            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
+            var stl = this.stlExporter.saveSTL(this.crystalRenderer.explorer.object3d);
+            
+            // Zip File //
+            zip.file('CrystalWalk/settings.json',settings);
+            zip.file('CrystalWalk/snapShot.png',imgURL);
+            zip.file('CrystalWalk/object.stl',stl);
+            content = zip.generate();
+            
+            // Create Download Link //
+            var dlLink = document.createElement('a');
+            dlLink.download = argument.name + '.' + argument.extention;
+            dlLink.href = "data:application/zip;base64,"+content;
+            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+
+            // Trigger and Dispose Link //
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
+        }
+    };
     StoreProject.prototype.downloadProject = function(argument){
-        
+        this.downLoadfile({
+            extention: 'zip',
+            name: 'cw_bandle',
+            details: argument,
+            crystalRenderer: this.crystalRenderer
+        });
     };
     StoreProject.prototype.saveOnline = function(argument){
         var json = constructJSONString(argument);

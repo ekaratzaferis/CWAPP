@@ -455,8 +455,8 @@ define([
             if ($parameter.atomNote === true) {
                 var x = parseInt($screen.find('#'+k).css('left'),10) + parseInt($screen.find('#'+k).css('width'),10) / 2;
                 var y = parseInt($screen.find('#'+k).css('top'),10) + parseInt($screen.find('#'+k).css('height'),10) / 2;
-                notes[id].x = x;
-                notes[id].y = y;
+                notes[k].x = x;
+                notes[k].y = y;
                 table.push({
                     id: k,
                     x: x,

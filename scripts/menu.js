@@ -789,6 +789,11 @@ define([
         PubSub.publish(event, {sliderName,val});
     };
                 
+    // System //
+    Menu.prototype.restore = function(data){
+        setUIValueModule.restore(data);
+    };
+    
     // Subscribers //
     Menu.prototype.onPlaneToggle = function(callback){
         PubSub.subscribe(events.PLANE_TOGGLE, callback);  
