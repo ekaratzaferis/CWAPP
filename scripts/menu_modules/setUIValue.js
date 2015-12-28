@@ -1929,6 +1929,9 @@ define([
             });
         }
     };
+    setUIValue.prototype.restore = function(data){
+        
+    };
     
     return setUIValue;
 });
