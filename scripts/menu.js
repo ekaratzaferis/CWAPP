@@ -96,6 +96,7 @@ define([
         NOTE_COLOR: 'menu.note_color',
         DOWNLOAD_PROJECT: 'menu.download_project',
         EXPORT_JSON: 'menu.export_json',
+        OPEN_JSON: 'menu.open_json',
         EXPORT_PNG: 'menu.export_png',
         SAVE_ONLINE: 'menu.save_online',
         AUTO_UPDATE: 'menu.auto_update',
@@ -1025,6 +1026,9 @@ define([
     };
     Menu.prototype.onShadowsChange = function(callback){
         PubSub.subscribe(events.SET_SHADOWS, callback);
+    };
+    Menu.prototype.onOpenJSON = function(callback){
+        PubSub.subscribe(events.OPEN_JSON, callback);
     };
 
     return Menu;
