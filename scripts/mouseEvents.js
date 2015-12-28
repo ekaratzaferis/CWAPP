@@ -37,6 +37,14 @@ define([
     this.SELECTED;
     this.enableCubeEvents = true;
 
+    this.cubeMapsHit = [];
+    this.cubeMapsHit = [];
+
+    for (var i = 0; i < 6; i++) {
+      Things[i]
+    };
+    new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+index+'Hit.png' ) });
+
     if(this.func === 'dragNdrop' ){
       
       this.plane.object3d = new THREE.Mesh(

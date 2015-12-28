@@ -144,13 +144,17 @@ define([
 
     	
     	var exporter = new THREE.STLExporter();
-        var stlString = exporter.parse(scene);
+      var stlString = exporter.parse(scene);
 
-        var blob = new Blob([stlString], {
-                type : 'text/plain'
-            });
+      if(name === undefined){
+        return stlString;
+      }
+      
+      var blob = new Blob([stlString], {
+          type : 'text/plain'
+      });
 
-        saveAs(blob, name + '.stl');
+      saveAs(blob, name + '.stl');
 
     }  
 

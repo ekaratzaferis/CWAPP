@@ -183,7 +183,7 @@ require([
 ) {
 
   var menu = new Menu();
-  
+ 
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;
@@ -300,7 +300,7 @@ require([
   var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube',  [orbitUnitCell,orbitCrystal], soundMachine, hudCube );
  
   // storing mechanism  
-  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer );
+  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, stlExporter, menu );
 
   // Gear Bar Tour
   var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
@@ -897,7 +897,7 @@ require([
   menu.onOpenJSON(function(message, arg) { 
     storeRestoreMech.configureState(arg);
   });
-  
+
   ///////////////////////
   ///////////////////////
   ///////////////////////
@@ -909,7 +909,7 @@ require([
   var service = 'https://cwgl.herokuapp.com' ;
 
   if(hash.length>0){
-     //console.log(service + '/' + hash + '.json') 
+    console.log(service + '/' + hash + '.json') 
 
     var slug = hash.replace(/^#/, '');
     $.ajax(service + '/' + slug + '.json', {
@@ -920,6 +920,7 @@ require([
     })
     .done(function(res) {  
       storeRestoreMech.configureState(res.data);
+      menu.restore(res.data);
     }); 
   } 
   

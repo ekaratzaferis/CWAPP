@@ -49,8 +49,10 @@ define([
       this.noteLinesMeshes[prop].scale.z = this.lineWeight;
     }  
   };
-  NoteManager.prototype.setLineColor = function(arg) { 
-    console.log(arg);
+  NoteManager.prototype.setLineColor = function(arg) {  
+    if(this.noteLinesMeshes[arg.id] === undefined){
+      return;
+    }
     this.noteLinesMeshes[arg.id].material.color.set( arg.color );
   };
   NoteManager.prototype.addNote = function(arg) {
