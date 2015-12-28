@@ -94,8 +94,7 @@ define([
     var bAxis = new THREE.Geometry();
     bAxis.vertices.push(
       new THREE.Vector3( 1000,0,0 ),
-      new THREE.Vector3(-1000,0,0)
-      
+      new THREE.Vector3(-1000,0,0) 
     );
    
     var cAxis = new THREE.Geometry();
@@ -121,28 +120,7 @@ define([
     this.cAxisLine.visible = false;
     this.bAxisLine.visible = false;
     this.aAxisLine.visible = false;
- 
-    // abc labels
-    var ctext = THREE.TextureLoader( "Images/clabel.png" ); 
-    var cmat = new THREE.SpriteMaterial( { map: ctext, color: 0xffffff, fog: true } );
-    this.cSprite = new THREE.Sprite( cmat ); 
-    this.cSprite.position.z = 0.01; 
-    this.object3d.add( this.cSprite );
-    
-    var atext = THREE.TextureLoader( "Images/alabel.png" ); 
-    var amat = new THREE.SpriteMaterial( { map: atext, color: 0xffffff, fog: true } );
-    this.aSprite = new THREE.Sprite( amat ); 
-    this.object3d.add( this.aSprite );
-
-    var btext = THREE.TextureLoader( "Images/blabel.png" ); 
-    var bmat = new THREE.SpriteMaterial( { map: btext, color: 0xffffff, fog: true } );
-    this.bSprite = new THREE.Sprite( bmat ); 
-    this.object3d.add( this.bSprite );
- 
-    this.aSprite.visible = false;
-    this.bSprite.visible = false;
-    this.cSprite.visible = false; 
-
+  
     this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
     this.helper.visible = false;
     this.object3d.add( this.helper );
