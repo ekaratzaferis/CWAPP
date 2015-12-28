@@ -39,17 +39,17 @@ define([
 
     this.animateAtom = false;
     this.atom;
-    this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: false }); // preserveDrawingBuffer: true
+    this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: false }); 
     this.backgroundColor =  '#000000' ;
     this.renderer.setClearColor( '#000000', 0 );
     this.renderer.setSize( width, height);
-    this.renderer.shadowMapEnabled = true;
-    this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // options are THREE.BasicShadowMap | THREE.PCFShadowMap | THREE.PCFSoftShadowMap
     this.renderer.physicallyBasedShading = true; 
     this.renderer.shadowMapSoft = true; 
     this.renderer.shadowCameraNear = 0.1;
-    this.renderer.shadowCameraFar = 400;
-    this.renderer.shadowCameraFov = 200;
+    this.renderer.shadowCameraFar = 1000;
+    this.renderer.shadowCameraFov = 50;
     this.renderer.shadowMapBias = 0.0039;
     this.renderer.shadowMapDarkness = 0.4;
     this.renderer.shadowMapWidth = 1024;
@@ -63,8 +63,9 @@ define([
     this.composer;
     this.ssaoPass;
 
-    this.effect = new THREE.AnaglyphEffect( this.renderer  ); 
+    this.stereoscopicEffect = new THREE.AnaglyphEffect( this.renderer  ); 
     this.anaglyph = false;
+
     this.container = container;
     this.externalFunctions = [];
 
@@ -149,6 +150,30 @@ define([
     this.composer.addPass( this.ssaoPass );
 
     this.changeContainerDimensions(this.containerWidth, this.containerHeight);
+  }; 
+  Renderer.prototype.changeContainerDimensions = function(width, height) { 
+
+    this.containerWidth = width ;
+    this.containerHeight = height ; 
+     
+    this.stereoscopicEffect.setSize( this.containerWidth, this.containerHeight ); 
+
+    if(this.oculusEffect !== undefined){
+      this.oculusEffect.setSize(this.containerWidth, this.containerHeight);
+      return;
+    }
+     
+    this.renderer.setSize(this.containerWidth, this.containerHeight); 
+
+    if(this.depthTarget !== undefined){  
+
+      this.depthTarget = new THREE.WebGLRenderTarget(this.containerWidth, this.containerHeight, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter } );
+
+      this.ssaoPass.uniforms[ 'size' ].value.set( this.containerWidth, this.containerHeight ); 
+      this.composer.reset( this.depthTarget );
+      this.composer.setSize( this.containerWidth, this.containerHeight );
+    }
+    
   };
   Renderer.prototype.createOrthographicCamera = function(width, height, near, far, x, y, z){  
     var viewSize = 50 ;
@@ -157,32 +182,6 @@ define([
     camera.position.set(x,y,z);
     camera.lookAt(new THREE.Vector3(0,0,0) );
     this.cameras.push(camera); 
-  };
-  Renderer.prototype.changeContainerDimensions = function(width, height) { 
-    this.containerWidth = width ;
-    this.containerHeight = height ; 
-     
-    this.effect.setSize( width,height ); 
-
-    if(this.depthTarget === undefined){
-      this.renderer.setSize(width,height);
-      return;
-    }
-
-    if(this.oculusEffect !== undefined){
-      this.oculusEffect.setSize(width,height);
-      return;
-    }
-
-    var pixelRatio = this.renderer.getPixelRatio();
-    var newWidth  = Math.floor( width / pixelRatio ) || 1;
-    var newHeight = Math.floor( height / pixelRatio ) || 1;
-
-    this.ssaoPass.uniforms[ 'size' ].value.set( width, height );
-    this.depthTarget.setSize( newWidth, newHeight );
-    this.composer.setSize( newWidth, newHeight );
- 
-
   };
   Renderer.prototype.atomAnimation = function(atom) {
     this.atom = atom;
@@ -203,9 +202,7 @@ define([
       this.animate(); 
     } 
   }; 
-  Renderer.prototype.initOculusEffect = function(arg) {
-    console.log(arg);
-
+  Renderer.prototype.initOculusEffect = function(arg) { 
     this.oculusEffectActive = arg.oculus ;
 
     if(this.oculusEffectActive === true){ 
@@ -268,7 +265,7 @@ define([
       this.cameras[0].updateProjectionMatrix();  
        
       if(this.anaglyph){  
-        this.effect.render( this.explorer.object3d, this.cameras[0] );
+        this.stereoscopicEffect.render( this.explorer.object3d, this.cameras[0] );
       }
       else{  
         if(this.container === 'crystalRenderer') { 
@@ -300,9 +297,19 @@ define([
           }
           
         }
-        else if(this.container === 'unitCellRenderer') { 
-          this.renderer.setClearColor( this.backgroundColor );
-          this.renderer.render( this.explorer.object3d, this.cameras[0] );
+        else if(this.container === 'unitCellRenderer') {  
+          if(this.ssao === true && this.composer !== undefined){  
+  
+            this.explorer.object3d.overrideMaterial = this.depthMaterial;
+
+            this.renderer.render( this.explorer.object3d, this.cameras[0], this.depthTarget, true ); 
+            this.explorer.object3d.overrideMaterial = null;
+            
+            this.composer.render();
+          }
+          else{
+            this.renderer.render( this.explorer.object3d, this.cameras[0] );
+          } 
         }
       } 
 
@@ -373,7 +380,7 @@ define([
         camera.aspect =this.containerWidth/(3*this.containerHeight); 
 
         if(this.anaglyph){     
-          this.effect.render( this.explorer.object3d, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
+          this.stereoscopicEffect.render( this.explorer.object3d, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
         }
         else{ 
           this.renderer.setViewport( 1/3 *i * this.containerWidth, 0,  this.containerWidth/3, this.containerHeight );

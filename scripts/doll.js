@@ -366,13 +366,14 @@ define([
     
     raycaster.setFromCamera( pos, this.camera ); 
     var intersects = raycaster.intersectObject( this.plane.object3d );
+    
     if(intersects.length > 0){ 
       var intPos = intersects[ 0 ].point.sub( this.offset2 ) ;
     }
     else{
       var intPos = new THREE.Vector2(0,0);
     }
- 
+     
     return intPos.x;
   }; 
 
@@ -390,6 +391,7 @@ define([
     this.dollHolder.position.x = newX ;  
     this.gearBar.position.x = newX ;  ; 
     this.gearBarSlider.position.x = newX ;  
+
 
     for (var j = 0; j < this.levels.length ; j++) {  
       this.levels[j].position.x = newX ;  
@@ -508,7 +510,7 @@ define([
     texture.needsUpdate = true;
 
     var spriteMaterial = new THREE.SpriteMaterial( 
-      { map: texture, useScreenCoordinates: false, transparent:true, opacity:1 } );
+      { map: texture,  transparent:true, opacity:1 } );
     var sprite = new THREE.Sprite( spriteMaterial );
     sprite.scale.set(10,5,1.0);
     return sprite;  

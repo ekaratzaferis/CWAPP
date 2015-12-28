@@ -139,7 +139,7 @@ NavCube.prototype.resetMat = function() {
   };  
 }
 function getTexture() {
-  var texture = new THREE.ImageUtils.loadTexture("Images/rotationArrow.png");
+  var texture = new THREE.TextureLoader("Images/rotationArrow.png");
   
   return texture;
 }

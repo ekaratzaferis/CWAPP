@@ -23,19 +23,25 @@ define([
     var _this = this;
  
     this.fogActive = false ;
+    
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
 
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    this.light.position.set( 300, 300, 60 );
+    this.light.position.set( 7, 7, 2 );
     this.light.castShadow = true;
     this.light.shadowMapWidth = 1024;    // power of 2
     this.light.shadowMapHeight = 1024;
 
-    this.light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
-    this.light.shadowCameraFar = 450;    // shadows not cast past the far plane
-    this.light.shadowCameraFov = 20;
-    this.light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
-    this.light.shadowDarkness = 0.3;
+    this.light.shadowCameraNear = 1;   // keep near and far planes as tight as possible
+    this.light.shadowCameraFar = 22;    // shadows not cast past the far plane
+    this.light.shadowCameraFov = 90;
+    this.light.shadowBias = -0.0015;    // -0.00022 a parameter you can tweak if there are artifacts
+    this.light.shadowDarkness = 0.35;
+
+    this.light.shadowCameraLeft = -11 ;
+    this.light.shadowCameraRight = 11 ;
+    this.light.shadowCameraTop = 11 ;
+    this.light.shadowCameraBottom = -11 ;
 
     this.AmbLight = new THREE.AmbientLight( 0x4D4D4C );
 

@@ -35,7 +35,7 @@ define([
       this.highlightOverlapState = false; 
       this.checkCrystalforOverlap();
       this.checkMotiforOverlap();
-      this.checkCellforOverlap();
+      this.checkCellforOverlap(); 
       this.highlightOverlapState = true; 
     }
     this.checkCrystalforOverlap();
@@ -61,12 +61,9 @@ define([
            
           var realDist = (posi).distanceTo(posj);
  
-          if(realDist !== 0 && (realDist + 0.0001 < tangentDist )){  
-            console.log(this.motifEditor.motifsAtoms[j]);
-            console.log(this.motifEditor.motifsAtoms[i]);
+          if(realDist !== 0 && (realDist + 0.0001 < tangentDist )){   
             this.motifEditor.motifsAtoms[j].setColorMaterial('#ff0000'); 
-            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000'); 
-            console.log(realDist,tangentDist);
+            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000');  
 
           } 
         };
@@ -76,12 +73,8 @@ define([
           var realDist = (posi).distanceTo(this.motifEditor.newSphere.object3d.position);
           var tangentDist = this.motifEditor.newSphere.radius + ri;
           if(realDist !== 0 && (realDist + 0.0001 < tangentDist )){   
-            console.log(this.motifEditor.newSphere.object3d.position);
-            console.log(this.motifEditor.motifsAtoms[i].object3d.position);
-            console.log(realDist,tangentDist);
             this.motifEditor.newSphere.setColorMaterial('#ff0000'); 
-            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000'); 
-
+            this.motifEditor.motifsAtoms[i].setColorMaterial('#ff0000');  
           } 
         }  
       };

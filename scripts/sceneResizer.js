@@ -11,7 +11,7 @@ define([
 
   function SceneResizer(crystalRenderer, motifRenderer, unitCellRenderer, hudDisplayFactor, dollEditor, hudCube) {
     
-      var _this = this;
+    var _this = this;
       
     this.crystalRenderer = crystalRenderer ;
     this.unitCellRenderer = unitCellRenderer ;
@@ -106,7 +106,7 @@ define([
          
     }
     else{
-      this.crystalRenderer.changeContainerDimensions(width, height);
+      
       if(this.ucViewPortActive === false){
         this.unitCellRenderer.changeContainerDimensions(0,0);
       }
@@ -187,6 +187,7 @@ define([
       $('#hudRendererCube').width(width/this.hudDisplayFactor);
       $('#hudRendererCube').height(height/this.hudDisplayFactor);
 
+      this.crystalRenderer.changeContainerDimensions(width, height);
     }
     
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);

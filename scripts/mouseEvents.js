@@ -139,10 +139,10 @@ define([
             index = 2 ;
           }
            
-          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+index+'Hit.png' ) });
+          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+index+'Hit.png' ) });
           
           for (var i = 0; i<6; i++) {
-            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'Images/'+i+'.png' ) });
+            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+i+'.png' ) });
           };
         }
         else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name == 'arrowLine'){

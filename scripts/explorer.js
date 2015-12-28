@@ -26,7 +26,7 @@ define([
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     
-    this.lastFrustumPlane =0;
+    this.lastFrustumPlane = 0;
     this.menu ;
 
     this.movingCube = new THREE.Mesh( new THREE.BoxGeometry( 0.001, 0.001, 0.001 ), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
@@ -39,20 +39,27 @@ define([
     var _this = this;
      
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    this.light.position.set( 300, 300, 60 );
+    this.light.position.set( 7, 7, 2 ); 
+    this.shadowCameraNear = 50;
+    this.shadowCameraFar = 5000;
+ 
     this.light.castShadow = true;
-    this.light.shadowMapWidth = 1024;    // power of 2
-    this.light.shadowMapHeight = 1024;
-
-    this.light.shadowCameraNear = 350;   // keep near and far planes as tight as possible
-    this.light.shadowCameraFar = 450;    // shadows not cast past the far plane
-    this.light.shadowCameraFov = 20;
-    this.light.shadowBias = -0.00022;    // a parameter you can tweak if there are artifacts
+    this.light.shadowMapSoft = true;
+    //this.light.shadowCameraVisible = true;
+    this.light.shadowCameraNear = 5;
+    this.light.shadowCameraFar = 100;
+    this.light.shadowCameraFov = 30;
+    this.light.shadowBias = 0.00012;
     this.light.shadowDarkness = 0.3;
+    this.light.shadowMapWidth = 2048;
+    this.light.shadowMapHeight = 2048;
+    this.light.shadowCameraLeft = -10;
+    this.light.shadowCameraRight = 10;
+    this.light.shadowCameraTop = 10;
+    this.light.shadowCameraBottom = -10;
 
     this.AmbLight = new THREE.AmbientLight( 0x4D4D4C );
-
-    //light.shadowCameraVisible = true;
+ 
     this.object3d.add(this.light);
     this.object3d.add(this.AmbLight);
 
@@ -116,18 +123,18 @@ define([
     this.aAxisLine.visible = false;
  
     // abc labels
-    var ctext = THREE.ImageUtils.loadTexture( "Images/clabel.png" ); 
+    var ctext = THREE.TextureLoader( "Images/clabel.png" ); 
     var cmat = new THREE.SpriteMaterial( { map: ctext, color: 0xffffff, fog: true } );
     this.cSprite = new THREE.Sprite( cmat ); 
     this.cSprite.position.z = 0.01; 
     this.object3d.add( this.cSprite );
     
-    var atext = THREE.ImageUtils.loadTexture( "Images/alabel.png" ); 
+    var atext = THREE.TextureLoader( "Images/alabel.png" ); 
     var amat = new THREE.SpriteMaterial( { map: atext, color: 0xffffff, fog: true } );
     this.aSprite = new THREE.Sprite( amat ); 
     this.object3d.add( this.aSprite );
 
-    var btext = THREE.ImageUtils.loadTexture( "Images/blabel.png" ); 
+    var btext = THREE.TextureLoader( "Images/blabel.png" ); 
     var bmat = new THREE.SpriteMaterial( { map: btext, color: 0xffffff, fog: true } );
     this.bSprite = new THREE.Sprite( bmat ); 
     this.object3d.add( this.bSprite );
@@ -143,7 +150,7 @@ define([
     this.plane = {object3d : undefined};
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
-      new THREE.MeshBasicMaterial( { transparent: true, opacity : 0.1   } )
+      new THREE.MeshBasicMaterial( { transparent: true, opacity : 0.1 } )
     ); 
     this.plane.object3d.visible = false;  
  
@@ -156,6 +163,27 @@ define([
       _this.remove(object);
     });
   }; 
+  Explorer.prototype.updateShadowCameraProperties = function(l){ 
+
+    var posV = new THREE.Vector3(1,1,1);
+    posV.setLength(l*6);
+
+    this.light.position.set( posV.x, posV.y, posV.z); 
+  
+    var l2 = l*3;
+    console.log(l2);
+ 
+    this.light.shadowCameraNear = l/2;
+    this.light.shadowCameraFar = l2; 
+
+    this.light.shadowCameraLeft = -l2;
+    this.light.shadowCameraRight = l2;
+    this.light.shadowCameraTop = l2;
+    this.light.shadowCameraBottom = -l2;
+
+    this.light.shadowCamera.updateProjectionMatrix();
+ 
+  };
   Explorer.prototype.toScreenPosition = function(obj, camera){ 
     var vector = new THREE.Vector3();
     var width = jQuery('#app-container').width() ;
@@ -501,7 +529,7 @@ define([
     texture.needsUpdate = true;
 
     var spriteMaterial = new THREE.SpriteMaterial( 
-      { map: texture, useScreenCoordinates: false, transparent:true, opacity:1 } );
+      { map: texture,  transparent:true, opacity:1 } );
     var sprite = new THREE.Sprite( spriteMaterial );
     sprite.scale.set(10,5,1.0);
     return sprite;  

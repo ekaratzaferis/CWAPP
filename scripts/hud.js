@@ -48,7 +48,7 @@ define([
     scene.add(startOfAxis);
 
     // a,b,c lengths
-    var aLabel = THREE.ImageUtils.loadTexture( "Images/a.png" );  
+    var aLabel = THREE.TextureLoader( "Images/a.png" );  
     var aMaterial = new THREE.SpriteMaterial( { map: aLabel, color: 0xffffff, fog: true } );
     this.spriteA = new THREE.Sprite( aMaterial );
      
@@ -56,7 +56,7 @@ define([
     this.spriteA.scale.set(1.8,1.8,1.8);
     scene.add( this.spriteA );
 
-    var bLabel = THREE.ImageUtils.loadTexture( "Images/b.png" );
+    var bLabel = THREE.TextureLoader( "Images/b.png" );
     var bMaterial = new THREE.SpriteMaterial( { map: bLabel, color: 0xffffff, fog: true } );
     this.spriteB = new THREE.Sprite( bMaterial );
      
@@ -64,7 +64,7 @@ define([
     this.spriteB.scale.set(1.8,1.8,1.8);
     scene.add( this.spriteB );
 
-    var cLabel = THREE.ImageUtils.loadTexture( "Images/c.png" );  
+    var cLabel = THREE.TextureLoader( "Images/c.png" );  
     var cMaterial = new THREE.SpriteMaterial( { map: cLabel, color: 0xffffff, fog: true } );
     this.spriteC = new THREE.Sprite( cMaterial );
      

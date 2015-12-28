@@ -78,11 +78,11 @@ define([
     this.object3d.children[2].material.needsUpdate = true;
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
-
-     if(this.object3d === undefined){
+    
+    if(this.object3d === undefined){
       return;
     }
-
+ 
     var _this = this;
     if(color === undefined){
       this.object3d.children[0].material.color = new THREE.Color( this.color );
@@ -107,12 +107,12 @@ define([
     var _this = this ;
 
     var wireMat; 
-
+ 
     if(renderingMode === 'wireframe') {
       wireMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
     }
-    else if(renderingMode === 'realistic'){
+    else if(renderingMode === 'realistic'){  
       wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
     }
@@ -130,7 +130,7 @@ define([
     
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
     
-    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
+    this.materialLetter = new THREE.MeshPhongMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
 
     this.materials =  [  
       this.colorMaterial, 
@@ -228,7 +228,9 @@ define([
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
     sphereCut.name = 'subtractedAtom';
-    
+    sphereCut.children[0].receiveShadow = true; 
+    sphereCut.children[0].castShadow = true; 
+
     if(gear !== undefined){
       this.subtractedForCache.object3d  = sphereCut ;
       Explorer.add(this.subtractedForCache);

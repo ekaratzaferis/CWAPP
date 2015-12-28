@@ -25,7 +25,7 @@ define([
       
     theRenderer = renderer;
 
-    var texture = THREE.ImageUtils.loadTexture('Images/logo.png');
+    var texture = THREE.TextureLoader('Images/logo.png');
      
     logo = new THREE.Mesh( new THREE.PlaneBufferGeometry(200,200 ), new THREE.MeshBasicMaterial( {map: texture, color:0xFAFFFF} )); 
     logo.visible = false;

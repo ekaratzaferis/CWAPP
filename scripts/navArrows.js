@@ -398,7 +398,7 @@ var transformationMatrix = function(parameter) {
   function curve(numPoints, a, b, c , mat){
     // smooth my curve over this many points
 
-    var spline = new THREE.SplineCurve3([
+    var spline = new THREE.CatmullRomCurve3([
        a, b, c
     ]);
 
@@ -454,7 +454,7 @@ var transformationMatrix = function(parameter) {
     texture.needsUpdate = true;
 
     var spriteMaterial = new THREE.SpriteMaterial( 
-      { map: texture, useScreenCoordinates: false, transparent:true, opacity:1 } );
+      { map: texture, transparent:true, opacity:1 } );
     var sprite = new THREE.Sprite( spriteMaterial );
     sprite.scale.set(10,5,1.0);
     return sprite;  

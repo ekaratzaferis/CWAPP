@@ -1,5 +1,4 @@
-'use strict';
-
+ 
 define([
   'three',
   'unitCellExplorer',
@@ -52,8 +51,8 @@ define([
   }; 
   UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode,image) {
     var _this = this ;
-    var wireMat;
- 
+    var wireMat; 
+
     this.texture = image;
 
     if(renderingMode === 'wireframe') { 
@@ -190,7 +189,7 @@ define([
 
   };
   UnitCellAtom.prototype.setColorMaterial = function(color, temp) {
-
+    
     if(this.object3d === undefined){
       return;
     }

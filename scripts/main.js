@@ -463,16 +463,16 @@ require([
      
     if(arg.lights){
       crystalScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      crystalScene.light.intensity = 1 ;
+      crystalScene.light.intensity = 1.0 ;
       crystalScene.light.castShadow = true;  
 
       unitCellScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      unitCellScene.light.intensity = 1 ;
+      unitCellScene.light.intensity = 1.0 ;
       unitCellScene.light.castShadow = true;  
     }
     else{
       crystalScene.AmbLight.color.setHex( 0xffffff ); 
-      crystalScene.light.intensity = 0 ;
+      crystalScene.light.intensity = 0.0 ;
       crystalScene.light.castShadow = false;  
 
       unitCellScene.AmbLight.color.setHex( 0xffffff ); 
@@ -539,6 +539,20 @@ require([
     atomRelationshipManager.checkCrystalforOverlap(); 
     motifEditor.checkCellForCollisions();
     motifEditor.checkMotifForCollisions();
+
+    var g = lattice.customBox(lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+
+    crystalScene.updateShadowCameraProperties( centroid.length());
+
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -590,6 +604,19 @@ require([
     motifEditor.checkCellForCollisions();
     atomRelationshipManager.checkCrystalforOverlap();
     motifEditor.checkMotifForCollisions();
+
+    var g = lattice.customBox(lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+    
+    crystalScene.updateShadowCameraProperties( centroid.length());
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -678,6 +705,19 @@ require([
 
     atomRelationshipManager.checkCrystalforOverlap();
     motifEditor.checkCellForCollisions();
+
+    var g = lattice.customBox(lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+
+    crystalScene.updateShadowCameraProperties( centroid.length());
      
   });
   menu.setDragMode(function(message, param){
@@ -832,9 +872,11 @@ require([
   });
   menu.onShadowsChange(function(message, arg) { 
     crystalRenderer.shadowing(arg);
+    unitCellRenderer.shadowing(arg);
   });
   menu.onSSAOChange(function(message, arg) { 
     crystalRenderer.ssaoEffect(arg);
+    unitCellRenderer.ssaoEffect(arg);
   });
 
   menu.onDownloadProject(function(message, arg) { 
@@ -852,32 +894,15 @@ require([
   menu.onExportPNG(function(message, arg) { 
     storingMachine.exportPNG(arg);
   });
-  
+  menu.onOpenJSON(function(message, arg) { 
+    storeRestoreMech.configureState(arg);
+  });
   ///////////////////////
   ///////////////////////
   ///////////////////////
 
   // to read the json file
   
-  //document.getElementById('localJSON').addEventListener('change', parseJSON, false);
-
-  function parseJSON(evt) { 
-     
-    var f = evt.target.files[0];  
-    if (f) {
-      var r = new FileReader();
-      r.onload = function(e) {  
-        var st = JSON.parse(e.target.result);  
-        storeRestoreMech.configureState(st);
-
-      }
-      r.readAsText(f);
-    } 
-    else { 
-      alert("Failed to load file");
-    }
-  } 
-
 
   var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ;
