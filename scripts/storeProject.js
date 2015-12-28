@@ -20,7 +20,7 @@ define([
         this.motifYcam = motifYcam;
         this.motifZcam = motifZcam;
         this.camera = camera;
-        this.crystalRenderer = crystalRenderer;
+        this.crystalRenderer = crystalRenderer; 
     };
     
     // Randomizer //
@@ -72,7 +72,7 @@ define([
     };
     
     // Download file
-    function downLoadfile(argument){
+     StoreProject.prototype.downLoadfile = function(argument){
         // json = application/json
         // text = application/text        
         if (argument.extention === 'json'){
@@ -81,7 +81,11 @@ define([
         }
         else if (argument.extention === 'png'){
             // Caprture Snapshot //
-            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL(argument.type);
+
+            this.crystalRenderer.renderer.clear();
+ 
+            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
+            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
             
             // Create Download Link //
             var dlLink = document.createElement('a');
@@ -194,7 +198,7 @@ define([
     };
     StoreProject.prototype.exportJSON = function(argument){ 
         // Force User Download //
-        downLoadfile({
+        this.downLoadfile({
             data: constructJSONString(argument),
             type: 'application/json;charset=utf-8;',
             extention: 'json',
@@ -203,10 +207,11 @@ define([
     };
     StoreProject.prototype.exportPNG = function(argument){ 
         // Force User Download //
-        downLoadfile({
+        this.downLoadfile({
             type: 'image/png',
             extention: 'png',
-            name: 'cw_snapshot'
+            name: 'cw_snapshot',
+            crystalRenderer: this.crystalRenderer
         });
     };
     

@@ -897,6 +897,7 @@ require([
   menu.onOpenJSON(function(message, arg) { 
     storeRestoreMech.configureState(arg);
   });
+  
   ///////////////////////
   ///////////////////////
   ///////////////////////
