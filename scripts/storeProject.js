@@ -173,11 +173,16 @@ define([
         jsonText = jsonText + '},';
         
         // System //
-        jsonText = jsonText + '"system":{}';
+        jsonText = jsonText + '"system":{'+ configureSystemState() +'}';
         
         // Close Object //
         jsonText = jsonText + '}';
         return jsonText;
+    };
+    
+    // Configure System State //
+    function configureSystemState(){
+        return '';  
     };
     
     StoreProject.prototype.downloadProject = function(argument){
@@ -204,6 +209,10 @@ define([
             name: 'cw_snapshot'
         });
     };
+    
+    
+    
+    
     
     
     
