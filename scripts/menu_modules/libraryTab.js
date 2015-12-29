@@ -42,6 +42,7 @@ define([
     var $downloadProject = jQuery('#downloadProject');
     var $exportJSON = jQuery('#exportJSON');
     var $openJSON = jQuery('#openJSON');
+    var $openJSONDialog = jQuery('#openJSONInput');
     var $saveOnlineLink = jQuery('#saveOnlineLink');
     var $selectLink = jQuery('#selectLink');
     var $saveOnlineLinkQR = jQuery('#saveOnlineLinkQR');
@@ -224,20 +225,23 @@ define([
         
         // Open JSON File //
         $openJSON.on('click', function(){
-            jQuery('#openJSONInput').trigger('click'); 
+            jQuery('#openJSONInput').trigger('click');
         });
-        jQuery('#openJSONInput').change(function(event){
+        $openJSONDialog.change(function(event){
+            $userDialog.showInfoDialog({ messageID: 30 });
             var f = event.target.files[0];  
             if (f) {
-              var r = new FileReader();
-              r.onload = function(e) {  
-                var st = JSON.parse(e.target.result);  
-                PubSub.publish('menu.open_json', st);
-              }
-              r.readAsText(f);
+                var r = new FileReader();
+                r.onload = function(e) {  
+                    var st = JSON.parse(e.target.result);  
+                    PubSub.publish('menu.open_json', st);
+                    jQuery('#info_modal').trigger('finish');
+                }
+                r.readAsText(f);
             } 
             else { 
-              alert("Failed to load file");
+                jQuery('#info_modal').trigger('finish');
+                $userDialog.showErrorDialog({ messageID: 31, code: '402' });
             }
         });
         

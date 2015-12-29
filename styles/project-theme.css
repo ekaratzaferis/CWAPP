@@ -2229,6 +2229,48 @@ width: 70px;}
           font-weight: 400;
           line-height: 17.6px;
           color: #6a6a6e; }
+
+.browse {
+    padding-left: 80px;
+    padding-right: 80px;
+}
+    .browse .btn-action {
+      margin-bottom: 10px; }
+      .browse .btn-action .btn {
+        padding: 0;
+        display: block;
+        text-align: left;
+        background: #1c1d21;
+        font-family: "Open Sans", sans-serif;
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 17.6px;
+        color: #3f4247; }
+        .browse .btn-action .btn:before, .browse .btn-action .btn:after {
+          content: " ";
+          display: table; }
+        .browse .btn-action .btn:after {
+          clear: both; }
+        .browse .btn-action .btn span {
+          display: block;
+          float: left; }
+        .browse .btn-action .btn .btn-image {
+          width: 20%;
+          padding: 10px;
+          text-align: center;
+          background: #fff; }
+        .browse .btn-action .btn .btn-text {
+          width: 80%;
+          padding: 17px 10px;
+          text-align: center;
+          text-transform: uppercase; }
+        .browse .btn-action .btn.active, .browse .btn-action .btn:hover, .browse .btn-action .btn:active, .browse .btn-action .btn:focus {
+          color: #fff;
+          background: #6f6299; }
+      .browse .btn-action:last-child {
+        margin-bottom: 0; }
+
+
 .public-library-tab-pane .tab-boxes-container .save-public-library-box {
   margin-bottom: -25px;
   background: #2c2e33; }
@@ -2342,6 +2384,9 @@ width: 70px;}
           font-weight: 900;
           line-height: 19.8px;
           color: #fff; }
+.public-library-tab-pane .public-project-section .tab-boxes-container .tab-box .box-head {
+    
+}
 .public-library-tab-pane .public-project-section .tab-boxes-container .tab-box .box-body {
   background: #2c2e33; }
   .public-library-tab-pane .public-project-section .tab-boxes-container .tab-box .box-body .project-search-form-container {
