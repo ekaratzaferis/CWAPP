@@ -553,6 +553,9 @@ require([
 
     crystalScene.updateShadowCameraProperties( centroid.length());
 
+    var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
+    unitCellScene.updateShadowCameraProperties( p.length()/2);
+
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -561,9 +564,9 @@ require([
     atomCustomizer.customizeAtom(arg);
   }); 
   menu.onAtomSubmit(function(message, atomParam) {
- 
+    var parameters = motifEditor.getDimensions() ;
     if(atomParam.button === 'saveChanges'){
-      var parameters = motifEditor.getDimensions() ;
+      
       lattice.setMotif(motifEditor.getMotif(), parameters)  ;
       
       var params = {
@@ -583,8 +586,8 @@ require([
     }
     else if(atomParam.button === 'deleteAtom'){
       motifEditor.submitAtom(atomParam);
-      var parameters = motifEditor.getDimensions() ;
-      lattice.setMotif(motifEditor.getMotif(), parameters)  ;
+      
+      lattice.setMotif(motifEditor.getMotif(), parameters) ;
       
       var params = {
         alpha : parameters.alpha,
@@ -617,6 +620,10 @@ require([
     }
     
     crystalScene.updateShadowCameraProperties( centroid.length());
+ 
+    var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
+    unitCellScene.updateShadowCameraProperties( p.length()/2);
+
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -718,6 +725,11 @@ require([
     }
 
     crystalScene.updateShadowCameraProperties( centroid.length());
+
+    var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
+    unitCellScene.updateShadowCameraProperties( p.length()/2);
+
+    console.log(999);
      
   });
   menu.setDragMode(function(message, param){

@@ -47,9 +47,8 @@ define([
     this.light.shadowMapSoft = true;
     //this.light.shadowCameraVisible = true;
     this.light.shadowCameraNear = 5;
-    this.light.shadowCameraFar = 10;
-    this.light.shadowCameraFov = 90;
-    this.light.shadowBias = 0.00012;
+    this.light.shadowCameraFar = 10; 
+    this.light.shadowBias = 0.0039;
     this.light.shadowDarkness = 0.3;
     this.light.shadowMapWidth = 1024;
     this.light.shadowMapHeight = 1024;
@@ -143,21 +142,21 @@ define([
   }; 
   Explorer.prototype.updateShadowCameraProperties = function(l){ 
 
-    var posV = new THREE.Vector3(1,1,1);
+    var _this = this;
+
+    var posV = new THREE.Vector3(7,5,2);
     posV.setLength(l*5);
 
     this.light.position.set( posV.x, posV.y, posV.z); 
   
     var l2 = l*3; 
-  
-    this.light.shadowCamera.near = l/2;
-    this.light.shadowCamera.far = l2*2;
+   
+    this.light.shadowCamera.far = l2*3;
     this.light.shadowCamera.left = -l2;
     this.light.shadowCamera.right = l2;
     this.light.shadowCamera.bottom = -l2;
     this.light.shadowCamera.top = l2; 
-    this.light.shadowCamera.updateProjectionMatrix();
- 
+    setTimeout(function(){ _this.light.shadowCamera.updateProjectionMatrix();},1000);
  
   };
   Explorer.prototype.toScreenPosition = function(obj, camera){ 
