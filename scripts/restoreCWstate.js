@@ -42,7 +42,7 @@ define([
       
     var _this = this; 
 
-    this.cwObj = cwObj ;  
+    this.cwObj = cwObj.system ;  
     this.configureCameras();
     this.configureAxisSelection();
     this.configureTextArea();
@@ -199,7 +199,11 @@ define([
     for (var i = 0; i<this.motifEditor.cachedAtoms.length; i++) { 
       this.motifEditor.cachedAtoms[i].destroy();  
     } 
-    this.motifEditor.newSphere.removesubtractedForCache();
+
+    if( this.motifEditor.newSphere !== undefined){
+      this.motifEditor.newSphere.removesubtractedForCache();
+    }
+    
 
     // global variables 
    

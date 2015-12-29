@@ -68,7 +68,7 @@ define([
     
     // Update Library Tab
     function updateLibraryTab(slug){
-        var link = 'cw.gl/'+slug;
+        var link = 'cw.gl/#'+slug;
         // Update QR //
         jQuery('#QRImage').trigger('update',[link]);
         // Update Links //
@@ -78,7 +78,7 @@ define([
     };
     
     // Construct JSON File //
-    function constructJSONString(argument){
+     StoreProject.prototype.constructJSONString = function (argument){
         var checkIteration = false;
         
         // Start with App Info //
@@ -154,17 +154,14 @@ define([
         jsonText = jsonText + '},';
         
         // System //
-        jsonText = jsonText + '"system":{'+ configureSystemState() +'}';
+        jsonText = jsonText + '"system": '+ this.getSystemState() +' ';
         
         // Close Object //
         jsonText = jsonText + '}';
         return jsonText;
     };
     
-    // Configure System State //
-    function configureSystemState(){
-        return '';  
-    };
+    
     
     StoreProject.prototype.downLoadfile = function(argument){
         // json = application/json
@@ -194,7 +191,7 @@ define([
             
             // Gather Info //
             var content = null;
-            var settings = JSON.stringify(JSON.parse(constructJSONString(argument.details)),null,2);
+            var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
             this.crystalRenderer.renderer.clear();
             this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
             var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
@@ -227,13 +224,13 @@ define([
         });
     };
     StoreProject.prototype.saveOnline = function(argument){
-        var json = constructJSONString(argument);
+        var json = this.constructJSONString(argument);
         sendToDatabase(json,updateLibraryTab);
     };
     StoreProject.prototype.exportJSON = function(argument){ 
         // Force User Download //
         this.downLoadfile({
-            data: constructJSONString(argument),
+            data: this.constructJSONString(argument),
             type: 'application/json;charset=utf-8;',
             extention: 'json',
             name: 'cw_settings_: ' + argument.name
@@ -247,137 +244,51 @@ define([
             name: 'cw_snapshot',
             crystalRenderer: this.crystalRenderer
         });
+    };  
+    StoreProject.prototype.getLatticeState = function() {
+        var latticeParams;
+
+        if(this.lattice.lattice){ 
+            var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
+            var gridPoints =  JSON.stringify(this.lattice.lattice.gridPoints);
+            var originArray = JSON.stringify(this.lattice.lattice.originArray);
+
+            latticeParams = 
+                '{"latticeParams": { "type": "object", "lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+        }
+        else{
+            latticeParams = '{"latticeParams": { "type": "object" ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+        }
+
+        return latticeParams;
     };
-    
-    
-    
-    
-    
-    
-    
-    StoreProject.prototype.createJSONfile = function() {
+    StoreProject.prototype.getCamerasStates = function() {
+        var cameraSettings  = '"cameraSettings" :{ "crystalCamera" :{  "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'}},"cellCamera" :{   "position" : { "x" : '+this.cellCamera.position.x+', "y" :'+this.cellCamera.position.y+', "z" : '+this.cellCamera.position.z+'}},  "motifCameras" :{  "xCam" :{"position" : { "x" : '+this.motifXcam.position.x+', "y" :'+this.motifXcam.position.y+', "z" : '+this.motifXcam.position.z+'}},"yCam" :{"position" : { "x" : '+this.motifYcam.position.x+', "y" :'+this.motifYcam.position.y+', "z" : '+this.motifYcam.position.z+'}},"zCam" :{"position" : { "x" : '+this.motifZcam.position.x+', "y" :'+this.motifZcam.position.y+', "z" : '+this.motifZcam.position.z+'} } } }';
+
+        return cameraSettings;
+    };
+    StoreProject.prototype.getSystemState = function() {
         var _this = this ;
         if(!this.idle){   
-
-            $("body").css("cursor", "wait");
-            var overlay = $('<div></div>').prependTo('body').attr('id', 'overlay');
-
-            var centeredAtAxis = ($('#crystalCamTarget').is(':checked')) ? true : false ;
-            var synced = ($('#syncCameras').is(':checked')) ? true : false ;
-            var enableDistortion = ($('#distortion').is(':checked')) ? true : false ;
-
-            var xyzAxes = ($('#xyzAxes').is(':checked')) ? true : false ;
-            var abcAxes = ($('#abcAxes').is(':checked')) ? true : false ;
+  
             var start =  " "  ;
-
-            var latticeParams;
-
-            if(this.lattice.lattice){ 
-                var restrictions = JSON.stringify(this.lattice.lattice.restrictions);
-                var gridPoints =  JSON.stringify(this.lattice.lattice.gridPoints);
-                var originArray = JSON.stringify(this.lattice.lattice.originArray);
-
-                latticeParams = 
-                    '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
-            }
-            else{
-                latticeParams = '{"latticeParams": { "type": "object",  "bravaisLattice" : "'+($('#bravaisLattice').val())+'"  ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
-            }
-
+ 
             var cellVisualization = '"cellVisualization" :{ "edges" : { "visible":'+this.lattice.gradeChoice.grid+', "radius":'+this.lattice.gradeParameters.radius+', "color":"'+this.lattice.gradeParameters.cylinderColor+'"}, "faces": { "visible": '+this.lattice.gradeChoice.face +', "opacity": '+this.lattice.gradeParameters.faceOpacity +', "color": "'+this.lattice.gradeParameters.faceColor +'"} },';
-
-            var millerObjects = this.createJsonMillerObjects();
-
-            var motif = this.createJsonMotif();
-
-            var notes = '"notes" : "'+($("#mynotes").val())+'" , ';
-
-            var cameraSettings  = '"cameraSettings" :{ "crystalCamera" :{  "centeredAtAxis" : '+centeredAtAxis+', "synced":'+synced+', "enableDistortion":'+enableDistortion+', "position" : { "x" : '+this.camera.position.x+', "y" :'+this.camera.position.y+', "z" : '+this.camera.position.z+'}},"cellCamera" :{   "position" : { "x" : '+this.cellCamera.position.x+', "y" :'+this.cellCamera.position.y+', "z" : '+this.cellCamera.position.z+'}},  "motifCameras" :{  "xCam" :{"position" : { "x" : '+this.motifXcam.position.x+', "y" :'+this.motifXcam.position.y+', "z" : '+this.motifXcam.position.z+'}},"yCam" :{"position" : { "x" : '+this.motifYcam.position.x+', "y" :'+this.motifYcam.position.y+', "z" : '+this.motifYcam.position.z+'}},"zCam" :{"position" : { "x" : '+this.motifZcam.position.x+', "y" :'+this.motifZcam.position.y+', "z" : '+this.motifZcam.position.z+'} } } },';
-
-
-            var unitCell = this.createJsonUnitCell() ;
-
-            var axisSelection = '"axisSelection" :{ "xyzVisible" : '+xyzAxes+', "abcVisible":'+abcAxes+' }';
-            var prName = ( ($('#projectName').val()).length === 0) ? (createRandomName()) : ($('#projectName').val()) ; 
-            var projectName = ', "projectName" : "'+prName+'"';
-            var tags = this.createJsonTags();  
-            var visualizationParams = this.createJsonVisualizationParams();
-
-            // thumbnail
-            this.crystalRenderer.renderer.clear();
-            this.crystalRenderer.renderer.render( this.crystalRenderer.scene, this.crystalRenderer.cameras[0] );
-
-            var base64thumbnail = document.getElementsByTagName("canvas")[0].toDataURL("image/png", 1.0);
-
-            var thumbnail = ', "thumbnailBase64" : "'+base64thumbnail+'" ';
-
-            var sounds = ', "sounds" : '+($('#anaglyph').is(':checked'));   
-
+       
             var end = "}" ;
 
             var text =  start+
-                latticeParams+
+                this.getLatticeState()+
                 cellVisualization+
-                millerObjects+
-                motif+
-                notes+
-                unitCell+
-                cameraSettings+
-                axisSelection+
-                projectName+
-                tags+
-                visualizationParams+
-                thumbnail+
-                sounds+
+                this.getMillerState()+
+                this.getMotifState()+ 
+                this.getUnitCellState()+
+                this.getCamerasStates()+ 
+                this.createJsonVisualizationParams()+ 
                 end ;
 
             console.log(text);
-
-            var obj =  JSON.parse(text) ;  
-            var str =  JSON.stringify(obj)
-
-            // send request
-
-            var hash = window.location.hash;
-            var service = 'https://cwgl.herokuapp.com';
-            var shortener = window.location.href;
-            var hash ='' ;
-
-            var data = {
-                url: document.location.origin,
-                data: str
-            };
-
-            $.ajax(service + '/add', {
-                method: 'POST',
-                data: data,
-                beforeSend: function(xmlHttpRequest) {
-                    xmlHttpRequest.withCredentials = true;
-                }
-            })
-            .done(function(res) {  
-                hash = res.slug;  
-                
-                var blob = new Blob([str], {type: "application/json"});
-                var url  = URL.createObjectURL(blob);
-
-                var a = document.createElement('a');  
-                a.download    = "save.json";
-                a.href        = url;
-                a.textContent = "save.json";
-
-                var input = document.createElement("input");
-                input.type = "text";
-                input.className = " ";  
-                input.value = shortener + hash;   
-
-                document.getElementById('downloadJSON').appendChild(a);
-                $("#downloadJSON").append('  Your url : ');
-                document.getElementById('downloadJSON').appendChild(input);
-                overlay.remove();
-                $("body").css("cursor", "default");
-
-            });
+            return (text); 
 
         } 
     }; 
@@ -391,22 +302,7 @@ define([
 
         return text ;
     };
-    StoreProject.prototype.createJsonTags = function(){
-        var tags = $('#tags').val(), text =[];
-        var tagsSplit =  tags.split(',');
-
-        text.push(',"tags": [');
-
-        for (var i = 0; i < tagsSplit.length ; i++) {  
-            if(tagsSplit[i].length>0){  
-                if(i>0) text.push(',');
-                text.push( '"'+tagsSplit[i]+'"' );
-            }
-        }; 
-        text.push(']');
-        return (text.join('')); 
-    };
-    StoreProject.prototype.createJsonUnitCell = function(){
+    StoreProject.prototype.getUnitCellState = function(){
         var _this = this ;
 
         var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
@@ -487,7 +383,7 @@ define([
         return (start+newSphere.join('')+positions.join('')+end) ;
 
     };
-    StoreProject.prototype.createJsonMotif = function(){
+    StoreProject.prototype.getMotifState = function(){
 
         var _this = this ;
 
@@ -555,7 +451,7 @@ define([
 
         return (start+motif.join('')) ;
     };
-    StoreProject.prototype.createJsonMillerObjects = function(){
+    StoreProject.prototype.getMillerState = function(){
 
         var _this = this ;
 
