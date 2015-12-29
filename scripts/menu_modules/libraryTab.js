@@ -235,6 +235,8 @@ define([
                 r.onload = function(e) {  
                     var st = JSON.parse(e.target.result);  
                     PubSub.publish('menu.open_json', st);
+                    $setUIValue.restore(st.appUI,st.info);
+                    $notesTab.restoreNotes(st.notes);
                     jQuery('#info_modal').trigger('finish');
                 }
                 r.readAsText(f);

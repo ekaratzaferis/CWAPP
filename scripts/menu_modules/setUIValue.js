@@ -35,6 +35,7 @@ define([
     var $tooltipGenerator = undefined;
     var $stringEditor = undefined;
     var $getUIValue = undefined;
+    var $menu = undefined;
     
     // Grouping
     var renderizationMode = {
@@ -161,6 +162,8 @@ define([
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
         else return false;
         if (!(_.isUndefined(argument.getUIValue))) $getUIValue = argument.getUIValue;
+        else return false;
+        if (!(_.isUndefined(argument.menu))) $menu = argument.menu;
         else return false;
     };
     function takeAction(index,selector,value){
@@ -1273,6 +1276,21 @@ define([
                 }
                 break; 
             }
+            
+            // Library Tab
+            case 'projectName':{
+                selector.val(value);
+                break;
+            }
+            case 'projectDescription':{
+                selector.val(value);
+                break;
+            }
+            case 'projectTags':{
+                _.each(value, function($parameter,k){
+                    selector.tagit("createTag", $parameter); 
+                });
+            }
                 
             //IAC Box
             case 'iacVisibility':{
@@ -1929,8 +1947,108 @@ define([
             });
         }
     };
-    setUIValue.prototype.restore = function(data){
+    setUIValue.prototype.restore = function(appUI,info){
+        // Restore Library Tab //
+        takeAction('projectName',jQuery('#projectName'),info.name);
+        takeAction('projectDescription',jQuery('#projectDescription'),info.description);
+        takeAction('projectTags',jQuery('#projectTags'),info.tags);
         
+        // Restore Rest of UI //
+        // Tabs //
+        $menu.restoreTabs(appUI.activeTab,appUI.tabDisable);
+
+        /*
+        // Toggles //
+        takeAction('latticePoints',jQuery('#latticePoints'),true);
+        takeAction('edges',jQuery('#edges'),false);
+        takeAction('faces',jQuery('#faces'),false);
+        takeAction('xyzAxes',jQuery('#xyzAxes'),true);
+        takeAction('abcAxes',jQuery('#abcAxes'),false);
+        takeAction('unitCellViewport',jQuery('#unitCellViewport'),false);
+        takeAction('planes',jQuery('#planes'),true);
+        takeAction('directions',jQuery('#directions'),true);
+        takeAction('atomRadius',jQuery('#atomRadius'),false);
+        takeAction('atomToggle',jQuery('#atomToggle'),true);
+        takeAction('labelToggle',jQuery('#labelToggle'),false);
+        takeAction('highlightTangency',jQuery('#highlightTangency'),false);
+
+        // Lattice //
+        takeAction('selectedLattice',jQuery('#selected_lattice'),$messages.getMessage(18));
+        takeAction('latticePadlock',jQuery('#latticePadlock'),false);
+        takeAction('repeatX',jQuery('#repeatX'),1);
+        takeAction('repeatY',jQuery('#repeatY'),1);
+        takeAction('repeatZ',jQuery('#repeatZ'),1);
+        takeAction('scaleX',jQuery('#scaleX'),1);
+        takeAction('scaleY',jQuery('#scaleY'),1);
+        takeAction('scaleZ',jQuery('#scaleZ'),1);
+        takeAction('alpha',jQuery('#alpha'),90);
+        takeAction('beta',jQuery('#beta'),90);
+        takeAction('gamma',jQuery('#gamma'),90);
+        takeAction('motifPadlock',jQuery('#motifPadlock'),false);
+        takeAction('cylinderColor',jQuery('#cube_color_border'),'A19EA1');
+        takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
+        takeAction('radius',jQuery('#radius'),'2');
+        takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
+        jQuery('#latticePadlock').trigger('reset'); // Restrictions
+        jQuery('#latticePadlock').trigger('resetCollision'); // Collisions
+
+        // Motif //
+        takeAction('tangency',jQuery('#tangency'),false);
+        takeAction('cellVolume',jQuery('#cellVolume'),'100');
+        jQuery('#atomTable').trigger('reset');
+        takeAction('atomPosX',jQuery('#atomPosX'),0);
+        takeAction('atomPosY',jQuery('#atomPosY'),0);
+        takeAction('atomPosZ',jQuery('#atomPosZ'),0);
+        takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),{value:false,toggle:true});
+        takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),{value:false,toggle:true});
+        jQuery('.element-symbol-container').hide();
+        jQuery('label[for=txt_coordinates_x]').html('x');
+        jQuery('label[for=txt_coordinates_y]').html('y');
+        jQuery('label[for=txt_coordinates_z]').html('z');
+        jQuery('#motifPadlock').trigger('resetCollision');
+
+        // Visual //
+        takeAction('realistic',jQuery('#realistic'),true);
+        takeAction('lights',jQuery('#lights'),true);
+        takeAction('ssao',jQuery('#ssao'),false);
+        takeAction('shadows',jQuery('#shadows'),true);
+        takeAction('distortionOff',jQuery('#distortionOff'),true);
+        takeAction('anaglyph',jQuery('#anaglyph'),false);
+        takeAction('oculus',jQuery('#oculus'),false);
+        takeAction('sideBySide',jQuery('#3DsideBySide'),false);
+        takeAction('onTop',jQuery('#3DonTop'),false);
+        takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),true);
+        takeAction('leapMotion',jQuery('#leapMotion'),false);
+        takeAction('crystalClassic',jQuery('#crystalClassic'),true);
+        takeAction('cellClassic',jQuery('#cellClassic'),true);
+        takeAction('fog',jQuery('input[name="fog"]'),false);
+        takeAction('fogDensity',jQuery('#fogDensity'),1);
+        takeAction('fogColor',jQuery('#fogColor'),'transparent');
+        takeAction('sounds',jQuery('#sounds'),false);
+        takeAction('soundSlider',jQuery('#soundSlider'),75);
+        takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),'#74629c');
+        takeAction('cellScreenColor',jQuery('#cellScreenColor'),'#74629c');
+        takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),'#74629c');
+        takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),'#74629c');
+        takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),'#74629c');
+
+        // PnD //
+        takeAction('planeOpacity',jQuery('#planeOpacity'),'6');
+        takeAction('millerH',jQuery('#millerH'),'');
+        takeAction('millerK',jQuery('#millerK'),'');
+        takeAction('millerL',jQuery('#millerL'),'');
+        takeAction('millerI',jQuery('#millerI'),'');
+        takeAction('planeName',jQuery('#planeName'),'');
+        takeAction('planeColor',jQuery('#planeColor'),'transparent');
+        takeAction('directionColor',jQuery('#directionColor'),'transparent');
+        takeAction('millerU',jQuery('#millerU'),'');
+        takeAction('millerV',jQuery('#millerV'),'');
+        takeAction('millerW',jQuery('#millerW'),'');
+        takeAction('millerT',jQuery('#millerT'),'');
+        takeAction('directionName',jQuery('#directionName'),'');
+        takeAction('dirRadius',jQuery('#dirRadius'),'10');
+        jQuery('#planesTable').trigger('reset'); // Empty Table
+        jQuery('#directionTable').trigger('reset'); // Empty Table*/
     };
     
     return setUIValue;

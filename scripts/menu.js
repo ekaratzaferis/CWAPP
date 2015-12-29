@@ -169,6 +169,8 @@ define([
             
     function Menu() {
 
+        var _this = this;
+        
         // Independent Modules //
         toolTipGeneratorModule = new tooltipGenerator();
         stringEditorModule = new stringEditor();
@@ -194,7 +196,8 @@ define([
             messages: messagesModule,
             stringEditor: stringEditorModule,
             getUIValue: getUIValueModule,
-            tooltipGenerator: toolTipGeneratorModule
+            tooltipGenerator: toolTipGeneratorModule,
+            menu: _this
         });      
         latticeTabModule = new latticeTab({
             messages: messagesModule,
@@ -422,6 +425,9 @@ define([
     };
     Menu.prototype.setTabDisable = function(argument){
         menuRibbonModule.disableTab(argument);
+    };
+    Menu.prototype.restoreTabs = function(active,disabled){
+        menuRibbonModule.restoreTabs(active,disabled);  
     };
     Menu.prototype.disableLatticeChoice = function(state){
         disableUIElementModule.disableElement({
