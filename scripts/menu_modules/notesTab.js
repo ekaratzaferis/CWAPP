@@ -208,7 +208,7 @@ define([
         });
     };
     
-    function addNote(newID){
+    function addNote(newID,restore){
         var id = undefined;
         var atomNote = false;
         
@@ -220,13 +220,17 @@ define([
         
         // Add Note //
         if (_.isUndefined(newID)) {
-            id = 'note'+idCounter;
-            idCounter++;
+            do{
+                id = 'note'+idCounter;
+                idCounter++;
+            } while(!(_.isUndefined(notes[id])));
         }
-        else {
+        else if (_.isUndefined(restore)){
             atomNote = true;
             id = newID;
         }
+        else id = newID;
+        
         $notesTable.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
         $notesTable.show('slow');
         
@@ -366,7 +370,10 @@ define([
         highlightNote(notes.activeEntry,false);
         $noteTitle.val(notes[id].title);
         $noteBody.val(notes[id].body);
-        if (notes[id].color !== '') $noteColor.spectrum('set',notes[id].color);
+        if (notes[id].color !== '') {
+            $noteColor.spectrum('set',notes[id].color);
+            $noteColor.children().css('background',notes[id].color);
+        }
         if (notes[id].opacity !== '') $noteOpacity.selectpicker('val',notes[id].opacity);
         highlightNote(id,true);
         $disableUIElement.disableElement({
@@ -529,8 +536,30 @@ define([
     notesTab.prototype.getNotes = function(){
         return notes;  
     };
-    notesTab.prototype.restoreNotes = function(notes){
-        
+    notesTab.prototype.restoreNotes = function(notesJSON){
+        _.each(notesJSON, function($parameter,k){
+            if (k !== 'activeEntry') {
+                // Parse possible atom connection //
+                var atomConnection = undefined;
+                if ($parameter.atomNote === 'false') atomConnection = false;
+                else atomConnection = true;
+
+                // Add empty note and select it //
+                highlightNote(notes.activeEntry,false);
+                highlightNote(addNote(k,true),true);
+
+                // Overwrite with data from the JSON file //
+                editNote({
+                    title: $parameter.title,
+                    opacity: $parameter.opacity,
+                    color: $parameter.color,
+                    body: $parameter.body,
+                    atomNote: atomConnection,
+                    x: parseInt($parameter.x),
+                    y: parseInt($parameter.y)
+                });
+            }
+        });
     };
     
     return notesTab;

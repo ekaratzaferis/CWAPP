@@ -411,7 +411,7 @@ define([
     
     menuRibbon.prototype.setSwapButtonState = function(state){
         if (!(_.isUndefined(state))) swapState = state;
-    }
+    };
     menuRibbon.prototype.switchTab = function(tab){
         switch(tab){
             case 'latticeTab': 
@@ -445,7 +445,7 @@ define([
                 value:$parameter
             });
         });
-    }
+    };
     menuRibbon.prototype.blockTab = function(argument){
         _.each(argument, function($parameter, k){
             blockTab({
@@ -453,7 +453,20 @@ define([
                 value:$parameter   
             });
         });
-    }
+    };
+    menuRibbon.prototype.restoreTabs = function(active,disabled){
+        this.switchTab(active);
+        _.each(tabs, function($parameter,k){
+            if (_.isUndefined(disabled[k])){
+                disableTab({'tab':k,'value':false});
+                blockTab({'tab':k,'value':false});
+            }
+            else {
+                disableTab({'tab':k,'value':true});
+                blockTab({'tab':k,'value':true});
+            }
+        });
+    };
     
     return menuRibbon;
 });
