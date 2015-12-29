@@ -21,6 +21,8 @@ define([
   var mouse = new THREE.Vector2(); 
 
   function MouseEvents( motifEditor, func, _camera, domElement, orbitControls, soundMachine, navCube) {
+    var _this =this;
+
     this.plane = {'object3d' : undefined} ;
     this.func = func ;
     this.soundMachine = soundMachine;
@@ -29,7 +31,7 @@ define([
     this.objects = [] ;
     this.camera = _camera ;
     this.motifEditor = motifEditor ;  
-    var _this =this;
+    
     this.dirty = false;
     this.offset = new THREE.Vector3();
     this.navCube = navCube;
@@ -37,13 +39,13 @@ define([
     this.SELECTED;
     this.enableCubeEvents = true;
 
-    this.cubeMapsHit = [];
-    this.cubeMapsHit = [];
+    this.cubeMapsHit = []; 
+    this.cubeMaps = []; 
 
-    for (var i = 0; i < 6; i++) {
-      Things[i]
+    for (var i = 0; i < 6; i++) { 
+      this.loadTexts('Images/'+i+'Hit.png', i, this.cubeMapsHit); 
+      this.loadTexts('Images/'+i+'.png', i, this.cubeMaps);  
     };
-    new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+index+'Hit.png' ) });
 
     if(this.func === 'dragNdrop' ){
       
@@ -81,6 +83,19 @@ define([
 
   }; 
 
+  MouseEvents.prototype.loadTexts = function(url, i, arr){ 
+    var loader = new THREE.TextureLoader();
+    var _this = this;
+
+    loader.load( 
+      url , 
+      function ( texture ) { 
+        arr[i] = new THREE.MeshBasicMaterial( {
+          map: texture
+        } );
+      } 
+    );
+  };
   MouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
     
@@ -146,11 +161,11 @@ define([
           if(intersects[0].face.normal.x==0 && intersects[0].face.normal.y==1 &&intersects[0].face.normal.z==0){
             index = 2 ;
           }
-           
-          intersects[0].object.material.materials[intersects[0].face.materialIndex] = new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+index+'Hit.png' ) });
+             
+          intersects[0].object.material.materials[intersects[0].face.materialIndex] = this.cubeMapsHit[index];
           
           for (var i = 0; i<6; i++) {
-            if( i!= index) intersects[0].object.material.materials[i] = new THREE.MeshBasicMaterial( { map: THREE.TextureLoader( 'Images/'+i+'.png' ) });
+            if( i!= index) intersects[0].object.material.materials[i] = this.cubeMaps[i];
           };
         }
         else if( intersects[0].object.name === 'arrowHead' || intersects[0].object.name == 'arrowLine'){
