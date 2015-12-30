@@ -78,9 +78,9 @@ define([
     };
     
     // Construct JSON File //
-     StoreProject.prototype.constructJSONString = function (argument){
+    StoreProject.prototype.constructJSONString = function (argument){
         var checkIteration = false;
-        
+
         // Start with App Info //
         var jsonText = '{"info":{';
         jsonText = jsonText + '"name":"'+argument.name+'","description":"'+argument.description+'",';
@@ -101,34 +101,46 @@ define([
             jsonText = jsonText.slice(0, -1);
             jsonText = jsonText + '},';
         }
-        
+
         // App UI //
         jsonText = jsonText + '"appUI":{';
-        _.each(argument.app, function($parameter,k){
-            checkIteration = true;
-            if ( ( k === 'motifLabels') || (k === 'tabDisable') || (k === 'toggleButtons') ){
-                var iteration = false;
-                jsonText = jsonText + '"' + k + '":{';
-                _.each($parameter, function($param,a){
-                    jsonText = jsonText + '"' + a + '":"' + $param + '",'; 
-                    iteration = true;
-                });
-                // Remove last comma //
-                // Remove last comma //
-                if (iteration === true){
-                    jsonText = jsonText.slice(0, -1);
-                    checkIteration = false;
-                }
-                jsonText = jsonText + '},';
-            }
-            else jsonText = jsonText + '"' +  k + '":"' + $parameter + '",';
-        });
-        // Remove last comma //
-        if (checkIteration === true){
-            jsonText = jsonText.slice(0, -1);
-            checkIteration = false;
-        }
-        jsonText = jsonText + '},';
+        
+        // Menu Ribbon // 
+        jsonText = jsonText + '"menuRibbon":{ "activeTab":"' + argument.app.activeTab + '", "disabledTabs":{';
+        _.each(argument.app.tabDisable, function($parameter,k){ jsonText = jsonText + '"' + k + '":' + $parameter + ','; });
+        jsonText = jsonText.slice(0, -1);
+        jsonText = jsonText + '}, "toggleButtons":{';
+        _.each(argument.app.toggleButtons, function($parameter,k){ jsonText = jsonText + '"' + k + '":' + $parameter + ','; });
+        jsonText = jsonText.slice(0, -1);
+        jsonText = jsonText + '}},'; // Close Toggle Buttons and Menu Ribbon //
+        
+        // Lattice Tab //
+        jsonText = jsonText + '"latticeTab":{ "selectedLattice":"' + argument.app.selectedLattice + '",';
+        jsonText = jsonText + '"latticeRepetition": { "repeatX":' + parseFloat(argument.app.repeatX) + ', "repeatY":' + parseFloat(argument.app.repeatY) + ', "repeatZ":' + parseFloat(argument.app.repeatZ) + '},';
+        jsonText = jsonText + '"latticeLength": { "scaleX":' + parseFloat(argument.app.scaleX) + ', "scaleY":' + parseFloat(argument.app.scaleY) + ', "scaleZ":' + parseFloat(argument.app.scaleZ) + '},';
+        jsonText = jsonText + '"latticeAngle": { "alpha":' + parseFloat(argument.app.alpha) + ', "beta":' + parseFloat(argument.app.beta) + ', "gamma":' + parseFloat(argument.app.gamma) + '},';
+        jsonText = jsonText + '"padlocks": { "lattice": { "state":' + argument.app.latticePadlock + ', "disabled":' + argument.app.latticePadlockDisable + '}, "motif": { "state":' + argument.app.motifPadlock + ', "disabled":' + argument.app.motifPadlockDisable + '}},';
+        jsonText = jsonText + '"cellVisualization": { "cellEdge": { "color":"' + argument.app.borderColor + '", "radius":' + parseFloat(argument.app.radius) + '}, "cellFace": { "color":"' + argument.app.filledColor + '", "opacity":' + parseFloat(argument.app.opacity) + '}}},';
+        
+        // Motif Tab //
+        jsonText = jsonText + '"motifTab": { "tangency":' + argument.app.tangency + ', "cellVolume":' + parseFloat(argument.app.cellVolume) + ',';
+        jsonText = jsonText + '"motifLabels": { "a":"' + argument.app.motifLabels.a + '", "b":"' + argument.app.motifLabels.b + '", "c":"' + argument.app.motifLabels.c + '", "alpha":"' + argument.app.motifLabels.alpha + '", "beta":"' + argument.app.motifLabels.beta + '", "gamma":"' + argument.app.motifLabels.gamma + '"}},';
+        
+        // Visual Tab //
+        jsonText = jsonText + '"visualTab": { "visualParameters": { "renderizationMode": { "wireframe":' + argument.app.wireframe + ', "toon":' + argument.app.toon + ', "flat":' + argument.app.flat + ', "realistic":' + argument.app.realistic + '},';
+        jsonText = jsonText + '"lights" : { "lights":' + argument.app.lights + ', "ssao":' + argument.app.ssao + ', "shadows":' + argument.app.shadows + '},';
+        jsonText = jsonText + '"visualizationMode" : { "distortionOn":' + argument.app.distortionOn + ', "distortionOff":' + argument.app.distortionOff + '},';
+        jsonText = jsonText + '"stereoscopicEffect" : { "anaglyph":' + argument.app.anaglyph + ', "oculus":' + argument.app.oculus + ', "sideBySide3D":' + argument.app.sideBySide3D + ', "OnTop3D":' + argument.app.onTop3D + '},';
+        jsonText = jsonText + '"focalPoint" : { "crystalCamTargetOn":' + argument.app.crystalCamTargetOn + ', "crystalCamTargetOff":' + argument.app.crystalCamTargetOff + '},';
+        jsonText = jsonText + '"fullScreen":' + argument.app.fullScreen + ', "leapMotion":' + argument.app.leapMotion + ',';
+        jsonText = jsonText + '"crystalModelRepresentation":{ "crystalClassic":' + argument.app.crystalClassic + ', "crystalSubstracted":' + argument.app.crystalSubstracted + ', "crystalSolidVoid":' + argument.app.crystalSolidVoid + ', "crystalGradeLimited":' + argument.app.crystalGradeLimited + '},';
+        jsonText = jsonText + '"unitCellModelRepresentation":{ "cellClassic":' + argument.app.cellClassic + ', "cellSubstracted":' + argument.app.cellSubstracted + ',"cellSolidVoid":' + argument.app.cellSolidVoid + ', "cellGradeLimited":' + argument.app.cellGradeLimited + '}},';
+        jsonText = jsonText + '"visualTools": { "menuZoom": { "autoZoom":' + argument.app.autoZoom + ', "zoom70":' + argument.app.zoom70 + ', "zoom80":' + argument.app.zoom80 + ', "zoom90":' + argument.app.zoom90 + ', "zoom100":' + argument.app.zoom100 + '},';
+        jsonText = jsonText + '"fog": { "state":' + argument.app.fog + ', "color":"' + argument.app.fogColor + '", "density":' + parseFloat(argument.app.fogDensity) + '},';
+        jsonText = jsonText + '"sound": { "state":' + argument.app.sounds + ', "volume":' + parseFloat(argument.app.soundVolume) + '},';
+        jsonText = jsonText + '"colorization": { "crystalScreenColor":"' + argument.app.crystalScreenColor + '", "cellScreenColor":"' + argument.app.cellScreenColor + '", "motifXScreenColor":"' + argument.app.motifXScreenColor + '", "motifYScreenColor":"' + argument.app.motifYScreenColor + '", "motifZScreenColor":"' + argument.app.motifZScreenColor + '"}}}';
+        
+        jsonText = jsonText + '},'; // Close App UI //
         
         // Notes //
         jsonText = jsonText + '"notes":{';
@@ -151,18 +163,14 @@ define([
             jsonText = jsonText.slice(0, -1);
             checkIteration = false;
         }
-        jsonText = jsonText + '},';
-        
+        jsonText = jsonText + '},'; // Close Notes //
+
         // System //
         jsonText = jsonText + '"system": '+ this.getSystemState() +' ';
-        
-        // Close Object //
-        jsonText = jsonText + '}';
+
+        jsonText = jsonText + '}'; // Close Object //
         return jsonText;
     };
-    
-    
-    
     StoreProject.prototype.downLoadfile = function(argument){
         // json = application/json
         // text = application/text        
@@ -233,7 +241,7 @@ define([
             data: this.constructJSONString(argument),
             type: 'application/json;charset=utf-8;',
             extention: 'json',
-            name: 'cw_settings_: ' + argument.name
+            name: 'cwSettings_: ' + argument.name
         });
     };
     StoreProject.prototype.exportPNG = function(argument){ 
@@ -241,7 +249,7 @@ define([
         this.downLoadfile({
             type: 'image/png',
             extention: 'png',
-            name: 'cw_snapshot',
+            name: 'cwSnapshot',
             crystalRenderer: this.crystalRenderer
         });
     };  
@@ -287,7 +295,6 @@ define([
                 this.createJsonVisualizationParams()+ 
                 end ;
 
-            console.log(text);
             return (text); 
 
         } 

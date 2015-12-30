@@ -72,9 +72,6 @@ define([
             PubSub.publish(pubEvent, argument);
             $warningModal.caller = 'none';
         });
-        $infoModal.on('finish',function(){
-            $infoModal.modal('hide');
-        });
     };
     
     userDialog.prototype.showWarningDialog = function(argument){
@@ -101,6 +98,9 @@ define([
         $errorModal.find('#errorLabel h2').html('Error '+argument.code);
         $errorModal.find('#errorMessage').html($messageList.getMessage(argument.messageID));
         $errorModal.modal('show').css('margin-top',(screen_height/2)-100);
+    };
+    userDialog.prototype.hideInfoDialog = function(){
+        $infoModal.modal('hide');
     };
     
     return userDialog;

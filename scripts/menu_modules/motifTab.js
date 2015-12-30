@@ -52,7 +52,6 @@ define([
     var $lockCameras = jQuery('#lockCameraIcon');
     var $swapButton = jQuery('#swapBtn');
     var $atomColor = jQuery('#atomColor');
-    var $motifPadlock = jQuery('#motifPadlock');
     
     // Grouping //
     var atomParameters = {
@@ -100,11 +99,6 @@ define([
         else return false;
         if (!(_.isUndefined(argument.latticeTab))) $latticeTab = argument.latticeTab;
         else return false;
-        
-        // Reset
-        $atomTable.on('reset',function(){
-            $atomTable.find('tbody').html('');
-        });
         
         // Input Handlers
         $atomOpacitySlider.slider({
@@ -468,13 +462,6 @@ define([
                     publish:{swap:swap},
                     value:value
                 }
-            });
-        });
-        $motifPadlock.on('resetCollision',function(){
-            // Clear Collision //
-            _.each(collisions, function($parameter,k){
-                jQuery('#'+k+'Collision').css('background-color','white'); 
-                delete collisions[k];
             });
         });
         
@@ -874,6 +861,16 @@ define([
     };
     motifTab.prototype.refreshStickyVisuals = function(){
         refreshStickyVisuals();
+    };
+    motifTab.prototype.clearCollisions = function(){
+        // Clear Collision //
+        _.each(collisions, function($parameter,k){
+            jQuery('#'+k+'Collision').css('background-color','white'); 
+            delete collisions[k];
+        });  
+    };
+    motifTab.prototype.resetTable = function(){
+        $atomTable.find('tbody').html('');
     };
     
     return motifTab;

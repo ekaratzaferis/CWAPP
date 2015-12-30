@@ -237,12 +237,12 @@ define([
                     PubSub.publish('menu.open_json', st);
                     $setUIValue.restore(st.appUI,st.info);
                     $notesTab.restoreNotes(st.notes);
-                    jQuery('#info_modal').trigger('finish');
+                    $userDialog.hideInfoDialog();
                 }
                 r.readAsText(f);
             } 
             else { 
-                jQuery('#info_modal').trigger('finish');
+                $userDialog.hideInfoDialog();
                 $userDialog.showErrorDialog({ messageID: 31, code: '402' });
             }
         });
