@@ -64,30 +64,47 @@ define([
             case 'tabDisable':{
                 var result = {};
                 if (jQuery('#latticeTab').hasClass('disabled')) result.latticeTab = true;
+                else result.latticeTab = false;
                 if (jQuery('#motifLI').hasClass('disabled')) result.motifTab = true;
+                else result.motifTab = false;
                 if (jQuery('#visualTab').hasClass('disabled')) result.visualTab = true;
+                else result.visualTab = false;
                 if (jQuery('#millerPI').hasClass('disabled')) result.pndTab = true;
+                else result.pndTab = false;
                 if (jQuery('#notesTab').hasClass('disabled')) result.notesTab = true;
+                else result.notesTab = false;
                 if (jQuery('#publicTab').hasClass('disabled')) result.publicTab = true;
+                else result.publicTab = false;
                 return result;
             }
             case 'toggleButtons':{
                 var result = {};
                 if (jQuery('#latticePoints').parent().hasClass('lightThemeActive')) result.latticePoints = true;
+                else result.latticePoints = false;
                 if (jQuery('#edges').parent().hasClass('lightThemeActive')) result.edges = true;
+                else result.edges = false;
                 if (jQuery('#faces').parent().hasClass('lightThemeActive')) result.faces = true;
+                else result.faces = false;
                 if (jQuery('#xyzAxes').parent().hasClass('lightThemeActive')) result.xyzAxes = true;
+                else result.xyzAxes = false;
                 if (jQuery('#abcAxes').parent().hasClass('lightThemeActive')) result.abcAxes = true;
+                else result.abcAxes = false;
                 if (jQuery('#unitCellViewport').parent().hasClass('lightThemeActive')) result.unitCellViewport = true;
+                else result.unitCellViewport = false;
                 if (jQuery('#planes').parent().hasClass('lightThemeActive')) result.planes = true;
+                else result.planes = false;
                 if (jQuery('#directions').parent().hasClass('lightThemeActive')) result.directions = true;
-                if (jQuery('#atomRadius').parent().hasClass('lightThemeActive')) {
-                    result.atomRadius = true;
-                    result.atomRadiusSlider = jQuery('#atomRadiusSlider').slider('value');
-                }
+                else result.directions = false;
+                if (jQuery('#atomRadius').parent().hasClass('lightThemeActive')) result.atomRadius = true;
+                else result.atomRadius = false;
                 if (jQuery('#atomToggle').parent().hasClass('lightThemeActive')) result.atomToggle = true;
+                else result.atomToggle = false;
                 if (jQuery('#labelToggle').parent().hasClass('lightThemeActive')) result.labelToggle = true;
+                else result.labelToggle = false;
                 if (jQuery('#highlightTangency').parent().hasClass('lightThemeActive')) result.highlightTangency = true;
+                else result.highlightTangency = false;
+                
+                result.atomRadiusSlider = jQuery('#atomRadiusSlider').slider('value');
                 return result;
             }
                 
@@ -279,6 +296,14 @@ define([
                 if (jQuery('#lights').hasClass('active')) return true;
                 else return false;
             }
+            case 'ssao':{
+                if (jQuery('#ssao').hasClass('active')) return true;
+                else return false;
+            }
+            case 'shadows':{
+                if (jQuery('#shadows').hasClass('active')) return true;
+                else return false;
+            }
             case 'distortionOn':{
                 if (jQuery('#distortionOn').hasClass('active')) return true;
                 else return false;
@@ -295,8 +320,12 @@ define([
                 if (jQuery('#oculus').hasClass('active')) return true;
                 else return false;
             }
-            case '3D':{
-                if (jQuery('#3D').hasClass('active')) return true;
+            case 'sideBySide3D':{
+                if (jQuery('#3DsideBySide').hasClass('active')) return true;
+                else return false;
+            }
+            case 'onTop3D':{
+                if (jQuery('#3DonTop').hasClass('active')) return true;
                 else return false;
             }
             case 'crystalCamTargetOn':{
@@ -441,11 +470,15 @@ define([
         app.toon = retrieveValueFromID('toon');
         app.flat = retrieveValueFromID('flat');
         app.realistic = retrieveValueFromID('realistic');
+        app.lights = retrieveValueFromID('lights');
+        app.ssao = retrieveValueFromID('ssao');
+        app.shadows = retrieveValueFromID('shadows');
         app.distortionOn = retrieveValueFromID('distortionOn');
         app.distortionOff = retrieveValueFromID('distortionOff');
         app.anaglyph = retrieveValueFromID('anaglyph');
         app.oculus = retrieveValueFromID('oculus');
-        app.threeD = retrieveValueFromID('3D');
+        app.sideBySide3D = retrieveValueFromID('sideBySide3D');
+        app.onTop3D = retrieveValueFromID('onTop3D');
         app.crystalCamTargetOn = retrieveValueFromID('crystalCamTargetOn');
         app.crystalCamTargetOff = retrieveValueFromID('crystalCamTargetOff');
         app.fullScreen = retrieveValueFromID('fullScreen');

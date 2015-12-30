@@ -565,18 +565,6 @@ define([
         });
         $latticePadlock.on('click', function() {
             if (!($latticePadlock.hasClass('disabled'))) latticePadlock();
-        }); 
-        $latticePadlock.on('reset',function(){
-            // Clear Lattice Restrictions //
-            removeLatticeRestrictions();
-            localRestrictions = undefined;
-        });
-        $latticePadlock.on('resetCollision',function(){
-            // Clear Collision //
-            _.each(collisions, function($parameter,k){
-                jQuery('#'+k+'Collision').css('background-color','white'); 
-                delete collisions[k];
-            });
         });
         $motifPadlock.on('click', function() {
             if (!($motifPadlock.hasClass('disabled'))) {
@@ -1011,6 +999,18 @@ define([
     };
     latticeTab.prototype.refreshStickyVisuals = function(){
         refreshStickyVisuals();
+    };
+    latticeTab.prototype.removeRestrictions = function(){
+        // Clear Lattice Restrictions //
+        removeLatticeRestrictions();
+        localRestrictions = undefined;  
+    };
+    latticeTab.prototype.clearCollisions = function(){
+        // Clear Collision //
+        _.each(collisions, function($parameter,k){
+            jQuery('#'+k+'Collision').css('background-color','white'); 
+            delete collisions[k];
+        });  
     };
     
     return latticeTab;

@@ -30,11 +30,9 @@ define([
     var allowPublish = false;
     
     // Modules References
-    var $interfaceResizer = undefined;
     var $messages = undefined;
     var $tooltipGenerator = undefined;
     var $stringEditor = undefined;
-    var $getUIValue = undefined;
     var $menu = undefined;
     
     // Grouping
@@ -153,15 +151,11 @@ define([
     function setUIValue(argument) {
         
         // Acquire Module References //
-        if (!(_.isUndefined(argument.interfaceResizer))) $interfaceResizer = argument.interfaceResizer;
-        else return false;
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
         if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
         else return false;
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
-        else return false;
-        if (!(_.isUndefined(argument.getUIValue))) $getUIValue = argument.getUIValue;
         else return false;
         if (!(_.isUndefined(argument.menu))) $menu = argument.menu;
         else return false;
@@ -176,13 +170,13 @@ define([
             case 'xyzAxes':{
                 if (value === true) selector.parent().addClass('lightThemeActive');
                 else selector.parent().removeClass('lightThemeActive');
-                $interfaceResizer.showCanvasXYZLabels(value);
+                $menu.showCanvasXYZLabels(value);
                 break;
             }
             case 'abcAxes':{
                 if (value === true) selector.parent().addClass('lightThemeActive');
                 else selector.parent().removeClass('lightThemeActive');
-                $interfaceResizer.showCanvasABCLabels(value);
+                $menu.showCanvasABCLabels(value);
                 break;
             }
             case 'edges':{
@@ -255,7 +249,7 @@ define([
             case 'unitCellViewport':{
                 if (value === true) selector.parent().addClass('lightThemeActive');
                 else selector.parent().removeClass('lightThemeActive');
-                $interfaceResizer.viewport(value);
+                $menu.viewport(value);
                 break;
             }
             case 'labelToggle':{
@@ -266,6 +260,10 @@ define([
             case 'highlightTangency':{
                 if (value === true) selector.parent().addClass('lightThemeActive');
                 else selector.parent().removeClass('lightThemeActive');
+                break;
+            }
+            case 'atomRadiusSlider':{
+                selector.slider('value',value);
                 break;
             }
             
@@ -838,7 +836,7 @@ define([
             }
             case 'cellVolume':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
-                var tangency = $getUIValue.getValue({ 'tangency': { 'id': 'tangency' } });
+                var tangency = $menu.getTangency();
                 if (newVal !== false){
                     if (tangency.tangency === true){
                         if (newVal > 90) {
@@ -1144,36 +1142,36 @@ define([
             case 'autoZoom':{
                 _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
                 selector.addClass('active');
-                $interfaceResizer.autoZoom(true);
+                $menu.autoZoom(true);
                 window.dispatchEvent(new Event('resize'));
                 break;
             }
             case 'zoom100':{
                 _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
                 selector.addClass('active');
-                $interfaceResizer.autoZoom(false);
-                $interfaceResizer.transformMenu(1);
+                $menu.autoZoom(false);
+                $menu.transformMenu(1);
                 break;
             } 
             case 'zoom90':{
                 _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
                 selector.addClass('active');
-                $interfaceResizer.autoZoom(false);
-                $interfaceResizer.transformMenu(0.9);
+                $menu.autoZoom(false);
+                $menu.transformMenu(0.9);
                 break;
             } 
             case 'zoom80':{
                 _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
                 selector.addClass('active');
-                $interfaceResizer.autoZoom(false);
-                $interfaceResizer.transformMenu(0.8);
+                $menu.autoZoom(false);
+                $menu.transformMenu(0.8);
                 break;
             } 
             case 'zoom70':{
                 _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
                 selector.addClass('active');
-                $interfaceResizer.autoZoom(false);
-                $interfaceResizer.transformMenu(0.7);
+                $menu.autoZoom(false);
+                $menu.transformMenu(0.7);
                 break;
             }
             case 'fog':{
@@ -1321,7 +1319,7 @@ define([
             case 'reset':{
                 
                 // Tabs //
-                jQuery('#main_controls_container').trigger('reset'); // Lock tabs
+                $menu.reset('tabs');
                 
                 // Toggles //
                 takeAction('latticePoints',jQuery('#latticePoints'),true);
@@ -1354,13 +1352,13 @@ define([
                 takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
                 takeAction('radius',jQuery('#radius'),'2');
                 takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
-                jQuery('#latticePadlock').trigger('reset'); // Restrictions
-                jQuery('#latticePadlock').trigger('resetCollision'); // Collisions
+                $menu.reset('restrictions');
+                $menu.reset('collisions');
                 
                 // Motif //
                 takeAction('tangency',jQuery('#tangency'),false);
                 takeAction('cellVolume',jQuery('#cellVolume'),'100');
-                jQuery('#atomTable').trigger('reset');
+                $menu.reset('atomTable');
                 takeAction('atomPosX',jQuery('#atomPosX'),0);
                 takeAction('atomPosY',jQuery('#atomPosY'),0);
                 takeAction('atomPosZ',jQuery('#atomPosZ'),0);
@@ -1370,7 +1368,7 @@ define([
                 jQuery('label[for=txt_coordinates_x]').html('x');
                 jQuery('label[for=txt_coordinates_y]').html('y');
                 jQuery('label[for=txt_coordinates_z]').html('z');
-                jQuery('#motifPadlock').trigger('resetCollision');
+                $menu.reset('motifCollisions');
                 
                 // Visual //
                 takeAction('realistic',jQuery('#realistic'),true);
@@ -1412,15 +1410,15 @@ define([
                 takeAction('millerT',jQuery('#millerT'),'');
                 takeAction('directionName',jQuery('#directionName'),'');
                 takeAction('dirRadius',jQuery('#dirRadius'),'10');
-                jQuery('#planesTable').trigger('reset'); // Empty Table
-                jQuery('#directionTable').trigger('reset'); // Empty Table
+                $menu.reset('planesTable');
+                $menu.reset('directionTable');
 
                 // Notes //
                 takeAction('noteTitle',jQuery('#noteTitle'),'');
                 takeAction('noteOpacity',jQuery('#noteOpacity'),'10');
                 takeAction('noteBody',jQuery('#noteBody'),'');
                 takeAction('noteColor',jQuery('#noteColor'),'transparent');
-                jQuery('#notesTable').trigger('reset');
+                $menu.reset('notesTable');
                 break;
             }
                 
@@ -1953,102 +1951,48 @@ define([
         takeAction('projectDescription',jQuery('#projectDescription'),info.description);
         takeAction('projectTags',jQuery('#projectTags'),info.tags);
         
-        // Restore Rest of UI //
         // Tabs //
-        $menu.restoreTabs(appUI.activeTab,appUI.tabDisable);
-
-        /*
+        $menu.restoreTabs(appUI.menuRibbon);
+        
         // Toggles //
-        takeAction('latticePoints',jQuery('#latticePoints'),true);
-        takeAction('edges',jQuery('#edges'),false);
-        takeAction('faces',jQuery('#faces'),false);
-        takeAction('xyzAxes',jQuery('#xyzAxes'),true);
-        takeAction('abcAxes',jQuery('#abcAxes'),false);
-        takeAction('unitCellViewport',jQuery('#unitCellViewport'),false);
-        takeAction('planes',jQuery('#planes'),true);
-        takeAction('directions',jQuery('#directions'),true);
-        takeAction('atomRadius',jQuery('#atomRadius'),false);
-        takeAction('atomToggle',jQuery('#atomToggle'),true);
-        takeAction('labelToggle',jQuery('#labelToggle'),false);
-        takeAction('highlightTangency',jQuery('#highlightTangency'),false);
-
-        // Lattice //
-        takeAction('selectedLattice',jQuery('#selected_lattice'),$messages.getMessage(18));
+        takeAction('latticePoints',jQuery('#latticePoints'),appUI.menuRibbon.toggleButtons.latticePoints);
+        takeAction('edges',jQuery('#edges'),appUI.menuRibbon.toggleButtons.edges);
+        takeAction('faces',jQuery('#faces'),appUI.menuRibbon.toggleButtons.faces);
+        takeAction('xyzAxes',jQuery('#xyzAxes'),appUI.menuRibbon.toggleButtons.xyzAxes);
+        takeAction('abcAxes',jQuery('#abcAxes'),appUI.menuRibbon.toggleButtons.abcAxes);
+        takeAction('unitCellViewport',jQuery('#unitCellViewport'),appUI.menuRibbon.toggleButtons.unitCellViewport);
+        takeAction('planes',jQuery('#planes'),appUI.menuRibbon.toggleButtons.planes);
+        takeAction('directions',jQuery('#directions'),appUI.menuRibbon.toggleButtons.directions);
+        takeAction('atomRadius',jQuery('#atomRadius'),appUI.menuRibbon.toggleButtons.atomRadius);
+        takeAction('atomToggle',jQuery('#atomToggle'),appUI.menuRibbon.toggleButtons.atomToggle);
+        takeAction('labelToggle',jQuery('#labelToggle'),appUI.menuRibbon.toggleButtons.labelToggle);
+        takeAction('highlightTangency',jQuery('#highlightTangency'),appUI.menuRibbon.toggleButtons.highlightTangency);
+        
+        // Atom Radius Slider //
+        takeAction('atomRadiusSlider',jQuery('#atomRadiusSlider'),appUI.menuRibbon.toggleButtons.highlightTangency);
+        
+        // Lattice Tab //
+        takeAction('selectedLattice',jQuery('#selected_lattice'),appUI.latticeTab.selectedLattice);
+        takeAction('repeatX',jQuery('#repeatX'),appUI.latticeTab.latticeRepetition.repeatX);
+        takeAction('repeatY',jQuery('#repeatY'),appUI.latticeTab.latticeRepetition.repeatY);
+        takeAction('repeatZ',jQuery('#repeatZ'),appUI.latticeTab.latticeRepetition.repeatZ);
+        takeAction('scaleX',jQuery('#scaleX'),appUI.latticeTab.latticeLength.scaleX);
+        takeAction('scaleY',jQuery('#scaleY'),appUI.latticeTab.latticeLength.scaleY);
+        takeAction('scaleZ',jQuery('#scaleZ'),appUI.latticeTab.latticeLength.scaleZ);
+        takeAction('alpha',jQuery('#alpha'),appUI.latticeTab.latticeAngle.alpha);
+        takeAction('beta',jQuery('#beta'),appUI.latticeTab.latticeAngle.beta);
+        takeAction('gamma',jQuery('#gamma'),appUI.latticeTab.latticeAngle.gamma);
+        /*
         takeAction('latticePadlock',jQuery('#latticePadlock'),false);
-        takeAction('repeatX',jQuery('#repeatX'),1);
-        takeAction('repeatY',jQuery('#repeatY'),1);
-        takeAction('repeatZ',jQuery('#repeatZ'),1);
-        takeAction('scaleX',jQuery('#scaleX'),1);
-        takeAction('scaleY',jQuery('#scaleY'),1);
-        takeAction('scaleZ',jQuery('#scaleZ'),1);
-        takeAction('alpha',jQuery('#alpha'),90);
-        takeAction('beta',jQuery('#beta'),90);
-        takeAction('gamma',jQuery('#gamma'),90);
+        
+        
         takeAction('motifPadlock',jQuery('#motifPadlock'),false);
         takeAction('cylinderColor',jQuery('#cube_color_border'),'A19EA1');
         takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
         takeAction('radius',jQuery('#radius'),'2');
         takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
-        jQuery('#latticePadlock').trigger('reset'); // Restrictions
-        jQuery('#latticePadlock').trigger('resetCollision'); // Collisions
-
-        // Motif //
-        takeAction('tangency',jQuery('#tangency'),false);
-        takeAction('cellVolume',jQuery('#cellVolume'),'100');
-        jQuery('#atomTable').trigger('reset');
-        takeAction('atomPosX',jQuery('#atomPosX'),0);
-        takeAction('atomPosY',jQuery('#atomPosY'),0);
-        takeAction('atomPosZ',jQuery('#atomPosZ'),0);
-        takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),{value:false,toggle:true});
-        takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),{value:false,toggle:true});
-        jQuery('.element-symbol-container').hide();
-        jQuery('label[for=txt_coordinates_x]').html('x');
-        jQuery('label[for=txt_coordinates_y]').html('y');
-        jQuery('label[for=txt_coordinates_z]').html('z');
-        jQuery('#motifPadlock').trigger('resetCollision');
-
-        // Visual //
-        takeAction('realistic',jQuery('#realistic'),true);
-        takeAction('lights',jQuery('#lights'),true);
-        takeAction('ssao',jQuery('#ssao'),false);
-        takeAction('shadows',jQuery('#shadows'),true);
-        takeAction('distortionOff',jQuery('#distortionOff'),true);
-        takeAction('anaglyph',jQuery('#anaglyph'),false);
-        takeAction('oculus',jQuery('#oculus'),false);
-        takeAction('sideBySide',jQuery('#3DsideBySide'),false);
-        takeAction('onTop',jQuery('#3DonTop'),false);
-        takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),true);
-        takeAction('leapMotion',jQuery('#leapMotion'),false);
-        takeAction('crystalClassic',jQuery('#crystalClassic'),true);
-        takeAction('cellClassic',jQuery('#cellClassic'),true);
-        takeAction('fog',jQuery('input[name="fog"]'),false);
-        takeAction('fogDensity',jQuery('#fogDensity'),1);
-        takeAction('fogColor',jQuery('#fogColor'),'transparent');
-        takeAction('sounds',jQuery('#sounds'),false);
-        takeAction('soundSlider',jQuery('#soundSlider'),75);
-        takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),'#74629c');
-        takeAction('cellScreenColor',jQuery('#cellScreenColor'),'#74629c');
-        takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),'#74629c');
-        takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),'#74629c');
-        takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),'#74629c');
-
-        // PnD //
-        takeAction('planeOpacity',jQuery('#planeOpacity'),'6');
-        takeAction('millerH',jQuery('#millerH'),'');
-        takeAction('millerK',jQuery('#millerK'),'');
-        takeAction('millerL',jQuery('#millerL'),'');
-        takeAction('millerI',jQuery('#millerI'),'');
-        takeAction('planeName',jQuery('#planeName'),'');
-        takeAction('planeColor',jQuery('#planeColor'),'transparent');
-        takeAction('directionColor',jQuery('#directionColor'),'transparent');
-        takeAction('millerU',jQuery('#millerU'),'');
-        takeAction('millerV',jQuery('#millerV'),'');
-        takeAction('millerW',jQuery('#millerW'),'');
-        takeAction('millerT',jQuery('#millerT'),'');
-        takeAction('directionName',jQuery('#directionName'),'');
-        takeAction('dirRadius',jQuery('#dirRadius'),'10');
-        jQuery('#planesTable').trigger('reset'); // Empty Table
-        jQuery('#directionTable').trigger('reset'); // Empty Table*/
+        $menu.reset('restrictions');
+        $menu.reset('collisions');*/
     };
     
     return setUIValue;

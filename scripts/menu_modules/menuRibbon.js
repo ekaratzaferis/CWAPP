@@ -165,20 +165,6 @@ define([
         disableTab({'tab':'visualTab','value':true});
         blockTab({'tab':'visualTab','value':true});
         
-        // Reset Handler
-        $menu.on('reset',function(){
-            disableTab({'tab':'motifTab','value':true});
-            blockTab({'tab':'motifTab','value':true});
-            disableTab({'tab':'pndTab','value':true});
-            blockTab({'tab':'pndTab','value':true});
-            disableTab({'tab':'visualTab','value':true});
-            blockTab({'tab':'visualTab','value':true});
-            latticeTab.find('a').trigger('click');
-            setTimeout(function(){
-                jQuery('body').mCustomScrollbar("scrollTo",'top');
-            },200);
-        });
-        
         // Top Menu Button
         $menuToggler.on('click', function(){
             if ($menu.hasClass('controls-open')) $interfaceResizer.closeMenu();
@@ -369,41 +355,41 @@ define([
     };
     function blockTab(argument){
         _.each(tabs, function($param,a){
-            if (argument.value === true) {
-                if (a === argument.tab) $param.addClass('blocked');
+            if (a === argument.tab) {
+                if (argument.value === true) $param.addClass('blocked');
+                else $param.removeClass('blocked');
             }
-            else $param.removeClass('blocked');
         });
     }
     function disableTab(argument){
         _.each(tabs, function($param,a){
-            if (argument.value === true) {
-                if (a === argument.tab) {
+            if (a === argument.tab) {
+                if (argument.value === true) {
                     $param.addClass('disabled');
                     $param.find('a').removeAttr('href');
                 }
-            }
-            else {
-                $param.removeClass('disabled');
-                switch(argument.tab){
-                    case 'latticeTab': 
-                        jQuery('#latticeTab').find('a').attr('href','#scrn_lattice');
-                        break;        
-                    case 'pndTab': 
-                        jQuery('#millerPI').find('a').attr('href','#scrn_pnd'); 
-                        break;
-                    case 'motifTab': 
-                        jQuery('#motifLI').find('a').attr('href','#scrn_motif'); 
-                        break;
-                    case 'visualTab': 
-                        jQuery('#visualTab').find('a').attr('href','#scrn_visualize'); 
-                        break;
-                    case 'publicTab': 
-                        jQuery('#publicTab').find('a').attr('href','#scrn_public_library');
-                        break;
-                    case 'notesTab': 
-                        jQuery('#notesTab').find('a').attr('href','#scrn_notes');
-                        break;
+                else {
+                    $param.removeClass('disabled');
+                    switch(argument.tab){
+                        case 'latticeTab': 
+                            jQuery('#latticeTab').find('a').attr('href','#scrn_lattice');
+                            break;        
+                        case 'pndTab': 
+                            jQuery('#millerPI').find('a').attr('href','#scrn_pnd'); 
+                            break;
+                        case 'motifTab': 
+                            jQuery('#motifLI').find('a').attr('href','#scrn_motif'); 
+                            break;
+                        case 'visualTab': 
+                            jQuery('#visualTab').find('a').attr('href','#scrn_visualize'); 
+                            break;
+                        case 'publicTab': 
+                            jQuery('#publicTab').find('a').attr('href','#scrn_public_library');
+                            break;
+                        case 'notesTab': 
+                            jQuery('#notesTab').find('a').attr('href','#scrn_notes');
+                            break;
+                    }
                 }
             }
         });
@@ -454,18 +440,38 @@ define([
             });
         });
     };
-    menuRibbon.prototype.restoreTabs = function(active,disabled){
-        this.switchTab(active);
+    menuRibbon.prototype.restoreTabs = function(argument){
+        this.switchTab(argument.activeTab);
         _.each(tabs, function($parameter,k){
-            if (_.isUndefined(disabled[k])){
-                disableTab({'tab':k,'value':false});
-                blockTab({'tab':k,'value':false});
-            }
-            else {
-                disableTab({'tab':k,'value':true});
-                blockTab({'tab':k,'value':true});
+            var value = argument.disabledTabs[k];
+            disableTab({'tab':k,'value':value});
+            blockTab({'tab':k,'value':value});
+        });
+    };
+    menuRibbon.prototype.resetTabs = function(){
+        this.switchTab('latticeTab');
+        _.each(tabs, function($parameter,k){
+            switch(k){
+                case 'motifTab':{
+                    
+                }
+                case 'pndTab':{
+                    
+                }
+                case 'visualTab':{
+                    disableTab({'tab':k,'value':true});
+                    blockTab({'tab':k,'value':true});
+                    break;
+                }
+                default:{
+                    disableTab({'tab':k,'value':false});
+                    blockTab({'tab':k,'value':false}); 
+                }
             }
         });
+        setTimeout(function(){
+            jQuery('body').mCustomScrollbar("scrollTo",'top');
+        },200);
     };
     
     return menuRibbon;

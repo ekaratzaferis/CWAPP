@@ -201,11 +201,6 @@ define([
                 });
             }
         });
-        
-        // Reset //
-        $notesTable.on('reset', function(){
-             $notesTable.find('tbody').html('');
-        });
     };
     
     function addNote(newID,restore){
@@ -561,6 +556,10 @@ define([
             }
         });
     };
+    notesTab.prototype.resetTable = function(){
+        $notesTable.find('tbody').html('');
+    };
+    
     
     return notesTab;
 });

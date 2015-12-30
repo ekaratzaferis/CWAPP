@@ -297,14 +297,6 @@ define([
                 }
             });
         });
-        
-        // Reset //
-        $planesTable.on('reset', function(){
-             $planesTable.find('tbody').html('');
-        });
-        $directionTable.on('reset', function(){
-             $directionTable.find('tbody').html('');
-        });
     };
     
     function parallelInterception(argument){
@@ -507,6 +499,10 @@ define([
                 other: $directionTable.find('#'+argument['id']).find('.directionButton')
             }
         });
+    };
+    pndTab.prototype.resetTable = function(table){
+        if (table === 'planesTable') $planesTable.find('tbody').html('');
+        else $directionTable.find('tbody').html('');
     };
     
     return pndTab;

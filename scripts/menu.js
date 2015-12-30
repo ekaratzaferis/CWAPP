@@ -189,16 +189,14 @@ define([
         disableUIElementModule = new disableUIElement({
             messages: messagesModule 
         });
-        
-        // 2nd level dependency //
         setUIValueModule = new setUIValue({
-            interfaceResizer:interfaceResizerModule,
             messages: messagesModule,
             stringEditor: stringEditorModule,
-            getUIValue: getUIValueModule,
             tooltipGenerator: toolTipGeneratorModule,
             menu: _this
-        });      
+        });
+        
+        // 2nd level dependency //   
         latticeTabModule = new latticeTab({
             messages: messagesModule,
             disableUIElement: disableUIElementModule,
@@ -272,7 +270,7 @@ define([
     /* --------------
        Hover Tooltips
        -------------- */
-        var listLeft = {
+        /*var listLeft = {
             'controls_toggler':'left',
             'latticeTab':'left',
             'millerPI':'left',
@@ -381,7 +379,7 @@ define([
         _.each(listLeft, function($element, k){
             toolTipGeneratorModule.addOnHoverTooltip({ target: k.toString(), message: i, placement: $element.toString() });
             i++;
-        });
+        });*/
 
         
         /*$
@@ -441,6 +439,21 @@ define([
     };
     Menu.prototype.focusNote = function(id){
         notesTabModule.focusNote(id);
+    };
+    Menu.prototype.showCanvasXYZLabels = function(argument){
+        interfaceResizerModule.showCanvasXYZLabels(argument);
+    };
+    Menu.prototype.showCanvasABCLabels = function(argument){
+        interfaceResizerModule.showCanvasABCLabels(argument);
+    };
+    Menu.prototype.viewport = function(argument){
+        interfaceResizerModule.viewport(argument);
+    };
+    Menu.prototype.autoZoom = function(argument){
+        interfaceResizerModule.autoZoom(argument);
+    };
+    Menu.prototype.transformMenu = function(argument){
+        interfaceResizerModule.transformMenu(argument);    
     };
 
     // Tooltips //
@@ -620,6 +633,9 @@ define([
     Menu.prototype.getChainLevel = function(id){
         motifTabModule.getChainLevel(id);
     };
+    Menu.prototype.getTangency = function(){
+       return getUIValueModule.getValue({ 'tangency': { 'id': 'tangency' } });
+    };
                 
     // PnD Tab //
     Menu.prototype.editPlaneInputs = function(values){
@@ -798,6 +814,42 @@ define([
     // System //
     Menu.prototype.restore = function(data){
         setUIValueModule.restore(data);
+    };
+    Menu.prototype.reset = function(argument){
+        switch(argument){
+            case 'tabs':{
+                menuRibbonModule.resetTabs();
+                break;
+            }
+            case 'restrictions':{
+                latticeTabModule.removeRestrictions();
+                break;
+            }
+            case 'collisions':{
+                latticeTabModule.clearCollisions();
+                break;
+            }
+            case 'motifCollisions':{
+                motifTabModule.clearCollisions();
+                break;
+            }
+            case 'atomTable':{
+                motifTabModule.resetTable();
+                break;
+            }
+            case 'planesTable':{
+                pndTabModule.resetTable(argument);
+                break;
+            }
+            case 'directionTable':{
+                pndTabModule.resetTable(argument);
+                break;
+            }
+            case 'notesTable':{
+                notesTabModule.resetTable();
+                break;
+            }
+        }
     };
     
     // Subscribers //
