@@ -203,7 +203,7 @@ define([
                 var askValue = {};
                 askValue[k] = {id:k};
  
-                var publish = $getUIValue(askValue);
+                var publish = $getUIValue.getValue(askValue);
                 
                 // Set Value //
                 var argument = {};
@@ -214,7 +214,7 @@ define([
                 
                 
                 // Publish if everything ok
-                var publish = $getUIValue(askValue);
+                var publish = $getUIValue.getValue(askValue);
                 if (publish[k] !== false) {
                     var argument = {};
                     argument[k] = { 
@@ -241,7 +241,7 @@ define([
                 $setUIValue.setValue(argument);
                
                 // Publish if everything ok
-                //var publish = $getUIValue(askValue);
+                var publish = $getUIValue.getValue(askValue);
                 if (publish[k] !== false) {
                     var argument = {};
                     argument[k] = { 
