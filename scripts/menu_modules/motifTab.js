@@ -84,6 +84,7 @@ define([
     
     // Contructor //
     function motifTab(argument) {
+         
         // Acquire Module References
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
@@ -201,6 +202,7 @@ define([
                 // Get //
                 var askValue = {};
                 askValue[k] = {id:k};
+ 
                 var publish = $getUIValue(askValue);
                 
                 // Set Value //
@@ -237,9 +239,9 @@ define([
                     value: publish[k]
                 }
                 $setUIValue.setValue(argument);
-                
+               
                 // Publish if everything ok
-                var publish = $getUIValue(askValue);
+                //var publish = $getUIValue(askValue);
                 if (publish[k] !== false) {
                     var argument = {};
                     argument[k] = { 

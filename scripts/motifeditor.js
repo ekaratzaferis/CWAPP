@@ -458,6 +458,8 @@ define([
     var yFactor = 1;
     var zFactor = 1;
      
+     console.log(param);
+     
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
