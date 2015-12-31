@@ -270,7 +270,7 @@ define([
     /* --------------
        Hover Tooltips
        -------------- */
-        /*var listLeft = {
+        var listLeft = {
             'controls_toggler':'left',
             'latticeTab':'left',
             'millerPI':'left',
@@ -379,7 +379,7 @@ define([
         _.each(listLeft, function($element, k){
             toolTipGeneratorModule.addOnHoverTooltip({ target: k.toString(), message: i, placement: $element.toString() });
             i++;
-        });*/
+        });
 
         
         /*$
