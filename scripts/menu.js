@@ -33,7 +33,7 @@ define([
     'notesTab',
     'tag-it.min',
     'jquery.qrcode-0.12.0.min',
-    'html'
+    'menu_html'
 ], function(
     jQuery,
     jQuery_ui,
@@ -64,7 +64,7 @@ define([
     notesTab,
     tagIt,
     qrCode,
-    html
+    menu_html
 ) 
 {
 
@@ -86,6 +86,7 @@ define([
     var motifTabModule = undefined;
     var libraryTabModule = undefined;
     var notesTabModule = undefined;
+    var html = undefined;
 
     // Events //
     var events = {
@@ -172,6 +173,7 @@ define([
     function Menu() {
 
         var _this = this;
+        html = new menu_html();
         
         // Independent Modules //
         toolTipGeneratorModule = new tooltipGenerator();

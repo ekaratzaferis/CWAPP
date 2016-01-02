@@ -31,21 +31,19 @@ define([
         
         // IAC //
         this.iac = {};
-        this.iac.toggleVisibility = jQuery('#iacToggle');
-        this.iac.atomSymbol = jQuery('#iacSymbol');
-        this.iac.atomRadius = jQuery('#radiusLabelValue');
-        this.iac.atomRadiusLabel = jQuery('#radiusLabel');
+        this.iac.visibility = jQuery('#iacToggle');
+        this.iac.symbol = jQuery('#iacSymbol');
+        this.iac.radius = jQuery('#radiusLabelValue');
+        this.iac.radiusLabel = jQuery('#radiusLabel');
         this.iac.doll = jQuery('#iacDoll');
         this.iac.colorPicker = jQuery('#iacColor');
-        
-        
-        var $opacity = jQuery('#iacOpacity');
-        var $opacitySlider = jQuery('#iacOpacitySlider');
-        var $notes = jQuery('#iacNotes');
-        var $sound = jQuery('#iacSound');
-        var $box = jQuery('#iacBox');
-        var $closeButton = jQuery('#iacClose');
-        var $boxTitle = jQuery('#iacLabel h2');
+        this.iac.opacity = jQuery('#iacOpacity');
+        this.iac.opacitySlider = jQuery('#iacOpacitySlider');
+        this.iac.notes = jQuery('#iacNotes');
+        this.iac.sound = jQuery('#iacSound');
+        this.iac.box = jQuery('#iacBox');
+        this.iac.boxTitle = jQuery('#iacLabel h2');
+        this.iac.closeButton = jQuery('#iacClose');
         // Modals //
         
         // Notes //
