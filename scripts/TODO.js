@@ -1,23 +1,19 @@
- 
-    So currently, if the  "Highlight Overlapped atoms" is ON, it rusn in these points :
+Educational Game Development Ideas
+- Narrative Structure
+- Explicit Goals and Rules
+- Consistent Indications of Progress
+- Include Followup Questions
+- Test, Iterate, Test 
+
+
+So currently, if the  "Highlight Overlapped atoms" is ON, it rusn in these points :
   for Crystal : every time the crystal is refreshed in any way.
   for Cell : 1.every time the user drags and leaves an atom,  2. every time he uses the length/angle sliders, 3. every time an atom is deleted/added
   for Motif : 1.every time the user drags and leaves an atom,  2.. every time an atom is deleted/added
  
  ray apo point se point-fernw katheto sto plane tou triangle !!!!!!!
-
--- na kleinei me to parallel koumpi 
--- arnitika
-
-[6:53:45 μμ] alexandros: onPlaneParallel
-[6:53:49 μμ] alexandros: onPlaneInterception
-closeAtomCustomizer()
-
-[7:15:30 μμ] alexandros: parallel = 'active'
-[7:15:40 μμ] alexandros: interception = 'active'
-
-  
- 3. na dw ti paizei me grids faces. 
+ 
+   
 5. fps drop in unit cell renderern motif renderer
   6. suggest merge in crystal because atoms do not move.
 7. kleidwma geometriwn gia performance
