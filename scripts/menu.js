@@ -173,9 +173,6 @@ define([
 
         var _this = this;
         
-        var html = new html();
-        console.log(html.alex);
-        
         // Independent Modules //
         toolTipGeneratorModule = new tooltipGenerator();
         stringEditorModule = new stringEditor();
