@@ -42,6 +42,7 @@ require.config({
     'menuRibbon': 'menu_modules/menuRibbon',
     'userDialog': 'menu_modules/userDialog',
     'modals': 'menu_modules/modals',
+    'menu_html': 'menu_modules/html',
     'dynamictexture': '../vendor/dynamictexture',
     'tag-it.min': '../vendor/tag-it.min',
     'jquery.qrcode-0.12.0.min': '../vendor/jquery.qrcode-0.12.0.min',
@@ -126,7 +127,8 @@ require([
   'MaskPass',
   'CopyShader',
   'html2canvas',
-  'jszip'
+  'jszip',
+  'menu_html'
 
 ], function(
   PubSub, 
@@ -178,7 +180,8 @@ require([
   MaskPass,
   CopyShader,
   html2canvas,
-  jszip
+  jszip,
+  menu_html
 
 ) {
 
