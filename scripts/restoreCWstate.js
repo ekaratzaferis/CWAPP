@@ -76,7 +76,7 @@ define([
       this.configureMotifEditorSettings();
     }
     
-    console.log(999999);
+    this.menu.reset(this.cwObj);
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -463,8 +463,7 @@ define([
           break; 
       } 
     }  */
-    /////////-------
-
+  
     this.motifEditor.updateLatticeParameters(
       anglesScales,
       this.cwObj.system.latticeParams.lattice.latticeType, 
