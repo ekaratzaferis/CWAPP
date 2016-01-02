@@ -462,49 +462,18 @@ require([
       crystalScreenEvents.state = 'motifScreen';
     } 
   });
-  menu.onLightsSet(function(message, arg) { 
-     
-    if(arg.lights){
-      crystalScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      crystalScene.light.intensity = 1.0 ;
-      crystalScene.light.castShadow = true;  
-
-      unitCellScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      unitCellScene.light.intensity = 1.0 ;
-      unitCellScene.light.castShadow = true;  
-    }
-    else{
-      crystalScene.AmbLight.color.setHex( 0xffffff ); 
-      crystalScene.light.intensity = 0.0 ;
-      crystalScene.light.castShadow = false;  
-
-      unitCellScene.AmbLight.color.setHex( 0xffffff ); 
-      unitCellScene.light.intensity = 0.0;
-      unitCellScene.light.castShadow = false;   
-    }  
+  menu.onLightsSet(function(message, arg) {
+    crystalScene.setLightProperties(arg);
+    unitCellScene.setLightProperties(arg); 
   });
   menu.onLeapMotionSet(function(message, arg) {  
     leapM.toggle(arg.leap);
   });
   menu.onFogParameterChange(function(message, arg) { 
-    if(crystalScene.fogActive === true){ 
-      if(!_.isUndefined(arg.fogColor)){
-        crystalScene.object3d.fog.color.setHex( "0x"+arg.fogColor );  
-      }
-      else if(!_.isUndefined(arg.fogDensity)){
-        crystalScene.object3d.fog.density = parseInt(arg.fogDensity)/3000 ;
-      }
-    }
+    crystalScene.setFogProperties(arg);
   });
   menu.onFogChange(function(message, arg) { 
-    crystalScene.fogActive = arg.fog ;
-    if(arg.fog === true){  
-      crystalScene.object3d.fog.density = parseInt($('#fogDensity').val())/2000;
-      crystalScene.object3d.fog.color.setHex( "0x"+($('#fogColor').val()) );  
-    }
-    else{ 
-      crystalScene.object3d.fog.density = 0 ;
-    } 
+    crystalScene.setFogProperties(arg);
   });
   menu.onRendererColorChange(function(message, arg) { 
      
@@ -731,9 +700,7 @@ require([
 
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
     unitCellScene.updateShadowCameraProperties( p.length()/2);
-
-    console.log(999);
-     
+  
   });
   menu.setDragMode(function(message, param){
     motifEditor.setDraggableAtom(param)  ;
@@ -924,13 +891,13 @@ require([
   var service = 'https://cwgl.herokuapp.com' ;
 
   if(hash.length>0){
-    console.log(service + '/' + hash + '.json') 
+    console.log(service + '/' + hash + '.json') ;
 
     var slug = hash.replace(/^#/, '');
     $.ajax(service + '/' + slug + '.json', {
       method: 'GET',
       beforeSend: function(xmlHttpRequest) {
-          xmlHttpRequest.withCredentials = true;
+        xmlHttpRequest.withCredentials = true;
       }
     })
     .done(function(res) {  

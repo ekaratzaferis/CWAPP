@@ -43,8 +43,7 @@ define([
     } 
   };
 
-  Sound.prototype.changeVolume = function(arg){ 
-     
+  Sound.prototype.changeVolume = function(arg){  
     if(arg.sound){
       this.universalGainNode.gain.value = parseFloat(arg.sound)/100;
     }

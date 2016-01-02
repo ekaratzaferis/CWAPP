@@ -3583,26 +3583,28 @@ define([
       }
     };  
     
-    // autosave feature
-    this.motifsAtoms.push(this.newSphere); 
-  
-    this.updateAtomList(
-      pos, 
-      this.newSphere.getID(), 
-      this.newSphere.getRadius(), 
-      this.newSphere.elementName,
-      'save',
-      'bg-light-gray',
-      this.newSphere.tangentParent,
-      this.newSphere.color,
-      this.newSphere.ionicIndex
-    );
-    PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
-    this.lastSphereAdded = this.newSphere ;
-    this.newSphere.blinkMode(false); 
-    this.newSphere = undefined ;
-    this.dragMode = false; 
-    // end
+    if(this.newSphere !== undefined){ 
+      // autosave feature
+      this.motifsAtoms.push(this.newSphere); 
+      
+      this.updateAtomList(
+        pos, 
+        this.newSphere.getID(), 
+        this.newSphere.getRadius(), 
+        this.newSphere.elementName,
+        'save',
+        'bg-light-gray',
+        this.newSphere.tangentParent,
+        this.newSphere.color,
+        this.newSphere.ionicIndex
+      );
+      PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
+      this.lastSphereAdded = this.newSphere ;
+      this.newSphere.blinkMode(false); 
+      this.newSphere = undefined ;
+      this.dragMode = false; 
+      // end
+    }
 
     this.createAdditionalAtoms();
   }; 
@@ -5845,7 +5847,11 @@ define([
     var _this = this, i = 0;   
     this.padlock = !(arg.padlock);
     this.globalTangency = !(arg.padlock);
-      
+    
+    if(restore !== undefined){
+      return;
+    }
+    
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');

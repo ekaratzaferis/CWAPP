@@ -23,6 +23,7 @@ define([
     var height = jQuery(window).height() ; 
     this.object3d = new THREE.Scene();
     this.fogActive = false ;
+    this.fogDensity = 0 ;
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
     this.angles = {'alpha':90, 'beta':90, 'gamma':90 }; 
     
@@ -140,6 +141,43 @@ define([
       _this.remove(object);
     });
   }; 
+  Explorer.prototype.setLightProperties = function(arg){ 
+    if(arg.lights){
+      this.AmbLight.color.setHex( 0x4D4D4C ); 
+      this.light.intensity = 1.0 ;
+      this.light.castShadow = true;   
+    }
+    else{
+      this.AmbLight.color.setHex( 0xffffff ); 
+      this.light.intensity = 0.0 ;
+      this.light.castShadow = false;   
+    }  
+  };
+  Explorer.prototype.setFogProperties = function(arg){ 
+
+    if(arg.fogDensity !== undefined){
+      var val = parseInt(arg.fogDensity)/2000 ;
+      this.fogDensity = val; 
+      if(this.fogActive === true){
+        this.object3d.fog.density = parseInt(arg.fogDensity)/2000 ;
+      }
+    }
+
+    if(arg.fogColor !== undefined){
+      this.object3d.fog.color.setHex( "0x"+arg.fogColor ); 
+    }
+
+    if(arg.fog !== undefined){
+      this.fogActive = arg.fog ;
+      if(arg.fog === true){
+        this.object3d.fog.density = this.fogDensity ;
+      } 
+      else{
+        this.object3d.fog.density = 0 ;
+      }
+    }
+
+  };
   Explorer.prototype.updateShadowCameraProperties = function(l){ 
 
     var _this = this;

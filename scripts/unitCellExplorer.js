@@ -83,6 +83,18 @@ define([
     });
     
   };
+  UnitCellExplorer.prototype.setLightProperties = function(arg){ 
+    if(arg.lights){
+      this.AmbLight.color.setHex( 0x4D4D4C ); 
+      this.light.intensity = 1.0 ;
+      this.light.castShadow = true;   
+    }
+    else{
+      this.AmbLight.color.setHex( 0xffffff ); 
+      this.light.intensity = 0.0 ;
+      this.light.castShadow = false;   
+    }  
+  };
   UnitCellExplorer.prototype.updateShadowCameraProperties = function(l){ 
 
     var _this = this;

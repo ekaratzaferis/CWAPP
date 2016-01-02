@@ -71,7 +71,7 @@ define([
     //view
     this.viewBox = [];
     this.viewMode = 'crystalClassic'; 
-    this.crystalNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
+    this.crystalNeedsRecalculation = {'crystalSolidVoid' : false, 'crystalSubstracted' : false};
     this.cachedAtoms = [];
     // visualization
     this.renderingMode = 'realistic';
@@ -818,7 +818,7 @@ define([
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
 
-      if(this.crystalNeedsRecalculation.crustalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
+      if(this.crystalNeedsRecalculation.crystalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
         while(i < this.actualAtoms.length ){ 
           this.actualAtoms[i].setVisibility(false) ; 
           this.actualAtoms[i].subtractedForCache.object3d.visible = true;  
@@ -833,7 +833,7 @@ define([
         }
       }
       else{
-        this.crystalNeedsRecalculation.crustalSubstracted = false;
+        this.crystalNeedsRecalculation.crystalSubstracted = false;
         while(i < this.actualAtoms.length ) {
           this.actualAtoms[i].setVisibility(false) ;
           this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);  

@@ -43,14 +43,15 @@ define([
     var _this = this; 
 
     this.cwObj = cwObj;  
+
     this.configureCameraSettings();
-    this.configureAxisSelection(); 
-    this.configureGradeParams();
+    this.configureAxisSettings(); 
+    this.configureGradeSettings(); 
+    this.configureVisualizationSettings();
 
-    this.configureVisualizationParams();
-    this.soundMachine.switcher(cwObj.sounds);
-    $("input[name='sounds']").prop('checked', cwObj.sounds );
-
+    this.soundMachine.switcher(this.cwObj.appUI.visualTab.visualTools.sound.state);
+    this.soundMachine.changeVolume(this.cwObj.appUI.visualTab.visualTools.sound.volume);
+ 
     // important to destroy now the crystal atoms
     _.each(_this.lattice.actualAtoms, function(atom,k) {
       atom.destroy();   
@@ -59,26 +60,23 @@ define([
  
     // AFTER ADDING EVERYTHING
 
-    if(this.cwObj.latticeParams.lattice){  
+    if(this.cwObj.system.latticeParams.lattice){  
 
-      this.configureLatticeParams();
-      this.configureCellVisualization();
-      this.configureMillerObjects();
+      this.configureLatticeSettings(); 
+      this.configureMillerObjectsSettings();
 
-      this.lattice.updatePoints();  
-      this.lattice.createGrid();  
-      this.lattice.createFaces();
-      this.lattice.setGradeParameters();
-      this.lattice.forwardTransformations();  // todo may be useless
+      this.lattice.updatePoints([this.lattice.createGrid,this.lattice.createFaces,this.lattice.forwardTransformations]);  
+       
       this.lattice.reCreateMillers();
  
-      this.lattice.setGradeChoices( {'faceCheckButton': this.cwObj.cellVisualization.faces.visible} );
-      this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.cellVisualization.edges.visible} );
+      this.lattice.setGradeChoices( {'faceCheckButton': this.cwObj.system.cellVisualization.faces.visible} );
+      this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.system.cellVisualization.edges.visible} );
       this.lattice.setGradeParameters();
 
-      this.configureMotifEditor();
+      this.configureMotifEditorSettings();
     }
-  
+    
+    console.log(999999);
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -174,8 +172,7 @@ define([
     this.lattice.confirmationFunction = { id : ' ', object : ' '};
  
     this.lattice.labeling = false;
-
-
+ 
   // MOTIF EDITOR
 
     // remove 3d objects
@@ -287,65 +284,42 @@ define([
     this.soundMachine.switcher(false);
     this.soundMachine.changeVolume(75);
   };
-  RestoreCWstate.prototype.configureVisualizationParams = function() {
-    var visualizationParams = this.cwObj.visualizationParams ;
+  RestoreCWstate.prototype.configureVisualizationSettings = function() {
+    var visualTab = this.cwObj.appUI.visualTab ; 
 
-    this.crystalScene.fogActive = visualizationParams.fog ;
+    this.crystalScene.fogActive = visualTab.visualTools.fog.state ;
       
-    this.crystalScene.object3d.fog.density = parseInt(visualizationParams.fogDensity)/3000;
-    this.crystalScene.object3d.fog.color.setHex( "0x"+(visualizationParams.fogColor) );  
-    $('#fogColor').val(visualizationParams.fogColor);
-    this.menu.setSliderValue("fogDensity", parseInt(visualizationParams.fogDensity) );
-    $("input[name='fog']").prop('checked', visualizationParams.fog ); 
+    this.crystalScene.setFogProperties({
+      "fogDensity" : visualTab.visualTools.fog.density,
+      "fogColor" : visualTab.visualTools.fog.color,
+      "fog" : visualTab.visualTools.fog.state,
+    })
+  
+    this.crystalRenderer.backgroundColor = visualTab.visualTools.colorization.crystalScreenColor ; 
+    this.unitCellRenderer.backgroundColor = visualTab.visualTools.colorization.cellScreenColor ; 
+    this.motifRenderer.viewportColors[0] = visualTab.visualTools.colorization.motifXScreenColor ; 
+    this.motifRenderer.viewportColors[1] = visualTab.visualTools.colorization.motifYScreenColor ; 
+    this.motifRenderer.viewportColors[2] = visualTab.visualTools.colorization.motifZScreenColor ; 
+    
+    this.crystalScene.setLightProperties(visualTab.visualParameters.lights.lights);
+    this.unitCellScene.setLightProperties(visualTab.visualParameters.lights.lights); 
+    
+    this.crystalRenderer.ssaoEffect(visualTab.visualParameters.lights.ssao); 
+    this.unitCellRenderer.ssaoEffect(visualTab.visualParameters.lights.ssao);
 
-    this.crystalRenderer.backgroundColor = ('#'+visualizationParams.crystalScreenColor); 
-    $('#crystalScreenColor').val(visualizationParams.crystalScreenColor); 
-
-    this.unitCellRenderer.backgroundColor = ('#'+visualizationParams.cellScreenColor);
-    $('#cellScreenColor').val(visualizationParams.cellScreenColor); 
-
-    this.motifRenderer.viewportColors[0] = ('#'+visualizationParams.motifXScreenColor);
-    $('#motifXScreenColor').val(visualizationParams.motifXScreenColor); 
-
-    this.motifRenderer.viewportColors[1] = ('#'+visualizationParams.motifYScreenColor);
-    $('#motifYScreenColor').val(visualizationParams.motifYScreenColor); 
-
-    this.motifRenderer.viewportColors[2] = ('#'+visualizationParams.motifZScreenColor);
-    $('#motifZScreenColor').val(visualizationParams.motifZScreenColor); 
-
-    if(visualizationParams.lights){ 
-      this.crystalScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      this.crystalScene.light.intensity = 1 ;
-      this.crystalScene.light.castShadow = true;  
-
-      this.unitCellScene.AmbLight.color.setHex( 0x4D4D4C ); 
-      this.unitCellScene.light.intensity = 1 ;
-      this.unitCellScene.light.castShadow = true;  
-    }
-    else{ 
-      this.crystalScene.AmbLight.color.setHex( 0xffffff ); 
-      this.crystalScene.light.intensity = 0 ;
-      this.crystalScene.light.castShadow = false;  
-
-      this.unitCellScene.AmbLight.color.setHex( 0xffffff ); 
-      this.unitCellScene.light.intensity = 0.0;
-      this.unitCellScene.light.castShadow = false;  
-
-    }
-    $("input[name='lights']").prop('checked', visualizationParams.lights );
-
-    $("input[name='anaglyph']").prop('checked', visualizationParams.anaglyph ); 
-   
-    this.crystalRenderer.setAnaglyph(visualizationParams.anaglyph);
-    this.motifRenderer.setAnaglyph(visualizationParams.anaglyph);
-    this.unitCellRenderer.setAnaglyph(visualizationParams.anaglyph);
+    this.crystalRenderer.shadowing(visualTab.visualParameters.lights.shadows); 
+    this.unitCellRenderer.shadowing(visualTab.visualParameters.lights.shadows);
+ 
+    this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
+    this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
+    this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
 
   };
-  RestoreCWstate.prototype.configureMotifEditor = function() {
+  RestoreCWstate.prototype.configureMotifEditorSettings = function() {
 
-    var cell = this.cwObj.unitCell ;
-    var atoms = this.cwObj.motif ;
-    var latticeParams = this.cwObj.latticeParams.lattice.defaults ;
+    var cell = this.cwObj.system.unitCell ;
+    var atoms = this.cwObj.system.motif ;
+    var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
     
     var anglesScales = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
@@ -367,15 +341,14 @@ define([
       this.motifEditor.newSphere.destroy();
       this.motifEditor.newSphere = undefined ;
     }
+    ////////----
     this.motifEditor.editorState_("initial");
-    this.motifEditor.viewState_("Classic");
-    
+    this.motifEditor.setCSGmode("cellClassic");
+     
     this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
-
-    $("input[name='padlock']").prop('checked', cell.padlock); 
-   
-    this.motifEditor.padlockMode({padlock: cell.padlock}, true ) ;
   
+    this.motifEditor.padlockMode({padlock : cell.padlock}, true ) ;
+    
     this.motifEditor.unitCellPositions ={};
 
     for (var i = cell.positions.length - 1; i >= 0; i--) { 
@@ -490,8 +463,15 @@ define([
           break; 
       } 
     }  */
+    /////////-------
 
-    this.motifEditor.updateLatticeParameters(anglesScales,this.cwObj.latticeParams.lattice.latticeType, this.cwObj.latticeParams.bravaisLattice, this.cwObj.latticeParams.lattice.latticeSystem,1  );
+    this.motifEditor.updateLatticeParameters(
+      anglesScales,
+      this.cwObj.system.latticeParams.lattice.latticeType, 
+      this.cwObj.system.latticeParams.bravaisLattice, 
+      this.cwObj.system.latticeParams.lattice.latticeSystem,
+      1  
+    );
 
     if ( atoms.length>0 ) {
       this.motifEditor.isEmpty = false;
@@ -540,7 +520,7 @@ define([
         atoms[i].wireframe,
         1); 
        
-      this.motifEditor.updateAtomList(atoms[i].id, atoms[i].radius, atoms[i].elementName,true);
+      // this.motifEditor.updateAtomList(atoms[i].id, atoms[i].radius, atoms[i].elementName,true);
        
       if(atoms[i].id == cell.lastSphereAdded) {
         this.motifEditor.lastSphereAdded = atom ;
@@ -553,9 +533,9 @@ define([
     this.lattice.recreateMotif();
     
   };
-  RestoreCWstate.prototype.configureMillerObjects = function() {
-    var dirs = this.cwObj.millerObjects.directions;
-    var planes = this.cwObj.millerObjects.planes; 
+  RestoreCWstate.prototype.configureMillerObjectsSettings = function() {
+    var dirs = this.cwObj.system.millerObjects.directions;
+    var planes = this.cwObj.system.millerObjects.planes; 
     
     for (var i = 0; i < this.lattice.millerDirections.length; i++) {
       this.lattice.millerDirections[i].direction.destroy();
@@ -569,12 +549,7 @@ define([
 
     this.lattice.planeList.splice(0);
     this.lattice.directionalList.splice(0);
-
-    $('#planes option').remove();
-    $('#vectors option').remove();  
-    $('#vectors').append("<option  >---</option>") ;
-    $('#planes').append("<option  >---</option>") ;
-
+ 
     for (var i = dirs.length - 1; i >= 0; i--) {
       
       this.lattice.millerDirections[i] = {
@@ -592,12 +567,9 @@ define([
       this.lattice.forwardTransformationsMiller(this.lattice.millerDirections[i]); 
        
       this.lattice.millerDirections[i].direction  = new MillerVector(new THREE.Vector3( dirs[i].startPoint.x, dirs[i].startPoint.y, dirs[i].startPoint.z ), new THREE.Vector3( dirs[i].endPoint.x, dirs[i].endPoint.y, dirs[i].endPoint.z )  , dirs[i].color) ;
-      
-      var text = "Vector : "+dirs[i].name+"  ["+dirs[i].u+","+dirs[i].v+","+dirs[i].w+"] ";
+       
       var id = "_"+dirs[i].u+""+dirs[i].v+""+dirs[i].w+"";
-      var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
-      $('#vectors').append(option) ;
-
+     
       this.lattice.planeList.push({ id : id }); //selectPlane
 
     }
@@ -638,45 +610,25 @@ define([
           planeName : planes[i].name
         }; 
       }
-       
-      //this.lattice.forwardTransformationsMiller(this.lattice.millerPlanes[i]); 
-    
-      var text = "Plane : "+planes[i].name+"  ["+planes[i].h+","+planes[i].k+","+planes[i].l+"] ";
-      var id = "_"+planes[i].h+""+planes[i].k+""+planes[i].l+"";
-      var option = "<option id="+id+" value="+id+">"+text+"</option>" ;
-      $('#planes').append(option) ;
-
+   
       this.lattice.directionalList.push({ id : id });
 
     }   
 
   }; 
-  RestoreCWstate.prototype.configureGradeParams = function() {
+  RestoreCWstate.prototype.configureGradeSettings = function() {
     
     this.lattice.gradeParameters = {
       "radius" : this.cwObj.appUI.latticeTab.cellVisualization.cellEdge.radius, 
-      "cylinderColor" : this.cwObj.cellVisualization.edges.color , 
-      "faceOpacity" : this.cwObj.cellVisualization.faces.opacity , 
-      "faceColor" : this.cwObj.cellVisualization.faces.color
+      "cylinderColor" : this.cwObj.appUI.latticeTab.cellVisualization.cellEdge.color, 
+      "faceOpacity" : this.cwObj.appUI.latticeTab.cellVisualization.cellFace.opacity, 
+      "faceColor" : this.cwObj.appUI.latticeTab.cellVisualization.cellFace.color
     };
- 
-    this.menu.setSliderValue("radius",this.cwObj.cellVisualization.edges.radius );
-    this.menu.setSliderValue("faceOpacity",this.cwObj.cellVisualization.faces.opacity);
-
-
-  }; 
-  RestoreCWstate.prototype.configureCellVisualization = function() {
-
-    var _this = this ;
-     
-    $("input[name='faceCheckButton']").prop('checked', this.cwObj.cellVisualization.faces.visible);
-    $("input[name='gridCheckButton']").prop('checked', this.cwObj.cellVisualization.edges.visible);
   
-  }; 
-    
-  RestoreCWstate.prototype.configureLatticeParams = function() { 
+  };   
+  RestoreCWstate.prototype.configureLatticeSettings = function() { 
     var _this = this ;
-    var params = this.cwObj.latticeParams.properties ;
+    var params = this.cwObj.system.latticeParams ;
 
     // empty array of crystal atoms
     this.lattice.currentMotif.splice(0);
@@ -685,51 +637,28 @@ define([
     }); 
     this.lattice.actualAtoms.splice(0); 
       
-    this.lattice.gradeChoice = {"face":this.cwObj.cellVisualization.faces.visible, "grid":this.cwObj.cellVisualization.edges.visible};
+    this.lattice.gradeChoice = {"face":this.cwObj.system.cellVisualization.edges.visible, "grid":this.cwObj.system.cellVisualization.faces.visible};
+    
+    this.lattice.setCSGmode("crystalClassic");
 
-    $('#bravaisLattice').val(this.cwObj.latticeParams.bravaisLattice); 
-
-    /*if(!_.isUndefined(this.lattice.lattice.latticeType )){
-      this.lattice.destroyPoints();
-      this.lattice.destroyGrids();
-      this.lattice.destroyPoints();
-    };*/
-
-    this.lattice.lattice = this.cwObj.latticeParams.lattice ; 
-    if(this.cwObj.latticeParams.lattice){  
-
-      this.lattice.parameters =  {
-        'repeatX': this.cwObj.latticeParams.repeatX, 'repeatY': this.cwObj.latticeParams.repeatY, 'repeatZ':this.cwObj.latticeParams.repeatZ,
-        'scaleX': this.cwObj.latticeParams.lattice.defaults.scaleX, 'scaleY': this.cwObj.latticeParams.lattice.defaults.scaleY, 'scaleZ': this.cwObj.latticeParams.lattice.defaults.scaleZ, 'alpha': this.cwObj.latticeParams.lattice.defaults.alpha, 'beta': this.cwObj.latticeParams.lattice.defaults.beta, 'gamma': this.cwObj.latticeParams.lattice.defaults.gamma
-      }; 
-    }
-
-    this.lattice.update(); 
-
-    //// forgot other camerasssssssssss!
-
-    $('#repeatX').val(this.cwObj.latticeParams.repeatX);
-    $('#repeatY').val(this.cwObj.latticeParams.repeatY);
-    $('#repeatZ').val(this.cwObj.latticeParams.repeatZ);
-
-    if(this.cwObj.latticeParams.lattice){  
-
-      $('#scaleX').val(this.cwObj.latticeParams.lattice.defaults.scaleX);
-      $('#scaleY').val(this.cwObj.latticeParams.lattice.defaults.scaleY);
-      $('#scaleZ').val(this.cwObj.latticeParams.lattice.defaults.scaleZ);
-
-      $('#alpha').val(this.cwObj.latticeParams.lattice.defaults.alpha);
-      $('#beta').val(this.cwObj.latticeParams.lattice.defaults.beta);
-      $('#gamma').val(this.cwObj.latticeParams.lattice.defaults.gamma);
+    this.lattice.lattice = this.cwObj.system.latticeParams.lattice ; 
+ 
+    this.lattice.parameters =  {
+      'repeatX': params.repeatX, 
+      'repeatY': params.repeatY, 
+      'repeatZ': params.repeatZ,
+      'scaleX': params.lattice.defaults.scaleX, 
+      'scaleY': params.lattice.defaults.scaleY, 
+      'scaleZ': params.lattice.defaults.scaleZ, 
+      'alpha': params.lattice.defaults.alpha, 
+      'beta': params.lattice.defaults.beta, 
+      'gamma': params.lattice.defaults.gamma
+    }; 
       
-
-      this.menu.setSliderValue("alpha",this.cwObj.latticeParams.lattice.defaults.alpha);
-      this.menu.setSliderValue("beta",this.cwObj.latticeParams.lattice.defaults.beta);
-      this.menu.setSliderValue("gamma",this.cwObj.latticeParams.lattice.defaults.gamma);
-    }
-
+    this.lattice.update(); 
+ 
   };  
-  RestoreCWstate.prototype.configureAxisSelection = function() { 
+  RestoreCWstate.prototype.configureAxisSettings = function() { 
  
     this.crystalScene.axisMode({'xyzAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.xyzAxes}); 
     this.crystalScene.axisMode({'abcAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.abcAxes}); 
