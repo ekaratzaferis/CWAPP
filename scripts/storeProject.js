@@ -115,7 +115,7 @@ define([
         jsonText = jsonText + '}},'; // Close Toggle Buttons and Menu Ribbon //
         
         // Lattice Tab //
-        jsonText = jsonText + '"latticeTab":{ "selectedLattice":"' + argument.app.selectedLattice + '",';
+        jsonText = jsonText + '"latticeTab":{ "latticeSelecion": { "selectedLattice":"' + argument.app.selectedLattice + '", "selectedLatticeDisable":' + argument.app.selectedLatticeDisable + '},';
         jsonText = jsonText + '"latticeRepetition": { "repeatX":' + parseFloat(argument.app.repeatX) + ', "repeatY":' + parseFloat(argument.app.repeatY) + ', "repeatZ":' + parseFloat(argument.app.repeatZ) + '},';
         jsonText = jsonText + '"latticeLength": { "scaleX":' + parseFloat(argument.app.scaleX) + ', "scaleY":' + parseFloat(argument.app.scaleY) + ', "scaleZ":' + parseFloat(argument.app.scaleZ) + '},';
         jsonText = jsonText + '"latticeAngle": { "alpha":' + parseFloat(argument.app.alpha) + ', "beta":' + parseFloat(argument.app.beta) + ', "gamma":' + parseFloat(argument.app.gamma) + '},';
@@ -123,7 +123,7 @@ define([
         jsonText = jsonText + '"cellVisualization": { "cellEdge": { "color":"' + argument.app.borderColor + '", "radius":' + parseFloat(argument.app.radius) + '}, "cellFace": { "color":"' + argument.app.filledColor + '", "opacity":' + parseFloat(argument.app.opacity) + '}}},';
         
         // Motif Tab //
-        jsonText = jsonText + '"motifTab": { "tangency":' + argument.app.tangency + ', "cellVolume":' + parseFloat(argument.app.cellVolume) + ',';
+        jsonText = jsonText + '"motifTab": { "lockCameras":' + argument.app.lockCameras + ', "tangency":' + argument.app.tangency + ', "cellVolume":' + parseFloat(argument.app.cellVolume) + ',';
         jsonText = jsonText + '"motifLabels": { "a":"' + argument.app.motifLabels.a + '", "b":"' + argument.app.motifLabels.b + '", "c":"' + argument.app.motifLabels.c + '", "alpha":"' + argument.app.motifLabels.alpha + '", "beta":"' + argument.app.motifLabels.beta + '", "gamma":"' + argument.app.motifLabels.gamma + '"}},';
         
         // Visual Tab //

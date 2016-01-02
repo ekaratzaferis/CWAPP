@@ -113,6 +113,10 @@ define([
                 if (jQuery('#tangency').parent().hasClass('purpleThemeActive')) return true;
                 else return false;
             }
+            case 'lockCameras':{
+                if (jQuery('#lockCameraIcon').hasClass('active')) return true;
+                else return false;
+            }
             case 'atomOpacity':{
                 return $stringEditor.inputIsNumber(jQuery('#atomOpacity').val());
             }
@@ -473,6 +477,7 @@ define([
         app.tangency = retrieveValueFromID('tangency');
         app.cellVolume = retrieveValueFromID('cellVolume');
         app.motifLabels = retrieveValueFromID('motifLabels');
+        app.lockCameras = retrieveValueFromID('lockCameras');
         
         // Retrieve Visual Tab Values //
         app.wireframe = retrieveValueFromID('wireframe');

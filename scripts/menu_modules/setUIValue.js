@@ -2003,6 +2003,7 @@ define([
         // Motif //
         takeAction('tangency',jQuery('#tangency'),appUI.motifTab.tangency);
         takeAction('cellVolume',jQuery('#cellVolume'),appUI.motifTab.cellVolume.toString());
+        takeAction('lockCameras',jQuery('#lockCameraIcon'),appUI.motifTab.lockCameras);
         $menu.reset('atomTable');
         jQuery('.element-symbol-container').hide();
         $menu.reset('motifCollisions');
