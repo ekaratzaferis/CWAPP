@@ -231,22 +231,16 @@ define([
             jQuery('#openJSONInput').trigger('click');
         });
         $openJSONDialog.change(function(event){
-            $userDialog.showInfoDialog({ messageID: 30 });
             var f = event.target.files[0];  
             if (f) {
                 var r = new FileReader();
                 r.onload = function(e) {  
                     var st = JSON.parse(e.target.result);  
                     PubSub.publish('menu.open_json', st);
-                    $setUIValue.restoreUI(st.appUI,st.info);
-                    $disableUIElement.restoreUI(st.appUI);
-                    $notesTab.restoreNotes(st.notes);
-                    $userDialog.hideInfoDialog();
                 }
                 r.readAsText(f);
             } 
             else { 
-                $userDialog.hideInfoDialog();
                 $userDialog.showErrorDialog({ messageID: 31, code: '402' });
             }
         });

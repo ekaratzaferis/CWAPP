@@ -173,12 +173,12 @@ define([
     function Menu() {
 
         var _this = this;
-        html = new menu_html();
-        
+
         // Independent Modules //
         toolTipGeneratorModule = new tooltipGenerator();
         stringEditorModule = new stringEditor();
         messagesModule = new messages();
+        html = new menu_html();
 
         // 1st level dependency //
         userDialogModule = new userDialog({
@@ -191,7 +191,8 @@ define([
             stringEditor: stringEditorModule,
         });
         disableUIElementModule = new disableUIElement({
-            messages: messagesModule 
+            messages: messagesModule,
+            html: html
         });
         setUIValueModule = new setUIValue({
             messages: messagesModule,
@@ -251,7 +252,8 @@ define([
             tooltipGenerator:toolTipGeneratorModule,
             interfaceResizer:interfaceResizerModule,
             setUIValue:setUIValueModule,
-            notesTab:notesTabModule
+            notesTab:notesTabModule,
+            html:html
         });
         modalsModule = new modals({
             setUIValue: setUIValueModule,
