@@ -113,6 +113,10 @@ define([
                 if (jQuery('#tangency').parent().hasClass('purpleThemeActive')) return true;
                 else return false;
             }
+            case 'lockCameras':{
+                if (jQuery('#lockCameraIcon').hasClass('active')) return true;
+                else return false;
+            }
             case 'atomOpacity':{
                 return $stringEditor.inputIsNumber(jQuery('#atomOpacity').val());
             }
@@ -202,12 +206,12 @@ define([
             case 'selectedLattice':{
                 return jQuery('#selected_lattice').html();
             }
-            case 'latticePadlockDisable':{
-                if (jQuery('#latticePadlock').hasClass('disabled')) return true;
-                else return false;
-            }
             case 'latticePadlock':{
                 if (jQuery('#latticePadlock').children().hasClass('active')) return true;
+                else return false;
+            }
+            case 'motifPadlock':{
+                if (jQuery('#motifPadlock').children().hasClass('active')) return true;
                 else return false;
             }
             case 'borderColor':{
@@ -265,14 +269,6 @@ define([
             }
             case 'millerT':{
                 return $stringEditor.inputIsInteger(jQuery('#millerT').val());
-            }
-            case 'motifPadlockDisable':{
-                if (jQuery('#motifPadlock').hasClass('disabled')) return true;
-                else return false;
-            }
-            case 'motifPadlock':{
-                if (jQuery('#motifPadlock').children().hasClass('active')) return true;
-                else return false;
             }
             
             // Visual Tab
@@ -430,7 +426,23 @@ define([
             }
                 
         };
-    }
+    };
+    function retrieveAccessibility(index){
+        switch(index){
+            case 'latticePadlockDisable':{
+                if (jQuery('#latticePadlock').hasClass('disabled')) return true;
+                else return false;
+            }
+            case 'motifPadlockDisable':{
+                if (jQuery('#motifPadlock').hasClass('disabled')) return true;
+                else return false;
+            }
+            case 'selectedLattice':{
+                if (jQuery('#selectedLattice').hasClass('disabled')) return true;
+                else return false;
+            }
+        };
+    };
     
     getUIValue.prototype.getAppState = function(){
         var app = {};
@@ -442,12 +454,13 @@ define([
         
         // Retrieve Lattice Tab Values //
         app.selectedLattice = retrieveValueFromID('selectedLattice');
-        app.latticePadlockDisable = retrieveValueFromID('latticePadlockDisable');
+        app.selectedLatticeDisable = retrieveAccessibility('selectedLattice');
+        app.latticePadlockDisable = retrieveAccessibility('latticePadlockDisable');
         app.latticePadlock = retrieveValueFromID('latticePadlock');
         app.repeatX = retrieveValueFromID('repeatX');
         app.repeatY = retrieveValueFromID('repeatY');
         app.repeatZ = retrieveValueFromID('repeatZ');
-        app.motifPadlockDisable = retrieveValueFromID('motifPadlockDisable');
+        app.motifPadlockDisable = retrieveAccessibility('motifPadlockDisable');
         app.motifPadlock = retrieveValueFromID('motifPadlock');
         app.scaleX = retrieveValueFromID('scaleX');
         app.scaleY = retrieveValueFromID('scaleY');
@@ -464,6 +477,7 @@ define([
         app.tangency = retrieveValueFromID('tangency');
         app.cellVolume = retrieveValueFromID('cellVolume');
         app.motifLabels = retrieveValueFromID('motifLabels');
+        app.lockCameras = retrieveValueFromID('lockCameras');
         
         // Retrieve Visual Tab Values //
         app.wireframe = retrieveValueFromID('wireframe');

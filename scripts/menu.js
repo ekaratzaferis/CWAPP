@@ -32,7 +32,8 @@ define([
     'libraryTab',
     'notesTab',
     'tag-it.min',
-    'jquery.qrcode-0.12.0.min'
+    'jquery.qrcode-0.12.0.min',
+    'html'
 ], function(
     jQuery,
     jQuery_ui,
@@ -62,7 +63,8 @@ define([
     libraryTab,
     notesTab,
     tagIt,
-    qrCode
+    qrCode,
+    html
 ) 
 {
 
@@ -234,6 +236,7 @@ define([
             stringEditor:stringEditorModule
         });
         libraryTabModule = new libraryTab({
+            disableUIElement: disableUIElementModule, 
             setUIValue: setUIValueModule, 
             tooltipGenerator: toolTipGeneratorModule,
             messages: messagesModule,
@@ -527,6 +530,9 @@ define([
     Menu.prototype.setLatticeRestrictions = function(restrictions) {
         latticeTabModule.setLatticeRestrictions(restrictions);
     };
+    Menu.prototype.restorePadlocks = function(lattice,motif){
+        latticeTabModule.restorePadlocks(lattice,motif);  
+    };
 
     // Motif Tab //
     Menu.prototype.toggleExtraParameter = function(choice, action){
@@ -813,7 +819,9 @@ define([
                 
     // System //
     Menu.prototype.restore = function(data){
-        setUIValueModule.restore(data);
+        setUIValueModule.restoreUI(data.appUI,data.info);
+        disableUIElementModule.restoreUI(data.appUI);
+        notesTabModule.restoreNotes(data.notes);
     };
     Menu.prototype.reset = function(argument){
         switch(argument){
