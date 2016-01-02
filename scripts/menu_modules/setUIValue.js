@@ -310,6 +310,16 @@ define([
                 selector.children().css('background','#'+value);
                 break;  
             }
+            case 'cellEdgeColor':{
+                selector.spectrum('set',value);
+                selector.children().css('background',value);
+                break;  
+            }
+            case 'cellFaceColor':{
+                selector.spectrum('set',value);
+                selector.children().css('background',value);
+                break;  
+            }
             case 'faceColor':{
                 selector.children().css('background','#'+value);
                 break;  
@@ -1945,7 +1955,7 @@ define([
             });
         }
     };
-    setUIValue.prototype.restore = function(appUI,info){
+    setUIValue.prototype.restoreUI = function(appUI,info){
         // Restore Library Tab //
         takeAction('projectName',jQuery('#projectName'),info.name);
         takeAction('projectDescription',jQuery('#projectDescription'),info.description);
@@ -1972,7 +1982,7 @@ define([
         takeAction('atomRadiusSlider',jQuery('#atomRadiusSlider'),appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Lattice Tab //
-        takeAction('selectedLattice',jQuery('#selected_lattice'),appUI.latticeTab.selectedLattice);
+        takeAction('selectedLattice',jQuery('#selected_lattice'),appUI.latticeTab.latticeSelecion.selectedLattice);
         takeAction('repeatX',jQuery('#repeatX'),appUI.latticeTab.latticeRepetition.repeatX);
         takeAction('repeatY',jQuery('#repeatY'),appUI.latticeTab.latticeRepetition.repeatY);
         takeAction('repeatZ',jQuery('#repeatZ'),appUI.latticeTab.latticeRepetition.repeatZ);
@@ -1982,17 +1992,61 @@ define([
         takeAction('alpha',jQuery('#alpha'),appUI.latticeTab.latticeAngle.alpha);
         takeAction('beta',jQuery('#beta'),appUI.latticeTab.latticeAngle.beta);
         takeAction('gamma',jQuery('#gamma'),appUI.latticeTab.latticeAngle.gamma);
-        /*
-        takeAction('latticePadlock',jQuery('#latticePadlock'),false);
-        
-        
-        takeAction('motifPadlock',jQuery('#motifPadlock'),false);
-        takeAction('cylinderColor',jQuery('#cube_color_border'),'A19EA1');
-        takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
-        takeAction('radius',jQuery('#radius'),'2');
-        takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
+        $menu.restorePadlocks(appUI.latticeTab.padlocks.lattice.state,appUI.latticeTab.padlocks.motif.state);
+        takeAction('cellEdgeColor',jQuery('#cube_color_border'),appUI.latticeTab.cellVisualization.cellEdge.color);
+        takeAction('cellFaceColor',jQuery('#cube_color_filled'),appUI.latticeTab.cellVisualization.cellFace.color);
+        takeAction('radius',jQuery('#radius'),appUI.latticeTab.cellVisualization.cellEdge.radius.toString());
+        takeAction('faceOpacity',jQuery('#faceOpacity'),appUI.latticeTab.cellVisualization.cellFace.opacity.toString());
         $menu.reset('restrictions');
-        $menu.reset('collisions');*/
+        $menu.reset('collisions');
+        
+        // Motif //
+        takeAction('tangency',jQuery('#tangency'),appUI.motifTab.tangency);
+        takeAction('cellVolume',jQuery('#cellVolume'),appUI.motifTab.cellVolume.toString());
+        $menu.reset('atomTable');
+        jQuery('.element-symbol-container').hide();
+        $menu.reset('motifCollisions');
+
+        // Visual //
+        takeAction('wireframe',jQuery('#wireframe'),appUI.visualTab.visualParameters.renderizationMode.wireframe);
+        takeAction('toon',jQuery('#toon'),appUI.visualTab.visualParameters.renderizationMode.toon);
+        takeAction('flat',jQuery('#flat'),appUI.visualTab.visualParameters.renderizationMode.flat);
+        takeAction('realistic',jQuery('#realistic'),appUI.visualTab.visualParameters.renderizationMode.realistic);
+        takeAction('lights',jQuery('#lights'),appUI.visualTab.visualParameters.lights.lights);
+        takeAction('ssao',jQuery('#ssao'),appUI.visualTab.visualParameters.lights.ssao);
+        takeAction('shadows',jQuery('#shadows'),appUI.visualTab.visualParameters.lights.shadows);
+        takeAction('distortionOff',jQuery('#distortionOff'),appUI.visualTab.visualParameters.visualizationMode.distortionOff);
+        takeAction('distortionOn',jQuery('#distortionOn'),appUI.visualTab.visualParameters.visualizationMode.distortionOn);
+        takeAction('anaglyph',jQuery('#anaglyph'),appUI.visualTab.visualParameters.stereoscopicEffect.anaglyph);
+        takeAction('oculus',jQuery('#oculus'),appUI.visualTab.visualParameters.stereoscopicEffect.oculus);
+        takeAction('sideBySide',jQuery('#3DsideBySide'),appUI.visualTab.visualParameters.stereoscopicEffect.sideBySide3D);
+        takeAction('onTop',jQuery('#3DonTop'),appUI.visualTab.visualParameters.stereoscopicEffect.OnTop3D);
+        takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn);
+        takeAction('crystalCamTargetOff',jQuery('#crystalCamTargetOff'),appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOff);
+        takeAction('leapMotion',jQuery('#leapMotion'),appUI.visualTab.visualParameters.leapMotion);
+        takeAction('crystalClassic',jQuery('#crystalClassic'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalClassic);
+        takeAction('crystalSubstracted',jQuery('#crystalSubstracted'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSubstracted);
+        takeAction('crystalSolidVoid',jQuery('#crystalSolidVoid'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSolidVoid);
+        takeAction('crystalGradeLimited',jQuery('#crystalGradeLimited'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalGradeLimited);
+        takeAction('cellClassic',jQuery('#cellClassic'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellClassic);
+        takeAction('cellSubstracted',jQuery('#cellSubstracted'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSubstracted);
+        takeAction('cellSolidVoid',jQuery('#cellSolidVoid'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSolidVoid);
+        takeAction('cellGradeLimited',jQuery('#cellGradeLimited'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellGradeLimited);
+        if (appUI.visualTab.visualTools.menuZoom.autoZoom === true) takeAction('autoZoom',jQuery('autoZoom'),'');
+        if (appUI.visualTab.visualTools.menuZoom.zoom100 === true) takeAction('zoom100',jQuery('zoom100'),'');
+        if (appUI.visualTab.visualTools.menuZoom.zoom90 === true) takeAction('zoom90',jQuery('zoom90'),'');
+        if (appUI.visualTab.visualTools.menuZoom.zoom80 === true) takeAction('zoom80',jQuery('zoom80'),'');
+        if (appUI.visualTab.visualTools.menuZoom.zoom70 === true) takeAction('zoom70',jQuery('zoom70'),'');
+        takeAction('fog',jQuery('input[name="fog"]'),appUI.visualTab.visualTools.fog.state);
+        takeAction('fogDensity',jQuery('#fogDensity'),appUI.visualTab.visualTools.fog.density);
+        takeAction('fogColor',jQuery('#fogColor'),appUI.visualTab.visualTools.fog.color);
+        takeAction('sounds',jQuery('#sounds'),appUI.visualTab.visualTools.sound.state);
+        takeAction('soundSlider',jQuery('#soundSlider'),appUI.visualTab.visualTools.sound.volume);
+        takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),appUI.visualTab.visualTools.colorization.crystalScreenColor);
+        takeAction('cellScreenColor',jQuery('#cellScreenColor'),appUI.visualTab.visualTools.colorization.cellScreenColor);
+        takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),appUI.visualTab.visualTools.colorization.motifXScreenColor);
+        takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),appUI.visualTab.visualTools.colorization.motifYScreenColor);
+        takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),appUI.visualTab.visualTools.colorization.motifZScreenColor);
     };
     
     return setUIValue;

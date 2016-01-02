@@ -634,6 +634,11 @@ define([
             });
         }
     };
+    disableUIElement.prototype.restoreUI = function(data){
+        takeAction('latticePadlock',jQuery('#latticePadlock'),data.latticeTab.padlocks.lattice.disabled);
+        takeAction('motifPadlock',jQuery('#motifPadlock'),data.latticeTab.padlocks.motif.disabled);
+        takeAction('select_lattice',jQuery('#select_lattice'),data.latticeTab.latticeSelecion.selectedLatticeDisable);
+    };
     
     return disableUIElement;
 });

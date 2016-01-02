@@ -1012,6 +1012,9 @@ define([
             delete collisions[k];
         });  
     };
+    latticeTab.prototype.restorePadlocks = function(lattice,motif){
+        
+    };
     
     return latticeTab;
 });

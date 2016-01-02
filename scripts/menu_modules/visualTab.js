@@ -369,7 +369,7 @@ define([
         $soundSlider.slider('disable');
         _.each(colorPickers, function($parameter, k) {
             $parameter.spectrum({
-                color: "#ffffff",
+                color: "#000000",
                 allowEmpty:true,
                 chooseText: "Choose",
                 cancelText: "Close",

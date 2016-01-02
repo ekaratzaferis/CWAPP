@@ -24,6 +24,7 @@ define([
     var $getUIValue = undefined;
     var $tooltipGenerator = undefined;
     var $messages = undefined;
+    var $disableUIElement = undefined;
     var $notesTab = undefined;
     var $userDialog = undefined;
     
@@ -69,6 +70,8 @@ define([
         if (!(_.isUndefined(argument.notesTab))) $notesTab = argument.notesTab;
         else return false;
         if (!(_.isUndefined(argument.userDialog))) $userDialog = argument.userDialog;
+        else return false;
+        if (!(_.isUndefined(argument.disableUIElement))) $disableUIElement = argument.disableUIElement;
         else return false;
         
         // Save Project Section //
@@ -235,7 +238,8 @@ define([
                 r.onload = function(e) {  
                     var st = JSON.parse(e.target.result);  
                     PubSub.publish('menu.open_json', st);
-                    $setUIValue.restore(st.appUI,st.info);
+                    $setUIValue.restoreUI(st.appUI,st.info);
+                    $disableUIElement.restoreUI(st.appUI);
                     $notesTab.restoreNotes(st.notes);
                     $userDialog.hideInfoDialog();
                 }
