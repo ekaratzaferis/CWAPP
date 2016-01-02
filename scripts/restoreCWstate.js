@@ -42,8 +42,8 @@ define([
       
     var _this = this; 
 
-    this.cwObj = cwObj.system ;  
-    this.configureCameras();
+    this.cwObj = cwObj;  
+    this.configureCameraSettings();
     this.configureAxisSelection();
     this.configureTextArea();
     this.configureGradeParams();
@@ -203,8 +203,7 @@ define([
     if( this.motifEditor.newSphere !== undefined){
       this.motifEditor.newSphere.removesubtractedForCache();
     }
-    
-
+     
     // global variables 
    
     this.motifEditor.cellParameters = { "alpha" : 90, "beta" : 90, "gamma" : 90, "scaleX" : 1, "scaleY" : 1, "scaleZ" : 1 }; 
@@ -742,9 +741,9 @@ define([
     $('#abcAxes').prop('checked', choices.abcVisible);
 
   }; 
-  RestoreCWstate.prototype.configureCameras = function() { 
+  RestoreCWstate.prototype.configureCameraSettings = function() { 
 
-    var settings = this.cwObj.cameraSettings ;
+    var settings = this.cwObj.system.cameraSettings ;
     var crystalCam = this.orbitCrystal.camera ;
     var cellCamera = this.orbitUnitCell.camera ; 
 
@@ -760,26 +759,34 @@ define([
     this.motifZcam.updateProjectionMatrix();
  
     // center at
-    if(settings.crystalCamera.centeredAtAxis){
+    if(this.cwObj.appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn === true){
       this.orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
     }
-    else{
-      var params = this.cwObj.latticeParams.properties ;
-      var x = params.scaleX * params.repeatX/2 ;
-      var y = params.scaleY * params.repeatY /2;
-      var z = params.scaleZ * params.repeatZ/2 ;
-      var target = new THREE.Vector3(x,y,z) ;
-      this.orbitCrystal.control.target = target ;
-    } 
-    $('#crystalCamTarget').prop('checked', settings.crystalCamera.centeredAtAxis);
+    else{ 
+      this.orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
+      /*
+      var g = lattice.customBox(lattice.viewBox);
+      var centroid = new THREE.Vector3(0,0,0);
 
+      if(g !== undefined){ 
+        centroid = new THREE.Vector3(); 
+        for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+          centroid.add( g.vertices[ z ] ); 
+        }  
+        centroid.divideScalar( g.vertices.length );
+      }
+ 
+      this.orbitCrystal.control.target = centroid ;
+      */
+    } 
+ 
     // distortion
     var cPos = this.crystalRenderer.cameras[0].position ;
     var currDistance = (this.crystalRenderer.cameras[0].position).distanceTo(new THREE.Vector3(0,0,0)) ;
     var vFOV = this.crystalRenderer.cameras[0].fov * Math.PI / 180;         
     var Visheight = 2 * Math.tan( vFOV / 2 ) * currDistance;   
 
-    if(settings.crystalCamera.distortion){
+    if(this.cwObj.appUI.visualTab.visualParameters.visualizationMode.distortionOn === true){
       this.crystalRenderer.cameras[0].fov = 75;
       var distance = Visheight/(2 * Math.tan( (75* Math.PI / 180) / 2 ) );
       var factor = distance/currDistance; 
@@ -793,19 +800,20 @@ define([
     }   
 
     // sync cameras 
-
-    if(settings.crystalCamera.synced){    
-      crystalCam.position.set( cellCamera.position.x, cellCamera.position.y, cellCamera.position.z );  
-      this.orbitCrystal.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ); 
-      this.orbitUnitCell.currPos.set(cellCamera.position.x,cellCamera.position.y,cellCamera.position.z ) ; 
-      this.orbitCrystal.sync = true;
-      this.orbitUnitCell.sync = true;  
+ 
+    if(false /* here is if synced*/){    
+      cellCamera.position.set( crystalCam.position.x, crystalCam.position.y, crystalCam.position.z );   
+      this.orbitUnitCell.control.target = this.orbitCrystal.control.target.clone();
+      this.orbitCrystal.syncCams(true);
+      this.orbitUnitCell.syncCams(true); 
     }
     else
-    {
-      this.orbitCrystal.sync = false;
-      this.orbitUnitCell.sync = false; 
-    } 
+    { 
+      this.orbitUnitCell.control.target = new THREE.Vector3(0,0,0);
+      this.orbitCrystal.syncCams(false);
+      this.orbitUnitCell.syncCams(false);
+    }
+
   };  
  
   return RestoreCWstate;
