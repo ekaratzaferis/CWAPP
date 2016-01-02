@@ -44,8 +44,7 @@ define([
 
     this.cwObj = cwObj;  
     this.configureCameraSettings();
-    this.configureAxisSelection();
-    this.configureTextArea();
+    this.configureAxisSelection(); 
     this.configureGradeParams();
 
     this.configureVisualizationParams();
@@ -653,11 +652,14 @@ define([
 
   }; 
   RestoreCWstate.prototype.configureGradeParams = function() {
-    this.lattice.gradeParameters = {"radius" : this.cwObj.cellVisualization.edges.radius, "cylinderColor" : this.cwObj.cellVisualization.edges.color , "faceOpacity" : this.cwObj.cellVisualization.faces.opacity , "faceColor" : this.cwObj.cellVisualization.faces.color};
-
-    $('#radius').val(this.cwObj.cellVisualization.edges.radius);
-    $('#faceOpacity').val(this.cwObj.cellVisualization.faces.opacity);
-
+    
+    this.lattice.gradeParameters = {
+      "radius" : this.cwObj.appUI.latticeTab.cellVisualization.cellEdge.radius, 
+      "cylinderColor" : this.cwObj.cellVisualization.edges.color , 
+      "faceOpacity" : this.cwObj.cellVisualization.faces.opacity , 
+      "faceColor" : this.cwObj.cellVisualization.faces.color
+    };
+ 
     this.menu.setSliderValue("radius",this.cwObj.cellVisualization.edges.radius );
     this.menu.setSliderValue("faceOpacity",this.cwObj.cellVisualization.faces.opacity);
 
@@ -726,20 +728,12 @@ define([
       this.menu.setSliderValue("gamma",this.cwObj.latticeParams.lattice.defaults.gamma);
     }
 
-  };
-  RestoreCWstate.prototype.configureTextArea = function() { 
-    $('#mynotes').append(this.cwObj.notes);
-  };
-
+  };  
   RestoreCWstate.prototype.configureAxisSelection = function() { 
-    var choices = this.cwObj.axisSelection;
  
-    this.crystalScene.axisMode({'xyzAxes' : choices.xyzVisible});
-    $('#xyzAxes').prop('checked', choices.xyzVisible);
-
-    this.crystalScene.axisMode({'abcAxes' : choices.abcVisible}); 
-    $('#abcAxes').prop('checked', choices.abcVisible);
-
+    this.crystalScene.axisMode({'xyzAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.xyzAxes}); 
+    this.crystalScene.axisMode({'abcAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.abcAxes}); 
+     
   }; 
   RestoreCWstate.prototype.configureCameraSettings = function() { 
 
@@ -801,7 +795,7 @@ define([
 
     // sync cameras 
  
-    if(false /* here is if synced*/){    
+    if(this.cwObj.appUI.motifTab.lockCameras !== undefined && this.cwObj.appUI.motifTab.lockCameras === true){    
       cellCamera.position.set( crystalCam.position.x, crystalCam.position.y, crystalCam.position.z );   
       this.orbitUnitCell.control.target = this.orbitCrystal.control.target.clone();
       this.orbitCrystal.syncCams(true);
