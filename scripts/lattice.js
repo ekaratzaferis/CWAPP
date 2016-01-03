@@ -1418,8 +1418,7 @@ define([
     }); 
      
   }; 
-  var _times = {'a':0,'b':0,'c':0};
-   
+ 
   Lattice.prototype.updatePoints = function(callbacks) { 
     var spawnCounter, spawns = 0;
      
@@ -1451,17 +1450,13 @@ define([
     var reference;
 
     var _this = this;
-
-    var aa = new Date(); 
  
     parameters.repeatX = parseInt(parameters.repeatX);
     parameters.repeatY = parseInt(parameters.repeatY);
     parameters.repeatZ = parseInt(parameters.repeatZ);
 
     spawnCounter = (parameters.repeatX +1) * (parameters.repeatY +1) * (parameters.repeatZ + 1);
-    
-    
-    _times['c'] = new Date();
+     
 
     if(this.latticeName !== 'hexagonal'){ 
       
@@ -1622,7 +1617,7 @@ define([
     
     this.resetPlaneToggles();
     var _this = this;
-     
+ 
     if(_this.currentMotif.length === 0 ) return ;
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position; 
@@ -2668,9 +2663,7 @@ define([
         notvis++;
       }
     };
-
-    console.log('vis '+vis);
-    console.log('notvis '+notvis);
+ 
   };
   function identicalPoints(a,b){
 

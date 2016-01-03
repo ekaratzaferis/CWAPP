@@ -457,9 +457,7 @@ define([
     var xFactor = 1;
     var yFactor = 1;
     var zFactor = 1;
-     
-     console.log(param);
-     
+      
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
@@ -3103,8 +3101,7 @@ define([
         case "base":  
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-
+              _.times(2 , function(_z) { 
                 identity = "_"+_x+_y+_z; 
                 _this.unitCellAtoms.push(
                   createHelperObj(
@@ -3115,8 +3112,7 @@ define([
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z
                   )
-                );
-
+                ); 
               });
             });
           }); 
@@ -5851,7 +5847,7 @@ define([
     if(restore !== undefined){
       return;
     }
-    
+
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');
