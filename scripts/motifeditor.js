@@ -153,7 +153,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-     
+      
     // late feature
     if(this.newSphere !== undefined){
        
@@ -181,7 +181,7 @@ define([
     
     var radius = parseFloat(params.ionicValue);
      
-    var newId = "_"+produceUuid() ;
+    var newId = "_"+this.produceUuid() ;
     var p = new THREE.Vector3(0,0,0);
 
     if(this.isEmpty) {  
@@ -224,15 +224,7 @@ define([
       false,
       undefined,
       params.ionicIndex
-    );
-
-    /* PubSub.publish(
-      events.EDITOR_STATE,{
-        'state' : "creating", 
-        'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
-        'atomColor' : params.atomColor
-      }
-    ); */ 
+    ); 
     
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
@@ -1728,21 +1720,18 @@ define([
     } ;
       
     return r;
-  }; 
+  };   
   Motifeditor.prototype.updateFixedDimensions = function (latticeParams) {
 
     if(!_.isUndefined(latticeParams.scaleX) ) { 
-      if(this.latticeName !== 'hexagonal'){
-        $("#fixedX").val(parseFloat(latticeParams.scaleX));
+      if(this.latticeName !== 'hexagonal'){ 
         this.cellParameters.scaleX = parseFloat(latticeParams.scaleX) ; 
       }
     } 
-    if(!_.isUndefined(latticeParams.scaleY) ) {
-      $("#fixedY").val(parseFloat(latticeParams.scaleY));
+    if(!_.isUndefined(latticeParams.scaleY) ) { 
       this.cellParameters.scaleY = parseFloat(latticeParams.scaleY) ; 
     }
-    if(!_.isUndefined(latticeParams.scaleZ) ) {
-      $("#fixedZ").val(parseFloat(latticeParams.scaleZ));
+    if(!_.isUndefined(latticeParams.scaleZ) ) { 
       this.cellParameters.scaleZ = parseFloat(latticeParams.scaleZ) ; 
     }
   };
@@ -2002,6 +1991,7 @@ define([
     }
   }; 
   Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
+    console.log(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) ;
 
     var _this = this ;  
     if(action === 'delete'){
@@ -2025,7 +2015,18 @@ define([
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-     
+      
+      console.log({
+        'action':action,
+        'id':id, 
+        'visible':true,
+        'elementCode':name.toLowerCase(),
+        'elementName':name,
+        'atomColor':atomColor,
+        'atomPos': atomPos,
+        'ionicIndex': ionicIndex
+      });
+
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -6499,9 +6500,12 @@ define([
 
   var uuid = -1;
 
-  function produceUuid () {
-    uuid++
-    return uuid;
+  Motifeditor.prototype.produceUuid = function(reset) {
+    if(reset !== undefined){
+      uuid = -1;
+      return;
+    }
+    return uuid++;
   }
   THREE.ShaderTypes = { 
     'phongDiffuse' : {

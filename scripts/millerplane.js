@@ -1,5 +1,5 @@
 /*global define*/
-'use strict';
+//'use strict';
 
 define([
   'three',

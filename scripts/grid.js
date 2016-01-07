@@ -36,12 +36,17 @@ define([
 
   };
   
-  Grid.prototype.setVisible= function( x) { this.object3d.visible = x; };
+  Grid.prototype.setVisible= function(x) { this.object3d.visible = x; };
 
   Grid.prototype.setColor = function(color) {
 
-    if(_.isUndefined(color)) return; 
-    this.object3d.material.color.setHex( "0x"+color );
+    if(_.isUndefined(color)) return;  
+    if(color[0] === '#'){
+      this.object3d.material.color.set( color );
+    } 
+    else if(color[0] === '0'){
+      this.object3d.material.color.setHex( color );
+    }
     this.setRadius(this.scale);
 
   };

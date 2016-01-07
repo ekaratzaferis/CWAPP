@@ -423,6 +423,21 @@ define([
 
             motif.push('",');
 
+            motif.push('"tangentParent" : "');
+            motif.push(atom.tangentParent );
+
+            motif.push('",');
+            
+            motif.push('"ionicIndex" : "');
+            motif.push(atom.ionicIndex );
+
+            motif.push('",');
+
+            motif.push('"ionicValue" : "');
+            motif.push(atom.ionicValue );
+
+            motif.push('",');
+
             motif.push('"color" : "');
             motif.push(atom.color );
 
@@ -468,7 +483,8 @@ define([
         var directionsUnique = _.uniq(_this.lattice.millerDirections, function(d) { return d.id; }); 
 
         _.each(directionsUnique, function(directional ) {
-            if(counter>0) directions.push(', ');
+            
+            if(counter>0) directions.push(',');
             counter++;
 
             directions.push('{"visible" : ');
@@ -477,13 +493,13 @@ define([
             directions.push(',');
 
             directions.push('"id" : "');
-
+          
             directions.push(directional.id );
 
             directions.push('",');
 
             directions.push('"startPoint" : { "x" : '+directional.startPoint.x+', "y" :'+directional.startPoint.y+', "z" : '+directional.startPoint.z+'},'  );
-
+             
             directions.push('"endPoint" : { "x" : '+directional.endpointPoint.x+', "y" :'+directional.endpointPoint.y+', "z" : '+directional.endpointPoint.z+'}'  );
 
             directions.push(',');
@@ -495,6 +511,11 @@ define([
 
             directions.push('"color" : "');
             directions.push(directional.directionColor );
+
+            directions.push('",');
+
+            directions.push('"radius" : "');
+            directions.push(directional.dirRadius );
 
             directions.push('",');
 
@@ -516,7 +537,7 @@ define([
         });
 
         directions.push('], "planes":[ ');
-
+        
         counter = 0;
 
         var planesIDs = [];
@@ -557,6 +578,11 @@ define([
 
             planes.push('"opacity" : ');
             planes.push(plane.planeOpacity );
+
+            planes.push(',');
+
+            planes.push('"parallel" : ');
+            planes.push(plane.parallel );
 
             planes.push(',');
 

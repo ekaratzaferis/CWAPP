@@ -42,6 +42,9 @@ define([
       
     var _this = this; 
 
+    this.globalReset();
+    this.menu.restore(cwObj);
+    
     this.cwObj = cwObj;  
 
     this.configureCameraSettings();
@@ -51,11 +54,7 @@ define([
 
     this.soundMachine.switcher(this.cwObj.appUI.visualTab.visualTools.sound.state);
     this.soundMachine.changeVolume(this.cwObj.appUI.visualTab.visualTools.sound.volume);
- 
-    // important to destroy now the crystal atoms
-    _.each(_this.lattice.actualAtoms, function(atom,k) {
-      atom.destroy();   
-    }); 
+  
     this.lattice.actualAtoms.splice(0); 
  
     // AFTER ADDING EVERYTHING
@@ -67,22 +66,19 @@ define([
 
       this.configureMotifEditorSettings();
 
-      this.lattice.updatePoints([
-        this.lattice.createGrid,
-        this.lattice.createFaces,
-        this.lattice.forwardTransformations,
-        this.lattice.recreateMotif
-      ]);  
-       
-      this.lattice.reCreateMillers();
- 
       this.lattice.setGradeChoices( {'faceCheckButton': this.cwObj.system.cellVisualization.faces.visible} );
       this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.system.cellVisualization.edges.visible} );
-      this.lattice.setGradeParameters();
- 
+      
+      this.lattice.updatePoints([
+        this.lattice.createGrid,
+        this.lattice.createFaces, 
+        this.lattice.setGradeParameters, 
+        this.lattice.forwardTransformations,   
+        this.lattice.reCreateMillers, 
+        this.lattice.recreateMotif 
+      ]);   
     }
-    
-    this.menu.restore(this.cwObj);
+     
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -160,12 +156,12 @@ define([
       this.lattice.planeState = {state:"initial", editing : undefined };
       this.lattice.planeList = [];
       this.lattice.tempPlanes = [];
+      this.lattice.planesUnique = [];
 
       this.lattice.millerDirections = [];
       this.lattice.directionalState = {state:"initial", editing : undefined };    
       this.lattice.directionalList = [];
-      this.lattice.tempDirs = [] ;
-      this.lattice.planesUnique = [];
+      this.lattice.tempDirs = [] ; 
       this.lattice.directionsUnique = [] ;
 
       //view
@@ -330,18 +326,6 @@ define([
 
     this.motifEditor.cellParameters = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
-    // empty array of motif
-    for (var i = this.motifEditor.motifsAtoms.length - 1; i >= 0; i--) {
-      this.motifEditor.motifsAtoms[i].destroy(); 
-    };
-    this.motifEditor.motifsAtoms.splice(0);
-
-    // empty array of cell
-    for (var i = this.motifEditor.unitCellAtoms.length - 1; i >= 0; i--) {
-      this.motifEditor.unitCellAtoms[i].destroy(); 
-    };
-    this.motifEditor.unitCellAtoms.splice(0);
-
     if(this.motifEditor.newSphere){ 
       this.motifEditor.newSphere.destroy();
       this.motifEditor.newSphere = undefined ;
@@ -477,7 +461,9 @@ define([
       1  
     );
 
-    if ( atoms.length>0 ) {
+    this.motifEditor.produceUuid(true);
+
+    if ( atoms.length > 0 ) {
       this.motifEditor.isEmpty = false;
     }
 
@@ -536,13 +522,25 @@ define([
         1,
         atoms[i].ionicIndex
       ); 
-       
-
-      //this.motifEditor.updateAtomList(atoms[i].id, atoms[i].radius, atoms[i].elementName,true);
-       
+      
+ 
+      this.motifEditor.updateAtomList(
+        new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z), 
+        atoms[i].id, 
+        atoms[i].radius , 
+        atoms[i].elementName,
+        'save',
+        'bg-light-gray',
+        undefined,
+        atoms[i].color,
+        atoms[i].ionicIndex
+      );
+ 
       if(atoms[i].id == cell.lastSphereAdded) {
         this.motifEditor.lastSphereAdded = atom ;
       }
+
+      this.motifEditor.produceUuid();
     } 
      
     var _this = this ;
@@ -552,82 +550,79 @@ define([
   RestoreCWstate.prototype.configureMillerObjectsSettings = function() {
     var dirs = this.cwObj.system.millerObjects.directions;
     var planes = this.cwObj.system.millerObjects.planes; 
-    
-    for (var i = 0; i < this.lattice.millerDirections.length; i++) {
-      this.lattice.millerDirections[i].direction.destroy();
-    } 
-    this.lattice.millerDirections.splice(0);
-
-    for (var i = 0; i < this.lattice.millerPlanes.length; i++) {
-      this.lattice.millerPlanes[i].plane.destroy();
-    } 
-    this.lattice.millerPlanes.splice(0);
-
-    this.lattice.planeList.splice(0);
-    this.lattice.directionalList.splice(0);
- 
-    for (var i = dirs.length - 1; i >= 0; i--) {
-      
-      this.lattice.millerDirections[i] = {
-        visible: dirs[i].visible,
-        direction : undefined,
-        startPoint : new THREE.Vector3( dirs[i].startPoint.x, dirs[i].startPoint.y, dirs[i].startPoint.z ) , 
-        endpointPoint : new THREE.Vector3( dirs[i].endPoint.x, dirs[i].endPoint.y, dirs[i].endPoint.z ),
-        id : dirs[i].id,
-        u : dirs[i].u,
-        v : dirs[i].v,
-        w : dirs[i].w,
-        directionColor : dirs[i].color,
-        name : dirs[i].name
-      };
-      this.lattice.forwardTransformationsMiller(this.lattice.millerDirections[i]); 
-       
-      this.lattice.millerDirections[i].direction  = new MillerVector(new THREE.Vector3( dirs[i].startPoint.x, dirs[i].startPoint.y, dirs[i].startPoint.z ), new THREE.Vector3( dirs[i].endPoint.x, dirs[i].endPoint.y, dirs[i].endPoint.z )  , dirs[i].color) ;
-       
-      var id = "_"+dirs[i].u+""+dirs[i].v+""+dirs[i].w+"";
      
-      this.lattice.planeList.push({ id : id }); //selectPlane
+    for (var i = dirs.length - 1; i >= 0; i--) {
+
+
+      this.lattice.directionalState.state = 'initial'; 
+    
+      this.lattice.submitDirectional( 
+        {   
+          button: "newDirection",
+          dirRadius: "1",
+          directionColor: "ffffff",
+          directionName: "",
+          millerT: "",
+          millerU: "",
+          millerV: "",
+          millerW: ""
+        }
+      );
+
+      this.lattice.directionalState.state = 'creating';
+      this.lattice.directionParameterChange(undefined, true);
+
+      this.lattice.submitDirectional( 
+        {   
+          button: "saveDirection",
+          dirRadius: parseInt(dirs[i].radius),
+          directionColor: dirs[i].color,
+          directionName: dirs[i].name,
+          millerT: dirs[i].t,
+          millerU: dirs[i].u,
+          millerV: dirs[i].v,
+          millerW: dirs[i].w
+        }
+      );
 
     }
-
+ 
     for (var i = planes.length - 1; i >= 0; i--) {
       
-      var x =  new MillerPlane(planes[i].a, planes[i].b, planes[i].c, planes[i].d, planes[i].opacity , planes[i].color ); 
-      if(planes[i].d){  
-        this.lattice.millerPlanes[i] = {
-          visible: planes[i].visible,
-          plane : x, 
-          a : planes[i].a, 
-          b : planes[i].b, 
-          c : planes[i].c, 
-          d : planes[i].d, 
-          id : planes[i].id,
-          h : planes[i].h,
-          k : planes[i].k,
-          l : planes[i].l,
-          planeOpacity : planes[i].opacity,
-          planeColor : planes[i].color,
-          planeName : planes[i].name
-        }; 
-      }
-      else{ 
-        this.lattice.millerPlanes[i] = {
-          visible: planes[i].visible,
-          plane : x, 
-          a : planes[i].a, 
-          b : planes[i].b, 
-          c : planes[i].c,   
-          id : planes[i].id,
-          h : planes[i].h,
-          k : planes[i].k,
-          l : planes[i].l,
-          planeOpacity : planes[i].opacity,
-          planeColor : planes[i].color,
-          planeName : planes[i].name
-        }; 
-      }
-   
-      this.lattice.directionalList.push({ id : id });
+      this.lattice.planeState.state = 'initial';
+
+      this.lattice.submitPlane( 
+        { 
+          button: "newPlane",
+          interception: false,
+          millerH: '',
+          millerI: '',
+          millerK: '',
+          millerL: '',
+          parallel: false,
+          planeColor: '#ffffff"',
+          planeName: '',
+          planeOpacity: 6
+        }
+      );  
+
+      this.lattice.planeState.state = 'creating';
+      this.lattice.planeParameterChange(undefined, true);
+    
+      this.lattice.submitPlane( 
+        { 
+          button: "savePlane",
+          interception: false,
+          millerH: planes[i].h,
+          millerI: planes[i].i,
+          millerK: planes[i].k,
+          millerL: planes[i].l,
+          parallel: planes[i].parallel,
+          planeColor: planes[i].color,
+          planeName: planes[i].name,
+          planeOpacity: planes[i].opacity
+        }
+      ); 
 
     }    
   }; 
@@ -643,14 +638,7 @@ define([
   RestoreCWstate.prototype.configureLatticeSettings = function() { 
     var _this = this ;
     var params = this.cwObj.system ;
-
-    // empty array of crystal atoms
-    this.lattice.currentMotif.splice(0);
-    _.each(_this.lattice.actualAtoms, function(atom,k) {
-      atom.destroy();   
-    }); 
-    this.lattice.actualAtoms.splice(0); 
-      
+  
     this.lattice.gradeChoice = {"face":this.cwObj.system.cellVisualization.edges.visible, "grid":this.cwObj.system.cellVisualization.faces.visible};
     
     // todo this.lattice.setCSGmode("crystalClassic");
@@ -664,12 +652,11 @@ define([
       'scaleX': params.unitCell.dimensions.x, 
       'scaleY': params.unitCell.dimensions.y,
       'scaleZ': params.unitCell.dimensions.z, 
-      'alpha': params.unitCell.angles.alpha, 
-      'beta': params.unitCell.angles.beta, 
-      'gamma': params.unitCell.angles.gamma
+      'alpha': params.latticeParams.lattice.defaults.alpha, 
+      'beta': params.latticeParams.lattice.defaults.beta, 
+      'gamma': params.latticeParams.lattice.defaults.gamma
     }; 
-      
-    this.lattice.update();  
+       
   };  
   RestoreCWstate.prototype.configureAxisSettings = function() { 
  

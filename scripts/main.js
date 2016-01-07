@@ -642,7 +642,7 @@ require([
       orbitUnitCell.syncCams(false);
     }
   });  
-  menu.onCameraDistortionChange(function(message, mode){ console.log(mode);
+  menu.onCameraDistortionChange(function(message, mode){  
     var cPos = crystalRenderer.cameras[0].position ;
     var currDistance = (crystalRenderer.cameras[0].position).distanceTo(new THREE.Vector3(0,0,0)) ;
     var vFOV = crystalRenderer.cameras[0].fov * Math.PI / 180;         
@@ -771,7 +771,7 @@ require([
     }
 
   }); 
-  menu.onPlaneToggle(function(message, arg) { 
+  menu.onPlaneToggle(function(message, arg) {  
     lattice.planeToggle(arg);
   }); 
   menu.onDirectionToggle(function(message, arg) { 
@@ -901,8 +901,7 @@ require([
       }
     })
     .done(function(res) {  
-      storeRestoreMech.configureState(res.data);
-      menu.restore(res.data);
+      storeRestoreMech.configureState(res.data); 
     }); 
   } 
   
