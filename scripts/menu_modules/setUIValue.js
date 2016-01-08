@@ -21,9 +21,16 @@ define([
     jColor
 ) 
 {    
+    /* This modules changes every UI input/button/element.
     
-    // TO AVOID INFITE LOOPING, INPUTS CHANGE SLIDERS FROM THIS MODULE, BUT SLIDERS SHOULD CHANGE INPUTS LOCALLY FROM, THEIR HANDLER.
-    // TO SUM UP, IN ORDER FOR THE SYSTEM TO MOVE A SLIDER, IT HAS TO CHANGE THE INPUT FROM THIS MODULE.
+        Every action triggered by the other modules, it actually takes place in here.
+        
+        * TO AVOID INFITE LOOPING, INPUTS CHANGE SLIDERS FROM THIS MODULE, BUT SLIDERS SHOULD CHANGE INPUTS LOCALLY FROM, THEIR HANDLER.
+        * TO SUM UP, IN ORDER FOR THE SYSTEM TO MOVE A SLIDER, IT HAS TO CHANGE THE INPUT FROM THIS MODULE.
+        
+        * To dogde another inifite loop, we're using the allowPublish variable. If we run into a condition we cannot pass during the
+          'taking action' part, then we're blocking the publishing of this event.
+    */
     
     // Variables
     var $selector = undefined;
@@ -34,118 +41,8 @@ define([
     var $tooltipGenerator = undefined;
     var $stringEditor = undefined;
     var $menu = undefined;
-    
-    // Grouping
-    var renderizationMode = {
-        'realistic': jQuery('#realistic'),
-        'wireframe': jQuery('#wireframe'),
-        'toon': jQuery('#toon'),
-        'flat': jQuery('#flat')
-    };
-    var stereoscopic = {
-        'anaglyph': jQuery('#anaglyph'),
-        'oculus': jQuery('#oculus'),
-        'onTop': jQuery('#3DonTop'),
-        'sideBySide': jQuery('#3DsideBySide')
-    };
-    var crystalMode = {
-        'crystalClassic': jQuery('#crystalClassic'),
-        'crystalSubstracted': jQuery('#crystalSubstracted'),
-        'crystalSolidVoid': jQuery('#crystalSolidVoid'),
-        'crystalGradeLimited': jQuery('#crystalGradeLimited')
-    };
-    var unitCellMode = {
-        'cellClassic': jQuery('#cellClassic'),
-        'cellSubstracted': jQuery('#cellSubstracted'),
-        'cellSolidVoid': jQuery('#cellSolidVoid'),
-        'cellGradeLimited': jQuery('#cellGradeLimited')
-    };
-    var zoomOptions = {
-        70: jQuery('#zoom70'),   
-        80: jQuery('#zoom80'),   
-        90: jQuery('#zoom90'),   
-        100: jQuery('#zoom100'),
-        auto: jQuery('#autoZoom')
-    };
-    
-    // Published Events
-    var events = {
-        AUTO_UPDATE: 'menu.auto_update',
-        SET_SSAO: 'menu.set_ssao',
-        SET_SHADOWS: 'menu.set_shadows',
-        RESET: 'menu.reset',
-        SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
-        ON_TOP_3D: 'menu.on_top_3d',
-        PLANE_INTERCEPTION: 'menu.plane_interception',
-        PLANE_PARALLEL: 'menu.plane_parallel',
-        THREE_D_PRINTING: 'menu.three_d_printing',
-        ATOM_CUSTOMIZATION: 'menu.atom_customization',
-        SOUND_VOLUME: 'menu.sound_volume',
-        CHANGE_REND_MODE: 'menu.change_rend_mode',
-        CHANGE_CRYSTAL_MODE: 'menu.change_crystal_mode',
-        CHANGE_UNIT_CELL_MODE: 'menu.change_unit_cell_mode',
-        TANGENTR: 'menu.tangetnr',
-        ATOM_VISIBILITY: 'menu.atom_visibility',
-        PLANE_VISIBILITY: 'menu.plane_visibility',
-        DIRECTION_VISIBILITY: 'menu.direction_visibility',
-        PLANE_TOGGLE: 'menu.planes_toggle',
-        ATOM_TOGGLE: 'menu.atom_toggle',
-        DIRECTION_TOGGLE: 'menu.directions_toggle',
-        LATTICE_POINTS_TOGGLE: 'menu.lattice_points_change',
-        LATTICE_CHANGE: 'menu.lattice_change',
-        LATTICE_PARAMETER_CHANGE: 'menu.lattice_parameter_change',
-        GRADE_PARAMETER_CHANGE: 'menu.grade_parameter_change',
-        GRADE_CHOICES: 'menu.grade_choices',
-        MILLER_PLANE_SUBMIT : 'menu.miller_plane_submit',
-        MILLER_DIRECTIONAL_SUBMIT : 'menu.miller_directional_submit',
-        DIRECTION_PARAMETER_CHANGE : 'menu.direction_parameter_change',
-        PLANE_PARAMETER_CHANGE : 'menu.plane_parameter_change',
-        PLANE_SELECTION : 'menu.plane_selection',
-        DIRECTION_SELECTION : 'menu.direction_selection',
-        MOTIF_POSITION_CHANGE : 'menu.motif_position_change',
-        ATOM_SELECTION : 'menu.atom_selection',
-        ATOM_SUBMIT : 'menu.atom_submit',
-        SAVED_ATOM_SELECTION : 'menu.saved_atom_selection',
-        ATOM_PARAMETER_CHANGE : 'menu.atom_parameter_change',
-        ATOM_POSITION_CHANGE : 'menu.atom_position_change',
-        ATOM_TANGENCY_CHANGE : 'menu.atom_tangency_change',
-        MOTIF_DISTORTION_CHANGE : 'menu.motif_distortion_change',
-        MOTIF_LENGTH_CHANGE : 'menu.motif_length_change',
-        MOTIF_CAMERASYNC_CHANGE : 'menu.motif_camerasync_change',
-        MOTIF_CELLDIMENSIONS_CHANGE : 'menu.motif_celldimensions_change',
-        MOTIF_TO_LATTICE: 'menu.motif_to_lattice',
-        DRAG_ATOM: 'menu.drag_atom',
-        SET_ROTATING_ANGLE: 'menu.set_rotating_angle',
-        AXIS_MODE: 'menu.axis_mode',
-        CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
-        CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
-        STORE_PROJECT: 'menu.store_project',
-        ANAGLYPH_EFFECT: 'menu.anaglyph_effect',
-        SET_PADLOCK: 'menu.set_padlock',
-        FOG_CHANGE: 'menu.fog_change',
-        FOG_PARAMETER_CHANGE: 'menu.fog_parameter_change',
-        RENDERER_COLOR_CHANGE: 'menu.renderer_color_change',
-        SET_SOUNDS: 'menu.set_sounds',
-        SET_LIGHTS: 'menu.set_lights',
-        SET_GEAR_BAR: 'menu.set_gear_bar',
-        CHANGE_CRYSTAL_ATOM_RADIUS: 'menu.change_crystal_atom_radius',
-        CHANGE_ATOM_POSITIONING_MODE: 'menu.change_atom_positioning_mode',
-        FULL_SCREEN_APP: 'menu.full_screen_app', 
-        UPDATE_NOTES: 'menu.update_notes',
-        LEAP_MOTION: 'menu.leap_motion', 
-        UC_CRYSTAL_VIEWPORT: 'menu.uc_crystal_viewport',
-        LEAP_TRACKING_SYSTEM: 'menu.leap_tracking_system',
-        AXYZ_CHANGE: 'menu.axyz_change',
-        MAN_ANGLE_CHANGE: 'menu.man_angle_change',
-        SWAP_SCREEN: 'menu.swap_screen',
-        DIALOG_RESULT: 'menu.dialog_result',
-        LABEL_TOGGLE: 'menu.label_toggle',
-        DOWNLOAD_PROJECT: 'menu.download_project',
-        NOTE_VISIBILITY: 'menu.note_visibility',
-        NOTE_MOVEMENT: 'menu.note_movement',
-        NOTE_COLOR: 'menu.note_color',
-        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
-    }; 
+    var html = undefined;
+    var events = undefined;
     
     // Contructor //
     function setUIValue(argument) {
@@ -159,8 +56,15 @@ define([
         else return false;
         if (!(_.isUndefined(argument.menu))) $menu = argument.menu;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
+        
+        // Get Event List from Menu //
+        events = $menu.events;
     };
-    function takeAction(index,selector,value){
+    
+    // Sets UI Value - Selector is optional //
+    function takeAction(index,value,selector){
         
         // If setting a new value fails, block publish //
         var success = true;
@@ -168,200 +72,200 @@ define([
             
             // Menu Ribbon
             case 'xyzAxes':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.xyzAxes.parent().addClass('lightThemeActive');
+                else html.menu.toggles.xyzAxes.parent().removeClass('lightThemeActive');
                 $menu.showCanvasXYZLabels(value);
                 break;
             }
             case 'abcAxes':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.abcAxes.parent().addClass('lightThemeActive');
+                else html.menu.toggles.abcAxes.parent().removeClass('lightThemeActive');
                 $menu.showCanvasABCLabels(value);
                 break;
             }
             case 'edges':{
                 if (value === true) {
-                    jQuery('[name=gridCheckButton]').iCheck('check');
-                    selector.parent().addClass('lightThemeActive');
+                    html.lattice.visual.edgeCheckbox.iCheck('check');
+                    html.menu.toggles.edges.parent().addClass('lightThemeActive');
                 }
                 else {
-                    jQuery('[name=gridCheckButton]').iCheck('uncheck');
-                    selector.parent().removeClass('lightThemeActive');
+                    html.lattice.visual.edgeCheckbox.iCheck('uncheck');
+                    html.menu.toggles.edges.parent().removeClass('lightThemeActive');
                 }
                 break;
             }
             case 'faces':{
                 if (value === true) {
-                    jQuery('[name=faceCheckButton]').iCheck('check');
-                    selector.parent().addClass('lightThemeActive');
+                    html.lattice.visual.faceCheckbox.iCheck('check');
+                    html.menu.toggles.faces.parent().addClass('lightThemeActive');
                 }
                 else {
-                    jQuery('[name=faceCheckButton]').iCheck('uncheck');
-                    selector.parent().removeClass('lightThemeActive');
+                    html.lattice.visual.faceCheckbox.iCheck('uncheck');
+                    html.menu.toggles.faces.parent().removeClass('lightThemeActive');
                 }
                 break;
             }
             case 'latticePoints':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.latticePoints.parent().addClass('lightThemeActive');
+                else html.menu.toggles.latticePoints.parent().removeClass('lightThemeActive');
                 break;
             }
             case 'planes':{
                 if (value === true) {
-                    jQuery('#planesTable').find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
-                    selector.parent().addClass('lightThemeActive');
+                    html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    html.menu.toggles.planes.parent().addClass('lightThemeActive');
                 }
                 else {
-                    jQuery('#planesTable').find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
-                    selector.parent().removeClass('lightThemeActive');
+                    html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    html.menu.toggles.planes.parent().removeClass('lightThemeActive');
                 }
                 publishAction('planes',value);
                 break;
             }
             case 'directions':{
                 if (value === true) {
-                    jQuery('#directionTable').find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
-                    selector.parent().addClass('lightThemeActive');
+                    html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    html.menu.toggles.directions.parent().addClass('lightThemeActive');
                 }
                 else {
-                    jQuery('#directionTable').find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
-                    selector.parent().removeClass('lightThemeActive');
+                    html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    html.menu.toggles.directions.parent().removeClass('lightThemeActive');
                 }
                 publishAction('directions',value);
                 break;
             }
             case 'atomToggle':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.atomToggle.parent().addClass('lightThemeActive');
+                else html.menu.toggles.atomToggle.parent().removeClass('lightThemeActive');
                 break;
             }
             case 'atomRadius':{
                 if (value === true) {
-                    jQuery('#atomRadiusSliderContainer').show('slow');
-                    selector.parent().addClass('lightThemeActive');
+                    html.menu.other.atomRadiusSliderContainer.show('slow');
+                    html.menu.toggles.atomRadius.parent().addClass('lightThemeActive');
                 }
                 else {
-                    jQuery('#atomRadiusSliderContainer').hide('slow');
-                    selector.parent().removeClass('lightThemeActive');
+                    html.menu.other.atomRadiusSliderContainer.hide('slow');
+                    html.menu.toggles.atomRadius.parent().removeClass('lightThemeActive');
                 }
                 break;
             }
             case 'unitCellViewport':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.unitCellViewport.parent().addClass('lightThemeActive');
+                else html.menu.toggles.unitCellViewport.parent().removeClass('lightThemeActive');
                 $menu.viewport(value);
                 break;
             }
             case 'labelToggle':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.labelToggle.parent().addClass('lightThemeActive');
+                else html.menu.toggles.labelToggle.parent().removeClass('lightThemeActive');
                 break;
             }
             case 'highlightTangency':{
-                if (value === true) selector.parent().addClass('lightThemeActive');
-                else selector.parent().removeClass('lightThemeActive');
+                if (value === true) html.menu.toggles.highlightTangency.parent().addClass('lightThemeActive');
+                else html.menu.toggles.highlightTangency.parent().removeClass('lightThemeActive');
                 break;
             }
             case 'atomRadiusSlider':{
-                selector.slider('value',value);
+                html.menu.other.atomRadiusSlider.slider('value',value);
                 break;
             }
             
             // Lattice Tab
             case 'latticePadlock':{
                 if (value === true) {
-                    if (!(selector.children().addClass('active'))) selector.find('a').button('toggle');
-                    selector.children().addClass('active');
+                    if (!(html.lattice.padlocks.lattice.children().addClass('active'))) html.lattice.padlocks.lattice.find('a').button('toggle');
+                    html.lattice.padlocks.lattice.children().addClass('active');
                 }
                 else {
-                    if (selector.children().addClass('active')) selector.find('a').button('toggle');
-                    selector.children().removeClass('active');
+                    if (html.lattice.padlocks.lattice.children().addClass('active')) html.lattice.padlocks.lattice.find('a').button('toggle');
+                    html.lattice.padlocks.lattice.children().removeClass('active');
                 }
                 break;
             }
             case 'motifPadlock':{
                 if (value === true) {
-                    if (!(selector.children().addClass('active'))) selector.find('a').button('toggle');
-                    selector.children().addClass('active');
+                    if (!(html.lattice.padlocks.motif.children().addClass('active'))) html.lattice.padlocks.motif.find('a').button('toggle');
+                    html.lattice.padlocks.motif.children().addClass('active');
                 }
                 else {
-                    if (selector.children().addClass('active')) selector.find('a').button('toggle');
-                    selector.children().removeClass('active');
+                    if (html.lattice.padlocks.motif.children().addClass('active')) html.lattice.padlocks.motif.find('a').button('toggle');
+                    html.lattice.padlocks.motif.children().removeClass('active');
                 }
                 break;
             }
             case 'selectedLattice':{
-                jQuery('#selected_lattice').html(value);
+                html.lattice.other.selected.html(value);
                 break;
             }
             case 'gridCheckButton':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
-                takeAction('edges',jQuery('#edges'),value);
+                if (value === true) html.lattice.visual.edgeCheckbox.addClass('active');
+                else html.lattice.visual.edgeCheckbox.removeClass('active');
+                takeAction('edges',value);
                 break;
             }
             case 'faceCheckButton':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
-                takeAction('faces',jQuery('#faces'),value);
+                if (value === true) html.lattice.visual.faceCheckbox.addClass('active');
+                else html.lattice.visual.faceCheckbox.removeClass('active');
+                takeAction('faces',value);
                 break;
             }
             case 'cylinderColor':{
-                selector.children().css('background','#'+value);
+                html.lattice.visual.edgeColorPicker.children().css('background','#'+value);
                 break;  
             }
             case 'cellEdgeColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.lattice.visual.edgeColorPicker.spectrum('set',value);
+                html.lattice.visual.edgeColorPicker.children().css('background',value);
                 break;  
             }
             case 'cellFaceColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.lattice.visual.faceColorPicker.spectrum('set',value);
+                html.lattice.visual.faceColorPicker.children().css('background',value);
                 break;  
             }
             case 'faceColor':{
-                selector.children().css('background','#'+value);
+                html.lattice.visual.faceColorPicker.children().css('background','#'+value);
                 break;  
             }
             case 'repeatX':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.lattice.parameters.repeatX.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.lattice.parameters.repeatX.val('');
                     success = false;
                 }
                 break;
             }
             case 'repeatY':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.lattice.parameters.repeatY.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.lattice.parameters.repeatY.val('');
                     success = false;
                 }
                 break;
             }
             case 'repeatZ':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.lattice.parameters.repeatZ.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.lattice.parameters.repeatZ.val('');
                     success = false;
                 }
                 break;
@@ -369,8 +273,8 @@ define([
             case 'radius':{
                 var newVal = $stringEditor.inputIsInteger(value);
                 if (newVal !== false) {
-                    takeAction('radiusSlider',jQuery('#radiusSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('radiusSlider',newVal);
+                    html.lattice.visual.radius.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -378,20 +282,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.lattice.visual.radius.val('');
                     success = false;
                 }
                 break;
             }
             case 'radiusSlider':{
-                selector.slider('value',value);
+                html.lattice.visual.radiusSlider.slider('value',value);
                 break;
             }
             case 'faceOpacity':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
                 if (newVal !== false) {
-                    takeAction('faceOpacitySlider',jQuery('#faceOpacitySlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('faceOpacitySlider',newVal);
+                    html.lattice.visual.opacity.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -399,20 +303,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.lattice.visual.opacity.val('');
                     success = false;
                 }
                 break;
             }
             case 'faceOpacitySlider':{
-                selector.slider('value',value);
+                html.lattice.visual.opacitySlider.slider('value',value);
                 break;
             }
             case 'alpha':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('alphaSlider',jQuery('#alphaSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('alphaSlider',newVal);
+                    html.lattice.parameters.alpha.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -420,20 +324,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.alpha.val('');
                     success = false;
                 }
                 break;
             }
             case 'alphaSlider':{
-                selector.slider('value',value);
+                html.lattice.sliders.alpha.slider('value',value);
                 break;
             }
             case 'beta':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('betaSlider',jQuery('#betaSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('betaSlider',newVal);
+                    html.lattice.parameters.beta.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -441,20 +345,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.beta.val('');
                     success = false;
                 }
                 break;
             }
             case 'betaSlider':{
-                selector.slider('value',value);
+                html.lattice.sliders.beta.slider('value',value);
                 break;
             }
             case 'gamma':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('gammaSlider',jQuery('#gammaSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('gammaSlider',newVal);
+                    html.lattice.parameters.gamma.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -462,20 +366,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.gamma.val('');
                     success = false;
                 }
                 break;
             }
             case 'gammaSlider':{
-                selector.slider('value',value);
+                html.lattice.sliders.gamma.slider('value',value);
                 break;
             }
             case 'scaleX':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleXSlider',jQuery('#scaleXSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('scaleXSlider',newVal);
+                    html.lattice.parameters.scaleX.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -483,7 +387,7 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.scaleX.val('');
                     success = false;
                 }
                 break;
@@ -491,12 +395,12 @@ define([
             case 'scaleXMotif':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleXSlider',jQuery('#scaleXSlider'),newVal);
+                    takeAction('scaleXSlider',newVal);
                     selector.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
-                        'target': index,
+                        'target': 'scaleX',
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
@@ -504,16 +408,16 @@ define([
                     success = false;
                 }
                 break;
-            }
+            } // Requires Selector //
             case 'scaleXSlider':{
-                selector.slider('value',value);
+                html.lattice.sliders.scaleX.slider('value',value);
                 break;
             }
             case 'scaleY':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleYSlider',jQuery('#scaleYSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('scaleYSlider',newVal);
+                    html.lattice.parameters.scaleY.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -521,7 +425,7 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.scaleY.val('');
                     success = false;
                 }
                 break;
@@ -529,12 +433,12 @@ define([
             case 'scaleYMotif':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleYSlider',jQuery('#scaleYSlider'),newVal);
+                    takeAction('scaleYSlider',newVal);
                     selector.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
-                        'target': index,
+                        'target': 'scaleY',
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
@@ -542,16 +446,16 @@ define([
                     success = false;
                 }
                 break;
-            }
+            } // Requires Selector //
             case 'scaleYSlider':{
-                selector.slider('value',value.toString());
+                html.lattice.sliders.scaleY.slider('value',value.toString());
                 break;
             }
             case 'scaleZ':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleZSlider',jQuery('#scaleZSlider'),newVal);
-                    selector.val(newVal);
+                    takeAction('scaleZSlider',newVal);
+                    html.lattice.parameters.scaleZ.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -559,7 +463,7 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.lattice.parameters.scaleZ.val('');
                     success = false;
                 }
                 break;
@@ -567,12 +471,12 @@ define([
             case 'scaleZMotif':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    takeAction('scaleZSlider',jQuery('#scaleZSlider'),newVal);
+                    takeAction('scaleZSlider',newVal);
                     selector.val(newVal);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
-                        'target': index,
+                        'target': 'scaleZ',
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
@@ -580,147 +484,147 @@ define([
                     success = false;
                 }
                 break;
-            }
+            } // Requires Selector //
             case 'scaleZSlider':{
-                selector.slider('value',value);
+                html.lattice.sliders.scaleZ.slider('value',value);
                 break;
             }
                 
             // PnD Tab
             case 'planeColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.pnd.planeParameters.planeColor.spectrum('set',value);
+                html.pnd.planeParameters.planeColor.children().css('background',value);
                 break;
             }
             case 'planeOpacity':{
-                selector.selectpicker('val',value);
+                html.pnd.planeParameters.planeOpacity.selectpicker('val',value);
                 break;
             }
             case 'planeName':{
-                selector.val(value);
+                html.pnd.planeParameters.planeName.val(value);
                 break;
             }
             case 'millerH':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.planeParameters.millerH.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.planeParameters.millerH.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerK':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.planeParameters.millerK.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.planeParameters.millerK.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerL':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.planeParameters.millerL.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.planeParameters.millerL.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerI':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.planeParameters.millerI.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.planeParameters.millerI.val('');
                     success = false;
                 }
                 break;
             }
             case 'directionColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.pnd.directionParameters.directionColor.spectrum('set',value);
+                html.pnd.directionParameters.directionColor.children().css('background',value);
                 break;
             }
             case 'dirRadius':{
-                selector.selectpicker('val',value);
+                html.pnd.directionParameters.dirRadius.selectpicker('val',value);
                 break;
             }
             case 'directionName':{
-                selector.val(value);
+                html.pnd.directionParameters.directionName.val(value);
                 break;
             }
             case 'millerU':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.directionParameters.millerU.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.directionParameters.millerU.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerV':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.directionParameters.millerV.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.directionParameters.millerV.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerW':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.directionParameters.millerW.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.directionParameters.millerW.val('');
                     success = false;
                 }
                 break;
             }
             case 'millerT':{
                 var newVal = $stringEditor.inputIsInteger(value.toString());
-                if (newVal !== false) selector.val(newVal);
+                if (newVal !== false) html.pnd.directionParameters.millerT.val(newVal);
                 else {
                     $tooltipGenerator.showTooltip({
                         'target': index,
                         'placement': 'top',
                         'message': $messages.getMessage(19)
                     });
-                    selector.val('');
+                    html.pnd.directionParameters.millerT.val('');
                     success = false;
                 }
                 break;
@@ -735,17 +639,17 @@ define([
                     selector.find('.planeButton').addClass('visible');
                 }
                 break; 
-            }
+            } // Requires Selector //
             case 'planeParallel':{
                 if (value === false) selector.find('.parallel').removeClass('active');
                 else selector.find('.parallel').addClass('active');
                 break; 
-            }
+            } // Requires Selector //
             case 'planeInterception':{
                 if (value === false) selector.find('.interception').removeClass('active');
                 else selector.find('.interception').addClass('active');
                 break; 
-            }
+            } // Requires Selector //
             case 'directionVisibility':{
                 if (value === false) {
                     selector.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
@@ -756,36 +660,36 @@ define([
                     selector.find('.directionButton').addClass('visible');
                 }
                 break; 
-            }
+            } // Requires Selector //
             
             // Motif Tab
             case 'atomName':{
-                if (value.atomName === '-') selector.hide('slow');
+                if (value.atomName === '-') html.motif.other.nameContainer.hide('slow');
                 else {
                     var newAtom = 'ch-' + value.atonName;
                     var newAtomName = $stringEditor.capitalizeFirstLetter(value.atomName);
-                    selector.find('a').attr('class','ch');
+                    html.motif.other.nameContainer.find('a').attr('class','ch');
                     if (value.ionicIndex !== '0' && value.ionicIndex !== '3b')
-                        selector.find('a').html('<span style="font-size:17px;">'+newAtomName+'<sup>'+value.ionicIndex+'</sup></span>');
-                    else selector.find('a').html(newAtomName);
-                    selector.find('a').css('background',value.atomColor);
-                    selector.show('slow');
+                        html.motif.other.nameContainer.find('a').html('<span style="font-size:17px;">'+newAtomName+'<sup>'+value.ionicIndex+'</sup></span>');
+                    else html.motif.other.nameContainer.find('a').html(newAtomName);
+                    html.motif.other.nameContainer.find('a').css('background',value.atomColor);
+                    html.motif.other.nameContainer.show('slow');
                 }   
                 break;
             }
             case 'elementContainer':{
-                jQuery('.element-symbol-container').find('a').removeAttr('class');
-                jQuery('.element-symbol-container').find('a').attr('class',selector.attr('class'));
-                if ( value !== '0' && (value !== '3b')) jQuery('.element-symbol-container').find('a').html('<span style="font-size:17px;">'+selector.html()+'<sup>'+value+'</sup></span>');
-                else jQuery('.element-symbol-container').find('a').html(selector.html());
-                jQuery('.element-symbol-container').show('slow');
+                html.motif.other.nameContainer.find('a').removeAttr('class');
+                html.motif.other.nameContainer.find('a').attr('class',selector.attr('class'));
+                if ( value !== '0' && (value !== '3b')) html.motif.other.nameContainer.find('a').html('<span style="font-size:17px;">'+selector.html()+'<sup>'+value+'</sup></span>');
+                else html.motif.other.nameContainer.find('a').html(selector.html());
+                html.motif.other.nameContainer.show('slow');
                 break;  
-            }
+            } // Requires Selectors //
             case 'atomPosX':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    selector.val(newVal);
-                    takeAction('atomPosXSlider',jQuery('#atomPosXSlider'),value);
+                    html.motif.motifInputs.atomPosX.val(newVal);
+                    takeAction('atomPosXSlider',value);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -793,20 +697,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.motif.motifInputs.atomPosX.val('');
                     success = false;
                 }
                 break;
             }
             case 'atomPosXSlider':{
-                selector.slider('value',value);
+                html.motif.motifInputsSliders.atomPosX.slider('value',value);
                 break;   
             }
             case 'atomPosY':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    selector.val(newVal);
-                    takeAction('atomPosYSlider',jQuery('#atomPosYSlider'),value);
+                    html.motif.motifInputs.atomPosY.val(newVal);
+                    takeAction('atomPosYSlider',value);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -814,20 +718,20 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.motif.motifInputs.atomPosY.val('');
                     success = false;
                 }
                 break;   
             }
             case 'atomPosYSlider':{
-                selector.slider('value',value);
+                html.motif.motifInputsSliders.atomPosY.slider('value',value);
                 break;   
             }
             case 'atomPosZ':{
                 var newVal = $stringEditor.inputIsNumber(value.toString());
                 if (newVal !== false) {
-                    selector.val(newVal);
-                    takeAction('atomPosZSlider',jQuery('#atomPosZSlider'),value);
+                    html.motif.motifInputs.atomPosZ.val(newVal);
+                    takeAction('atomPosZSlider',value);
                 }
                 else {
                     $tooltipGenerator.showTooltip({
@@ -835,13 +739,13 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(20)
                     });
-                    selector.val('');
+                    html.motif.motifInputs.atomPosZ.val('');
                     success = false;
                 }
                 break;  
             }
             case 'atomPosZSlider':{
-                selector.slider('value',value);
+                html.motif.motifInputsSliders.atomPosZ.slider('value',value);
                 break;   
             }
             case 'cellVolume':{
@@ -850,8 +754,8 @@ define([
                 if (newVal !== false){
                     if (tangency.tangency === true){
                         if (newVal > 90) {
-                            selector.val(newVal);
-                            takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                            html.motif.other.cellVolume.val(newVal);
+                            takeAction('cellVolumeSlider',newVal);
                         }
                         else {
                             $tooltipGenerator.showTooltip({
@@ -859,14 +763,14 @@ define([
                                 'placement': 'top',
                                 'message': $messages.getMessage(22)
                             });
-                            takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),90);
-                            selector.val(90);
+                            takeAction('cellVolumeSlider',90);
+                            html.motif.other.cellVolume.val(90);
                             success = false;
                         }
                     }
                     else if (newVal > 0) {
-                        selector.val(newVal);
-                        takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),newVal);
+                        html.motif.other.cellVolume.val(newVal);
+                        takeAction('cellVolumeSlider',newVal);
                     }
                     else {
                         $tooltipGenerator.showTooltip({
@@ -874,8 +778,8 @@ define([
                             'placement': 'top',
                             'message': $messages.getMessage(22)
                         });
-                        takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),0);
-                        selector.val(0);
+                        takeAction('cellVolumeSlider',0);
+                        html.motif.other.cellVolume.val(0);
                         success = false;
                     }
                 }
@@ -885,79 +789,79 @@ define([
                         'placement': 'top',
                         'message': $messages.getMessage(22)
                     });
-                    takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),100);
-                    selector.val(100);
+                    takeAction('cellVolumeSlider',100);
+                    html.motif.other.cellVolume.val(100);
                     success = false;
                 }
                 break;   
             }
             case 'cellVolumeSlider':{
-                selector.slider('value',value);
+                html.motif.other.cellVolumeSlider.slider('value',value);
                 break;   
             }
             case 'tangency':{
-                if (value === false) selector.parent().removeClass('purpleThemeActive');
-                else selector.parent().addClass('purpleThemeActive');
+                if (value === false) html.motif.panel.tangency.parent().removeClass('purpleThemeActive');
+                else html.motif.panel.tangency.parent().addClass('purpleThemeActive');
                 break;   
             }
             case 'atomPositioningXYZ':{
                 var tempValue = undefined;
                 if ((_.isUndefined(value.toggle))) {
-                    takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),{value:!value,toggle:true});
+                    takeAction('atomPositioningABC',{value:!value,toggle:true});
                     tempValue = value;
                 }
                 else tempValue = value.value;
                 if (tempValue === true){
-                    selector.addClass('buttonPressed');
-                    selector.removeClass('btn-light');
-                    selector.addClass('btn-purple');
-                    jQuery('label[for=txt_coordinates_x]').html('x');
-                    jQuery('label[for=txt_coordinates_y]').html('y');
-                    jQuery('label[for=txt_coordinates_z]').html('z');
+                    html.motif.panel.atomPositioningXYZ.addClass('buttonPressed');
+                    html.motif.panel.atomPositioningXYZ.removeClass('btn-light');
+                    html.motif.panel.atomPositioningXYZ.addClass('btn-purple');
+                    html.motif.motifInputsLabels.xa.html('x');
+                    html.motif.motifInputsLabels.yb.html('y');
+                    html.motif.motifInputsLabels.zc.html('z');
                 }
                 else{  
-                    selector.removeClass('buttonPressed');
-                    selector.removeClass('btn-purple');
-                    selector.addClass('btn-light');
+                    html.motif.panel.atomPositioningXYZ.removeClass('buttonPressed');
+                    html.motif.panel.atomPositioningXYZ.removeClass('btn-purple');
+                    html.motif.panel.atomPositioningXYZ.addClass('btn-light');
                 }
                 break;
             }
             case 'atomPositioningABC':{
                 var tempValue = undefined;
                 if ((_.isUndefined(value.toggle))) {
-                    takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),{value:!value,toggle:true});
+                    takeAction('atomPositioningXYZ',{value:!value,toggle:true});
                     tempValue = value;
                 }
                 else tempValue = value.value;
                 if (tempValue === true){
-                    selector.addClass('buttonPressed');
-                    selector.removeClass('btn-light');
-                    selector.addClass('btn-purple');
-                    jQuery('label[for=txt_coordinates_x]').html('a');
-                    jQuery('label[for=txt_coordinates_y]').html('b');
-                    jQuery('label[for=txt_coordinates_z]').html('c');
+                    html.motif.panel.atomPositioningABC.addClass('buttonPressed');
+                    html.motif.panel.atomPositioningABC.removeClass('btn-light');
+                    html.motif.panel.atomPositioningABC.addClass('btn-purple');
+                    html.motif.motifInputsLabels.xa.html('a');
+                    html.motif.motifInputsLabels.yb.html('b');
+                    html.motif.motifInputsLabels.zc.html('c');
                 }
                 else{  
-                    selector.removeClass('buttonPressed');
-                    selector.removeClass('btn-purple');
-                    selector.addClass('btn-light');
+                    html.motif.panel.atomPositioningABC.removeClass('buttonPressed');
+                    html.motif.panel.atomPositioningABC.removeClass('btn-purple');
+                    html.motif.panel.atomPositioningABC.addClass('btn-light');
                 }
                 break;
             }
             case 'lockCameras':{
                 if (value === true) {
-                    selector.addClass('active');
-                    selector.find('img').attr('src','Images/lockCamerasActive.png');
+                    html.motif.other.lockCameras.addClass('active');
+                    html.motif.other.lockCameras.find('img').attr('src','Images/lockCamerasActive.png');
                 }
                 else {
-                    selector.removeClass('active');
-                    selector.find('img').attr('src','Images/lockCameras.png');
+                    html.motif.other.lockCameras.removeClass('active');
+                    html.motif.other.lockCameras.find('img').attr('src','Images/lockCameras.png');
                 }
                 break; 
             }
             case 'swapButton':{
-                if (value === true) selector.addClass('motif');
-                else selector.removeClass('motif');
+                if (value === true) html.motif.other.swapButton.addClass('motif');
+                else html.motif.other.swapButton.removeClass('motif');
                 break;
             }
             case 'atomVisibility':{
@@ -970,307 +874,370 @@ define([
                     selector.find('.atomButton').addClass('visible');
                 }
                 break; 
-            }
+            } // Requires Selector //
             case 'atomColor':{
-                selector.children().css('background',value);
-                selector.spectrum('set',value);
+                html.motif.panel.color.children().css('background',value);
+                html.motif.panel.color.spectrum('set',value);
                 break;
             }
             case 'atomOpacity':{
-                selector.val(value);
-                takeAction('atomOpacitySlider',jQuery('#atomOpacitySlider'),value);
+                html.motif.atomParameters.atomOpacity.val(value);
+                takeAction('atomOpacitySlider',value);
                 break;
             }
             case 'atomOpacitySlider':{
-                selector.slider('value',value);
+                html.motif.panel.opacitySlider.slider('value',value);
                 break;
             }
             case 'rotAngleTheta':{
-                selector.val(value);
+                html.motif.rotatingAngles.combo.rotAngleTheta.val(value);
                 break;
             }
             case 'rotAnglePhi':{
-                selector.val(value);
+                html.motif.rotatingAngles.combo.rotAngleTheta.val(value);
                 break;
             }
             case 'rotAngleX':{
-                selector.text(value);
+                html.motif.rotatingAngles.x.text(value);
                 break;
             }
             case 'rotAngleY':{
-                selector.text(value);
+                html.motif.rotatingAngles.y.text(value);
                 break;
             }
             case 'rotAngleZ':{
-                selector.text(value);
+                html.motif.rotatingAngles.z.text(value);
                 break;
             }
                 
             // Visual Tab
-            case 'wireframe':{} //Move to realistic handler
-            case 'toon':{} //Move to realistic handler
-            case 'flat':{} //Move to realistic handler
+            case 'wireframe':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationMode.wireframe.addClass('active');
+                }
+                else html.visual.parameters.renderizationMode.wireframe.removeClass('active');
+                break;
+            }
+            case 'toon':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationMode.toon.addClass('active');
+                }
+                else html.visual.parameters.renderizationMode.toon.removeClass('active');
+                break;
+            }
+            case 'flat':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationMode.flat.addClass('active');
+                }
+                else html.visual.parameters.renderizationMode.flat.removeClass('active');
+                break;
+            }
             case 'realistic':{
                 if (value === true){
-                    _.each(renderizationMode, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.parameters.renderizationMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationMode.realistic.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.parameters.renderizationMode.realistic.removeClass('active');
                 break;
             }
             case 'lights':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
+                if (value === true) html.visual.parameters.lights.addClass('active');
+                else html.visual.parameters.lights.removeClass('active');
                 break;
             }
             case 'ssao':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
+                if (value === true) html.visual.parameters.ssao.addClass('active');
+                else html.visual.parameters.ssao.removeClass('active');
                 break;
             }
             case 'shadows':{
-                if (value === true) selector.addClass('active');
-                else selector.removeClass('active');
+                if (value === true) html.visual.parameters.shadows.addClass('active');
+                else html.visual.parameters.shadows.removeClass('active');
                 break;
             }
             case 'distortionOn':{
                 if (value === true) {
-                    selector.addClass('active');
-                    jQuery('#distortionOff').removeClass('active');
+                    html.visual.parameters.distortionOn.addClass('active');
+                    html.visual.parameters.distortionOff.removeClass('active');
                 }
                 else {
-                    selector.removeClass('active');
-                    jQuery('#distortionOff').addClass('active');
+                    html.visual.parameters.distortionOn.removeClass('active');
+                    html.visual.parameters.distortionOff.addClass('active');
                 }
                 break;
             }
             case 'distortionOff':{
                 if (value === true) {
-                    selector.addClass('active');
-                    jQuery('#distortionOn').removeClass('active');
+                    html.visual.parameters.distortionOff.addClass('active');
+                    html.visual.parameters.distortionOn.removeClass('active');
                 }
                 else {
-                    selector.removeClass('active');
-                    jQuery('#distortionOn').addClass('active');
+                    html.visual.parameters.distortionOff.removeClass('active');
+                    html.visual.parameters.distortionOn.addClass('active');
                 }
                 break;
             }
             case 'anaglyph':{
                 if (value === true){
-                    _.each(stereoscopic, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.stereoscopic, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.anaglyph.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.stereoscopic.anaglyph.removeClass('active');
                 break;
             }
             case 'oculus':{
                 if (value === true){
-                    _.each(stereoscopic, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.stereoscopic, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.oculus.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.stereoscopic.oculus.removeClass('active');
                 break;
             }
             case 'sideBySide':{
                 if (value === true){
-                    _.each(stereoscopic, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.stereoscopic, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.sideBySide3D.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.stereoscopic.sideBySide3D.removeClass('active');
                 break;
             }
             case 'onTop':{
                 if (value === true){
-                    _.each(stereoscopic, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.stereoscopic, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.onTop3D.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.stereoscopic.onTop3D.removeClass('active');
                 break;
             }
             case 'crystalCamTargetOn':{
                 if (value === true) {
-                    selector.addClass('active');
-                    jQuery('#crystalCamTargetOff').removeClass('active');
+                    html.visual.parameters.crystalCamTargetOn.addClass('active');
+                    html.visual.parameters.crystalCamTargetOff.removeClass('active');
                 }
                 else {
-                    selector.removeClass('active');
-                    jQuery('#crystalCamTargetOff').addClass('active');
+                    html.visual.parameters.crystalCamTargetOn.removeClass('active');
+                    html.visual.parameters.crystalCamTargetOff.addClass('active');
                 }
                 break;
             }
             case 'crystalCamTargetOff':{
                 if (value === true) {
-                    selector.addClass('active');
-                    jQuery('#crystalCamTargetOn').removeClass('active');
+                    html.visual.parameters.crystalCamTargetOff.addClass('active');
+                    html.visual.parameters.crystalCamTargetOn.removeClass('active');
                 }
                 else {
-                    selector.removeClass('active');
-                    jQuery('#crystalCamTargetOn').addClass('active');
+                    html.visual.parameters.crystalCamTargetOff.removeClass('active');
+                    html.visual.parameters.crystalCamTargetOn.addClass('active');
                 }
                 break;
             }
             case 'fullScreen':{
                 if (value === false) {
-                    if (selector.hasClass('active')) selector.button('toggle');
+                    if (html.visual.parameters.fullScreen.hasClass('active')) html.visual.parameters.fullScreen.button('toggle');
                 }
                 else {
-                    if (!(selector.hasClass('active'))) selector.button('toggle');   
+                    if (!(html.visual.parameters.fullScreen.hasClass('active'))) html.visual.parameters.fullScreen.button('toggle');   
                 }
                 break;
             }
             case 'leapMotion':{
                 if (value === false) {
-                    if (selector.hasClass('active')) selector.button('toggle');
+                    if (html.visual.parameters.leapMotion.hasClass('active')) html.visual.parameters.leapMotion.button('toggle');
                 }
                 else {
-                    if (!(selector.hasClass('active'))) selector.button('toggle');   
+                    if (!(html.visual.parameters.leapMotion.hasClass('active'))) html.visual.parameters.leapMotion.button('toggle');   
                 }
                 break;
             }
-            case 'crystalClassic':{} // Move to crystalGradeLimited handler
-            case 'crystalSubstracted':{} // Move to crystalGradeLimited handler
-            case 'crystalSolidVoid':{} // Move to crystalGradeLimited handler
+            case 'crystalClassic':{
+                if (value === true){
+                    _.each(html.visual.parameters.crystalMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.crystalMode.crystalClassic.addClass('active');
+                }
+                else html.visual.parameters.crystalMode.crystalClassic.removeClass('active');
+                break;
+            }
+            case 'crystalSubstracted':{
+                if (value === true){
+                    _.each(html.visual.parameters.crystalMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.crystalMode.crystalSubstracted.addClass('active');
+                }
+                else html.visual.parameters.crystalMode.crystalSubstracted.removeClass('active');
+                break;
+            }
+            case 'crystalSolidVoid':{
+                if (value === true){
+                    _.each(html.visual.parameters.crystalMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.crystalMode.crystalSolidVoid.addClass('active');
+                }
+                else html.visual.parameters.crystalMode.crystalSolidVoid.removeClass('active');
+                break;
+            }
             case 'crystalGradeLimited':{ 
                 if (value === true){
-                    _.each(crystalMode, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.parameters.crystalMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.crystalMode.crystalGradeLimited.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.parameters.crystalMode.crystalGradeLimited.removeClass('active');
                 break;
             }
-            case 'cellClassic':{} // Move to cellGradeLimited handler
-            case 'cellSubstracted':{} // Move to cellGradeLimited handler
-            case 'cellSolidVoid':{} // Move to cellGradeLimited handler
+            case 'cellClassic':{
+                if (value === true){
+                    _.each(html.visual.parameters.unitCellMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.unitCellMode.cellClassic.addClass('active');
+                }
+                else html.visual.parameters.unitCellMode.cellClassic.removeClass('active');
+                break;
+            }
+            case 'cellSubstracted':{
+                if (value === true){
+                    _.each(html.visual.parameters.unitCellMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.unitCellMode.cellSubstracted.addClass('active');
+                }
+                else html.visual.parameters.unitCellMode.cellSubstracted.removeClass('active');
+                break;
+            }
+            case 'cellSolidVoid':{
+                if (value === true){
+                    _.each(html.visual.parameters.unitCellMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.unitCellMode.cellSolidVoid.addClass('active');
+                }
+                else html.visual.parameters.unitCellMode.cellSolidVoid.removeClass('active');
+                break;
+            }
             case 'cellGradeLimited':{
                 if (value === true){
-                    _.each(unitCellMode, function($param, a) { $param.removeClass('active');});
-                    selector.addClass('active');
+                    _.each(html.visual.parameters.unitCellMode, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.unitCellMode.cellGradeLimited.addClass('active');
                 }
-                else selector.removeClass('active');
+                else html.visual.parameters.unitCellMode.cellGradeLimited.removeClass('active');
                 break;
             }
             case 'autoZoom':{
-                _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
-                selector.addClass('active');
+                _.each(html.visual.tools.zoomOptions, function($param, a) { $param.removeClass('active'); });
+                html.visual.tools.zoomOptions.autoZoom.addClass('active');
                 $menu.autoZoom(true);
                 window.dispatchEvent(new Event('resize'));
                 break;
             }
             case 'zoom100':{
-                _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
-                selector.addClass('active');
+                _.each(html.visual.tools.zoomOptions, function($param, a) { $param.removeClass('active'); });
+                html.visual.tools.zoomOptions.zoom100.addClass('active');
                 $menu.autoZoom(false);
                 $menu.transformMenu(1);
                 break;
             } 
             case 'zoom90':{
-                _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
-                selector.addClass('active');
+                _.each(html.visual.tools.zoomOptions, function($param, a) { $param.removeClass('active'); });
+                html.visual.tools.zoomOptions.zoom90.addClass('active');
                 $menu.autoZoom(false);
                 $menu.transformMenu(0.9);
                 break;
             } 
             case 'zoom80':{
-                _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
-                selector.addClass('active');
+                _.each(html.visual.tools.zoomOptions, function($param, a) { $param.removeClass('active'); });
+                html.visual.tools.zoomOptions.zoom80.addClass('active');
                 $menu.autoZoom(false);
                 $menu.transformMenu(0.8);
                 break;
             } 
             case 'zoom70':{
-                _.each(zoomOptions, function($param, a) { $param.removeClass('active'); });
-                selector.addClass('active');
+                _.each(html.visual.tools.zoomOptions, function($param, a) { $param.removeClass('active'); });
+                html.visual.tools.zoomOptions.zoom70.addClass('active');
                 $menu.autoZoom(false);
                 $menu.transformMenu(0.7);
                 break;
             }
             case 'fog':{
                 if (value === true) {
-                    selector.addClass('active');
-                    selector.iCheck('check');
+                    html.visual.fog.checkbox.addClass('active');
+                    html.visual.fog.checkbox.iCheck('check');
                 }
                 else {
-                    selector.addClass('active');
-                    selector.iCheck('uncheck');
+                    html.visual.fog.checkbox.addClass('active');
+                    html.visual.fog.checkbox.iCheck('uncheck');
                 }
                 break;
             }
             case 'fogColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.fog.color.spectrum('set',value);
+                html.visual.fog.color.children().css('background',value);
                 break;
             }
             case 'fogDensity':{
-                selector.val(value);
-                takeAction('fogDensitySlider',jQuery('#fogDensitySlider'),value);
+                html.visual.fog.density.val(value);
+                takeAction('fogDensitySlider',value);
                 break;
             }
             case 'fogDensitySlider':{
-                selector.slider('value',value);
+                html.visual.fog.densitySlider.slider('value',value);
                 break;
             }
             case 'sounds':{
                 if (value === true) {
-                    selector.addClass('active');
-                    takeAction('soundSliderToggle',jQuery('#soundSlider'),true);
+                    html.visual.sound.sounds.addClass('active');
+                    takeAction('soundSliderToggle',true);
                 }
                 else {
-                    selector.removeClass('active');
-                    takeAction('soundSliderToggle',jQuery('#soundSlider'),false);
+                    html.visual.sound.sounds.removeClass('active');
+                    takeAction('soundSliderToggle',false);
                 }
                 break;
             }
             case 'soundSliderToggle':{
-                if (value === true) selector.slider('enable');
-                else selector.slider('disable');
+                if (value === true) html.visual.sound.soundSlider.slider('enable');
+                else html.visual.sound.soundSlider.slider('disable');
                 break;
             }
             case 'soundSlider':{
-                selector.slider('value',value);
+                html.visual.sound.soundSlider.slider('value',value);
                 break;
             }
             case 'crystalScreenColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.tools.colorPickers.crystalScreen.spectrum('set',value);
+                html.visual.tools.colorPickers.crystalScreen.children().css('background',value);
                 break;
             }
             case 'cellScreenColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.tools.colorPickers.cellScreen.spectrum('set',value);
+                html.visual.tools.colorPickers.cellScreen.children().css('background',value);
                 break;
             }
             case 'motifXScreenColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.tools.colorPickers.motifXScreen.spectrum('set',value);
+                html.visual.tools.colorPickers.motifXScreen.children().css('background',value);
                 break;
             }
             case 'motifYScreenColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.tools.colorPickers.motifYScreen.spectrum('set',value);
+                html.visual.tools.colorPickers.motifYScreen.children().css('background',value);
                 break;
             }
             case 'motifZScreenColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.visual.tools.colorPickers.motifZScreen.spectrum('set',value);
+                html.visual.tools.colorPickers.motifZScreen.children().css('background',value);
                 break;
             }
             
             // Note Tab
             case 'noteTitle':{
-                selector.val(value);
+                html.notes.properties.title.val(value);
                 break;
             }
             case 'noteBody':{
-                selector.val(value);
+                html.notes.other.body.val(value);
                 break;
             }
             case 'noteOpacity':{
-                selector.selectpicker('val',value);
+                html.notes.properties.opacity.selectpicker('val',value);
                 break;
             }
             case 'noteColor':{
-                selector.spectrum('set',value);
-                selector.children().css('background',value);
+                html.notes.properties.color.spectrum('set',value);
+                html.notes.properties.color.children().css('background',value);
                 break;
             }
             case 'noteVisibility':{
@@ -1283,46 +1250,46 @@ define([
                     selector.find('.noteButton').addClass('visible');
                 }
                 break; 
-            }
+            } // Requires Selector //
             
             // Library Tab
             case 'projectName':{
-                selector.val(value);
+                html.library.project.name.val(value);
                 break;
             }
             case 'projectDescription':{
-                selector.val(value);
+                html.library.project.description.val(value);
                 break;
             }
             case 'projectTags':{
                 _.each(value, function($parameter,k){
-                    selector.tagit("createTag", $parameter); 
+                    html.library.project.tags.tagit("createTag", $parameter); 
                 });
             }
                 
             //IAC Box
             case 'iacVisibility':{
                 if (value === true) {
-                    selector.find('img').attr('src','Images/visible-icon-sm.png');
-                    selector.removeClass('notVisible');
+                    html.iac.buttons.visibility.find('img').attr('src','Images/visible-icon-sm.png');
+                    html.iac.buttons.visibility.removeClass('notVisible');
                 }
                 else {
-                    selector.find('img').attr('src','Images/hidden-icon-sm.png');
-                    selector.addClass('notVisible');
+                    html.iac.buttons.visibility.find('img').attr('src','Images/hidden-icon-sm.png');
+                    html.iac.buttons.visibility.addClass('notVisible');
                 } 
                 break;
             }
             case 'iacColor':{
-                selector.children().css('background',value);
+                html.iac.buttons.color.children().css('background',value);
                 break;
             }
             case 'iacOpacity':{
-                selector.val(value);
-                takeAction('iacOpacitySlider',jQuery('#iacOpacitySlider'),value);
+                html.iac.other.opacity.val(value);
+                takeAction('iacOpacitySlider',value);
                 break;
             }
             case 'iacOpacitySlider':{
-                selector.slider('value',value);
+                html.iac.other.opacitySlider.slider('value',value);
                 break;
             }
             
@@ -1332,102 +1299,102 @@ define([
                 $menu.reset('tabs');
                 
                 // Toggles //
-                takeAction('latticePoints',jQuery('#latticePoints'),true);
-                takeAction('edges',jQuery('#edges'),false);
-                takeAction('faces',jQuery('#faces'),false);
-                takeAction('xyzAxes',jQuery('#xyzAxes'),true);
-                takeAction('abcAxes',jQuery('#abcAxes'),false);
-                takeAction('unitCellViewport',jQuery('#unitCellViewport'),false);
-                takeAction('planes',jQuery('#planes'),true);
-                takeAction('directions',jQuery('#directions'),true);
-                takeAction('atomRadius',jQuery('#atomRadius'),false);
-                takeAction('atomToggle',jQuery('#atomToggle'),true);
-                takeAction('labelToggle',jQuery('#labelToggle'),false);
-                takeAction('highlightTangency',jQuery('#highlightTangency'),false);
+                takeAction('latticePoints',true);
+                takeAction('edges',false);
+                takeAction('faces',false);
+                takeAction('xyzAxes',true);
+                takeAction('abcAxes',false);
+                takeAction('unitCellViewport',false);
+                takeActionWithoutPublish('planes',true);
+                takeActionWithoutPublish('directions',true);
+                takeAction('atomRadius',false);
+                takeAction('atomToggle',true);
+                takeAction('labelToggle',false);
+                takeAction('highlightTangency',false);
                 
                 // Lattice //
-                takeAction('selectedLattice',jQuery('#selected_lattice'),$messages.getMessage(18));
-                takeAction('latticePadlock',jQuery('#latticePadlock'),false);
-                takeAction('repeatX',jQuery('#repeatX'),1);
-                takeAction('repeatY',jQuery('#repeatY'),1);
-                takeAction('repeatZ',jQuery('#repeatZ'),1);
-                takeAction('scaleX',jQuery('#scaleX'),1);
-                takeAction('scaleY',jQuery('#scaleY'),1);
-                takeAction('scaleZ',jQuery('#scaleZ'),1);
-                takeAction('alpha',jQuery('#alpha'),90);
-                takeAction('beta',jQuery('#beta'),90);
-                takeAction('gamma',jQuery('#gamma'),90);
-                takeAction('motifPadlock',jQuery('#motifPadlock'),false);
-                takeAction('cylinderColor',jQuery('#cube_color_border'),'A19EA1');
-                takeAction('faceColor',jQuery('#cube_color_filled'),'907190');
-                takeAction('radius',jQuery('#radius'),'2');
-                takeAction('faceOpacity',jQuery('#faceOpacity'),'3');
+                takeAction('selectedLattice',$messages.getMessage(18));
+                takeAction('latticePadlock',false);
+                takeAction('repeatX',1);
+                takeAction('repeatY',1);
+                takeAction('repeatZ',1);
+                takeAction('scaleX',1);
+                takeAction('scaleY',1);
+                takeAction('scaleZ',1);
+                takeAction('alpha',90);
+                takeAction('beta',90);
+                takeAction('gamma',90);
+                takeAction('motifPadlock',false);
+                takeAction('cylinderColor','A19EA1');
+                takeAction('faceColor','907190');
+                takeAction('radius','2');
+                takeAction('faceOpacity','3');
                 $menu.reset('restrictions');
                 $menu.reset('collisions');
                 
                 // Motif //
-                takeAction('tangency',jQuery('#tangency'),false);
-                takeAction('cellVolume',jQuery('#cellVolume'),'100');
+                takeAction('tangency',false);
+                takeAction('cellVolume','100');
                 $menu.reset('atomTable');
-                takeAction('atomPosX',jQuery('#atomPosX'),0);
-                takeAction('atomPosY',jQuery('#atomPosY'),0);
-                takeAction('atomPosZ',jQuery('#atomPosZ'),0);
-                takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),{value:false,toggle:true});
-                takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),{value:false,toggle:true});
-                jQuery('.element-symbol-container').hide();
-                jQuery('label[for=txt_coordinates_x]').html('x');
-                jQuery('label[for=txt_coordinates_y]').html('y');
-                jQuery('label[for=txt_coordinates_z]').html('z');
+                takeAction('atomPosX',0);
+                takeAction('atomPosY',0);
+                takeAction('atomPosZ',0);
+                takeAction('atomPositioningABC',{value:false,toggle:true});
+                takeAction('atomPositioningXYZ',{value:false,toggle:true});
+                html.motif.other.nameContainer.hide();
+                html.motif.motifInputsLabels.xa.html('x');
+                html.motif.motifInputsLabels.yb.html('y');
+                html.motif.motifInputsLabels.zc.html('z');
                 $menu.reset('motifCollisions');
                 
                 // Visual //
-                takeAction('realistic',jQuery('#realistic'),true);
-                takeAction('lights',jQuery('#lights'),true);
-                takeAction('ssao',jQuery('#ssao'),false);
-                takeAction('shadows',jQuery('#shadows'),true);
-                takeAction('distortionOff',jQuery('#distortionOff'),true);
-                takeAction('anaglyph',jQuery('#anaglyph'),false);
-                takeAction('oculus',jQuery('#oculus'),false);
-                takeAction('sideBySide',jQuery('#3DsideBySide'),false);
-                takeAction('onTop',jQuery('#3DonTop'),false);
-                takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),true);
-                takeAction('leapMotion',jQuery('#leapMotion'),false);
-                takeAction('crystalClassic',jQuery('#crystalClassic'),true);
-                takeAction('cellClassic',jQuery('#cellClassic'),true);
-                takeAction('fog',jQuery('input[name="fog"]'),false);
-                takeAction('fogDensity',jQuery('#fogDensity'),1);
-                takeAction('fogColor',jQuery('#fogColor'),'transparent');
-                takeAction('sounds',jQuery('#sounds'),false);
-                takeAction('soundSlider',jQuery('#soundSlider'),75);
-                takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),'#74629c');
-                takeAction('cellScreenColor',jQuery('#cellScreenColor'),'#74629c');
-                takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),'#74629c');
-                takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),'#74629c');
-                takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),'#74629c');
+                takeAction('realistic',true);
+                takeAction('lights',true);
+                takeAction('ssao',false);
+                takeAction('shadows',true);
+                takeAction('distortionOff',true);
+                takeAction('anaglyph',false);
+                takeAction('oculus',false);
+                takeAction('sideBySide',false);
+                takeAction('onTop',false);
+                takeAction('crystalCamTargetOn',true);
+                takeAction('leapMotion',false);
+                takeAction('crystalClassic',true);
+                takeAction('cellClassic',true);
+                takeAction('fog',false);
+                takeAction('fogDensity',1);
+                takeAction('fogColor','transparent');
+                takeAction('sounds',false);
+                takeAction('soundSlider',75);
+                takeAction('crystalScreenColor','#74629c');
+                takeAction('cellScreenColor','#74629c');
+                takeAction('motifXScreenColor','#74629c');
+                takeAction('motifYScreenColor','#74629c');
+                takeAction('motifZScreenColor','#74629c');
                 
                 // PnD //
-                takeAction('planeOpacity',jQuery('#planeOpacity'),'6');
-                takeAction('millerH',jQuery('#millerH'),'');
-                takeAction('millerK',jQuery('#millerK'),'');
-                takeAction('millerL',jQuery('#millerL'),'');
-                takeAction('millerI',jQuery('#millerI'),'');
-                takeAction('planeName',jQuery('#planeName'),'');
-                takeAction('planeColor',jQuery('#planeColor'),'transparent');
-                takeAction('directionColor',jQuery('#directionColor'),'transparent');
-                takeAction('millerU',jQuery('#millerU'),'');
-                takeAction('millerV',jQuery('#millerV'),'');
-                takeAction('millerW',jQuery('#millerW'),'');
-                takeAction('millerT',jQuery('#millerT'),'');
-                takeAction('directionName',jQuery('#directionName'),'');
-                takeAction('dirRadius',jQuery('#dirRadius'),'10');
+                takeAction('planeOpacity','6');
+                takeAction('millerH','');
+                takeAction('millerK','');
+                takeAction('millerL','');
+                takeAction('millerI','');
+                takeAction('planeName','');
+                takeAction('planeColor','transparent');
+                takeAction('directionColor','transparent');
+                takeAction('millerU','');
+                takeAction('millerV','');
+                takeAction('millerW','');
+                takeAction('millerT','');
+                takeAction('directionName','');
+                takeAction('dirRadius','10');
                 $menu.reset('planesTable');
                 $menu.reset('directionTable');
 
                 // Notes //
-                takeAction('noteTitle',jQuery('#noteTitle'),'');
-                takeAction('noteOpacity',jQuery('#noteOpacity'),'10');
-                takeAction('noteBody',jQuery('#noteBody'),'');
-                takeAction('noteColor',jQuery('#noteColor'),'transparent');
+                takeAction('noteTitle','');
+                takeAction('noteOpacity','10');
+                takeAction('noteBody','');
+                takeAction('noteColor','transparent');
                 $menu.reset('notesTable');
                 break;
             }
@@ -1435,6 +1402,36 @@ define([
         };
         allowPublish = success;
     };
+    
+    // Turn on/off toggles without publishing the event //
+    function takeActionWithoutPublish(index,value){
+        switch(index){
+            case 'planes':{
+                if (value === true) {
+                    html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    html.menu.toggles.planes.parent().addClass('lightThemeActive');
+                }
+                else {
+                    html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    html.menu.toggles.planes.parent().removeClass('lightThemeActive');
+                }
+                break;
+            }
+            case 'directions':{
+                if (value === true) {
+                    html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
+                    html.menu.toggles.directions.parent().addClass('lightThemeActive');
+                }
+                else {
+                    html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
+                    html.menu.toggles.directions.parent().removeClass('lightThemeActive');
+                }
+                break;
+            }   
+        }
+    };
+    
+    // Publishes event to the system //
     function publishAction(index,value){
         switch(index){
             
@@ -1933,21 +1930,22 @@ define([
         };
     };
     
+    // Module Interface //
     setUIValue.prototype.setValue = function(argument){
         if (Object.keys(argument).length <= 0) return false;
         else {
             _.each(argument,function($parameter, k){
                 
-                // Read Value adn run action
+                // Read Value and run action //
                 if (!(_.isUndefined($parameter.value))) {
-                    // Select Element
+                    // Select Element (if no selector is defined, the index is used //
                     if (_.isUndefined($parameter.other)) $selector = jQuery('#'+k);
                     else $selector = $parameter.other;
-                    takeAction(k,$selector,$parameter.value);
+                    takeAction(k,$parameter.value,$selector);
                 }
                 else allowPublish = true;
                 
-                // Publish Event
+                // Publish Event //
                 if (!(_.isUndefined($parameter.publish))) {
                     if (allowPublish === true) publishAction(k,$parameter.publish);
                 }
@@ -1957,97 +1955,97 @@ define([
     };
     setUIValue.prototype.restoreUI = function(appUI,info){
         // Restore Library Tab //
-        takeAction('projectName',jQuery('#projectName'),info.name);
-        takeAction('projectDescription',jQuery('#projectDescription'),info.description);
-        takeAction('projectTags',jQuery('#projectTags'),info.tags);
+        takeAction('projectName',info.name);
+        takeAction('projectDescription',info.description);
+        takeAction('projectTags',info.tags);
         
         // Tabs //
         $menu.restoreTabs(appUI.menuRibbon);
         
         // Toggles //
-        takeAction('latticePoints',jQuery('#latticePoints'),appUI.menuRibbon.toggleButtons.latticePoints);
-        takeAction('edges',jQuery('#edges'),appUI.menuRibbon.toggleButtons.edges);
-        takeAction('faces',jQuery('#faces'),appUI.menuRibbon.toggleButtons.faces);
-        takeAction('xyzAxes',jQuery('#xyzAxes'),appUI.menuRibbon.toggleButtons.xyzAxes);
-        takeAction('abcAxes',jQuery('#abcAxes'),appUI.menuRibbon.toggleButtons.abcAxes);
-        takeAction('unitCellViewport',jQuery('#unitCellViewport'),appUI.menuRibbon.toggleButtons.unitCellViewport);
-        takeAction('planes',jQuery('#planes'),appUI.menuRibbon.toggleButtons.planes);
-        takeAction('directions',jQuery('#directions'),appUI.menuRibbon.toggleButtons.directions);
-        takeAction('atomRadius',jQuery('#atomRadius'),appUI.menuRibbon.toggleButtons.atomRadius);
-        takeAction('atomToggle',jQuery('#atomToggle'),appUI.menuRibbon.toggleButtons.atomToggle);
-        takeAction('labelToggle',jQuery('#labelToggle'),appUI.menuRibbon.toggleButtons.labelToggle);
-        takeAction('highlightTangency',jQuery('#highlightTangency'),appUI.menuRibbon.toggleButtons.highlightTangency);
+        takeAction('latticePoints',appUI.menuRibbon.toggleButtons.latticePoints);
+        takeAction('edges',appUI.menuRibbon.toggleButtons.edges);
+        takeAction('faces',appUI.menuRibbon.toggleButtons.faces);
+        takeAction('xyzAxes',appUI.menuRibbon.toggleButtons.xyzAxes);
+        takeAction('abcAxes',appUI.menuRibbon.toggleButtons.abcAxes);
+        takeAction('unitCellViewport',appUI.menuRibbon.toggleButtons.unitCellViewport);
+        takeActionWithoutPublish('planes',appUI.menuRibbon.toggleButtons.planes);
+        takeActionWithoutPublish('directions',appUI.menuRibbon.toggleButtons.directions);
+        takeAction('atomRadius',appUI.menuRibbon.toggleButtons.atomRadius);
+        takeAction('atomToggle',appUI.menuRibbon.toggleButtons.atomToggle);
+        takeAction('labelToggle',appUI.menuRibbon.toggleButtons.labelToggle);
+        takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',jQuery('#atomRadiusSlider'),appUI.menuRibbon.toggleButtons.highlightTangency);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Lattice Tab //
-        takeAction('selectedLattice',jQuery('#selected_lattice'),appUI.latticeTab.latticeSelecion.selectedLattice);
-        takeAction('repeatX',jQuery('#repeatX'),appUI.latticeTab.latticeRepetition.repeatX);
-        takeAction('repeatY',jQuery('#repeatY'),appUI.latticeTab.latticeRepetition.repeatY);
-        takeAction('repeatZ',jQuery('#repeatZ'),appUI.latticeTab.latticeRepetition.repeatZ);
-        takeAction('scaleX',jQuery('#scaleX'),appUI.latticeTab.latticeLength.scaleX);
-        takeAction('scaleY',jQuery('#scaleY'),appUI.latticeTab.latticeLength.scaleY);
-        takeAction('scaleZ',jQuery('#scaleZ'),appUI.latticeTab.latticeLength.scaleZ);
-        takeAction('alpha',jQuery('#alpha'),appUI.latticeTab.latticeAngle.alpha);
-        takeAction('beta',jQuery('#beta'),appUI.latticeTab.latticeAngle.beta);
-        takeAction('gamma',jQuery('#gamma'),appUI.latticeTab.latticeAngle.gamma);
+        takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);
+        takeAction('repeatX',appUI.latticeTab.latticeRepetition.repeatX);
+        takeAction('repeatY',appUI.latticeTab.latticeRepetition.repeatY);
+        takeAction('repeatZ',appUI.latticeTab.latticeRepetition.repeatZ);
+        takeAction('scaleX',appUI.latticeTab.latticeLength.scaleX);
+        takeAction('scaleY',appUI.latticeTab.latticeLength.scaleY);
+        takeAction('scaleZ',appUI.latticeTab.latticeLength.scaleZ);
+        takeAction('alpha',appUI.latticeTab.latticeAngle.alpha);
+        takeAction('beta',appUI.latticeTab.latticeAngle.beta);
+        takeAction('gamma',appUI.latticeTab.latticeAngle.gamma);
         $menu.restorePadlocks(appUI.latticeTab.padlocks.lattice.state,appUI.latticeTab.padlocks.motif.state);
-        takeAction('cellEdgeColor',jQuery('#cube_color_border'),appUI.latticeTab.cellVisualization.cellEdge.color);
-        takeAction('cellFaceColor',jQuery('#cube_color_filled'),appUI.latticeTab.cellVisualization.cellFace.color);
-        takeAction('radius',jQuery('#radius'),appUI.latticeTab.cellVisualization.cellEdge.radius.toString());
-        takeAction('faceOpacity',jQuery('#faceOpacity'),appUI.latticeTab.cellVisualization.cellFace.opacity.toString());
+        takeAction('cellEdgeColor',appUI.latticeTab.cellVisualization.cellEdge.color);
+        takeAction('cellFaceColor',appUI.latticeTab.cellVisualization.cellFace.color);
+        takeAction('radius',appUI.latticeTab.cellVisualization.cellEdge.radius.toString());
+        takeAction('faceOpacity',appUI.latticeTab.cellVisualization.cellFace.opacity.toString());
         $menu.reset('restrictions');
         $menu.reset('collisions');
         
         // Motif //
-        takeAction('tangency',jQuery('#tangency'),appUI.motifTab.tangency);
-        takeAction('cellVolume',jQuery('#cellVolume'),appUI.motifTab.cellVolume.toString());
-        takeAction('lockCameras',jQuery('#lockCameraIcon'),appUI.motifTab.lockCameras);
+        takeAction('tangency',appUI.motifTab.tangency);
+        takeAction('cellVolume',appUI.motifTab.cellVolume.toString());
+        takeAction('lockCameras',appUI.motifTab.lockCameras);
         $menu.reset('atomTable');
-        jQuery('.element-symbol-container').hide();
+        html.motif.other.nameContainer.hide();
         $menu.reset('motifCollisions');
 
         // Visual //
-        takeAction('wireframe',jQuery('#wireframe'),appUI.visualTab.visualParameters.renderizationMode.wireframe);
-        takeAction('toon',jQuery('#toon'),appUI.visualTab.visualParameters.renderizationMode.toon);
-        takeAction('flat',jQuery('#flat'),appUI.visualTab.visualParameters.renderizationMode.flat);
-        takeAction('realistic',jQuery('#realistic'),appUI.visualTab.visualParameters.renderizationMode.realistic);
-        takeAction('lights',jQuery('#lights'),appUI.visualTab.visualParameters.lights.lights);
-        takeAction('ssao',jQuery('#ssao'),appUI.visualTab.visualParameters.lights.ssao);
-        takeAction('shadows',jQuery('#shadows'),appUI.visualTab.visualParameters.lights.shadows);
-        takeAction('distortionOff',jQuery('#distortionOff'),appUI.visualTab.visualParameters.visualizationMode.distortionOff);
-        takeAction('distortionOn',jQuery('#distortionOn'),appUI.visualTab.visualParameters.visualizationMode.distortionOn);
-        takeAction('anaglyph',jQuery('#anaglyph'),appUI.visualTab.visualParameters.stereoscopicEffect.anaglyph);
-        takeAction('oculus',jQuery('#oculus'),appUI.visualTab.visualParameters.stereoscopicEffect.oculus);
-        takeAction('sideBySide',jQuery('#3DsideBySide'),appUI.visualTab.visualParameters.stereoscopicEffect.sideBySide3D);
-        takeAction('onTop',jQuery('#3DonTop'),appUI.visualTab.visualParameters.stereoscopicEffect.OnTop3D);
-        takeAction('crystalCamTargetOn',jQuery('#crystalCamTargetOn'),appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn);
-        takeAction('crystalCamTargetOff',jQuery('#crystalCamTargetOff'),appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOff);
-        takeAction('leapMotion',jQuery('#leapMotion'),appUI.visualTab.visualParameters.leapMotion);
-        takeAction('crystalClassic',jQuery('#crystalClassic'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalClassic);
-        takeAction('crystalSubstracted',jQuery('#crystalSubstracted'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSubstracted);
-        takeAction('crystalSolidVoid',jQuery('#crystalSolidVoid'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSolidVoid);
-        takeAction('crystalGradeLimited',jQuery('#crystalGradeLimited'),appUI.visualTab.visualParameters.crystalModelRepresentation.crystalGradeLimited);
-        takeAction('cellClassic',jQuery('#cellClassic'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellClassic);
-        takeAction('cellSubstracted',jQuery('#cellSubstracted'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSubstracted);
-        takeAction('cellSolidVoid',jQuery('#cellSolidVoid'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSolidVoid);
-        takeAction('cellGradeLimited',jQuery('#cellGradeLimited'),appUI.visualTab.visualParameters.unitCellModelRepresentation.cellGradeLimited);
-        if (appUI.visualTab.visualTools.menuZoom.autoZoom === true) takeAction('autoZoom',jQuery('autoZoom'),'');
-        if (appUI.visualTab.visualTools.menuZoom.zoom100 === true) takeAction('zoom100',jQuery('zoom100'),'');
-        if (appUI.visualTab.visualTools.menuZoom.zoom90 === true) takeAction('zoom90',jQuery('zoom90'),'');
-        if (appUI.visualTab.visualTools.menuZoom.zoom80 === true) takeAction('zoom80',jQuery('zoom80'),'');
-        if (appUI.visualTab.visualTools.menuZoom.zoom70 === true) takeAction('zoom70',jQuery('zoom70'),'');
-        takeAction('fog',jQuery('input[name="fog"]'),appUI.visualTab.visualTools.fog.state);
-        takeAction('fogDensity',jQuery('#fogDensity'),appUI.visualTab.visualTools.fog.density);
-        takeAction('fogColor',jQuery('#fogColor'),appUI.visualTab.visualTools.fog.color);
-        takeAction('sounds',jQuery('#sounds'),appUI.visualTab.visualTools.sound.state);
-        takeAction('soundSlider',jQuery('#soundSlider'),appUI.visualTab.visualTools.sound.volume);
-        takeAction('crystalScreenColor',jQuery('#crystalScreenColor'),appUI.visualTab.visualTools.colorization.crystalScreenColor);
-        takeAction('cellScreenColor',jQuery('#cellScreenColor'),appUI.visualTab.visualTools.colorization.cellScreenColor);
-        takeAction('motifXScreenColor',jQuery('#motifXScreenColor'),appUI.visualTab.visualTools.colorization.motifXScreenColor);
-        takeAction('motifYScreenColor',jQuery('#motifYScreenColor'),appUI.visualTab.visualTools.colorization.motifYScreenColor);
-        takeAction('motifZScreenColor',jQuery('#motifZScreenColor'),appUI.visualTab.visualTools.colorization.motifZScreenColor);
+        takeAction('wireframe',appUI.visualTab.visualParameters.renderizationMode.wireframe);
+        takeAction('toon',appUI.visualTab.visualParameters.renderizationMode.toon);
+        takeAction('flat',appUI.visualTab.visualParameters.renderizationMode.flat);
+        takeAction('realistic',appUI.visualTab.visualParameters.renderizationMode.realistic);
+        takeAction('lights',appUI.visualTab.visualParameters.lights.lights);
+        takeAction('ssao',appUI.visualTab.visualParameters.lights.ssao);
+        takeAction('shadows',appUI.visualTab.visualParameters.lights.shadows);
+        takeAction('distortionOff',appUI.visualTab.visualParameters.visualizationMode.distortionOff);
+        takeAction('distortionOn',appUI.visualTab.visualParameters.visualizationMode.distortionOn);
+        takeAction('anaglyph',appUI.visualTab.visualParameters.stereoscopicEffect.anaglyph);
+        takeAction('oculus',appUI.visualTab.visualParameters.stereoscopicEffect.oculus);
+        takeAction('sideBySide',appUI.visualTab.visualParameters.stereoscopicEffect.sideBySide3D);
+        takeAction('onTop',appUI.visualTab.visualParameters.stereoscopicEffect.OnTop3D);
+        takeAction('crystalCamTargetOn',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn);
+        takeAction('crystalCamTargetOff',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOff);
+        takeAction('leapMotion',appUI.visualTab.visualParameters.leapMotion);
+        takeAction('crystalClassic',appUI.visualTab.visualParameters.crystalModelRepresentation.crystalClassic);
+        takeAction('crystalSubstracted',appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSubstracted);
+        takeAction('crystalSolidVoid',appUI.visualTab.visualParameters.crystalModelRepresentation.crystalSolidVoid);
+        takeAction('crystalGradeLimited',appUI.visualTab.visualParameters.crystalModelRepresentation.crystalGradeLimited);
+        takeAction('cellClassic',appUI.visualTab.visualParameters.unitCellModelRepresentation.cellClassic);
+        takeAction('cellSubstracted',appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSubstracted);
+        takeAction('cellSolidVoid',appUI.visualTab.visualParameters.unitCellModelRepresentation.cellSolidVoid);
+        takeAction('cellGradeLimited',appUI.visualTab.visualParameters.unitCellModelRepresentation.cellGradeLimited);
+        if (appUI.visualTab.visualTools.menuZoom.autoZoom === true) takeAction('autoZoom','');
+        if (appUI.visualTab.visualTools.menuZoom.zoom100 === true) takeAction('zoom100','');
+        if (appUI.visualTab.visualTools.menuZoom.zoom90 === true) takeAction('zoom90','');
+        if (appUI.visualTab.visualTools.menuZoom.zoom80 === true) takeAction('zoom80','');
+        if (appUI.visualTab.visualTools.menuZoom.zoom70 === true) takeAction('zoom70','');
+        takeAction('fog',appUI.visualTab.visualTools.fog.state);
+        takeAction('fogDensity',appUI.visualTab.visualTools.fog.density);
+        takeAction('fogColor',appUI.visualTab.visualTools.fog.color);
+        takeAction('sounds',appUI.visualTab.visualTools.sound.state);
+        takeAction('soundSlider',appUI.visualTab.visualTools.sound.volume);
+        takeAction('crystalScreenColor',appUI.visualTab.visualTools.colorization.crystalScreenColor);
+        takeAction('cellScreenColor',appUI.visualTab.visualTools.colorization.cellScreenColor);
+        takeAction('motifXScreenColor',appUI.visualTab.visualTools.colorization.motifXScreenColor);
+        takeAction('motifYScreenColor',appUI.visualTab.visualTools.colorization.motifYScreenColor);
+        takeAction('motifZScreenColor',appUI.visualTab.visualTools.colorization.motifZScreenColor);
     };
     
     return setUIValue;

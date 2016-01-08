@@ -1747,8 +1747,9 @@
 																		</form>
 																	</div>
 																	<div class="project-blocks-container">
-																		<div class="row row-5">
+																		<div class="row row-5" id="searchResults">
 																			
+                                                                            <!--
 																			<div class="col col-sm-6">
 																				<div class="project-block">
 																					<div class="block-image">
@@ -1759,29 +1760,20 @@
 																					</div>
 																				</div>
 																			</div>
-																			<div class="col col-sm-6">
-																				<div class="project-block">
-																					<div class="block-image">
-																						<img src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
-																					</div>
-																					<div class="block-title">
-																						<h4>Project Name 2</h4>
-																					</div>
-																				</div>
-																			</div>
-																			<div class="col col-sm-12">
+                                                                            -->
+																			<div class="col col-sm-12" id="resultPreviewBig">
 																				<div class="project-block-xl">
 																					<div class="block-image">
 																						<img src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
 																					</div>
 																					<div class="block-details">
-																						<div class="block-title">
+																						<div class="block-title" id="previewTitle">
 																							<h4>Project Name 1</h4>
 																						</div>
 																						<div class="row row-5">
 																							
 																							<div class="col col-sm-7">
-																								<div class="block-tags">
+																								<div class="block-tags" id="previewTags">
 																									<a class="tag tag-purple">NaCl</a>
 																									<a class="tag tag-purple">Tag 1</a>
 																									<a class="tag tag-purple">Dark Crystal</a>
@@ -1791,19 +1783,18 @@
 																							</div>
 																							<div class="col col-sm-5">
 																								<div class="block-actions">
-																									<a class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
-																									<a class="btn btn-primary btn-open">Open</a>
+																									<a id="openPreviewQR" data-toggle="modal" data-target="#qr_scan_modal" class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
+																									<a id="openPreview" class="btn btn-primary btn-open">Open</a>
 																								</div>
 																							</div>
 
 																						</div>
-																						<div class="block-description">
+																						<div class="block-description" id="previewDescription">
 																							<p>This is the Decription of Project 2 of Lorem Ipsum proin gravida nibh vel velit auctor aliquet aenean sollicitudin, lorem quis bibendum auctor is simply dummy text of the printing typesetting industry.</p>
 																						</div>
 																					</div>
 																				</div>
 																			</div>
-
 																		</div>
 																	</div>
 																</div>

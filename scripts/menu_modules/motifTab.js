@@ -16,7 +16,36 @@ define([
     _,
     bootstrap
 ) 
-{
+{   /* This module handles the motif tab. It assign listeners for the user input, and maintains a list of all atoms that the user has added.
+        - Motif Inputs Panel
+        - Atom List
+        - Atom Tangency Mechanics
+            * An atom may connect to another as child, only if it has no other role (not a parent)
+                * If the atom that it's connecting to, is already a child, then we upgrade this atom from child->child/parent.
+                * Thus, a chain is created: new atom (child) -> connects to (child/parent [old child]) -> connects to its parent.
+                * Case 1: 
+                    atom1 connects atom2 ===> atom1->atom2 or child->parent
+                * Case 2:
+                    atom1 connects to atom2->atom3->atom4 ===> atom1->atom2->atom3->atom4 or child->child/parent->child/parent->parent 
+            * An atom may disconnect from another atom, no matter what:
+                * Case 1:
+                    atom1->atom2->atom3->atom4 or child->child/parent->child/parent->parent
+                    disconnect atom1
+                    atom1 atom2->atom3->atom4 or  empty child->child/parent->parent
+                * Case 2:
+                    atom1->atom2->atom3->atom4 or child->child/parent->child/parent->parent
+                    disconnect atom2
+                    atom1 atom2 atom3->atom4 or  empty empty child->parent
+                * Case 3:
+                    atom1->atom2->atom3-atom4 or child->child/parent->child/parent->parent
+                    disconnect atom3
+                    atom1->atom2 atom3 atom4 or  child->parent empty empty
+                * Case 4:
+                    atom1->atom2->atom3->atom4 or child->child/parent->child/parent->parent
+                    disconnect atom4
+                    atom1->atom2->atom3 atom4 or  child->child/parent->parent empty
+        - Collision Mechanics
+    */
     // Variables //
     var collisions = {};
     var collisionTooltip = {
@@ -34,53 +63,7 @@ define([
     var $tooltipGenerator = undefined;
     var $latticeTab = undefined;
     var $disableUIElement = undefined;
-    
-    // Selectors //
-    var $atomTable = jQuery('#atomTable');
-    var $atomOpacitySlider = jQuery('#atomOpacitySlider');
-    var $tangentR = jQuery('#tangentR');
-    var $cellVolume = jQuery('#cellVolume');
-    var $cellVolumeSlider = jQuery('#cellVolumeSlider');
-    var $atomPalette = jQuery('#atomPalette');
-    var $previewAtomChanges = jQuery('.previewAtomChanges');
-    var $autoRefresh = jQuery('.autoRefresh');
-    var $saveAtomChanges = jQuery('.saveAtomChanges');
-    var $deleteAtom = jQuery('#deleteAtom');
-    var $tangency = jQuery('#tangency');
-    var $atomPositioningXYZ = jQuery('#atomPositioningXYZ');
-    var $atomPositioningABC = jQuery('#atomPositioningABC');
-    var $lockCameras = jQuery('#lockCameraIcon');
-    var $swapButton = jQuery('#swapBtn');
-    var $atomColor = jQuery('#atomColor');
-    
-    // Grouping //
-    var atomParameters = {
-        atomOpacity: jQuery('#atomOpacity'),
-        atomWireframe: jQuery('#atomWireframe'),
-        atomTexture: jQuery('#atomTexture')
-    };
-    var motifInputs = {
-        atomPosX : jQuery('#atomPosX'),
-        atomPosY : jQuery('#atomPosY'), 
-        atomPosZ : jQuery('#atomPosZ')
-    };
-    var motifSliders = {
-        atomPosX: jQuery('#atomPosXSlider'), 
-        atomPosY: jQuery('#atomPosYSlider'), 
-        atomPosZ: jQuery('#atomPosZSlider')
-    };
-    var rotatingAngles = {
-        rotAngleTheta : jQuery('#rotAngleTheta'),
-        rotAnglePhi : jQuery('#rotAnglePhi')
-    };
-    var latticeLabels = {
-        scaleX : jQuery('#meLengthA'),
-        scaleY : jQuery('#meLengthB'),
-        scaleZ : jQuery('#meLengthC'),
-        alpha : jQuery('#meAngleA'),
-        beta : jQuery('#meAngleB'),
-        gamma : jQuery('#meAngleG')
-    };
+    var html = undefined;
     
     // Contructor //
     function motifTab(argument) {
@@ -100,9 +83,11 @@ define([
         else return false;
         if (!(_.isUndefined(argument.latticeTab))) $latticeTab = argument.latticeTab;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         // Input Handlers
-        $atomOpacitySlider.slider({
+        html.motif.panel.opacitySlider.slider({
             value: 10,
             min: 0,
             max: 10,
@@ -114,10 +99,12 @@ define([
                         publish:{atomOpacity:ui.value}
                     }
                 });
-                atomParameters.atomOpacity.val(ui.value);
+                html.motif.atomParameters.atomOpacity.val(ui.value);
             }
         });
-        $cellVolumeSlider.slider({
+        
+        // Cell Volume //
+        html.motif.other.cellVolumeSlider.slider({
             value: 100,
             min: 0,
             max: 400,
@@ -127,7 +114,9 @@ define([
                 var value = ui.value;
                 // Pass Collistion Detection //
                 if (!(_.isUndefined(collisions.cellVolume))){
+                    // Check for collision //
                     if (collision(ui.value,collisions.cellVolume,2) === true){
+                        // Make sure that the code below will run only once //
                         if (collisionTooltip.cellVolume === false){
                             $tooltipGenerator.addStaticTooltip({
                                 'target': 'cellVolumeSlider',
@@ -135,26 +124,33 @@ define([
                                 'message': $messages.getMessage(24)
                             });
                             collisionTooltip.cellVolume = true;
-                            // Publish event only once //
+                            // Publish event //
                             var publish = {};
                             publish.cellVolume = collisions.cellVolume;
                             var argument = {};
                             argument.cellVolume = {publish: publish};
                             $setUIValue.setValue(argument);
                         }
-                        $cellVolume.val(collisions.cellVolume);
-                        $cellVolumeSlider.slider('value',collisions.cellVolume);
+                        // Freeze Input Field and Slider //
+                        html.motif.other.cellVolume.val(collisions.cellVolume);
+                        html.motif.other.cellVolumeSlider.slider('value',collisions.cellVolume);
+                        // Exit Handler //
                         return false; 
                     } 
                 }
+                
+                // Destroy tooltip since the collision test was successful //
                 collisionTooltip.cellVolume = false;
-                $cellVolumeSlider.tooltip('destroy');
+                html.motif.other.cellVolumeSlider.tooltip('destroy');
+                
+                // Get Tangency State //
                 var tangency = $getUIValue.getValue({tangency: {id:'tangency'}});
                 if (tangency.tangency === true){
+                    // With Tangency option active, the cell volume can't drop below 100.
                     if (value < 100) {
                         value = 100;
-                        $cellVolume.val(value);
-                        $cellVolumeSlider.slider('value',value);
+                        html.motif.other.cellVolume.val(value);
+                        html.motif.other.cellVolumeSlider.slider('value',value);
                         $tooltipGenerator.showTooltip({
                             'target': 'cellVolumeSlider',
                             'placement': 'top',
@@ -168,35 +164,41 @@ define([
                         return false;
                     }
                 }
+                
+                // Publish value normally //
                 $setUIValue.setValue({
                     cellVolume:{
                         publish: {cellVolume:value}
                     }
                 });
-                $cellVolume.val(value);
+                
+                // Update Input Field //
+                html.motif.other.cellVolume.val(value);
             },
             stop: function(){
-                $cellVolumeSlider.tooltip('destroy');   
+                html.motif.other.cellVolumeSlider.tooltip('destroy');   
             }
         });
-        $cellVolume.on('change', function() {
+        html.motif.other.cellVolume.on('change', function() {
             console.log('asd');
             $setUIValue.setValue({
                 cellVolume:{
-                    value: $cellVolume.val(),
-                    publish: {cellVolume:$cellVolume.val()}
+                    value: html.motif.other.cellVolume.val(),
+                    publish: {cellVolume:html.motif.other.cellVolume.val()}
                 }
             });       
         });
-        $cellVolume.val(100);
-        $tangentR.on('change', function() {
+        html.motif.other.cellVolume.val(100);
+        
+        // Motif Panel //
+        html.motif.panel.tangentR.on('change', function() {
             $setUIValue.setValue({
                 tangetR:{
-                    publish: {tangentR:$tangentR.val()}   
+                    publish: {tangentR:html.motif.panel.tangentR.val()}   
                 }
             });
         });
-        _.each(atomParameters, function($parameter, k ) {
+        _.each(html.motif.atomParameters, function($parameter, k ) {
             $parameter.on('change', function() {
                 
                 // Get //
@@ -224,7 +226,7 @@ define([
                 }
             }); 
         });
-        _.each(motifInputs, function($parameter, k) {
+        _.each(html.motif.motifInputs, function($parameter, k) {
             $parameter.on('change', function() {
                 
                 // Get //
@@ -251,7 +253,7 @@ define([
                 }
             });
         });
-        _.each(motifSliders, function($parameter, k) {
+        _.each(html.motif.motifSliders, function($parameter, k) {
             $parameter.slider({
                 value: 0,
                 min: -20.000,
@@ -262,7 +264,9 @@ define([
                     
                     // Pass Collistion Detection //
                     if (!(_.isUndefined(collisions[k]))){
+                        // Check for collision //
                         if (collision(ui.value,collisions[k],0.1) === true){
+                            // Make sure that the code below will run only once //
                             if (collisionTooltip[k] === false){
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': k+'Slider',
@@ -278,18 +282,23 @@ define([
                                 $setUIValue.setValue(argument);
                                 motifInputs[k].val(ui.value);
                             }
+                            // Freeze input field and slider value //
                             jQuery('#'+k).val(collisions[k]);
                             jQuery('#'+k+'Slider').slider('value',collisions[k]);
+                            // Exit Handler //
                             return false; 
                         } 
                     }
+                    
                     // Collision Passed //
                     var publish = {};
                     publish[k] = ui.value;
                     var argument = {};
                     argument[k] = {publish: publish};
                     $setUIValue.setValue(argument);
-                    motifInputs[k].val(ui.value);
+                    html.motif.motifInputs[k].val(ui.value);
+                    
+                    // Destroy collision tooltip and update input field //
                     collisionTooltip[k] = false;
                     jQuery('#'+k+'Slider').tooltip('destroy');
                     jQuery('#'+k).val(ui.value);
@@ -299,50 +308,49 @@ define([
                 }
             });
         });
-        _.each(rotatingAngles, function($parameter, k) {
+        _.each(html.motif.rotatingAngles.combo, function($parameter, k) {
             $parameter.on('change', function() {
                 $setUIValue.setValue({
                     rotatingAngles:{
-                        publish: {rotAnglePhi: jQuery('#rotAnglePhi').val(), rotAngleTheta: jQuery('#rotAngleTheta').val() }   
+                        publish: {rotAnglePhi: html.motif.rotatingAngles.combo.rotAnglePhi.val(), rotAngleTheta: html.motif.rotatingAngles.combo.rotAngleTheta.val() }   
                     }
                 });
             });
         });
-        $atomColor.spectrum({
-            color: "#ffffff",
+        html.motif.panel.color.spectrum({
+            color: "#000000",
             allowEmpty:true,
             chooseText: "Choose",
             cancelText: "Close",
             move: function(){
                 $setUIValue.setValue({
                     atomColor:{
-                        other: $atomColor,
-                        publish:{atomColor:$atomColor.spectrum('get').toHex()},
-                        value: '#'+$atomColor.spectrum('get').toHex()
+                        publish:{atomColor:html.motif.panel.color.spectrum('get').toHex()},
+                        value: '#'+html.motif.panel.color.spectrum('get').toHex()
                     }
                 });
             },
             change: function(){
                 $setUIValue.setValue({
                     atomColor:{
-                        other: $atomColor,
-                        publish:{atomColor:$atomColor.spectrum('get').toHex()},
-                        value: '#'+$atomColor.spectrum('get').toHex()
+                        publish:{atomColor:html.motif.panel.color.spectrum('get').toHex()},
+                        value: '#'+html.motif.panel.color.spectrum('get').toHex()
                     }
                 });
             }
         });
         
-        $tangency.on('click',function(){
+        html.motif.panel.tangency.on('click',function(){
             var value = undefined;
-            if ( !($tangency.parent().hasClass('disabled')) ){
-                ($tangency.parent().hasClass('purpleThemeActive')) ? value = false : value = true;
+            if ( !(html.motif.panel.tangency.parent().hasClass('disabled')) ){
+                (html.motif.panel.tangency.parent().hasClass('purpleThemeActive')) ? value = false : value = true;
                 $setUIValue.setValue({
                     tangency:{
                         publish:{button:'tangency',tangency:value},
                         value:value
                     }
                 });
+                // if tangency was just turned on, update cell volume to 100 //
                 if (value === true) {
                     $setUIValue.setValue({
                         cellVolume:{
@@ -353,9 +361,9 @@ define([
                 }
             }
         });
-        $previewAtomChanges.on('click', function(){  
+        html.motif.actions.preview.on('click', function(){
             var value = undefined;
-            if (!($previewAtomChanges.hasClass('disabled'))){
+            if (!(html.motif.actions.preview.hasClass('disabled'))){
                 $setUIValue.setValue({
                     previewAtomChanges:{
                         publish:{empty:0}
@@ -363,8 +371,8 @@ define([
                 });
             }
         });   
-        $saveAtomChanges.on('click', function(){
-            if (!($saveAtomChanges.hasClass('disabled'))){
+        html.motif.actions.save.on('click', function(){
+            if (!(html.motif.actions.save.hasClass('disabled'))){
                 var publish = {};
                 publish = $getUIValue.getValue({
                     atomColor:{
@@ -377,26 +385,24 @@ define([
                 publish.button = 'saveChanges';
                 $setUIValue.setValue({
                     saveAtomChanges:{
-                        publish: publish,
-                        other: $saveAtomChanges
+                        publish: publish
                     }
                 });
             }
         });
-        $deleteAtom.on('click', function(){
-            if (!($deleteAtom.hasClass('disabled'))){
+        html.motif.actions.delete.on('click', function(){
+            if (!(html.motif.actions.delete.hasClass('disabled'))){
                 $setUIValue.setValue({
                     deleteAtom:{
-                        publish: {'button':'deleteAtom'},
-                        other: $deleteAtom
+                        publish: {'button':'deleteAtom'}
                     }
                 });
             }
         });
-        $atomPositioningXYZ.on('click', function() {
+        html.motif.panel.atomPositioningXYZ.on('click', function() {
             var value = undefined;
-            if (!($atomPositioningXYZ.hasClass('disabled'))){ 
-                ($atomPositioningXYZ.hasClass('buttonPressed')) ? value = false : value = true;
+            if (!(html.motif.panel.atomPositioningXYZ.hasClass('disabled'))){ 
+                (html.motif.panel.atomPositioningXYZ.hasClass('buttonPressed')) ? value = false : value = true;
                 $setUIValue.setValue({
                     atomPositioningXYZ:{
                         publish: {xyz:value},
@@ -405,10 +411,10 @@ define([
                 });
             }
         });
-        $atomPositioningABC.on('click', function() {
+        html.motif.panel.atomPositioningABC.on('click', function() {
             var value = undefined;
-            if (!($atomPositioningABC.hasClass('disabled'))){ 
-                ($atomPositioningABC.hasClass('buttonPressed')) ? value = false : value = true;
+            if (!(html.motif.panel.atomPositioningABC.hasClass('disabled'))){ 
+                (html.motif.panel.atomPositioningABC.hasClass('buttonPressed')) ? value = false : value = true;
                 $setUIValue.setValue({
                     atomPositioningABC:{
                         publish: {abc:value},
@@ -417,7 +423,7 @@ define([
                 });
             }
         });
-        $atomTable.find('tbody').sortable({
+        html.motif.other.atomTable.find('tbody').sortable({
             appendTo: document.body,
             axis: 'y',
             containment: "parent",
@@ -426,48 +432,48 @@ define([
             tolerance: "pointer",
             cancel: 'td.atomButton, td.btn-tangent',
             update: function(e,ui){ 
+                // Cancel update if atom has been assigned a role (parent) //
                 if (jQuery(ui.item).attr('role') !== 'empty'){
-                    $atomTable.find('tbody').sortable("cancel");
+                    html.motif.other.atomTable.find('tbody').sortable("cancel");
                 }
+                // Cancel update if atom has parent //
                 else if (ui.item.prev('tr').length > 0){
-                    if (ui.item.prev('tr').attr('role') === 'parent') $atomTable.find('tbody').sortable('cancel');
-                    else if (ui.item.prev('tr').attr('role') === 'parentChild') $atomTable.find('tbody').sortable('cancel');
+                    if (ui.item.prev('tr').attr('role') === 'parent') html.motif.other.atomTable.find('tbody').sortable('cancel');
+                    else if (ui.item.prev('tr').attr('role') === 'parentChild') html.motif.other.atomTable.find('tbody').sortable('cancel');
                 }
             }
         });
-        $lockCameras.click(function() { 
+        html.motif.other.lockCameras.click(function() { 
             var value = undefined;
-            ($lockCameras.hasClass('active')) ? value = false : value = true;
+            (html.motif.other.lockCameras.hasClass('active')) ? value = false : value = true;
             $setUIValue.setValue({
                 lockCameras:{
                     publish: {'syncCameras':value},
-                    value: value,
-                    other: $lockCameras
+                    value: value
                 }
             });          
         });
-        _.each(latticeLabels, function($parameter, k){
+        _.each(html.motif.latticeLabels, function($parameter, k){
             $parameter.parent().parent().on('click', function(){
                 $menuRibbon.switchTab('latticeTab');
                 var conditions = $latticeTab.getConditions();
                 if (conditions.atomAdded !== false) $swapButton.trigger('click');
             });
         });
-        $swapButton.on('click', function(){
+        html.motif.other.swapButton.on('click', function(){
             var value = undefined;
             var swap = undefined;
-            ($swapButton.hasClass('motif')) ? value = false : value = true;
-            ($swapButton.hasClass('motif')) ? swap = 'latticeTab' : swap = 'motifLI';
+            (html.motif.other.swapButton.hasClass('motif')) ? value = false : value = true;
+            (html.motif.other.swapButton.hasClass('motif')) ? swap = 'latticeTab' : swap = 'motifLI';
             $setUIValue.setValue({
                 swapButton:{
-                    other: $swapButton,
                     publish:{swap:swap},
                     value:value
                 }
             });
         });
         
-        // Initiation
+        // Initiation //
         $disableUIElement.disableElement({
             atomTable:{
                 value: true
@@ -509,51 +515,52 @@ define([
                 value: true
             },
             saveAtomChanges:{
-                other: $saveAtomChanges,
                 value: true
             }
         });
-        $atomTable.hide();
+        html.motif.other.atomTable.hide();
     };
+    // Get Position of the atom in the parent/child chain //
     function getChainLevel(id){
         var level = 0;
-        var tangent = $atomTable.find('#'+id).attr('tangentTo');
+        var tangent = html.motif.other.atomTable.find('#'+id).attr('tangentTo');
         if (tangent !== 'x'){
             level =  1 + getChainLevel(tangent);               
         }
         return level;
     };
+    // Correlate two atoms with the relationship parent/child //
     function tangent(id){
         var arg = {};
-        var current = $atomTable.find('#'+id);
+        var current = html.motif.other.atomTable.find('#'+id);
         var above = current.prev('tr');
-        var parent = $atomTable.find('#'+current.attr('tangentTo'));
+        var parent = html.motif.other.atomTable.find('#'+current.attr('tangentTo'));
         //UNLINK
         if ( (current.find('.btn-tangent').hasClass('active')) && !(current.find('.btn-tangent').hasClass('blocked')) ) {
 
-            // If atom is a child
+            // If atom is a child //
             if (current.attr('role') === 'child') {
 
-                // Publish Event
+                // Publish Event //
                 arg["dragMode"]= false;
                 arg["parentId"]= current.attr('tangentTo');
                 PubSub.publish('menu.drag_atom', arg);
 
-                // Assign role empty and deactivate button
+                // Assign role empty and deactivate button //
                 current.attr('role','empty');
                 current.find('.btn-tangent').removeClass('active');
 
-                // Remove role if only parent
+                // Remove role if only parent //
                 if (parent.attr('role') === 'parent'){
                     parent.attr('role','empty');
                 }
-                // Assign child role again
+                // Assign child role again //
                 else{
                     parent.attr('role','child');
                     parent.find('.btn-tangent').addClass('active');
                 }
 
-                //UNLINK and hide icon
+                // UNLINK and hide icon //
                 current.attr('tangentTo','x');
                 current.find('.chain').addClass('hiddenIcon');
                 current.find('.element-serial').toggleClass('small');
@@ -562,27 +569,27 @@ define([
         //LINK
         else if (!(current.find('.btn-tangent').hasClass('blocked'))) {
             if (current.attr('role') === 'empty') {
-                // If there's an atom above
+                // If there's an atom above //
                 if (above.length !== 0 ) {
 
-                    // If atom above isn't a parent
+                    // If atom above isn't a parent //
                     if (above.attr('role') !== 'parent'){
 
-                        // Make child and activate button
+                        // Make child and activate button //
                         current.attr('role','child');
                         current.find('.btn-tangent').addClass('active');
 
-                        // Make atom above a parent or parentChild
+                        // Make atom above a parent or parentChild //
                         if (above.attr('role') === 'empty') above.attr('role','parent');
                         else above.attr('role','parentChild');
 
-                        // Link Parent-Child and show icon
+                        // Link Parent-Child and show icon //
                         current.attr('tangentTo',above.attr('id'));
                         current.find('.element-serial').toggleClass('small');
                         current.find('.chain').removeClass('hiddenIcon');
                         current.find('.chain').find('a').html(getChainLevel(id));
 
-                        // Publish Event
+                        // Publish Event //
                         arg["dragMode"]= true;
                         arg["parentId"]= above.attr('id');
                         PubSub.publish('menu.drag_atom', arg);
@@ -591,12 +598,13 @@ define([
             }
         }   
     };
+    // Break Chain of Atoms //
     function breakChain(argument){
-        var current = $atomTable.find('#'+argument['id']);
+        var current = html.motif.other.atomTable.find('#'+argument['id']);
         var above = current.prev('tr');
         var below = current.next('tr');
 
-        // Handle parent
+        // Disconnecting Child //
         if (current.attr('role') === 'child'){
             if (above.attr('role') === 'parent') {
                 above.attr('role','empty');
@@ -604,6 +612,7 @@ define([
             }
             else above.attr('role','child');
         }
+        // Disconnecting Parent //
         else if (current.attr('role') === 'parent'){
             if (below.attr('role') === 'child') below.attr('role','empty');
             else below.attr('role','parent');
@@ -612,6 +621,7 @@ define([
             below.find('.element-serial').removeClass('small');
             below.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
         }
+        // Disconnecting child/parent //
         else if (current.attr('role') === 'parentChild'){
             if (above.attr('role') === 'parent') {
                 above.attr('role','empty');
@@ -629,7 +639,7 @@ define([
             below.find('.btn-tangent').attr('class','btn-tangent disabled blocked');
         }
 
-        // Update list
+        // Update atom list //
         if (argument['remove'] === true) current.remove();
         else{
             current.attr('role','empty');
@@ -640,16 +650,19 @@ define([
             if (above.attr('tangentTo') !== 'x') tangent(current.attr('id'));
             else current.find('.btn-tangent').addClass('blocked');
         }
+        // Update Chain Numbers///
         jQuery('#tableAtom tbody tr').each(function(){
             jQuery(this).find('.chain').find('a').html(getChainLevel(jQuery(this).attr('id')));
         });
     };
+    // Check for Collision //
     function collision(value,limit,range){
         var upper = limit + range;
         var lower = limit - range; 
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
+    // Slider Mathematics //
     function sliderWidth(name){
         var width = jQuery('#'+name+'Slider').width();
         if (width > 0) return width;
@@ -668,6 +681,7 @@ define([
         }
         return counter;
     };
+    // Update Sliders with collision conditions //
     function refreshStickyVisuals(){
         _.each(collisions, function($parameter,k){
             var steps = countSteps(jQuery('#'+k+'Slider').slider('option','step'),collisions[k],jQuery('#'+k+'Slider').slider('option','min'));
@@ -676,14 +690,28 @@ define([
             jQuery('#'+k+'Shift').css('width',shift+'px');
         });
     };
-    
-    motifTab.prototype.toggleExtraParameter = function(choice,action){
-        if ( (choice === 'i') && (action === 'block') ) jQuery('#hexICoord').show('fast');
-        else if ( (choice === 'i')) jQuery('#hexICoord').hide('fast');
-        else if ( (choice === 't') && (action === 'block') ) jQuery('#hexTCoord').show('fast');
-        else jQuery('#hexTCoord').hide('fast');
-        setTimeout(function(){$.fn.matchHeight._update();},500);
+    // Table to Object //
+    function tableToObject(){
+        var result = {};
+        _.each(html.motif.other.atomTable.find('tr'), function(entry,k){
+            var current = jQuery(entry);
+            result[current.attr('id')] = {
+                role: current.attr('role'),
+                tangentTo: current.attr('tangentto'),
+                visibility: current.find('.visibility').hasClass('visible'),
+                chain: !(current.find('.chain').hasClass('hiddenIcon')),
+                level: current.find('#level').html(),
+                element: current.find('.element').attr('class'),
+                sup: current.find('.element sup').html(),
+                atomPos: current.find('.element-serial a').html()
+            };
+        });
+        return result;
     };
+    
+    // Module Interface //
+    
+    // Add, Save, Delete atoms from the Table //
     motifTab.prototype.editAtom = function(argument){
         
         var constructor = {};
@@ -697,7 +725,7 @@ define([
         constructor.chain = 'hiddenIcon chain';
         constructor.tangentTo = 'x';
         constructor.btnState = 'btn-tangent blocked';
-        constructor.current = $atomTable.find('#'+argument['id']);
+        constructor.current = html.motif.other.atomTable.find('#'+argument['id']);
         constructor.level = '';
 
         // Update construct object from argument //
@@ -743,7 +771,7 @@ define([
         // Add, Remove, Edit Entry
         switch(argument['action']){
             case 'save':
-                $atomTable.find('tbody').append(HTMLQuery);
+                html.motif.other.atomTable.find('tbody').append(HTMLQuery);
                 break;  
 
             case 'edit':
@@ -760,13 +788,15 @@ define([
         }
         
         // Update Current Selection //
-        constructor.current = $atomTable.find('#'+argument['id']);
+        constructor.current = html.motif.other.atomTable.find('#'+argument['id']);
         
         // Handlers //
         if ( (argument['action']==='save') || (argument['action']==='edit') ){
+            // Tangent //
             constructor.current.find('.btn-tangent').on('click', function(){
                 tangent(argument['id']);
             });
+            // Select Entry //
             constructor.current.find('.selectable').on('click',function(){
                 $setUIValue.setValue({
                     selectAtom:{
@@ -774,6 +804,7 @@ define([
                     }
                 });
             });
+            // Atom Visibility //
             constructor.current.find('.atomButton').on('click', function(){
                 var value = undefined;
                 (constructor.current.find('.atomButton').hasClass('visible')) ? value = false : value = true;
@@ -788,29 +819,31 @@ define([
         }
         
         // Show table if there are entries //
-        if ($atomTable.find('tr').length > 0) $atomTable.css('display','block');
+        if (html.motif.other.atomTable.find('tr').length > 0) html.motif.other.atomTable.css('display','block');
         else {
-            $atomTable.css('display','none');
-            $atomTable.find('tbody').sortable('disable');
+            html.motif.other.atomTable.css('display','none');
+            html.motif.other.atomTable.find('tbody').sortable('disable');
         }  
     };
+    // Highlight Table Entry (Purple) //
     motifTab.prototype.highlightAtomEntry = function(argument){
         if (argument['color'] === 'bg-light-purple') {
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('blocked');
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('disabled');
+            html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('blocked');
+            html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').removeClass('disabled');
         }
-        else if ($atomTable.find('#'+argument['id']).find('.btn-tangent').hasClass('active')){
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('blocked');
+        else if (html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').hasClass('active')){
+            html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('blocked');
         }
         else {
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('disabled');
-            $atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('blocked');
+            html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('disabled');
+            html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent').addClass('blocked');
         }
-        $atomTable.find('#'+argument['id']).removeAttr('class');
-        $atomTable.find('#'+argument['id']).attr('class',argument['color']);   
+        html.motif.other.atomTable.find('#'+argument['id']).removeAttr('class');
+        html.motif.other.atomTable.find('#'+argument['id']).attr('class',argument['color']);   
     };
+    // Enable/Disable/Block etc tangent option on a table entry //
     motifTab.prototype.btnTangentState = function(argument){
-        var current = $atomTable.find('#'+argument['id']).find('.btn-tangent');
+        var current = html.motif.other.atomTable.find('#'+argument['id']).find('.btn-tangent');
         switch(argument['state']){
             case 'reset':
                 current.attr('class','btn-tangent');
@@ -829,11 +862,12 @@ define([
                 break;
         }  
     };
+    // Hide/Show Table Entry //
     motifTab.prototype.setAtomEntryVisibility = function(argument){
         $disableUIElement.disableElement({
             entryVisibity:{
                 value: argument.action,
-                other: $atomTable.find('#'+argument['id']).find('.atomButton')
+                other: html.motif.other.atomTable.find('#'+argument['id']).find('.atomButton')
             }
         });
     };
@@ -843,15 +877,18 @@ define([
     motifTab.prototype.getChainLevel = function(id){
         return getChainLevel(id);  
     };
+    // Add/Remove collision condition //
     motifTab.prototype.stickySlider = function(argument){
         // Read state from argument //
         if (_.isUndefined(argument)) return false;
         else {
             _.each(argument, function($parameter,k){
+                // Remove from list //
                 if ($parameter === false) {
                     delete collisions[k];
                     jQuery('#'+k+'Collision').css('background-color','white');
                 }
+                // Add to list //
                 else {
                     collisions[k] = $parameter;
                     jQuery('#'+k+'Collision').css('background-color','#6f6299');
@@ -861,18 +898,28 @@ define([
         }
         return true;
     };
+    // Update Slider Collision Visuals //
     motifTab.prototype.refreshStickyVisuals = function(){
         refreshStickyVisuals();
     };
+    // Clear Collision //
     motifTab.prototype.clearCollisions = function(){
-        // Clear Collision //
         _.each(collisions, function($parameter,k){
             jQuery('#'+k+'Collision').css('background-color','white'); 
             delete collisions[k];
         });  
     };
+    // Clear Atom Table //
     motifTab.prototype.resetTable = function(){
-        $atomTable.find('tbody').html('');
+        html.motif.other.atomTable.find('tbody').html('');
+    };
+    // Save Atom Table as an object //
+    motifTab.prototype.tableToObject = function(){
+        return tableToObject();
+    };
+    // Restore Atom List //
+    motifTab.prototype.restoreTable = function(data){
+        
     };
     
     return motifTab;

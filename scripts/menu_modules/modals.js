@@ -15,6 +15,13 @@ define([
     _
 ) 
 {
+    /* This module handles the UI Modals.
+        Lattice Modal: Lattice Selection
+        Periodic Table Modal: Atom selection, in 2 stages
+            -> Select Atom
+            -> Select Ionic Value
+        QR Modal: QR Image Information
+    */
     // Module References //
     var $setUIValue = undefined;
     var $getUIValue = undefined;
@@ -22,16 +29,8 @@ define([
     var $disableUIElement = undefined;
     var $messages = undefined;
     var $latticeTab = undefined;
-    
-    // Selectors //
-    var $bravaisLatticeBlock = jQuery('.mh_bravais_lattice_block');
-    var $periodicElement = jQuery('.ch');
-    var $ionicValues = jQuery('.property-block');
-    var $preview = jQuery('#tempSelection').find('p');
     var $atomsData = undefined;
-    var $QRModal = jQuery('#openQR');
-    var $downloadQR = jQuery('#downloadQR');
-    var $QRImage = jQuery('#QRImage');
+    var html = undefined;
     
     // Contructor //
     function modals(argument) {
@@ -49,6 +48,8 @@ define([
         else return false;
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         // Atom Ionic Values //
         require(['atoms'], function(atomsInfo) {
@@ -56,9 +57,9 @@ define([
         });
         
         // Handlers //
-        $bravaisLatticeBlock.on('click',function(){
+        html.modals.lattice.block.on('click',function(){
             
-            // Update Button and publish event
+            // Update Button and publish event //
             $setUIValue.setValue({
                  selectedLattice:{
                     value: $messages.getMessage(jQuery(this).attr('id')) 
@@ -74,7 +75,7 @@ define([
             $menuRibbon.disableTab({ 'visualTab': false });
             $menuRibbon.blockTab({ 'visualTab': false });
             
-            // Enable Lattice Padlock
+            // Enable Lattice Padlock //
             $disableUIElement.disableElement({
                 latticePadlock:{
                     value: false
@@ -106,13 +107,13 @@ define([
                 }
             });
         });
-        $periodicElement.on('click',function(){
+        html.modals.periodicTable.element.on('click',function(){
             // Element is not disabled or is the preview on footer //
             if ( !jQuery(this).hasClass('disabled') && !jQuery(this).parent().parent().hasClass('element-symbol-container') ){
                 
                 // Clear preselected values, then select element //
-                $periodicElement.removeClass('selected');
-                $ionicValues.removeClass('selected');
+                html.modals.periodicTable.element.removeClass('selected');
+                html.modals.periodicTable.ionicValues.removeClass('selected');
                 jQuery(this).addClass('selected');
                 
                 // Fix preview selection on footer //
@@ -120,21 +121,21 @@ define([
                 
                 // Show footer and possible ionic values //
                 jQuery('.modal-pre-footer').show();
-                _.each($ionicValues, function($parameter, k){
+                _.each(html.modals.periodicTable.ionicValues, function($parameter, k){
                     var ionicIndex = jQuery($parameter).find('p').html();
                     
                     // If system has data for this element //
-                    if ( $atomsData[$preview.html()] !== undefined ){
+                    if ( $atomsData[html.modals.periodicTable.ionicPreview.html()] !== undefined ){
                         
                         // If this atom radius(iteration) is defined //
-                        if ($atomsData[$preview.html()]['ionic'][ionicIndex] !== undefined ){
+                        if ($atomsData[html.modals.periodicTable.ionicPreview.html()]['ionic'][ionicIndex] !== undefined ){
                             
                             // If we're searching for a triple bond //
-                            if ( ionicIndex === '≡') showIonicOption($parameter, parseFloat($atomsData[$preview.html()]['ionic']['≡']));
-                            else showIonicOption($parameter, parseFloat($atomsData[$preview.html()]['ionic'][ionicIndex]));
+                            if ( ionicIndex === '≡') showIonicOption($parameter, parseFloat($atomsData[html.modals.periodicTable.ionicPreview.html()]['ionic']['≡']));
+                            else showIonicOption($parameter, parseFloat($atomsData[html.modals.periodicTable.ionicPreview.html()]['ionic'][ionicIndex]));
                         }
-                        else if ($atomsData[$preview.html()]['radius'] !== undefined ) {
-                            if ( ionicIndex === '0') showIonicOption($parameter, parseFloat($atomsData[$preview.html()]['radius']));
+                        else if ($atomsData[html.modals.periodicTable.ionicPreview.html()]['radius'] !== undefined ) {
+                            if ( ionicIndex === '0') showIonicOption($parameter, parseFloat($atomsData[html.modals.periodicTable.ionicPreview.html()]['radius']));
                             else hideIonicOption($parameter);
                         }
                         else hideIonicOption($parameter); 
@@ -143,7 +144,7 @@ define([
                 });
             }
         });
-        $ionicValues.click(function(){
+        html.modals.periodicTable.ionicValues.click(function(){
             
             // Selected Element //
             var selected = jQuery('td.ch.selected');
@@ -161,7 +162,7 @@ define([
             publish.atomTexture = 'None';
             publish.wireframe = false;
             publish.atomColor = $atomsData[publish.element]['color'];
-            publish.atomOpacity = jQuery('#atomOpacity').val();
+            publish.atomOpacity = html.motif.atomParameters.atomOpacity.val();
             publish.ionicIndex = jQuery(this).find('.serial p').html();
             publish.ionicValue = ionicValue[0];
             publish.tangency = tangency.tangency;
@@ -175,9 +176,8 @@ define([
                 }
             });
             
-    
             // Enable motif padlock //
-            if (!(jQuery('#latticePadlock').hasClass('disabled'))){
+            if (!(html.lattice.padlocks.lattice.hasClass('disabled'))){
                 $disableUIElement.disableElement({
                     motifPadlock:{
                         value: false   
@@ -186,7 +186,7 @@ define([
             }
             
             // Disable lattice parameters //
-            if (!(jQuery('#motifPadlock').find('a').hasClass('active'))){
+            if (!(html.lattice.padlocks.motif.find('a').hasClass('active'))){
                 $disableUIElement.disableElement({
                     latticeParameters:{
                         value: true
@@ -195,9 +195,9 @@ define([
             }
             
             // Reset periodic modal //
-            $ionicValues.addClass('disabled');
-            $preview.hide('fast');
-            jQuery('.modal-pre-footer').hide('fast');
+            html.modals.periodicTable.ionicValues.addClass('disabled');
+            html.modals.periodicTable.ionicPreview.hide('fast');
+            html.modals.periodicTable.footer.hide('fast');
             
             // Update Lattice Tab Conditions
             $latticeTab.updateCondition({
@@ -218,20 +218,23 @@ define([
             // Show swap //
             $menuRibbon.setSwapButtonState(true);
         });
-        $QRModal.on('click', function(){
-            $downloadQR.attr('href',$QRImage.find('img').attr('src'));
+        html.modals.qr.modal.on('click', function(){
+            html.modals.qr.download.attr('href',html.modals.qr.image.find('img').attr('src'));
         });
     };
+    // Update preview symbol from the periodic table modal //
     function elementPreview(caller){
-        $preview.html(caller.html());
-        $preview.attr('class',caller.attr('class'));
-        $preview.show();
+        html.modals.periodicTable.ionicPreview.html(caller.html());
+        html.modals.periodicTable.ionicPreview.attr('class',caller.attr('class'));
+        html.modals.periodicTable.ionicPreview.show();
     };
+    // Removes Ionic Value from the bottom of the periodic table modal //
     function hideIonicOption(option){
         jQuery(option).addClass('disabled');
         jQuery(option).hide();
         jQuery(option).find('.resolution p').html('-');
     };
+    // Insert Ionic Value at the bottom of the periodic table modal //
     function showIonicOption(option,value){
         jQuery(option).show();
         jQuery(option).removeClass('disabled');

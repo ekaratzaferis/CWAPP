@@ -17,6 +17,19 @@ define([
     bootstrap
 ) 
 {
+    
+    /* This module handles the lattice tab. It assigns listeners to the user events (new input, slider handle moves, etc) and
+    also filters these events depending on the application needs. It contains:
+        - Lattice Repetition
+        - Lattice Length
+        - Lattice Angle
+        - Padlocks and their functionallity
+        - Input restrictions for lattice length and lattice repetition
+        - Collision Detection
+        - Cell Visualization
+        - Lattice Length/Angle become Motif Length/Angle after at least one atom is added.
+    */
+    
     // Variables //
     var value = undefined;
     var localRestrictions = undefined;
@@ -47,25 +60,6 @@ define([
     var LastLatticeParameters = [];
     var lengthSlider = ['scaleX','scaleY','scaleZ'];
     var angleSliders = ['alpha','beta','gamma'];
-    var latticeParameters = {
-        repeatX: jQuery('#repeatX'),
-        repeatY: jQuery('#repeatY'),
-        repeatZ: jQuery('#repeatZ'),
-        scaleX: jQuery('#scaleX'),
-        scaleY: jQuery('#scaleY'),
-        scaleZ: jQuery('#scaleZ'),
-        alpha: jQuery('#alpha'),
-        beta: jQuery('#beta'),
-        gamma: jQuery('#gamma')
-    };
-    var latticeLabels = {
-        'scaleX' : jQuery('#meLengthA'),
-        'scaleY' : jQuery('#meLengthB'),
-        'scaleZ' : jQuery('#meLengthC'),
-        'alpha' : jQuery('#meAngleA'),
-        'beta' : jQuery('#meAngleB'),
-        'gamma' : jQuery('#meAngleG')
-    };
     
     // Module References //
     var $messages = undefined;
@@ -74,20 +68,7 @@ define([
     var $disableUIElement = undefined;
     var $userDialog = undefined;
     var $tooltipGenerator = undefined;
-    
-    // Selectors //
-    var $latticePadlock = jQuery('#latticePadlock');
-    var $motifPadlock = jQuery('#motifPadlock');
-    var $tangency = jQuery('#tangency');
-    var $autoRefresh = jQuery('.autoRefresh');
-    var $icheck = jQuery('input.icheckbox, input.iradio');
-    var $colorBorder = jQuery('#cube_color_border');
-    var $colorFilled = jQuery('#cube_color_filled');
-    var $radiusSlider = jQuery('#radiusSlider');
-    var $faceOpacitySlider = jQuery('#faceOpacitySlider');
-    var $spinner = jQuery('.spinner');
-    var $radius = jQuery('#radius');
-    var $faceOpacity = jQuery('#faceOpacity');
+    var html = undefined;
     
     // Contructor //
     function latticeTab(argument) {
@@ -104,13 +85,17 @@ define([
         else return false;
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         // Inputs //
-        jQuery($icheck).iCheck({
+        
+        // Cell Visualization check-boxes //
+        jQuery(html.lattice.other.icheck).iCheck({
             checkboxClass: 'icheckbox_square-grey',
             radioClass: 'iradio_square-grey'
         });
-        $icheck.on('ifChecked',function(){
+        html.lattice.other.icheck.on('ifChecked',function(){
             var name = jQuery(this).attr('name');
             var argument = {};
             var publish = {};
@@ -121,7 +106,7 @@ define([
             argument[name] = value;
             $setUIValue.setValue(argument);
         });
-        $icheck.on('ifUnchecked',function(){
+        html.lattice.other.icheck.on('ifUnchecked',function(){
             var name = jQuery(this).attr('name');
             var argument = {};
             var publish = {};
@@ -132,7 +117,9 @@ define([
             argument[name] = value;
             $setUIValue.setValue(argument);
         });
-        $colorBorder.spectrum({
+        
+        // Cell Visualization color pickers //
+        html.lattice.visual.edgeColorPicker.spectrum({
             color: "#A19EA1",
             allowEmpty:true,
             chooseText: "Choose",
@@ -140,24 +127,22 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
-                        other: $colorBorder,
-                        value: $colorBorder.spectrum('get').toHex(),
-                        publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
+                        value: html.lattice.visual.edgeColorPicker.spectrum('get').toHex(),
+                        publish: { cylinderColor: html.lattice.visual.edgeColorPicker.spectrum('get').toHex() }
                     }
                 });
             },
             change: function(){
                 $setUIValue.setValue({
                     cylinderColor:{
-                        other: $colorBorder,
-                        value: $colorBorder.spectrum('get').toHex(),
-                        publish: { cylinderColor: $colorBorder.spectrum('get').toHex() }
+                        value: html.lattice.visual.edgeColorPicker.spectrum('get').toHex(),
+                        publish: { cylinderColor: html.lattice.visual.edgeColorPicker.spectrum('get').toHex() }
                     }
                 });
             }
         });
-        $colorBorder.children().css('background','#A19EA1');
-        $colorFilled.spectrum({
+        html.lattice.visual.edgeColorPicker.children().css('background','#A19EA1');
+        html.lattice.visual.faceColorPicker.spectrum({
             color: "#907190",
             allowEmpty:true,
             chooseText: "Choose",
@@ -165,24 +150,24 @@ define([
             move: function(){
                 $setUIValue.setValue({
                     faceColor:{
-                        other: $colorFilled,
-                        value: $colorFilled.spectrum('get').toHex(),
-                        publish: { faceColor: $colorFilled.spectrum('get').toHex() }
+                        value: html.lattice.visual.faceColorPicker.spectrum('get').toHex(),
+                        publish: { faceColor: html.lattice.visual.faceColorPicker.spectrum('get').toHex() }
                     }
                 });
             },
             change: function(){
                 $setUIValue.setValue({
                     faceColor:{
-                        other: $colorFilled,
-                        value: $colorFilled.spectrum('get').toHex(),
-                        publish: { faceColor: $colorFilled.spectrum('get').toHex() }
+                        value: html.lattice.visual.faceColorPicker.spectrum('get').toHex(),
+                        publish: { faceColor: html.lattice.visual.faceColorPicker.spectrum('get').toHex() }
                     }
                 });
             }
         });
-        $colorFilled.children().css('background','#907190');
-        $spinner.spinner({
+        html.lattice.visual.faceColorPicker.children().css('background','#907190');
+        
+        // Lattice Repetition Spinners //
+        html.lattice.other.spinner.spinner({
             min: 1,
             spin: function(event,ui){
                 var name = jQuery(this).attr('id');
@@ -196,9 +181,12 @@ define([
                 $setUIValue.setValue(argument);
             }
         });
-        _.each(latticeParameters, function($parameter, k) {
+        
+        // Lattice Parameters (Repetition,Angle,Length) inputs + Restrictions //
+        _.each(html.lattice.parameters, function($parameter, k) {
+            // Initiate restore table //
             LastLatticeParameters[k] = 1;
-            // Spinner Inputs //
+            // Spinner Inputs Listener //
             if ((k === 'repeatX')||(k === 'repeatY')||(k === 'repeatZ')){
                 $parameter.val(1);
                 $parameter.on('change',function(){
@@ -214,7 +202,7 @@ define([
             }
             else{
                 
-                // Initiate Inputs //
+                // Assign initial values //
                 if ((k === 'scaleX')||(k === 'scaleY')||(k === 'scaleZ')){
                     $parameter.val(1.000);
                     LastLatticeParameters[k] = 1;
@@ -224,32 +212,42 @@ define([
                     LastLatticeParameters[k] = 90;
                 }
                 
-                // Handlers
+                // User input listener //
                 $parameter.on('change', function() {
                     var argument = {};
+                    // Check if user input is a number //
                     if ($stringEditor.inputIsNumber($parameter.val()) !== false) {
                         argument[k] = $stringEditor.inputIsNumber($parameter.val());
+                        // Apply restrictions to the input //
                         var restrictionsMet = applyRestrictions(k,argument[k],false);
                         if ( restrictionsMet === 'success' ) $parameter.trigger('success', [argument[k]]);
                     }
+                    // Revert to the previous value //
                     else {
                         $parameter.val(LastLatticeParameters[k]);
+                        // Display error tooltip //
                         $tooltipGenerator.showTooltip({
                             'target': k,
                             'placement': 'top',
                             'message': $messages.getMessage(20)
                         });
                     }
-                });      
+                });   
+                // This listener reflects the value of another input. It is triggers by the restriction mechanics. //
                 $parameter.on('reflect',function(event, value) {
                     $parameter.val(value);
                     $parameter.trigger('success',[value]);
                 });
+                // This listener is triggered when the value of the input is valid (has passed restrictions + numbercheck). //
                 $parameter.on('success',function(event, value) {
                     
                     var argument = {};
                     var publish = {};
                     publish[k] = value;
+                    /* Choose Input Mode: 
+                        if at least one atom is added to the lattice, then these inputs publish motif events. 
+                        Otherwise they publish lattice events.    
+                    */
                     if (conditions.atomAdded === false) {
                         argument[k] = {
                             value: value,
@@ -273,26 +271,32 @@ define([
                             }
                         });
                     }
+                    // Update Restore Table //
                     LastLatticeParameters[k] = value;
                 });
+                // This listener is triggered when the restriction mechanics fail. //
                 $parameter.on('fail',function(event, value) {
                     $parameter.val(value);
                     LastLatticeParameters[k] = value;
                     jQuery('#'+k+'Slider').slider('value',value);
                 });
+                // This listener is triggered when the restriction mechanics fail and we also need to restore the old value. //
                 $parameter.on('undo',function(event, value) {
                     $parameter.trigger('fail',[value]);
                 });
             }
         });
+        
+        // Lattice Length Sliders //
         _.each(lengthSlider, function(name) {
             LastLatticeParameters[name] = 1;
+            // This listener is triggered when the restriction mechanics fail. //
             jQuery('#'+name+'Slider').on('fail', function(event, value){
                 var argument = {};
                 var sendValue = {};
                 var publish = {};
                 
-                // Pick different event is sliders are being used by Motif //
+                // Pick different event if sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
                 sendValue.value = value;
@@ -300,19 +304,21 @@ define([
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
-                // Update latest value //
+                // Update Restore Table and input field //
                 LastLatticeParameters[name] = value;
                 jQuery('#'+name).val(value);
             });
+            // This listener is triggered when the restriction mechanics fail and we need to revert to the previous value. //
             jQuery('#'+name+'Slider').on('undo', function(event, value){
                 jQuery('#'+name+'Slider').trigger('fail',[value]);
             });
+            // This listener is triggered in order to reflect a slider event due to restrictions. // 
             jQuery('#'+name+'Slider').on('reflect', function(event, value){
                 var argument = {};
                 var sendValue = {};
                 var publish = {};
                 
-                // Pick different event is sliders are being used by Motif //
+                // Pick different event if sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
                 sendValue.value = value;
@@ -320,10 +326,11 @@ define([
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
-                // Update latest value //
+                // Update Restore Table and input field //
                 LastLatticeParameters[name] = value;
                 jQuery('#'+name).val(value);
             });
+            // User Input Listener //
             jQuery('#'+name+'Slider').slider({
                 value: 1,
                 min: 1,
@@ -335,18 +342,22 @@ define([
                     var value = {};
                     var publish = {};
                     
-                    // Pass Collistion Detection //
+                    // Pass Collision Detection !!!!!(Exits function if fails)!!!!! //
                     if (!(_.isUndefined(collisions[name]))){
+                        // Check for collision //
                         if (collision(ui.value,collisions[name],collisionRange[name]) === true){
+                            // First time we detect collision //
                             if (collisionTooltip[name] === false){
+                                // Make sure that the following won't run repeatedly in this collision event //
+                                collisionTooltip[name] = true;
+                                // Display static error tooltip //
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
-                                collisionTooltip[name] = true;
-                                // Publish only once //
-                                _.each(latticeParameters, function($parameter,k){
+                                // Pass restrictions as usual and publish the event //
+                                _.each(html.lattice.parameters, function($parameter,k){
                                     if (k === name) {
                                         applyRestrictions(k+'Slider',collisions[name].toString(),true);
                                         publish[name] = collisions[name];
@@ -354,18 +365,21 @@ define([
                                 });
                                 value.publish = publish;
                                 value.other = jQuery('#name');
+                                // Choose slider behaviour (lattice/motif) //
                                 if (conditions.atomAdded === false) argument[name] = value;
                                 else argument[name+'Motif'] = value;
                                 $setUIValue.setValue(argument);
                             }
+                            // Freeze slider + input //
                             jQuery('#'+name).val(collisions[name]);
                             jQuery('#'+name+'Slider').slider('value',collisions[name]);
+                            // Exit Listener //
                             return false; 
                         } 
                     }
                     
                     // Pass Restrictions //
-                    _.each(latticeParameters, function($parameter,k){
+                    _.each(html.lattice.parameters, function($parameter,k){
                         if (k === name) {
                             applyRestrictions(k+'Slider',ui.value.toString(),true);
                             publish[name] = ui.value;
@@ -373,14 +387,18 @@ define([
                     });
                     value.publish = publish;
                     value.other = jQuery('#name');
+                    // Choose slider behaviour (lattice/motif) //
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
+                    // Destroy collision tooltip //
                     collisionTooltip[name] = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
+                    // Update input field //
                     jQuery('#'+name).val(ui.value);
                 },
                 stop: function(event,ui){
+                    // Auto-Refresh
                     if (conditions.autoRefresh === true){
                         $setUIValue.setValue({
                             motifRefresh:{
@@ -388,13 +406,17 @@ define([
                             }
                         });
                     }
+                    // Destroy collision tooltip //
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     collisionTooltip[name] = false;
                 }
             });
         });
+        
+        // Lattice Angle Sliders //
         _.each(angleSliders, function(name) {
             LastLatticeParameters[name] = 1;
+            // This listener is triggered when the restriction mechanics fail. //
             jQuery('#'+name+'Slider').on('fail', function(event, value){
                 var argument = {};
                 var sendValue = {};
@@ -404,34 +426,38 @@ define([
                 publish[name] = value;
                 sendValue.publish = publish;
                 sendValue.value = value;
+                // Choose slider behavior (lattice/motif) //
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
-                // Update latest value //
+                // Update Restore Table and input field //
                 LastLatticeParameters[name] = value;
                 jQuery('#'+name).val(value);
             });
+            // This listener is triggered when the restriction mechanics fail and we need to revert to the previous value. //
             jQuery('#'+name+'Slider').on('undo', function(event, value){
                 jQuery('#'+name+'Slider').trigger('fail',[value]);
             });
+            // This listener is triggered in order to reflect a slider event due to restrictions. // 
             jQuery('#'+name+'Slider').on('reflect', function(event, value){
                 var argument = {};
                 var sendValue = {};
                 var publish = {};
                 
-                // Pick different event is sliders are being used by Motif //
                 publish[name] = value;
                 sendValue.publish = publish;
                 sendValue.value = value;
+                // Choose slider behavior (lattice/motif) //
                 if (conditions.atomAdded === false) argument[name] = sendValue;
                 else argument[name+'Motif'] = sendValue;
                 $setUIValue.setValue(argument);
                 
-                // Update latest value //
+                // Update Restore Table and input field //
                 LastLatticeParameters[name] = value;
                 jQuery('#'+name).val(value);
             });
+            // User Input Listener //
             jQuery('#'+name+'Slider').slider({
                 value: 90,
                 min: 1,
@@ -443,18 +469,21 @@ define([
                     var value = {};
                     var publish = {};
                     
-                    // Pass Collistion Detection //
+                    // Pass Collision Detection !!!!!(Exits function if fails)!!!!! //
                     if (!(_.isUndefined(collisions[name]))){
+                        // Check for collision //
                         if (collision(ui.value,collisions[name],collisionRange[name]) === true){
                             if (collisionTooltip[name] === false){
+                                // Make sure that the following won't run repeatedly in this collision event //
+                                collisionTooltip[name] = true;
+                                // Display static error tooltip //
                                 $tooltipGenerator.addStaticTooltip({
                                     'target': name+'Slider',
                                     'placement': 'top',
                                     'message': $messages.getMessage(24)
                                 });
-                                collisionTooltip[name] = true;
-                                // Publish only once //
-                                _.each(latticeParameters, function($parameter,k){
+                                // Apply restrictions as usual //
+                                _.each(html.lattice.parameters, function($parameter,k){
                                     if (k === name) {
                                         applyRestrictions(k+'Slider',collisions[name].toString(),true);
                                         publish[name] = collisions[name];
@@ -462,18 +491,21 @@ define([
                                 });
                                 value.publish = publish;
                                 value.other = jQuery('#name');
+                                // Choose slider behavior (lattice/motif) //
                                 if (conditions.atomAdded === false) argument[name] = value;
                                 else argument[name+'Motif'] = value;
                                 $setUIValue.setValue(argument);
                             }
+                            // Freeze slider + input //
                             jQuery('#'+name).val(collisions[name]);
                             jQuery('#'+name+'Slider').slider('value',collisions[name]);
+                            // Exit listener //
                             return false; 
                         } 
                     }
                     
                     // Pass Restrictions //
-                    _.each(latticeParameters, function($parameter,k){
+                    _.each(html.lattice.parameters, function($parameter,k){
                         if (k === name) {
                             applyRestrictions(k+'Slider',ui.value.toString(),true);
                             publish[name] = ui.value;
@@ -481,15 +513,19 @@ define([
                     });
                     value.publish = publish;
                     value.other = jQuery('#name');
+                    // Choose slider behavior (lattice/motif) //
                     if (conditions.atomAdded === false) argument[name] = value;
                     else argument[name+'Motif'] = value;
                     $setUIValue.setValue(argument);
+                    // Destroy collision tooltip //
                     collisionTooltip[name] = false;
                     jQuery('#'+name+'Slider').tooltip('destroy');
+                    // Update input field //
                     jQuery('#'+name).val(ui.value);
                     
                 },
                 stop: function(event,ui){
+                    // Auto-Refresh
                     if (conditions.autoRefresh === true){
                         $setUIValue.setValue({
                             motifRefresh:{
@@ -497,30 +533,33 @@ define([
                             }
                         });
                     }
+                    // Destroy collision tooltip //
                     jQuery('#'+name+'Slider').tooltip('destroy');
                     collisionTooltip[name] = false;
                 }
             });
         });
-        $radius.val(2);
-        $radius.on('change', function() {
+        
+        // Cell Visualization Inputs //
+        html.lattice.visual.radius.val(2);
+        html.lattice.visual.radius.on('change', function() {
             $setUIValue.setValue({
                 radius:{
-                    publish:{radius:$radius.val()},
-                    value: $radius.val()
+                    publish:{radius:html.lattice.visual.radius.val()},
+                    value: html.lattice.visual.radius.val()
                 }
             });
         });
-        $faceOpacity.val(3);
-        $faceOpacity.on('change', function() {
+        html.lattice.visual.opacity.val(3);
+        html.lattice.visual.opacity.on('change', function() {
             $setUIValue.setValue({
                 faceOpacity:{
-                    publish:{radius:$faceOpacity.val()},
-                    value: $faceOpacity.val()
+                    publish:{radius:html.lattice.visual.opacity.val()},
+                    value: html.lattice.visual.opacity.val()
                 }
             });
         });
-        $radiusSlider.slider({
+        html.lattice.visual.radiusSlider.slider({
             value: 2,
             min: 1,
             max: 10,
@@ -532,10 +571,10 @@ define([
                         publish:{radius:ui.value}
                     }
                 });
-                $radius.val(ui.value);
+                html.lattice.visual.radius.val(ui.value);
             }
         });
-        $faceOpacitySlider.slider({
+        html.lattice.visual.opacitySlider.slider({
             value: 3,
             min: 1,
             max: 10,
@@ -547,11 +586,13 @@ define([
                         publish:{faceOpacity:ui.value}
                     }
                 });
-                $faceOpacity.val(ui.value);
+                html.lattice.visual.opacity.val(ui.value);
             }
         });
         
+        
         // Buttons //
+        // Disable Padlocks + Refresh Button //
         $disableUIElement.disableElement({
             latticePadlock:{
                 value: true
@@ -563,12 +604,14 @@ define([
                 value: true
             }
         });
-        $latticePadlock.on('click', function() {
-            if (!($latticePadlock.hasClass('disabled'))) latticePadlock();
+        
+        // Padlocks //
+        html.lattice.padlocks.lattice.on('click', function() {
+            if (!(html.lattice.padlocks.lattice.hasClass('disabled'))) latticePadlock();
         });
-        $motifPadlock.on('click', function() {
-            if (!($motifPadlock.hasClass('disabled'))) {
-                if (!($motifPadlock.children().hasClass('active'))) {
+        html.lattice.padlocks.motif.on('click', function() {
+            if (!(html.lattice.padlocks.motif.hasClass('disabled'))) {
+                if (!(html.lattice.padlocks.motif.children().hasClass('active'))) {
                     $setUIValue.setValue({
                         motifPadlock:{
                             publish: { padlock: true }
@@ -584,13 +627,15 @@ define([
                 }
             }
         });
-        $autoRefresh.on('click', function(){
-            if (!($autoRefresh.hasClass('off'))) {
-                $autoRefresh.addClass('off');
+        
+        // Auto-Refresh //
+        html.lattice.other.autoRefresh.on('click', function(){
+            if (!(html.lattice.other.autoRefresh.hasClass('off'))) {
+                html.lattice.other.autoRefresh.addClass('off');
                 conditions.autoRefresh = false;
             }
             else{
-                $autoRefresh.removeClass('off');
+                html.lattice.other.autoRefresh.removeClass('off');
                 conditions.autoRefresh = true;
             }
             $setUIValue.setValue({
@@ -600,11 +645,12 @@ define([
             });
         });
     };
+    // Unlocks lattice padlock -> No restrictions -> Unlocks Motif Padlock //
     function latticePadlock(){
-        if (!($latticePadlock.children().hasClass('active'))) {
+        if (!(html.lattice.padlocks.lattice.children().hasClass('active'))) {
             
             // If crystal is added //
-            if (!( jQuery('#selected_lattice').html() === 'Choose a Lattice' )) {
+            if (!( html.lattice.other.selected.html() === 'Choose a Lattice' )) {
 
                 // Change Title //
                 $setUIValue.setValue({
@@ -613,9 +659,11 @@ define([
                     }
                 });
                 
-                // Lattice Padlock //
-                $latticePadlock.find('a').button('toggle');
-                $latticePadlock.children().addClass('active');
+                // Toggle Lattice Padlock //
+                html.lattice.padlocks.lattice.find('a').button('toggle');
+                html.lattice.padlocks.lattice.children().addClass('active');
+                
+                // Disable both padlocks //
                 $disableUIElement.disableElement({
                     latticePadlock:{
                         value: true
@@ -628,7 +676,7 @@ define([
                 // Clear Lattice Restrictions //
                 removeLatticeRestrictions();
                 
-                // Motif Padlock //
+                // Unlock Motif Padlock //
                 $setUIValue.setValue({
                     motifPadlock:{
                         publish: { padlock: true }
@@ -640,12 +688,15 @@ define([
             }
         }
     };
+    // Clear Lattice Restrictions //
     function removeLatticeRestrictions(){
         restrictionList = {};
+        // Re-enable all lattice parameters //
         $disableUIElement.disableElement({
             latticeParameters:{ value: false } 
         });
     };
+    // Create restriction mechanics //
     function setLatticeRestrictions(restrictions){
         // Return is restrictions is not an object
         if (_.isObject(restrictions) === false) {
@@ -657,8 +708,30 @@ define([
         var left = {};
         var right = {};
 
-        _.each(latticeParameters, function($parameter, pk) {
+        /* The iteration can be described as following:
+                For each lattice parameter 
+                    if we receive a set of restriction for it
+                        we create a function for each restriction on the set
+                            the function above judges if a certain input on the this lattice parameter, passes the restriction that we were given
+                    
+                All restriction-functions are stored in the restricionList object.
+                There are 4 types of functions
+                    lattice parameters = number
+                    lattice parameters = another lattice parameters
+                    lattice parameters != number
+                    lattice parameters != another lattice parameters
+                    
+                    and they return the following properties:
+                        action: success/fail/reflect/undo
+                        source: left hand of the above expressions
+                        target: right hand of the above expressions
+                        value: value to be assigned
+                        restriction: = or !=
+        */
+        
+        _.each(html.lattice.parameters, function($parameter, pk) {
 
+            // Enable slider + input //
             $parameter.prop('disabled',false);
             jQuery('#'+pk+'Slider').slider('enable');
 
@@ -670,7 +743,7 @@ define([
                 _.each(restrictions[pk], function(operator, rk) {
 
                     // Right side of expression
-                    right[rk] = latticeParameters[rk];
+                    right[rk] = html.lattice.parameters[rk];
 
                     var restrictionName = 'restriction'+Object.keys(restrictionList).length;
 
@@ -793,10 +866,11 @@ define([
             }
         });
     };
-    function unlockMotifPadlock(){
-        
-        if (!($motifPadlock.children().addClass('active'))) $motifPadlock.find('a').button('toggle');
-        $motifPadlock.children().addClass('active');
+    // Unlock Motif Padlock //
+    function unlockMotifPadlock(){    
+        // Toggle //
+        if (!(html.lattice.padlocks.motif.children().addClass('active'))) html.lattice.padlocks.motif.find('a').button('toggle');
+        html.lattice.padlocks.motif.children().addClass('active');
         
         // Turn off tangency //
         $setUIValue.setValue({
@@ -812,17 +886,20 @@ define([
             }
         });
         
-        // Re-apply lattice restrictions is needed
-        if (!($latticePadlock.children().hasClass('active'))) {
+        // Re-apply lattice restrictions if needed
+        if (!(html.lattice.padlocks.lattice.children().hasClass('active'))) {
             removeLatticeRestrictions();
             setLatticeRestrictions(localRestrictions);
         }
+        
+        // Show info message //
         $userDialog.showInfoDialog({ messageID : 2 });
     };
-    function lockMotifPadlock(){
-        
-        if ($motifPadlock.children().addClass('active')) $motifPadlock.find('a').button('toggle');
-        $motifPadlock.children().removeClass('active');
+    // Lock Motif Padlock //
+    function lockMotifPadlock(){     
+        // Toggle //
+        if (html.lattice.padlocks.motif.children().addClass('active')) html.lattice.padlocks.motif.find('a').button('toggle');
+        html.lattice.padlocks.motif.children().removeClass('active');
         
         // Turn on tangency //
         $setUIValue.setValue({
@@ -838,18 +915,20 @@ define([
             }
         });
     };
+    // Apply restrictions on a certain input //
     function applyRestrictions(caller,value,context,noTooltips){
-        // Run restrictions
         var result = {};
         var returnValue = 'success';
 
+        // No-Restrictions yet //
         if (_.isEmpty(restrictionList)) return returnValue;
+        // RUN RESTRICTION FUNCTIONS //
         _.each(restrictionList, function($parameter,pk){
             result[pk] = $parameter(caller,value);
         });
 
-        // Evaluate Resutls
-        // ORDER [ ≠X > =X >  ≠Number,=Number]
+        // Evaluate Resutls - Trigger Listeners //
+        // ORDER [ ≠X > =X >  ≠Number,=Number] //
         _.each(result, function($param, a){
             if ($param.action === 'undo') {
                 if (noTooltips !== true){
@@ -892,12 +971,14 @@ define([
         }
         return returnValue;
     };
+    // Check for collision //
     function collision(value,limit,range){
         var upper = limit + range;
         var lower = limit - range; 
         if ( (value > lower) && (value < upper) ) return true;
         else return false;
     };
+    // Slider Mathematics //
     function sliderWidth(name){
         var width = jQuery('#'+name+'Slider').width();
         if (width > 0) return width;
@@ -916,6 +997,7 @@ define([
         }
         return counter;
     };
+    // Refresh slider bar and add collision area //
     function refreshStickyVisuals(){
         _.each(collisions, function($parameter,k){
             var steps = countSteps(jQuery('#'+k+'Slider').slider('option','step'),collisions[k],jQuery('#'+k+'Slider').slider('option','min'));
@@ -924,9 +1006,11 @@ define([
         });
     };
     
+    // Module Interface //
     latticeTab.prototype.setLatticeRestrictions = function(argument){
         setLatticeRestrictions(argument);  
     };
+    // Update Auto-Refresh + Atom Addition State
     latticeTab.prototype.updateCondition = function(argument){
         _.each(argument, function($parameter, k){
              conditions[k] = $parameter;
@@ -935,18 +1019,20 @@ define([
     latticeTab.prototype.getConditions = function(){
         return conditions;
     };
+    // Lock/Unlock Motif Padlock //
     latticeTab.prototype.setMotifPadlock = function(state){
         if (state === 'lock') {
-            if (($motifPadlock.children().hasClass('active'))) $motifPadlock.find('a').removeClass('active');
+            if ((html.lattice.padlocks.motif.children().hasClass('active'))) html.lattice.padlocks.motif.find('a').removeClass('active');
             lockMotifPadlock();
         }
         else if (state === 'unlock') {
-            if (!($motifPadlock.children().hasClass('active'))) $motifPadlock.find('a').addClass('active');
+            if (!(html.lattice.padlocks.motif.children().hasClass('active'))) html.lattice.padlocks.motif.find('a').addClass('active');
             unlockMotifPadlock();
         }
     };
+    // Assign Values to Lattice Length/Angle/Repetition //
     latticeTab.prototype.setLatticeParameters = function(parameters){
-        _.each(latticeParameters, function($latticeParameter, k) {
+        _.each(html.lattice.parameters, function($latticeParameter, k) {
             if (_.isUndefined(parameters[k]) === false) {
                 var argument = {};
                 var publish = {};
@@ -956,12 +1042,14 @@ define([
                     publish: publish
                 };
                 $setUIValue.setValue(argument);
+                // Update Restore Table //
                 LastLatticeParameters[k] = parameters[k];
             }
         }); 
     };
+    // Disable input fields of Lattice Length/Angle/Repetition //
     latticeTab.prototype.disableLatticeParameters = function(parameters){
-        _.each(latticeParameters, function($parameter, k) {
+        _.each(html.lattice.parameters, function($parameter, k) {
             if (parameters[k] !== undefined) {
                 var argument = {};
                 argument[k] = {
@@ -971,23 +1059,27 @@ define([
             }
         });  
     };
+    // Update Lattice Labels on the MOTIF tab //
     latticeTab.prototype.updateLatticeLabels = function(){
-        _.each(latticeLabels, function($parameter,k){
-            var labelLength = parseFloat(latticeParameters[k].val()).toFixed(3);
-            var labelAngle = parseFloat(latticeParameters[k].val()).toFixed(0);
+        _.each(html.motif.latticeLabels, function($parameter,k){
+            var labelLength = parseFloat(html.lattice.parameters[k].val()).toFixed(3);
+            var labelAngle = parseFloat(html.lattice.parameters[k].val()).toFixed(0);
             if ( (k !== 'alpha') && (k !== 'beta') && (k !== 'gamma') ) $parameter.text(labelLength+'Å'); 
             else $parameter.text(labelAngle+'°'); 
         });
     };
+    // Insert Collision //
     latticeTab.prototype.stickySlider = function(argument){
         // Read state from argument //
         if (_.isUndefined(argument)) return false;
         else {
             _.each(argument, function($parameter,k){
+                // Remove collision area + condition //
                 if ($parameter === false) {
                     jQuery('#'+k+'Collision').css('background-color','white');
                     delete collisions[k];
                 }
+                // Paint collision area, add new condition //
                 else {
                     collisions[k] = $parameter;
                     jQuery('#'+k+'Collision').css('background-color','#6f6299');
@@ -997,23 +1089,21 @@ define([
         }
         return true;
     };
+    // Update Sliders with collision conditions //
     latticeTab.prototype.refreshStickyVisuals = function(){
         refreshStickyVisuals();
     };
+    // Clear Lattice Restrictions //
     latticeTab.prototype.removeRestrictions = function(){
-        // Clear Lattice Restrictions //
         removeLatticeRestrictions();
         localRestrictions = undefined;  
     };
+    // Clear Collisions //
     latticeTab.prototype.clearCollisions = function(){
-        // Clear Collision //
         _.each(collisions, function($parameter,k){
             jQuery('#'+k+'Collision').css('background-color','white'); 
             delete collisions[k];
         });  
-    };
-    latticeTab.prototype.restorePadlocks = function(lattice,motif){
-        
     };
     
     return latticeTab;

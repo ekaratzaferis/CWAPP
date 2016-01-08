@@ -46,7 +46,8 @@ define([
             'highlightTangency': jQuery('#highlightTangency')
         };
         this.menu.other = {
-            atomRadiusSlider: jQuery('#atomRadiusSlider')
+            atomRadiusSlider: jQuery('#atomRadiusSlider'),
+            atomRadiusSliderContainer: jQuery('#atomRadiusSliderContainer')
         };
         
         // Lattice Tab //
@@ -62,14 +63,24 @@ define([
             beta: jQuery('#beta'),
             gamma: jQuery('#gamma')
         };
+        this.lattice.sliders = {
+            scaleX: jQuery('#scaleXSlider'),
+            scaleY: jQuery('#scaleYSlider'),
+            scaleZ: jQuery('#scaleZSlider'),
+            alpha: jQuery('#alphaSlider'),
+            beta: jQuery('#betaSlider'),
+            gamma: jQuery('#gammaSlider')  
+        };
         this.lattice.padlocks = {
             lattice: jQuery('#latticePadlock'),
             motif: jQuery('#motifPadlock')
         };
         this.lattice.visual = {
+            edgeCheckbox: jQuery('[name=gridCheckButton]'),
             edgeColorPicker: jQuery('#cube_color_border'),
             radius: jQuery('#radius'),
             radiusSlider: jQuery('#radiusSlider'),
+            faceCheckbox: jQuery('[name=faceCheckButton]'),
             faceColorPicker: jQuery('#cube_color_filled'),
             opacity: jQuery('#faceOpacity'),
             opacitySlider: jQuery('#faceOpacitySlider'),
@@ -113,7 +124,9 @@ define([
             swapButton: jQuery('#swapBtn'),
             atomTable: jQuery('#atomTable'),
             cellVolume: jQuery('#cellVolume'),
-            cellVolumeSlider: jQuery('#cellVolumeSlider')
+            cellVolumeSlider: jQuery('#cellVolumeSlider'),
+            name: jQuery('.element-symbol-container').find('a'),
+            nameContainer: jQuery('.element-symbol-container')
         };
         this.motif.atomParameters = {
             atomOpacity: jQuery('#atomOpacity'),
@@ -125,14 +138,29 @@ define([
             atomPosY : jQuery('#atomPosY'), 
             atomPosZ : jQuery('#atomPosZ')
         };
+        this.motif.motifInputsLabels = {
+            xa : jQuery('label[for=txt_coordinates_x]'),
+            yb : jQuery('label[for=txt_coordinates_y]'), 
+            zc : jQuery('label[for=txt_coordinates_z]')
+        };
+        this.motif.motifInputsSliders = {
+            atomPosX : jQuery('#atomPosXSlider'),
+            atomPosY : jQuery('#atomPosYSlider'), 
+            atomPosZ : jQuery('#atomPosZSlider')
+        };
         this.motif.motifSliders = {
             atomPosX: jQuery('#atomPosXSlider'), 
             atomPosY: jQuery('#atomPosYSlider'), 
             atomPosZ: jQuery('#atomPosZSlider')
         };
         this.motif.rotatingAngles = {
-            rotAngleTheta : jQuery('#rotAngleTheta'),
-            rotAnglePhi : jQuery('#rotAnglePhi'),
+            combo: {
+                rotAngleTheta : jQuery('#rotAngleTheta'),
+                rotAnglePhi : jQuery('#rotAnglePhi')
+            },
+            x: jQuery('#rotAngleX'),
+            y: jQuery('#rotAngleY'),
+            z: jQuery('#rotAngleZ'),
             section: jQuery('.tangent-properties-container')
         };
         
@@ -141,6 +169,7 @@ define([
         this.visual.fog = {
             checkbox: jQuery('input[name="fog"]'),
             density: jQuery('#fogDensity'),
+            color : jQuery('#fogColor'),
             densitySlider: jQuery('#fogDensitySlider')
         };
         this.visual.parameters = {
@@ -154,9 +183,15 @@ define([
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop'),
             fullScreen: jQuery('#fullScreen'),
-            leapMotion: $('#leapMotion'),
+            leapMotion: jQuery('#leapMotion'),
             crystalCamTargetOn: jQuery("#crystalCamTargetOn"),
             crystalCamTargetOff: jQuery("#crystalCamTargetOff")
+        };
+        this.visual.stereoscopic = {
+            anaglyph: jQuery('#anaglyph'),
+            oculus: jQuery('#oculus'),
+            sideBySide3D: jQuery('#3DsideBySide'),
+            onTop3D: jQuery('#3DonTop')
         };
         this.visual.parameters.renderizationMode = {
             realistic: jQuery('#realistic'),
@@ -185,7 +220,6 @@ define([
         };
         this.visual.tools = {};
         this.visual.tools.colorPickers = {
-            fog : jQuery('#fogColor'),
             crystalScreen : jQuery('#crystalScreenColor'),
             cellScreen : jQuery('#cellScreenColor'),
             motifXScreen : jQuery('#motifXScreenColor'),
@@ -207,33 +241,37 @@ define([
             directions: jQuery('#directionTable')
         }; 
         this.pnd.planeButtons = { 
-            save: jQuery('#savePlane'),
-            delete: jQuery('#deletePlane'),
-            new: jQuery('#newPlane'),
-            parallel: jQuery('#parallelPlane')
+            savePlane: jQuery('#savePlane'),
+            deletePlane: jQuery('#deletePlane'),
+            newPlane: jQuery('#newPlane'),
+            parallelPlane: jQuery('#parallelPlane')
         };
         this.pnd.directionButtons = { 
-            save: jQuery('#saveDirection'),
-            delete: jQuery('#deleteDirection'),
-            new: jQuery('#newDirection')
+            saveDirection: jQuery('#saveDirection'),
+            deleteDirection: jQuery('#deleteDirection'),
+            newDirection: jQuery('#newDirection')
         };
         this.pnd.planeParameters = {
             millerH: jQuery('#millerH'),
             millerK: jQuery('#millerK'),
             millerL: jQuery('#millerL'),
             millerI: jQuery('#millerI'),
-            color: jQuery('#planeColor'),
-            opacity: jQuery('#planeOpacity'),
-            name : jQuery('#planeName')
+            planeColor: jQuery('#planeColor'),
+            planeOpacity: jQuery('#planeOpacity'),
+            planeName: jQuery('#planeName')
         };
         this.pnd.directionParameters = {
             millerU: jQuery('#millerU'),
             millerV: jQuery('#millerV'),
             millerW: jQuery('#millerW'),
             millerT: jQuery('#millerT'),
-            color: jQuery('#directionColor'),
-            name : jQuery('#directionName'),
-            radius : jQuery('#dirRadius')
+            directionColor: jQuery('#directionColor'),
+            directionName : jQuery('#directionName'),
+            dirRadius : jQuery('#dirRadius')
+        };
+        this.pnd.other = {
+            hexICoord: jQuery('#hexICoord'),
+            hexTCoord: jQuery('#hexTCoord')
         };
         
         // Public Library Tab //
@@ -265,6 +303,16 @@ define([
             name: jQuery('#projectName'),
             tags: jQuery('#projectTags'),
             description: jQuery('#projectDescription')
+        };
+        this.library.search = {
+            results: jQuery('#searchResults'),
+            preview: jQuery('#resultPreviewBig'),
+            previewTitle: jQuery('#previewTitle h4'),
+            previewDescription: jQuery('#previewDescription p'),
+            previewTags: jQuery('#previewTags'),
+            openPreview: jQuery('#openPreview'),
+            openPreviewQR: jQuery('#openPreviewQR'),
+            footer: jQuery('.footerLink')
         };
         
         // IAC //
@@ -311,7 +359,8 @@ define([
         this.modals.periodicTable = {
             element: jQuery('.ch'),
             ionicValues: jQuery('.property-block'),
-            ionicPreview: jQuery('#tempSelection').find('p')
+            ionicPreview: jQuery('#tempSelection').find('p'),
+            footer: jQuery('.modal-pre-footer')
         };
         this.modals.lattice = {
             block: jQuery('.mh_bravais_lattice_block')
@@ -341,6 +390,7 @@ define([
             appLogo: jQuery('#appLogo'),
             unitCellRenderer: jQuery('#unitCellRenderer'),
             unitCellRendererMouse: jQuery('#unitCellRendererMouse'),
+            atomRadiusSlider: jQuery('#atomRadiusSliderContainer'),
             xyz: {
                 xLabel: jQuery('#xLabel'), 
                 yLabel: jQuery('#yLabel'),  
@@ -355,11 +405,16 @@ define([
         this.interface.screen = {
             wrapper: jQuery('#screenWrapper'),
             appContainer: jQuery('#app-container'),
+            body: jQuery('body'),
+            bravaisModal: jQuery('#bravais_lattice_modal'),
             scrollBars: jQuery('.custom_scrollbar')
         };
         this.interface.sidebar = {
             toggler: jQuery('#controls_toggler'),
             menu: jQuery('#main_controls_container'),
+            menuContainer: jQuery('.main-controls-container'),
+            menuInner: jQuery('.main-controls-inner'),
+            tabList: jQuery('.main-tab-nav-container')
         };
         this.interface.progress = {
             wrapper: jQuery('#progressBarWrapper'),

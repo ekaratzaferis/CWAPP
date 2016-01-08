@@ -15,6 +15,13 @@ define([
     _
 ) 
 {
+    /* This tabs takes care of the Menu Ribbon, which includes: 
+    
+        - Toggle Buttons
+        - Tab buttons
+        - Tab accessibility
+    
+    */
     var value = undefined;
     
     // Module References
@@ -24,49 +31,10 @@ define([
     var $latticeTab = undefined;
     var $setUI = undefined;
     var $userDialog = undefined;
-    
-    // Menu Button
-    var $menuToggler = jQuery('#controls_toggler');
-    var $menu = jQuery('#main_controls_container');
-    
-    // Tabs
-    var latticeTab = jQuery('#latticeTab');
-    var motifTab = jQuery('#motifLI');
-    var visualTab = jQuery('#visualTab');
-    var pndTab = jQuery('#millerPI');
-    var publicTab = jQuery('#publicTab');
-    var notesTab = jQuery('#notesTab');
-    var helpTab = jQuery('#helpTab');
-    
-    // Grouping
-    var tabs = {
-       'latticeTab':latticeTab,
-       'motifTab':motifTab,
-       'visualTab':visualTab,
-       'pndTab':pndTab,
-       'publicTab':publicTab,
-       'notesTab':notesTab,
-       'helpTab':helpTab
-    };
-    var toggles = {
-        'xyzAxes': jQuery('#xyzAxes'),
-        'abcAxes': jQuery('#abcAxes'),
-        'edges': jQuery('#edges'),
-        'faces': jQuery('#faces'),
-        'latticePoints': jQuery('#latticePoints'),
-        'planes': jQuery('#planes'),
-        'directions': jQuery('#directions'),
-        'atomToggle': jQuery('#atomToggle'),
-        'atomRadius': jQuery('#atomRadius'),
-        'unitCellViewport': jQuery('#unitCellViewport'),
-        'labelToggle': jQuery('#labelToggle'),
-        'highlightTangency': jQuery('#highlightTangency')
-    };
-    var $atomRadiusSlider = jQuery('#atomRadiusSlider');
-    
-    // Check if swap button should be visible
-    var swapState = false;
-    var $swapButton = jQuery('#swapBtn');
+    var html = undefined;
+
+    // Check if swap button should be visible //
+    var swapState = false; 
     
     // Contructor //
     function menuRibbon(argument) {
@@ -84,80 +52,94 @@ define([
         else return false;
         if (!(_.isUndefined(argument.latticeTab))) $latticeTab = argument.latticeTab;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
-        // Assign handlers
-        latticeTab.on('click', function(event){
-            if (latticeTab.hasClass('disabled')){
+        // Assign Tab handlers //
+        html.menu.tabs.latticeTab.on('click', function(event){
+            // Stop Action //
+            if (html.menu.tabs.latticeTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
             }
+            // Open Menu /w swap button on canvas //
             else if(swapState === true) {
-                $interfaceResizer.openMenu(latticeTab);
-                $swapButton.show();
+                $interfaceResizer.openMenu(html.menu.tabs.latticeTab);
+                html.motif.other.swapButton.show();
             }
+            // Open Menu //
             else {
-                $interfaceResizer.openMenu(latticeTab);
-                $swapButton.hide();
-                $swapButton.attr('class','');   
+                $interfaceResizer.openMenu(html.menu.tabs.latticeTab);
+                html.motif.other.swapButton.hide();
+                html.motif.other.swapButton.attr('class','');   
             }
         });
-        motifTab.on('click', function(event){
-            if (motifTab.hasClass('disabled')){
+        html.menu.tabs.motifTab.on('click', function(event){
+            // Stop Event //
+            if (html.menu.tabs.motifTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
-                if (motifTab.hasClass('blocked')) {
-                    if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) $tooltipGenerator.showTooltip({target:'motifLI',placement:'left',message:$messageList.getMessage(5)});
+                // If no atom has been added yet //
+                if (html.menu.tabs.motifTab.hasClass('blocked')) {
+                    if ( html.lattice.other.selected.html() === 'Choose a Lattice' ) $tooltipGenerator.showTooltip({target:'motifLI',placement:'left',message:$messageList.getMessage(5)});
                 }
             }
             else {
-                $interfaceResizer.openMenu(motifTab);
+                $interfaceResizer.openMenu(html.menu.tabs.motifTab);
+                // Update Lattice Labels every time we open the Motif Tab!!! //
                 $latticeTab.updateLatticeLabels();
             }
-            $swapButton.hide();
+            html.motif.other.swapButton.hide();
         });
-        visualTab.on('click', function(event){
-            if (visualTab.hasClass('disabled')){
+        html.menu.tabs.visualTab.on('click', function(event){
+            // Stop Event //
+            if (html.menu.tabs.visualTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
-                if (visualTab.hasClass('blocked')) {
-                    if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) $tooltipGenerator.showTooltip({target:'visualTab',placement:'left',message:$messageList.getMessage(5)});
+                // If no atom is added yet //
+                if (html.menu.tabs.visualTab.hasClass('blocked')) {
+                    if ( html.lattice.other.selected.html() === 'Choose a Lattice' ) $tooltipGenerator.showTooltip({target:'visualTab',placement:'left',message:$messageList.getMessage(5)});
                 }
             }
-            else $interfaceResizer.openMenu(visualTab);
-            $swapButton.hide();
+            else $interfaceResizer.openMenu(html.menu.tabs.visualTab);
+            html.motif.other.swapButton.hide();
         });
-        pndTab.on('click', function(event){
-            if (pndTab.hasClass('disabled')){
+        html.menu.tabs.pndTab.on('click', function(event){
+            // Stop Event //
+            if (html.menu.tabs.pndTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
-                if (pndTab.hasClass('blocked')) {
+                // If no atom is added yet //
+                if (html.menu.tabs.pndTab.hasClass('blocked')) {
                     if ( jQuery('#selected_lattice').html() === 'Choose a Lattice' ) $tooltipGenerator.showTooltip({target:'millerPI',placement:'left',message:$messageList.getMessage(5)});
                 }
             }
-            else $interfaceResizer.openMenu(pndTab);
-            $swapButton.hide();
+            else $interfaceResizer.openMenu(html.menu.tabs.pndTab);
+            html.motif.other.swapButton.hide();
         });
-        publicTab.on('click', function(event){
-            if (publicTab.hasClass('disabled')){
+        html.menu.tabs.publicTab.on('click', function(event){
+            // Stop Event //
+            if (html.menu.tabs.publicTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
             }
-            else $interfaceResizer.openMenu(publicTab);
-            $swapButton.hide();
+            else $interfaceResizer.openMenu(html.menu.tabs.publicTab);
+            html.motif.other.swapButton.hide();
         });
-        notesTab.on('click', function(event){
-            if (notesTab.hasClass('disabled')){
+        html.menu.tabs.notesTab.on('click', function(event){
+            // Stop Event //
+            if (html.menu.tabs.notesTab.hasClass('disabled')){
                 event.preventDefault();
                 event.stopPropagation();
             }
-            else $interfaceResizer.openMenu(notesTab);
-            $swapButton.hide();
+            else $interfaceResizer.openMenu(html.menu.tabs.notesTab);
+            html.motif.other.swapButton.hide();
         });
-        helpTab.on('click', function(){
-            if (!(helpTab.hasClass('disabled'))) $userDialog.showInfoDialog({ messageID: 4 });
+        html.menu.tabs.helpTab.on('click', function(){
+            if (!(html.menu.tabs.helpTab.hasClass('disabled'))) $userDialog.showInfoDialog({ messageID: 4 });
         });
         
-        // Block Tabs
+        // Block Tabs //
         disableTab({'tab':'motifTab','value':true});
         blockTab({'tab':'motifTab','value':true});
         disableTab({'tab':'pndTab','value':true});
@@ -165,14 +147,14 @@ define([
         disableTab({'tab':'visualTab','value':true});
         blockTab({'tab':'visualTab','value':true});
         
-        // Top Menu Button
-        $menuToggler.on('click', function(){
-            if ($menu.hasClass('controls-open')) $interfaceResizer.closeMenu();
+        // Top Menu Button //
+        html.interface.sidebar.toggler.on('click', function(){
+            if (html.interface.sidebar.menu.hasClass('controls-open')) $interfaceResizer.closeMenu();
             else openFirstActiveTab();
         });
         
-        // Toggle Buttons
-        _.each(toggles, function($parameter, k){
+        // Toggle Buttons Initiation //
+        _.each(html.menu.toggles, function($parameter, k){
             var title;
             switch(k){
                 case 'xyzAxes':
@@ -223,8 +205,8 @@ define([
                 placement: 'left'
             });
         });
-        toggles.xyzAxes.on('click', function() {
-            (toggles.xyzAxes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.xyzAxes.on('click', function() {
+            (html.menu.toggles.xyzAxes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 xyzAxes:{
                     value: value,
@@ -232,8 +214,8 @@ define([
                 }
             });
         });
-        toggles.abcAxes.on('click', function() {
-            (toggles.abcAxes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.abcAxes.on('click', function() {
+            (html.menu.toggles.abcAxes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 abcAxes:{
                     value: value,
@@ -241,24 +223,24 @@ define([
                 }
             });
         });
-        toggles.edges.on('click', function() {
-            (toggles.edges.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.edges.on('click', function() {
+            (html.menu.toggles.edges.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 edges:{
                     value: value
                 }
             });
         });  
-        toggles.faces.on('click', function() {
-            (toggles.faces.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.faces.on('click', function() {
+            (html.menu.toggles.faces.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 faces:{
                     value: value
                 }
             });
         }); 
-        toggles.latticePoints.parent().on('click', function() {
-            (toggles.latticePoints.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.latticePoints.parent().on('click', function() {
+            (html.menu.toggles.latticePoints.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 latticePoints:{
                     value: value,
@@ -266,8 +248,8 @@ define([
                 }
             });
         });
-        toggles.planes.on('click', function() {
-            (toggles.planes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.planes.on('click', function() {
+            (html.menu.toggles.planes.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 planes:{
                     value: value,
@@ -275,8 +257,8 @@ define([
                 }
             });
         });  
-        toggles.directions.on('click', function() {
-            (toggles.directions.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.directions.on('click', function() {
+            (html.menu.toggles.directions.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 directions:{
                     value: value,
@@ -284,8 +266,8 @@ define([
                 }
             });
         });
-        toggles.atomToggle.on('click', function() {
-            (toggles.atomToggle.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.atomToggle.on('click', function() {
+            (html.menu.toggles.atomToggle.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 atomToggle:{
                     value: value,
@@ -293,7 +275,7 @@ define([
                 }
             });
         });
-        $atomRadiusSlider.slider({
+        html.menu.other.atomRadiusSlider.slider({
             value: 10.2,
             min: 1,
             max: 10.2,
@@ -307,9 +289,9 @@ define([
                 });
             }
         });
-        toggles.atomRadius.on('click', function() {
-            if (!(motifTab.hasClass('active'))){
-                (toggles.atomRadius.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.atomRadius.on('click', function() {
+            if (!(html.menu.tabs.motifTab.hasClass('active'))){
+                (html.menu.toggles.atomRadius.parent().hasClass('lightThemeActive')) ? value = false : value = true;
                 $setUI.setValue({
                     atomRadius:{
                         value: value
@@ -317,8 +299,8 @@ define([
                 });
             }
         });
-        toggles.unitCellViewport.on('click', function(){
-            (toggles.unitCellViewport.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.unitCellViewport.on('click', function(){
+            (html.menu.toggles.unitCellViewport.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 unitCellViewport:{
                     value: value,
@@ -326,8 +308,8 @@ define([
                 }
             });
         });
-        toggles.labelToggle.on('click', function(){
-            (toggles.labelToggle.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.labelToggle.on('click', function(){
+            (html.menu.toggles.labelToggle.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 labelToggle:{
                     value: value,
@@ -335,8 +317,8 @@ define([
                 }
             });
         });
-        toggles.highlightTangency.on('click', function(){
-            (toggles.highlightTangency.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+        html.menu.toggles.highlightTangency.on('click', function(){
+            (html.menu.toggles.highlightTangency.parent().hasClass('lightThemeActive')) ? value = false : value = true;
             $setUI.setValue({
                 highlightTangency:{
                     value: value,
@@ -346,15 +328,15 @@ define([
         });
     };
     function openFirstActiveTab(){
-        var openTab = jQuery('.main-tab-nav-container').find('li.active');
+        var openTab = html.interface.sidebar.tabList.find('li.active');
         if (!(openTab.hasClass('disabled'))) openTab.trigger('click');  
         else {
-            openTab = jQuery('.main-tab-nav-container').find('li:not(.disabled):first');
+            openTab = html.interface.sidebar.tabList.find('li:not(.disabled):first');
             openTab.trigger('click');
         }
     };
     function blockTab(argument){
-        _.each(tabs, function($param,a){
+        _.each(html.menu.tabs, function($param,a){
             if (a === argument.tab) {
                 if (argument.value === true) $param.addClass('blocked');
                 else $param.removeClass('blocked');
@@ -362,7 +344,7 @@ define([
         });
     }
     function disableTab(argument){
-        _.each(tabs, function($param,a){
+        _.each(html.menu.tabs, function($param,a){
             if (a === argument.tab) {
                 if (argument.value === true) {
                     $param.addClass('disabled');
@@ -372,22 +354,22 @@ define([
                     $param.removeClass('disabled');
                     switch(argument.tab){
                         case 'latticeTab': 
-                            jQuery('#latticeTab').find('a').attr('href','#scrn_lattice');
+                            html.menu.tabs.latticeTab.find('a').attr('href','#scrn_lattice');
                             break;        
                         case 'pndTab': 
-                            jQuery('#millerPI').find('a').attr('href','#scrn_pnd'); 
+                            html.menu.tabs.pndTab.find('a').attr('href','#scrn_pnd'); 
                             break;
                         case 'motifTab': 
-                            jQuery('#motifLI').find('a').attr('href','#scrn_motif'); 
+                            html.menu.tabs.motifTab.find('a').attr('href','#scrn_motif'); 
                             break;
                         case 'visualTab': 
-                            jQuery('#visualTab').find('a').attr('href','#scrn_visualize'); 
+                            html.menu.tabs.visualTab.find('a').attr('href','#scrn_visualize'); 
                             break;
                         case 'publicTab': 
-                            jQuery('#publicTab').find('a').attr('href','#scrn_public_library');
+                            html.menu.tabs.publicTab.find('a').attr('href','#scrn_public_library');
                             break;
                         case 'notesTab': 
-                            jQuery('#notesTab').find('a').attr('href','#scrn_notes');
+                            html.menu.tabs.notesTab.find('a').attr('href','#notes_tab');
                             break;
                     }
                 }
@@ -401,28 +383,28 @@ define([
     menuRibbon.prototype.switchTab = function(tab){
         switch(tab){
             case 'latticeTab': 
-                latticeTab.find('a').trigger('click');
+                html.menu.tabs.latticeTab.find('a').trigger('click');
                 break;        
             case 'motifTab': 
-                motifTab.find('a').trigger('click'); 
+                html.menu.tabs.motifTab.find('a').trigger('click'); 
                 break;
             case 'visualTab': 
-                visualTab.find('a').trigger('click'); 
+                html.menu.tabs.visualTab.find('a').trigger('click'); 
                 break;
             case 'pndTab': 
-                pndTab.find('a').trigger('click'); 
+                html.menu.tabs.pndTab.find('a').trigger('click'); 
                 break;
             case 'publicTab': 
-                publicTab.find('a').trigger('click');
+                html.menu.tabs.publicTab.find('a').trigger('click');
                 break;
             case 'notesTab': 
-                notesTab.find('a').trigger('click');
+                html.menu.tabs.notesTab.find('a').trigger('click');
                 break;
             case 'helpTab': 
-                helpTab.find('a').trigger('click');
+                html.menu.tabs.helpTab.find('a').trigger('click');
                 break;
         }
-        if (tab !== 'latticeTab') $swapButton.hide();
+        if (tab !== 'latticeTab') html.motif.other.swapButton.hide();
     };
     menuRibbon.prototype.disableTab = function(argument){
         _.each(argument, function($parameter, k){
@@ -442,7 +424,7 @@ define([
     };
     menuRibbon.prototype.restoreTabs = function(argument){
         this.switchTab(argument.activeTab);
-        _.each(tabs, function($parameter,k){
+        _.each(html.menu.tabs, function($parameter,k){
             var value = argument.disabledTabs[k];
             disableTab({'tab':k,'value':value});
             blockTab({'tab':k,'value':value});
@@ -450,7 +432,7 @@ define([
     };
     menuRibbon.prototype.resetTabs = function(){
         this.switchTab('latticeTab');
-        _.each(tabs, function($parameter,k){
+        _.each(html.menu.tabs, function($parameter,k){
             switch(k){
                 case 'motifTab':{
                     
@@ -470,7 +452,7 @@ define([
             }
         });
         setTimeout(function(){
-            jQuery('body').mCustomScrollbar("scrollTo",'top');
+            html.interface.screen.body.mCustomScrollbar("scrollTo",'top');
         },200);
     };
     

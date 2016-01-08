@@ -21,6 +21,8 @@ define([
     jColor
 ) 
 {
+    /* This module handles the Visualization Tab, which is a simple collection of buttons and inputs! */
+    
     // Variables
     var $getUI = undefined;
     var $setUI = undefined;
@@ -29,64 +31,7 @@ define([
     var value = undefined;
     var argument = undefined;
     var publish = undefined;
-    
-    // Inputs
-    var $fogCheckbox = jQuery('input[name="fog"]');
-    var $fogDensity = jQuery('#fogDensity');
-    var $fogDensitySlider = jQuery('#fogDensitySlider');
-    var $soundSlider = jQuery('#soundSlider');
-    
-    // Buttons
-    var $sounds = jQuery('#sounds');
-    var $lights = jQuery('#lights');
-    var $ssao = jQuery('#ssao');
-    var $shadows = jQuery('#shadows');
-    var $fullScreen = jQuery('#fullScreen');
-    var $leapMotion = $('#leapMotion');
-    var $crystalCamTargetOn = jQuery("#crystalCamTargetOn");
-    var $crystalCamTargetOff = jQuery("#crystalCamTargetOff");
-    var $anaglyph = jQuery('#anaglyph');
-    var $oculus = jQuery('#oculus');
-    var $3DsideBySide = jQuery('#3DsideBySide');
-    var $3DonTop = jQuery('#3DonTop');
-    var $distortionOn = jQuery('#distortionOn');
-    var $distortionOff = jQuery('#distortionOff');
-    var $reset = jQuery('#reset');
-    
-    // Grouping
-    var renderizationMode = {
-        realistic: jQuery('#realistic'),
-        wireframe: jQuery('#wireframe'),
-        toon: jQuery('#toon'),
-        flat: jQuery('#flat')
-    };
-    var crystalMode = {
-        crystalClassic: jQuery('#crystalClassic'),
-        crystalSubstracted: jQuery('#crystalSubstracted'),
-        crystalSolidVoid: jQuery('#crystalSolidVoid'),
-        crystalGradeLimited: jQuery('#crystalGradeLimited')
-    };
-    var unitCellMode = {
-        cellClassic: jQuery('#cellClassic'),
-        cellSubstracted: jQuery('#cellSubstracted'),
-        cellSolidVoid: jQuery('#cellSolidVoid'),
-        cellGradeLimited: jQuery('#cellGradeLimited')
-    };
-    var colorPickers = {
-        fogColor : jQuery('#fogColor'),
-        crystalScreenColor : jQuery('#crystalScreenColor'),
-        cellScreenColor : jQuery('#cellScreenColor'),
-        motifXScreenColor : jQuery('#motifXScreenColor'),
-        motifYScreenColor : jQuery('#motifYScreenColor'),
-        motifZScreenColor : jQuery('#motifZScreenColor')
-    };
-    var zoomOptions = {
-        zoom70: jQuery('#zoom70'),   
-        zoom80: jQuery('#zoom80'),   
-        zoom90: jQuery('#zoom90'),   
-        zoom100: jQuery('#zoom100'),
-        autoZoom: jQuery('#autoZoom')
-    };
+    var html = undefined;
     
     // Contructor //
     function visualTab(argument) {
@@ -100,10 +45,11 @@ define([
         else return false;
         if (!(_.isUndefined(argument.disableUIElement))) $disableUIElement = argument.disableUIElement;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
-        
-        // Visual Parameters
-        _.each(renderizationMode, function($parameter, k) {
+        // Visual Parameters //
+        _.each(html.visual.parameters.renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
                 if (!($parameter.hasClass('disabled'))) {
                     ($parameter.hasClass('active')) ? value = false : value = true;
@@ -120,8 +66,8 @@ define([
                 }
             });
         });
-        $lights.on('click', function(){
-            ($lights.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.lights.on('click', function(){
+            (html.visual.parameters.lights.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 lights:{
                     publish:{lights:value},
@@ -129,8 +75,8 @@ define([
                 }
             });
         });
-        $ssao.on('click', function(){
-            ($ssao.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.ssao.on('click', function(){
+            (html.visual.parameters.ssao.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 ssao:{
                     publish:{ssao:value},
@@ -138,8 +84,8 @@ define([
                 }
             });
         });
-        $shadows.on('click', function(){
-            ($shadows.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.shadows.on('click', function(){
+            (html.visual.parameters.shadows.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 shadows:{
                     publish:{shadows:value},
@@ -147,8 +93,8 @@ define([
                 }
             });
         });
-        $distortionOn.on('click', function() {
-            ($distortionOn.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.distortionOn.on('click', function() {
+            (html.visual.parameters.distortionOn.hasClass('active')) ? value = false : value = true;
             if (value === true){
                 $setUI.setValue({
                     distortionOn:{
@@ -158,8 +104,8 @@ define([
                 });  
             }
         });
-        $distortionOff.on('click', function() {  
-            ($distortionOff.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.distortionOff.on('click', function() {  
+            (html.visual.parameters.distortionOff.hasClass('active')) ? value = false : value = true;
             if (value === true){
                 $setUI.setValue({
                     distortionOff:{
@@ -169,8 +115,8 @@ define([
                 });
             }
         });
-        $anaglyph.on('click', function() {
-            ($anaglyph.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.anaglyph.on('click', function() {
+            (html.visual.parameters.anaglyph.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 anaglyph:{
                     publish:{anaglyph:value},
@@ -178,8 +124,8 @@ define([
                 }
             });
         });
-        $oculus.on('click', function() {
-            ($oculus.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.oculus.on('click', function() {
+            (html.visual.parameters.oculus.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 oculus:{
                     publish:{oculus:value},
@@ -187,28 +133,26 @@ define([
                 }
             });
         });
-        $3DsideBySide.on('click', function() {
-            ($3DsideBySide.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.sideBySide3D.on('click', function() {
+            (html.visual.parameters.sideBySide3D.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 sideBySide:{
                     publish:{sideBySide:value},
-                    value:value,
-                    other: $3DsideBySide
+                    value:value
                 }
             });
         });
-        $3DonTop.on('click', function() {
-            ($3DonTop.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.onTop3D.on('click', function() {
+            (html.visual.parameters.onTop3D.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 onTop:{
                     publish:{onTop:value},
-                    value:value,
-                    other: $3DonTop
+                    value:value
                 }
             });
         });
-        $crystalCamTargetOn.on('click', function(){
-            ($crystalCamTargetOn.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.crystalCamTargetOn.on('click', function(){
+            (html.visual.parameters.crystalCamTargetOn.hasClass('active')) ? value = false : value = true;
             if (value === true) {
                 $setUI.setValue({
                     crystalCamTargetOn:{
@@ -218,8 +162,8 @@ define([
                 });
             }
         });
-        $crystalCamTargetOff.on('click', function(){
-            ($crystalCamTargetOff.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.crystalCamTargetOff.on('click', function(){
+            (html.visual.parameters.crystalCamTargetOff.hasClass('active')) ? value = false : value = true;
             if (value === true) {
                 $setUI.setValue({
                     crystalCamTargetOff:{
@@ -229,22 +173,22 @@ define([
                 });
             }
         });
-        $fullScreen.on('click', function(){
+        html.visual.parameters.fullScreen.on('click', function(){
             $setUI.setValue({
                 fullScreen:{
                     publish:{}
                 }
             });
         }); 
-        $leapMotion.click(function() {
-            ($leapMotion.hasClass('active')) ? value = false : value = true;
+        html.visual.parameters.leapMotion.click(function() {
+            (html.visual.parameters.leapMotion.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 leapMotion:{
                     publish:{leap:value}
                 }
             });          
         });
-        _.each(crystalMode, function($parameter, k) {
+        _.each(html.visual.parameters.crystalMode, function($parameter, k) {
             $parameter.on('click', function() {
                 if (!($parameter.hasClass('disabled'))) {
                     if ( (k === 'crystalSubstracted') || (k === 'crystalSolidVoid') ) {
@@ -253,6 +197,7 @@ define([
                     else $parameter.trigger('action');
                 }
             });
+            // Triggered by the Warning dialog!!!! //
             $parameter.on('action', function() {
                 ($parameter.hasClass('active')) ? value = false : value = true;
                 if (value === true){
@@ -267,7 +212,7 @@ define([
                 }
             });
         });
-        _.each(unitCellMode, function($parameter, k) {
+        _.each(html.visual.parameters.unitCellMode, function($parameter, k) {
             $parameter.on('click', function() {
                 if (!($parameter.hasClass('disabled'))) {
                     ($parameter.hasClass('active')) ? value = false : value = true;
@@ -285,8 +230,8 @@ define([
             });
         });
         
-        // Visualization Tools
-        _.each(zoomOptions, function($parameter, k) {
+        // Visualization Tools //
+        _.each(html.visual.tools.zoomOptions, function($parameter, k) {
             $parameter.on('click', function() {
                 ($parameter.hasClass('active')) ? value = false : value = true;
                 if (value === true){
@@ -296,39 +241,37 @@ define([
                 }
             });
         });
-        $fogCheckbox.iCheck({
+        // Fog //
+        html.visual.fog.checkbox.iCheck({
             checkboxClass: 'icheckbox_square-grey',
             radioClass: 'iradio_square-grey'
         });
-        $fogCheckbox.on('ifChecked',function(){
-            $fogCheckbox.addClass('active');
+        html.visual.fog.checkbox.on('ifChecked',function(){
+            html.visual.fog.checkbox.addClass('active');
             $setUI.setValue({
                 fog:{
                     publish:{fog:true}
                 }
             });
         });
-        $fogCheckbox.on('ifUnchecked',function(){
-            $fogCheckbox.removeClass('active');
+        html.visual.fog.checkbox.on('ifUnchecked',function(){
+            html.visual.fog.checkbox.removeClass('active');
             $setUI.setValue({
                 fog:{
                     publish:{fog:false}
                 }
             });
         });
-        $fogCheckbox.on('reset',function(){
-            
-        });
-        $fogDensity.val(1);
-        $fogDensity.on('change',function(){
+        html.visual.fog.density.val(1);
+        html.visual.fog.density.on('change',function(){
             $setUI.setValue({
                 fogDensity:{
-                    publish:{fogDensity: $fogDensity.val()},
-                    value: $fogDensity.val()
+                    publish:{fogDensity: html.visual.fog.density.val()},
+                    value: html.visual.fog.density.val()
                 }
             });
         });
-        $fogDensitySlider.slider({
+        html.visual.fog.densitySlider.slider({
             value: 5,
             min: 1,
             max: 10,
@@ -337,14 +280,37 @@ define([
             slide: function(event, ui){
                 $setUI.setValue({
                     fogDensity:{
-                        publish:{fogDensity: $fogDensity.val()}
+                        publish:{fogDensity: html.visual.fog.density.val()}
                     }
                 });
-                $fogDensity.val(ui.value);
+                html.visual.fog.density.val(ui.value);
             }
         });
-        $sounds.on('click', function(){
-            ($sounds.hasClass('active')) ? value = false : value = true;
+        html.visual.fog.color.spectrum({
+            color: "#000000",
+            allowEmpty:true,
+            chooseText: "Choose",
+            cancelText: "Close",
+            move: function(){
+                $setUI.setValue({
+                    fogColor:{
+                        value: '#' + html.visual.fog.color.spectrum('get').toHex(),
+                        publish: { fogColor: html.visual.fog.color.spectrum('get').toHex() }
+                    }
+                });
+            },
+            change: function(){
+                $setUI.setValue({
+                    fogColor:{
+                        value: '#' + html.visual.fog.color.spectrum('get').toHex(),
+                        publish: { fogColor: html.visual.fog.color.spectrum('get').toHex() }
+                    }
+                });
+            }
+        });
+        // Sound //
+        html.visual.sound.sounds.on('click', function(){
+            (html.visual.sound.sounds.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 sounds:{
                     publish:{sounds:value},
@@ -352,7 +318,7 @@ define([
                 }
             });
         });
-        $soundSlider.slider({
+        html.visual.sound.soundSlider.slider({
             value: 75,
             min: 0,
             max: 100,
@@ -366,8 +332,8 @@ define([
                 });
             }
         });
-        $soundSlider.slider('disable');
-        _.each(colorPickers, function($parameter, k) {
+        html.visual.sound.soundSlider.slider('disable');
+        _.each(html.visual.tools.colorPickers, function($parameter, k) {
             $parameter.spectrum({
                 color: "#000000",
                 allowEmpty:true,
@@ -375,9 +341,9 @@ define([
                 cancelText: "Close",
                 move: function(){
                     publish = {};
-                    publish[k] = $parameter.spectrum("get").toHex();
+                    publish[k+'Color'] = $parameter.spectrum("get").toHex();
                     argument = {};
-                    argument[k] = {
+                    argument[k+'Color'] = {
                         publish: publish
                     };
                     $setUI.setValue(argument);
@@ -385,9 +351,9 @@ define([
                 },
                 change: function(){
                     publish = {};
-                    publish[k] = $parameter.spectrum("get").toHex();
+                    publish[k+'Color'] = $parameter.spectrum("get").toHex();
                     argument = {};
-                    argument[k] = {
+                    argument[k+'Color'] = {
                         publish: publish
                     };
                     $setUI.setValue(argument);
@@ -395,7 +361,8 @@ define([
                 }
             });
         });
-        $reset.on('click',function(){
+        // Hard Reset //
+        html.visual.other.reset.on('click',function(){
             $setUI.setValue({
                 reset: {
                     value: true,
@@ -410,6 +377,7 @@ define([
         });
     };
     
+    // Module Interface //
     visualTab.prototype.chooseActiveRenderMode = function(id){
         var argument = {};
         argument[id] = {value: true};

@@ -17,6 +17,18 @@ define([
     bootstrap
 ) 
 {
+    /* This modules handles the planes and directions tab. It includes:
+            - User Input Management
+                - miller inputs
+                - color
+                - radius
+                - opacity
+            - Table Management
+                - Add
+                - Edit
+                - Delete
+                - Hide/Show
+    */
     
     // Module References //
     var $getUIValue = undefined;
@@ -24,41 +36,7 @@ define([
     var $disableUIElement = undefined;
     var $setUIValue = undefined;
     var $messages = undefined;
-    
-    // Selectors //
-    var $planesTable = jQuery('#planesTable');
-    var $directionTable = jQuery('#directionTable'); 
-    
-    // Grouping //
-    var planeButtons = { 
-        savePlane: jQuery('#savePlane'),
-        deletePlane: jQuery('#deletePlane'),
-        newPlane: jQuery('#newPlane'),
-        parallelPlane: jQuery('#parallelPlane')
-    };
-    var directionButtons = { 
-        saveDirection: jQuery('#saveDirection'),
-        deleteDirection: jQuery('#deleteDirection'),
-        newDirection: jQuery('#newDirection')
-    };
-    var planeParameters = {
-        millerH: jQuery('#millerH'),
-        millerK: jQuery('#millerK'),
-        millerL: jQuery('#millerL'),
-        millerI: jQuery('#millerI'),
-        planeColor: jQuery('#planeColor'),
-        planeOpacity: jQuery('#planeOpacity'),
-        planeName : jQuery('#planeName')
-    };
-    var directionParameters = {
-        millerU: jQuery('#millerU'),
-        millerV: jQuery('#millerV'),
-        millerW: jQuery('#millerW'),
-        millerT: jQuery('#millerT'),
-        directionColor: jQuery('#directionColor'),
-        directionName : jQuery('#directionName'),
-        dirRadius : jQuery('#dirRadius')
-    };
+    var html = undefined;
     
     // Contructor //
     function pndTab(argument) {
@@ -71,29 +49,29 @@ define([
         else return false;
         if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         $setUIValue = argument.setUIValue;
         
         // Hide extra miller parameters and tables
-        jQuery('#hexICoord').hide('slow');
-        jQuery('#hexTCoord').hide('slow');
-        $planesTable.hide('slow');
-        $directionTable.hide('slow');
+        html.pnd.other.hexICoord.hide('slow');
+        html.pnd.other.hexICoord.hide('slow');
+        html.pnd.tables.planes.hide('slow');
+        html.pnd.tables.directions.hide('slow');
         
         // Inputs //
-        _.each(planeParameters, function($parameter, k) {
-
-            // Construct Select Picker
+        _.each(html.pnd.planeParameters, function($parameter, k) {
+            // Construct Color Picker //
             if (k === 'planeColor'){
                 $parameter.spectrum({
-                    color: "#ffffff",
+                    color: "#000000",
                     allowEmpty:true,
                     chooseText: "Choose",
                     cancelText: "Close",
                     move: function(){
                         $setUIValue.setValue({
                             planeColor:{
-                                other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
@@ -102,7 +80,6 @@ define([
                     change: function(){
                         $setUIValue.setValue({
                             planeColor:{
-                                other: $parameter,
                                 publish:{planeColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
@@ -116,10 +93,10 @@ define([
                     $parameter.selectpicker();
                     $parameter.selectpicker('val','6');
                 }
-                // Change Handlers
+                // Change Handlers //
                 $parameter.on('change', function() {
-                    // Disable Interception
-                    if (k!== 'planeName') $planesTable.find('.bg-light-purple').find('.interception').removeClass('active');
+                    // Disable Interception //
+                    if (k!== 'planeName') html.pnd.tables.planes.find('.bg-light-purple').find('.interception').removeClass('active');
                     
                     // Publish Value
                     var publish = {};
@@ -134,19 +111,17 @@ define([
                 });   
             }
         }); 
-        _.each(directionParameters, function($parameter, k) {
-            
-            // Construct Select Picker
+        _.each(html.pnd.directionParameters, function($parameter, k) {
+            // Construct Color Picker //
             if (k === 'directionColor'){
                 $parameter.spectrum({
-                    color: "#ffffff",
+                    color: "#000000",
                     allowEmpty:true,
                     chooseText: "Choose",
                     cancelText: "Close",
                     move: function(){
                         $setUIValue.setValue({
                             directionColor:{
-                                other: $parameter,
                                 publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
@@ -155,7 +130,6 @@ define([
                     change: function(){
                         $setUIValue.setValue({
                             directionColor:{
-                                other: $parameter,
                                 publish:{directionColor: $parameter.spectrum('get').toHex()},
                                 value: '#'+$parameter.spectrum('get').toHex()
                             }
@@ -167,10 +141,10 @@ define([
                 if (k === 'dirRadius'){
                     $parameter.html('<option>10</option><option>20</option><option>40</option><option>60</option><option>80</option><option>100</option>');
                     $parameter.selectpicker();
+                    $parameter.selectpicker('val','10');
                 }
-                // Change Handlers
+                // Change Handlers //
                 $parameter.on('change', function() {
-
                     // Publish Value
                     var publish = {};
                     publish[k] = $parameter.val();
@@ -180,11 +154,11 @@ define([
                         publish: publish
                     }
                     $setUIValue.setValue(argument);
-
                 });
             }
         });
-        // Disable Inputs
+        
+        // Disable Inputs //
         $disableUIElement.disableElement({
             planeName:{
                 value: true
@@ -231,11 +205,10 @@ define([
         });
         
         // Button Handlers //
-        _.each(planeButtons, function($parameter, k ) {
+        _.each(html.pnd.planeButtons, function($parameter, k ) {
             $parameter.on('click', function(){
                 if (!($parameter.hasClass('disabled'))){
-                    
-                    // Construct publish object
+                    // Construct publish object //
                     var publish = $getUIValue.getValue({
                         planeColor: {
                             id: 'planeColor'  
@@ -265,10 +238,10 @@ define([
                 }
             });
         });
-        _.each(directionButtons, function($parameter, k ) {
+        _.each(html.pnd.directionButtons, function($parameter, k ) {
             $parameter.on('click', function(){
                 if (!($parameter.hasClass('disabled'))){
-                    // Construct publish object
+                    // Construct publish object //
                     var publish = $getUIValue.getValue({
                         directionColor: {
                             id: 'directionColor'  
@@ -298,49 +271,68 @@ define([
             });
         });
     };
-    
+    // Check if Parallel and interception buttons are active //
     function parallelInterception(argument){
-        if ($planesTable.find('.bg-light-purple').find('.parallel').hasClass('active')) argument.parallel = true;
+        if (html.pnd.tables.planes.find('.bg-light-purple').find('.parallel').hasClass('active')) argument.parallel = true;
         else argument.parallel = false;
-        if ($planesTable.find('.bg-light-purple').find('.interception').hasClass('active')) argument.interception = true;
+        if (html.pnd.tables.planes.find('.bg-light-purple').find('.interception').hasClass('active')) argument.interception = true;
         else argument.interception = false;  
         return argument;
     };
     
+    // Module Interface //
+    // Show Hide Extra Miller Parameters //
+    pndTab.prototype.toggleExtraParameter = function(choice,action){
+        if ( (choice === 'i') && (action === 'block') ) html.pnd.other.hexICoord.show('fast');
+        else if ( (choice === 'i')) html.pnd.other.hexICoord.hide('fast');
+        else if ( (choice === 't') && (action === 'block') ) html.pnd.other.hexTCoord.show('fast');
+        else html.pnd.other.hexTCoord.hide('fast');
+        // Match Height //
+        setTimeout(function(){$.fn.matchHeight._update();},500);
+    };
+    // Activate Paraller/Interception in a plane entry //
     pndTab.prototype.editPlaneToggles = function(argument){
         if (!(_.isUndefined(argument.parallel))){
-            if (argument.parallel === true) $planesTable.find('#'+argument.id).find('.parallel').addClass('active');
-            else $planesTable.find('#'+argument.id).find('.parallel').removeClass('active');
+            if (argument.parallel === true) html.pnd.tables.planes.find('#'+argument.id).find('.parallel').addClass('active');
+            else html.pnd.tables.planes.find('#'+argument.id).find('.parallel').removeClass('active');
         }
         if (!(_.isUndefined(argument.interception))){
-            if (argument.interception === true) $planesTable.find('#'+argument.id).find('.interception').addClass('active');
-            else $planesTable.find('#'+argument.id).find('.interception').removeClass('active');
+            if (argument.interception === true) html.pnd.tables.planes.find('#'+argument.id).find('.interception').addClass('active');
+            else html.pnd.tables.planes.find('#'+argument.id).find('.interception').removeClass('active');
         }
-    }
+    };
+    // Show/Hide all planes //
     pndTab.prototype.hidePlanes = function(state){
         if (state === true){
-            $planesTable.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
+            html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/hidden-icon-sm.png');
             PubSub.publish('menu.planes_toggle', {'planeToggle':state});
         }
         else {
-            $planesTable.find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
+            html.pnd.tables.planes.find('.planeButton').find('img').attr('src','Images/visible-icon-sm.png');
             PubSub.publish('menu.planes_toggle', {'planeToggle':state});
         }
     };
+    // Show/Hide all directions //
     pndTab.prototype.hideDirections = function(state){
         if (state === true){
-            $directionTable.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
+            html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/hidden-icon-sm.png');
             PubSub.publish('menu.directions_toggle', {'directionToggle':state});
         }
         else {
-            $directionTable.find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
+            html.pnd.tables.directions.find('.directionButton').find('img').attr('src','Images/visible-icon-sm.png');
             PubSub.publish('menu.directions_toggle', {'directionToggle':state});
         }
     };
+    // Highlight table entries //
     pndTab.prototype.highlightPlaneEntry = function(argument){
-        $planesTable.find('#'+argument['id']).removeAttr('class');
-        $planesTable.find('#'+argument['id']).attr('class',argument['color']);  
+        html.pnd.tables.planes.find('#'+argument['id']).removeAttr('class');
+        html.pnd.tables.planes.find('#'+argument['id']).attr('class',argument['color']);  
     };
+    pndTab.prototype.highlightDirectionEntry = function(argument){
+        html.pnd.tables.directions.find('#'+argument['id']).removeAttr('class');
+        html.pnd.tables.directions.find('#'+argument['id']).attr('class',argument['color']);  
+    };
+    // Add/Save/Delete on tables //
     pndTab.prototype.editPlane = function(argument){
         var parameters;
         // Parameters [,,,,] //
@@ -354,26 +346,25 @@ define([
         // Add,Edit,Remove Entry //
         switch(argument['action']){
             case 'save':
-                $planesTable.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
-                $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
+                html.pnd.tables.planes.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
+                html.pnd.tables.planes.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;  
 
             case 'edit':
-                $planesTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel '+argument['parallel']+'"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception '+argument['interception']+'"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
-                $planesTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
+                html.pnd.tables.planes.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel '+argument['parallel']+'"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception '+argument['interception']+'"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
+                html.pnd.tables.planes.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;
 
             case 'delete':
-                $planesTable.find('#'+argument['oldId']).remove();
+                html.pnd.tables.planes.find('#'+argument['oldId']).remove();
                 break;
-
         }
         
         // Handlers //
         if ( (argument['action']==='save') | (argument['action']==='edit') ){
             
             // Select Entry //
-            $planesTable.find('#'+argument['id']).find('.selectable').on('click',function(){
+            html.pnd.tables.planes.find('#'+argument['id']).find('.selectable').on('click',function(){
                 $setUIValue.setValue({
                     selectPlane:{
                         publish: argument['id']   
@@ -382,52 +373,48 @@ define([
             });
             
             // Toggle Visibility //
-            $planesTable.find('#'+argument['id']).find('.planeButton').on('click', function(){
+            html.pnd.tables.planes.find('#'+argument['id']).find('.planeButton').on('click', function(){
                 var value = undefined;
-                ($planesTable.find('#'+argument['id']).find('.planeButton').hasClass('visible')) ? value = false : value = true;
+                (html.pnd.tables.planes.find('#'+argument['id']).find('.planeButton').hasClass('visible')) ? value = false : value = true;
                 $setUIValue.setValue({
                     planeVisibility:{
                         value: value,
                         publish: {id:argument['id'], visible: value},
-                        other: $planesTable.find('#'+argument['id'])
+                        other: html.pnd.tables.planes.find('#'+argument['id'])
                     }
                 });
             });
             
             // Parallel Planes //
-            $planesTable.find('#'+argument['id']).find('.parallel').on('click', function(){
+            html.pnd.tables.planes.find('#'+argument['id']).find('.parallel').on('click', function(){
                 var value = undefined;
-                ($planesTable.find('#'+argument['id']).find('.parallel').hasClass('active')) ? value = false : value = true;
+                (html.pnd.tables.planes.find('#'+argument['id']).find('.parallel').hasClass('active')) ? value = false : value = true;
                 $setUIValue.setValue({
                     planeParallel:{
                         value: value,
                         publish: {id:argument['id'], parallel: value},
-                        other: $planesTable.find('#'+argument['id'])
+                        other: html.pnd.tables.planes.find('#'+argument['id'])
                     }
                 });
             });
             
             // Atom Interception //
-            $planesTable.find('#'+argument['id']).find('.interception').on('click', function(){
+            html.pnd.tables.planes.find('#'+argument['id']).find('.interception').on('click', function(){
                 var value = undefined;
-                ($planesTable.find('#'+argument['id']).find('.interception').hasClass('active')) ? value = false : value = true;
+                (html.pnd.tables.planes.find('#'+argument['id']).find('.interception').hasClass('active')) ? value = false : value = true;
                 $setUIValue.setValue({
                     planeInterception:{
                         value: value,
                         publish: {id:argument['id'], interception: value},
-                        other: $planesTable.find('#'+argument['id'])
+                        other: html.pnd.tables.planes.find('#'+argument['id'])
                     }
                 });
             });
         }
 
         // Show Table if there are entries //
-        if ($planesTable.find('tr').length > 0) $planesTable.show('slow');
-        else $planesTable.hide('slow');  
-    };
-    pndTab.prototype.highlightDirectionEntry = function(argument){
-        $directionTable.find('#'+argument['id']).removeAttr('class');
-        $directionTable.find('#'+argument['id']).attr('class',argument['color']);  
+        if (html.pnd.tables.planes.find('tr').length > 0) html.pnd.tables.planes.show('slow');
+        else html.pnd.tables.planes.hide('slow');  
     };
     pndTab.prototype.editDirection = function(argument){
         var parameters;
@@ -439,17 +426,17 @@ define([
         // Add,Edit,Remove Entry //
         switch(argument['action']){
             case 'save':
-                $directionTable.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
-                $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
+                html.pnd.tables.directions.find('tbody').append('<tr id="'+ argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                html.pnd.tables.directions.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;  
 
             case 'edit':
-                $directionTable.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
-                $directionTable.find('#'+argument['id']).find('.color').css('background',argument['color']);
+                html.pnd.tables.directions.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="directionButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
+                html.pnd.tables.directions.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;
 
             case 'delete':
-                $directionTable.find('#'+argument['oldId']).remove();
+                html.pnd.tables.directions.find('#'+argument['oldId']).remove();
                 break;
 
         }
@@ -458,7 +445,7 @@ define([
         if ( (argument['action']==='save') | (argument['action']==='edit') ){
             
             // Select Entry //
-            $directionTable.find('#'+argument['id']).find('.selectable').on('click',function(){
+            html.pnd.tables.directions.find('#'+argument['id']).find('.selectable').on('click',function(){
                 $setUIValue.setValue({
                     selectDirection:{
                         publish: argument['id']   
@@ -467,28 +454,29 @@ define([
             });
             
             // Toggle Visibility //
-            $directionTable.find('#'+argument['id']).find('.directionButton').on('click', function(){
+            html.pnd.tables.directions.find('#'+argument['id']).find('.directionButton').on('click', function(){
                 var value = undefined;
-                ($directionTable.find('#'+argument['id']).find('.directionButton').hasClass('visible')) ? value = false : value = true;
+                (html.pnd.tables.directions.find('#'+argument['id']).find('.directionButton').hasClass('visible')) ? value = false : value = true;
                 $setUIValue.setValue({
                     directionVisibility:{
                         value: value,
                         publish: {id:argument['id'], visible: value},
-                        other: $directionTable.find('#'+argument['id'])
+                        other: html.pnd.tables.directions.find('#'+argument['id'])
                     }
                 });
             });
         }
 
         // Show Table if there are entries //
-        if ($directionTable.find('tr').length > 0) $directionTable.show('slow');
-        else $directionTable.hide('slow'); 
+        if (html.pnd.tables.directions.find('tr').length > 0) html.pnd.tables.directions.show('slow');
+        else html.pnd.tables.directions.hide('slow'); 
     };
+    // Toggle Visibility //
     pndTab.prototype.setPlaneEntryVisibility = function(argument){
         $disableUIElement.disableElement({
             entryVisibity:{
                 value: argument.action,
-                other: $planesTable.find('#'+argument['id']).find('.planeButton')
+                other: html.pnd.tables.planes.find('#'+argument['id']).find('.planeButton')
             }
         });
     };
@@ -496,13 +484,14 @@ define([
         $disableUIElement.disableElement({
             entryVisibity:{
                 value: argument.action,
-                other: $directionTable.find('#'+argument['id']).find('.directionButton')
+                other: html.pnd.tables.directions.find('#'+argument['id']).find('.directionButton')
             }
         });
     };
+    // Clear Table //
     pndTab.prototype.resetTable = function(table){
-        if (table === 'planesTable') $planesTable.find('tbody').html('');
-        else $directionTable.find('tbody').html('');
+        if (table === 'planesTable') html.pnd.tables.planes.find('tbody').html('');
+        else html.pnd.tables.directions.find('tbody').html('');
     };
     
     return pndTab;

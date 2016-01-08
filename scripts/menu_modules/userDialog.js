@@ -15,54 +15,59 @@ define([
     _
 ) 
 {
+    /* This module handles the 3 dialog modals:
+            - Error Modal
+            - Information Modal
+            - Warning Modal
+                - It gaves the option to "freeze" any user interaction until he takes some action on the dialog window
+                - It is called by passing the caller HTML element, and depending on the action that the user takes,
+                  it triggers the caller's 'action' listener.
+    */
+    
     // Variables
     var argument = undefined;
     var $messageList = undefined;
-    var $warningModal = jQuery('#warning_modal');
-    var $infoModal = jQuery('#info_modal');
-    var $errorModal = jQuery('#error_modal');
+    var html = undefined;
     var pubEvent = 'menu.dialog_result';
-    
-    // Warning Interface
-    var $closeWarning = jQuery('#closeWarning');
-    var $cancelWarning = jQuery('#cancelWarning');
-    var $continueWarning = jQuery('#continueWarning');
     
     // Contructor //
     function userDialog(argument) {
+        // Acquire Module References
         if (!(_.isUndefined(argument.messages))) $messageList = argument.messages;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
-        // Reset callback
-        $warningModal.caller = 'none';
-        $closeWarning.on('click',function(){
+        // Warning Modal Handlers //
+        html.modals.dialog.warning.modal.caller = 'none';
+        html.modals.dialog.warning.close.on('click',function(){
             argument = {};
             argument.result = false;
             PubSub.publish(pubEvent, argument);
-            $warningModal.caller = 'userDenied';
+            html.modals.dialog.warning.modal.caller = 'userDenied';
         });
-        $cancelWarning.on('click',function(){
+        html.modals.dialog.warning.cancel.on('click',function(){
             argument = {};
             argument.result = false;
             PubSub.publish(pubEvent, argument);
-            $warningModal.caller = 'userDenied';
+            html.modals.dialog.warning.modal.caller = 'userDenied';
         });
-        $continueWarning.on('click',function(){
+        html.modals.dialog.warning.continue.on('click',function(){
             argument = {};
             argument.result = true;
             PubSub.publish(pubEvent, argument);
             // Trigger callback if any
-            if ($warningModal.caller !== 'none') {
-                $warningModal.caller.trigger('action');
-                $warningModal.caller = 'none';
+            if (html.modals.dialog.warning.modal.caller !== 'none') {
+                html.modals.dialog.warning.modal.caller.trigger('action');
+                html.modals.dialog.warning.modal.caller = 'none';
             }
-            $warningModal.caller = 'userConfirmed';
+            html.modals.dialog.warning.modal.caller = 'userConfirmed';
         });
-        $warningModal.on('hide.bs.modal', function(){
+        html.modals.dialog.warning.modal.on('hide.bs.modal', function(){
             // If modal is hidden by system event, only reset callback
-            if ($warningModal.caller !== undefined){
-                if ( ($warningModal.caller === 'userConfirmed') || ($warningModal.caller === 'userDenied') ){
-                    $warningModal.caller = 'none';
+            if (html.modals.dialog.warning.modal.caller !== undefined){
+                if ( (html.modals.dialog.warning.modal.caller === 'userConfirmed') || (html.modals.dialog.warning.modal.caller === 'userDenied') ){
+                    html.modals.dialog.warning.modal.caller = 'none';
                     return true;
                 }
             }
@@ -70,7 +75,7 @@ define([
             argument = {};
             argument.result = false;
             PubSub.publish(pubEvent, argument);
-            $warningModal.caller = 'none';
+            html.modals.dialog.warning.modal.caller = 'none';
         });
     };
     
@@ -78,29 +83,29 @@ define([
         var screen_height = jQuery(window).height();
         
         // Pick message source
-        if (!(_.isUndefined(argument.messageID))) $warningModal.find('#warningMessage').html($messageList.getMessage(argument.messageID));
-        else if (!(_.isUndefined(argument.message))) $warningModal.find('#warningMessage').html(argument.message);
+        if (!(_.isUndefined(argument.messageID))) html.modals.dialog.warning.modal.find('#warningMessage').html($messageList.getMessage(argument.messageID));
+        else if (!(_.isUndefined(argument.message))) html.modals.dialog.warning.modal.find('#warningMessage').html(argument.message);
         
         // Position Modal
-        $warningModal.modal('show').css('margin-top',(screen_height/2)-100);
+        html.modals.dialog.warning.modal.modal('show').css('margin-top',(screen_height/2)-100);
         
         // Pass Caller
-        if (!(_.isUndefined(argument.caller))) $warningModal.caller = argument.caller;
+        if (!(_.isUndefined(argument.caller))) html.modals.dialog.warning.modal.caller = argument.caller;
     };
     userDialog.prototype.showInfoDialog = function(argument){
         var screen_height = jQuery(window).height();
-        $infoModal.find('#infoMessage').html($messageList.getMessage(argument.messageID));
-        if (argument.messageID === 4) $infoModal.modal('show').css('margin-top',(screen_height/2)-250);
-        else $infoModal.modal('show').css('margin-top',(screen_height/2)-100);
+        html.modals.dialog.info.find('#infoMessage').html($messageList.getMessage(argument.messageID));
+        if (argument.messageID === 4) html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-250);
+        else html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
     };
     userDialog.prototype.showErrorDialog = function(argument){
         var screen_height = jQuery(window).height();
-        $errorModal.find('#errorLabel h2').html('Error '+argument.code);
-        $errorModal.find('#errorMessage').html($messageList.getMessage(argument.messageID));
-        $errorModal.modal('show').css('margin-top',(screen_height/2)-100);
+        html.modals.dialog.error.find('#errorLabel h2').html('Error '+argument.code);
+        html.modals.dialog.error.find('#errorMessage').html($messageList.getMessage(argument.messageID));
+        html.modals.dialog.error.modal('show').css('margin-top',(screen_height/2)-100);
     };
     userDialog.prototype.hideInfoDialog = function(){
-        $infoModal.modal('hide');
+        html.modals.dialog.info.modal('hide');
     };
     
     return userDialog;

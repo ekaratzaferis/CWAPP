@@ -46,6 +46,7 @@ define([
         29:'Project is being saved to our Database. <br/><br/> This window will close automatically.',
         30:'Uploading File...',
         31:'Unknown Error. Try uploading the JSON file again.',
+        32:'Swap between crystal and motif screen',
         cubic_primitive:'Cubic Simple',
         cubic_body_centered:'Cubic Body Centered',
         cubic_face_centered:'Cubic Face Centered',

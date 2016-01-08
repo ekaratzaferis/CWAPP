@@ -23,6 +23,7 @@ define([
     jColor
 ) 
 {
+    /* The module implements the Individual Atom Controller, which is a small panel for the atom customization. */ 
     
     // Local Variables //
     var boxWidth = 340;
@@ -91,7 +92,7 @@ define([
             closeBox();
         });
         html.buttons.color.spectrum({
-            color: "#ffffff",
+            color: "#000000",
             allowEmpty:true,
             chooseText: "Choose",
             cancelText: "Close",
@@ -132,6 +133,7 @@ define([
                         publish:{id:$atomID,opacity:$stringEditor.divide10(ui.value)}
                     }
                 });
+                // Update input field //
                 html.other.opacity.val(ui.value);
             }
         });
@@ -159,24 +161,27 @@ define([
             });
         });
         html.buttons.notes.on('click',function(){
+            // Switch to notes tab. Then, either create or focus the specific atom notes //
             $notesTab.moveToNote($atomID);
         });
         
-        // Add tooltip //
+        // Add tooltip on the sound icon //
         $tooltipGenerator.addOnHoverTooltip({target:'iacSound',placement:'top',message:"Move sound source to atom's center"});
         
-        // Highlight Buttons
+        // Highlight Buttons on hover //
         html.buttons.doll.find('a').hover(function(){html.buttons.doll.find('img').attr('src','Images/doll-hover.png');},function(){html.buttons.doll.find('img').attr('src','Images/doll.png');});
         html.buttons.notes.find('a').hover(function(){html.buttons.notes.find('img').attr('src','Images/notes-icon-purple.png');},function(){html.buttons.notes.find('img').attr('src','Images/notes-icon-white.png');});
         html.buttons.sound.find('a').hover(function(){html.buttons.sound.find('img').attr('src','Images/sound-icon-hover-purple.png');},function(){html.buttons.sound.find('img').attr('src','Images/sound-icon-hover.png');});
     };
     function changeLayout(mode){
+        // Single atom selection //
         if (mode === true){
             html.buttons.sound.show();
             html.buttons.notes.show();
             html.buttons.doll.show();
             html.other.symbol.show();
         }
+        // Multiple atom selection //
         else{
             html.buttons.sound.hide();
             html.buttons.notes.hide();
@@ -187,6 +192,7 @@ define([
         }
     };
     function closeBox(){
+        // Unfocus note if it's open //
         $html.notes.other.table.find('#'+$atomID).trigger('hide');
         $atomID = undefined;
         html.box.body.hide('slow');
@@ -204,7 +210,7 @@ define([
         }
         else single = argument.single;
         
-        // Atom ID //
+        // Atom ID + Box Title //
         if (single === true){
             if (_.isUndefined(argument.id)) {
                 closeBox();
@@ -283,6 +289,7 @@ define([
         // Apply layout
         changeLayout(single);
         
+        // Show Box //
         html.box.body.show('slow');
         boxOn = true;
         return true;
@@ -297,23 +304,28 @@ define([
         if (!(_.isUndefined(argument.y))) yCoord = argument.y;
         else return false;
         
+        // Chech if our box will fit in the canvas in the given position //
         var fitsCanvas = $interfaceResizer.fitsCanvas({x:xCoord,y:yCoord,width:boxWidth,height:boxHeight});
         if (fitsCanvas === true) {
             html.box.body.css('left',xCoord);
             html.box.body.css('top',yCoord);
         }
         else if (fitsCanvas === 'width') {
+            // Check again //
             fitsCanvas = $interfaceResizer.fitsCanvas({x:xCoord-boxWidth,y:yCoord,width:boxWidth,height:boxHeight});
+            // Slide box top and left [doesn't fit horizontally and vertically] //
             if (fitsCanvas === 'height') {
                 html.box.body.css('left',xCoord-boxWidth);
                 html.box.body.css('top',yCoord-boxHeight);
             }
+            // Slide box to the left [doesn't fit horizontally] //
             else {
                 html.box.body.css('left',xCoord-boxWidth);
                 html.box.body.css('top',yCoord);
             }
         }
         else if (fitsCanvas === 'height') { 
+            // Slide box to the top [doesn't fit vertically] //
             html.box.body.css('left',xCoord);
             html.box.body.css('top',yCoord-boxHeight);
         }

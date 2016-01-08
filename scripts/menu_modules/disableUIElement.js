@@ -21,16 +21,14 @@ define([
     jColor
 ) 
 { 
+    /* This module is used in order to enable/disable certain HTML elements, like inputs,buttons etc. */
     
-    // Module References
-    var $messages = undefined;
+    // Module References //
     var html = undefined;
     
-    // Contructor //
+    // Functions //
     function disableUIElement(argument) {
         // Acquire Module References
-        if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
-        else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
     };
@@ -127,16 +125,16 @@ define([
                 
             // PnD Tab //
             case 'planeName':{
-                html.pnd.planeParameters.name.prop('disabled', value);
+                html.pnd.planeParameters.planeName.prop('disabled', value);
                 break;
             }
             case 'planeColor':{
-                if (value === true) html.pnd.planeParameters.color.spectrum('disable');
-                else html.pnd.planeParameters.color.spectrum('enable');
+                if (value === true) html.pnd.planeParameters.planeColor.spectrum('disable');
+                else html.pnd.planeParameters.planeColor.spectrum('enable');
                 break;
             }
             case 'planeOpacity':{
-                html.pnd.planeParameters.opacity.prop('disabled', value);
+                html.pnd.planeParameters.planeOpacity.prop('disabled', value);
                 break;
             }
             case 'millerH':{
@@ -156,16 +154,16 @@ define([
                 break;
             }
             case 'directionName':{
-                html.pnd.directionParameters.name.prop('disabled', value);
+                html.pnd.directionParameters.directionName.prop('disabled', value);
                 break;
             }
             case 'directionColor':{
-                if (value === true) html.pnd.directionParameters.color.spectrum('disable');
-                else html.pnd.directionParameters.color.spectrum('enable');
+                if (value === true) html.pnd.directionParameters.directionColor.spectrum('disable');
+                else html.pnd.directionParameters.directionColor.spectrum('enable');
                 break;
             }
             case 'dirRadius':{
-                html.pnd.directionParameters.radius.prop('disabled', value);
+                html.pnd.directionParameters.dirRadius.prop('disabled', value);
                 break;
             }
             case 'millerU':{
@@ -185,38 +183,38 @@ define([
                 break;
             }
             case 'savePlane':{
-                if (value === true) html.pnd.planeButtons.save.addClass('disabled');
-                else html.pnd.planeButtons.save.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.savePlane.addClass('disabled');
+                else html.pnd.planeButtons.savePlane.removeClass('disabled');
                 break;
             }
             case 'deletePlane':{
-                if (value === true) html.pnd.planeButtons.delete.addClass('disabled');
-                else html.pnd.planeButtons.delete.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.deletePlane.addClass('disabled');
+                else html.pnd.planeButtons.deletePlane.removeClass('disabled');
                 break;
             }
             case 'newPlane':{
-                if (value === true) html.pnd.planeButtons.new.addClass('disabled');
-                else html.pnd.planeButtons.new.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.newPlane.addClass('disabled');
+                else html.pnd.planeButtons.newPlane.removeClass('disabled');
                 break;
             }
             case 'parallelPlane':{
-                if (value === true) html.pnd.planeButtons.parallel.addClass('disabled');
-                else html.pnd.planeButtons.parallel.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.parallelPlane.addClass('disabled');
+                else html.pnd.planeButtons.parallelPlane.removeClass('disabled');
                 break;
             }
             case 'saveDirection':{
-                if (value === true) html.pnd.directionButtons.save.addClass('disabled');
-                else html.pnd.directionButtons.save.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.saveDirection.addClass('disabled');
+                else html.pnd.directionButtons.saveDirection.removeClass('disabled');
                 break;
             }
             case 'deleteDirection':{
-                if (value === true) html.pnd.directionButtons.delete.addClass('disabled');
-                else html.pnd.directionButtons.delete.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.deleteDirection.addClass('disabled');
+                else html.pnd.directionButtons.deleteDirection.removeClass('disabled');
                 break;
             }
             case 'newDirection':{
-                if (value === true) html.pnd.directionButtons.new.addClass('disabled');
-                else html.pnd.directionButtons.new.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.newDirection.addClass('disabled');
+                else html.pnd.directionButtons.newDirection.removeClass('disabled');
                 break;
             }
                 
@@ -264,11 +262,11 @@ define([
                 break;
             }
             case 'rotAngleTheta':{
-                html.motif.rotatingAngles.rotAngleTheta.prop('disabled', value);
+                html.motif.rotatingAngles.combo.rotAngleTheta.prop('disabled', value);
                 break;
             }
             case 'rotAnglePhi':{
-                html.motif.rotatingAngles.rotAnglePhi.prop('disabled', value);
+                html.motif.rotatingAngles.combo.rotAnglePhi.prop('disabled', value);
                 break;
             }
             case 'atomOpacity':{
@@ -607,7 +605,20 @@ define([
             }
         };
     };
-    
+
+    // Module Interface //
+    /* This function is called by passing multiple objects, like:
+        {
+            element#1: {
+                value: true/false,
+                other: HTML selector [This is optional, see line 360]
+            },
+            element#2:{
+                ...
+            },
+            ...
+        }
+    */
     disableUIElement.prototype.disableElement = function(argument){
         if (Object.keys(argument).length <= 0) return false;
         else {
@@ -620,6 +631,7 @@ define([
             });
         }
     };
+    /* This functions restores some HTML elements to the state described by the data argument, which is a JSON parsed object. */
     disableUIElement.prototype.restoreUI = function(data){
         takeAction('latticePadlock',data.latticeTab.padlocks.lattice.disabled);
         takeAction('motifPadlock',data.latticeTab.padlocks.motif.disabled);
