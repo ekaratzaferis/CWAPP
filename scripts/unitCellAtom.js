@@ -15,9 +15,9 @@ define([
   AtomMaterialManager 
 ) { 
   var globGeometry = new THREE.SphereGeometry(1,32, 32);
-
+  
   function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
-     
+    
     var _this = this; 
     this.radius = radius;  
     this.material;
@@ -49,7 +49,7 @@ define([
       originalColor = color;
     }
   }; 
-  UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode,image) {
+  UnitCellAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, image) {
     var _this = this ;
     var wireMat; 
 

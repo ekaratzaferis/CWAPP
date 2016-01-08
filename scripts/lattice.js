@@ -71,7 +71,7 @@ define([
     //view
     this.viewBox = [];
     this.viewMode = 'crystalClassic'; 
-    this.crystalNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
+    this.crystalNeedsRecalculation = {'crystalSolidVoid' : false, 'crystalSubstracted' : false};
     this.cachedAtoms = [];
     // visualization
     this.renderingMode = 'realistic';
@@ -818,7 +818,7 @@ define([
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
 
-      if(this.crystalNeedsRecalculation.crustalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
+      if(this.crystalNeedsRecalculation.crystalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
         while(i < this.actualAtoms.length ){ 
           this.actualAtoms[i].setVisibility(false) ; 
           this.actualAtoms[i].subtractedForCache.object3d.visible = true;  
@@ -833,7 +833,7 @@ define([
         }
       }
       else{
-        this.crystalNeedsRecalculation.crustalSubstracted = false;
+        this.crystalNeedsRecalculation.crystalSubstracted = false;
         while(i < this.actualAtoms.length ) {
           this.actualAtoms[i].setVisibility(false) ;
           this.actualAtoms[i].subtractedSolidView(box, this.actualAtoms[i].object3d.position, true);  
@@ -1288,11 +1288,11 @@ define([
 
     var gridPoints = this.lattice.gridPoints;
     var usedGridOrigins = [];
-     
+      
     if (_.isUndefined(gridPoints) && (this.latticeName !== 'hexagonal')) { 
       return;
     }
-    
+     
     var parameters = this.parameters;
     var origin, g,destinationReference;
     var destination;
@@ -1418,8 +1418,7 @@ define([
     }); 
      
   }; 
-  var _times = {'a':0,'b':0,'c':0};
-   
+ 
   Lattice.prototype.updatePoints = function(callbacks) { 
     var spawnCounter, spawns = 0;
      
@@ -1439,7 +1438,7 @@ define([
     var parameters = this.parameters;
     var origin = lattice.originArray[0];
     var vector = lattice.vector;
-  
+     
     var limit = new THREE.Vector3(
       parameters.repeatX * vector.x + origin.x,
       parameters.repeatY * vector.y + origin.y,
@@ -1451,18 +1450,13 @@ define([
     var reference;
 
     var _this = this;
-
-    var aa = new Date(); 
  
     parameters.repeatX = parseInt(parameters.repeatX);
     parameters.repeatY = parseInt(parameters.repeatY);
     parameters.repeatZ = parseInt(parameters.repeatZ);
 
     spawnCounter = (parameters.repeatX +1) * (parameters.repeatY +1) * (parameters.repeatZ + 1);
-    
-    
-    _times['c'] = new Date();
-
+      
     if(this.latticeName !== 'hexagonal'){ 
       
       // the above concept of execution keeps the speed of execution high but also prevents the js thread to be idle processing only the above
@@ -1622,7 +1616,7 @@ define([
     
     this.resetPlaneToggles();
     var _this = this;
-     
+    
     if(_this.currentMotif.length === 0 ) return ;
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position; 
@@ -2059,15 +2053,15 @@ define([
       } 
     }     
   };
-  Lattice.prototype.planeParameterChange = function(arg) {
+  Lattice.prototype.planeParameterChange = function(arg, restore) {
 
     var checkParams = this.menu.getPlaneInputs();
     
-    if(checkParams.millerH.length === 0 || checkParams.millerK.length === 0 || checkParams.millerL.length === 0){ 
+    if((restore === undefined) && (checkParams.millerH.length === 0 || checkParams.millerK.length === 0 || checkParams.millerL.length === 0)){ 
       return;
     }
     else if(this.planeState.state === 'creating'){
-      this.planePreview('current');
+      this.planePreview('current', restore);
 
       PubSub.publish(events.PLANE_STATE,"editing");
       return; 
@@ -2193,36 +2187,25 @@ define([
     this.setGradeParameters(); 
   }; 
   Lattice.prototype.setGradeChoices = function(gradeChoices) { 
-     
+    var _this = this;
+
     if(!_.isUndefined(gradeChoices["faceCheckButton"])) {
      
-      this.gradeChoice.face = gradeChoices["faceCheckButton"];
+        this.gradeChoice.face = gradeChoices["faceCheckButton"];
 
-      if(this.gradeChoice.face == false){
         _.each(this.faces, function(face) {
-          face.setVisible(false);
+            face.setVisible(_this.gradeChoice.face);
         });
-      }
-      else{
-        _.each(this.faces, function(face) {
-          face.setVisible(true);
-       });
-      }
 
     };
 
     if(!_.isUndefined(gradeChoices["gridCheckButton"])) { 
-      this.gradeChoice.grid = gradeChoices["gridCheckButton"];
-      if(this.gradeChoice.grid == false){
+        this.gradeChoice.grid = gradeChoices["gridCheckButton"];
+       
         _.each(this.grids, function(grid) {
-          grid.grid.setVisible(false);
+          grid.grid.setVisible(_this.gradeChoice.grid);
         });
-      }
-      else{
-        _.each(this.grids, function(grid) {
-          grid.grid.setVisible(true);
-        });
-      } 
+       
     }; 
   };
 
@@ -2233,7 +2216,7 @@ define([
     var _this = this;
      
     if(_.isUndefined(_this.gradeParameters)) return;
-      
+     
     _.each(this.grids, function(grid) { 
       grid.grid.setRadius(_this.gradeParameters.radius);
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
@@ -2339,7 +2322,7 @@ define([
  
   Lattice.prototype.reCreateMillers = function() {
     var _this = this; 
-
+ 
     this.planesUnique = _.uniq(_this.millerPlanes, function(p) { return p.id; });
 
     for (var i = 0; i < this.millerPlanes.length; i++) {
@@ -2360,7 +2343,7 @@ define([
         parallel : plane.parallel,  
         interception : plane.interception  
       };    
-
+       
       this.createMillerPlane(params, false, true);   
     }
     
@@ -2429,7 +2412,7 @@ define([
 
   // planes
   Lattice.prototype.parallelPlane = function(arg) { 
-
+ 
     var id = arg.id;
     var visible = arg.parallel;
 
@@ -2668,9 +2651,7 @@ define([
         notvis++;
       }
     };
-
-    console.log('vis '+vis);
-    console.log('notvis '+notvis);
+ 
   };
   function identicalPoints(a,b){
 
@@ -2945,7 +2926,7 @@ define([
   } 
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
-
+ 
     var parameters = this.parameters ;
     var hInit = parseInt(millerParameters.millerH); 
     var kInit = parseInt(millerParameters.millerK); 
@@ -2968,12 +2949,12 @@ define([
     var planeNum = ((maxIndex) *2 - 1);
     var m = 1;
 
-    while(finished === false){
-      if(m > 10000) {
+    while(finished === false){  
+      if(m > 1000) {
         // infinite loop stopper
         finished = true;
       }
-
+       
       var visible;
       if(m === 1 || millerParameters.parallel === true){
         visible = true;
@@ -2981,7 +2962,7 @@ define([
       else{
         visible = false;
       }
-
+  
       var h = ( hInit !== 0 ) ? (1/hInit)*m : 0 ;  
       var k = ( kInit !== 0 ) ? (1/kInit)*m : 0 ;
       var l = ( lInit !== 0 ) ? (1/lInit)*m : 0 ;
@@ -3024,8 +3005,7 @@ define([
             points.push(0);
             points.push(0);
           }
-            
-          
+             
           if(points.length > 2){ 
             _.times(parameters.repeatX , function(_x) {
               _.times(parameters.repeatY , function(_y) {
@@ -3888,7 +3868,7 @@ define([
       } 
     );   
   }
-  Lattice.prototype.planePreview = function (which){ 
+  Lattice.prototype.planePreview = function (which, restore){ 
      
     var _this = this; 
  
@@ -3910,6 +3890,10 @@ define([
     };
     this.tempPlanes.splice(0);
     
+    if(restore !== undefined) {
+        return;
+    }
+
     if(this.planeState.editing !== '-' && this.planeState.editing !== which ){
        
       this.updatePlaneList(
@@ -3921,7 +3905,7 @@ define([
      
     this.createMillerPlane(params, true, false); 
   }; 
-  Lattice.prototype.submitPlane = function(millerParameters) {  
+  Lattice.prototype.submitPlane = function(millerParameters) {   
     if(
       ( millerParameters.millerH === "" || 
         millerParameters.millerK === "" || 
@@ -3934,7 +3918,7 @@ define([
     var _this = this ;
     var buttonClicked = millerParameters.button ;
     var planeID = "_"+millerParameters.millerH+""+millerParameters.millerK+""+millerParameters.millerL+"";
- 
+     
     if (this.planeState.state === "initial"){
       if( buttonClicked === "newPlane"){  
         this.updatePlaneList(
@@ -3957,7 +3941,7 @@ define([
         PubSub.publish(events.PLANE_STATE,"creating");
       }
     }
-    else if (_this.planeState.state === "creating"){
+    else if (this.planeState.state === "creating"){
       switch(buttonClicked) {  
         case "savePlane":
             
@@ -3981,7 +3965,7 @@ define([
           
       }
     }
-    else if (_this.planeState.state === "editing"){
+    else if (this.planeState.state === "editing"){
 
       switch(buttonClicked) {  
         case "savePlane": 
@@ -4129,6 +4113,7 @@ define([
       c.setLength(Math.abs(w/devider)); 
       
       a1.add(a2.add(a3.add(c)));
+
       new MillerVector(new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor, millerParameters.dirRadius) ;  
        
     }
@@ -4138,7 +4123,7 @@ define([
       u/=devider;
       v/=devider;
       w/=devider;  
- 
+    
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
           _.times(parameters.repeatZ , function(_z) {
@@ -4163,6 +4148,7 @@ define([
                 w : parseFloat(millerParameters.millerW),
                 directionColor : millerParameters.directionColor,
                 name : millerParameters.directionName,
+                dirRadius : millerParameters.dirRadius,
                 lastSaved : { 
                   visible: true, 
                   startPoint : startPoint , 
@@ -4194,6 +4180,7 @@ define([
                   w : parseFloat(millerParameters.millerW),
                   directionColor : millerParameters.directionColor,
                   name : millerParameters.directionName,
+                  dirRadius : millerParameters.dirRadius,
                   lastSaved : { 
                     visible: true, 
                     startPoint : startPoint , 
@@ -4215,6 +4202,7 @@ define([
                   startPoint : startPoint , 
                   endpointPoint : endpointPoint,
                   id : pid,
+                  dirRadius : millerParameters.dirRadius,
                   u : parseFloat(millerParameters.millerU),
                   v : parseFloat(millerParameters.millerV),
                   w : parseFloat(millerParameters.millerW),
@@ -4476,7 +4464,8 @@ define([
      
     this.createMillerDirection(params, true, false); 
   };  
-  Lattice.prototype.submitDirectional = function(millerParameters) {  
+  Lattice.prototype.submitDirectional = function(millerParameters) { 
+  console.log(millerParameters); 
     if(
       ( millerParameters.millerU === "" || 
         millerParameters.millerV === "" || 

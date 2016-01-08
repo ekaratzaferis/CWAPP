@@ -153,7 +153,7 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-     
+      
     // late feature
     if(this.newSphere !== undefined){
        
@@ -181,7 +181,7 @@ define([
     
     var radius = parseFloat(params.ionicValue);
      
-    var newId = "_"+produceUuid() ;
+    var newId = "_"+this.produceUuid() ;
     var p = new THREE.Vector3(0,0,0);
 
     if(this.isEmpty) {  
@@ -224,15 +224,7 @@ define([
       false,
       undefined,
       params.ionicIndex
-    );
-
-    /* PubSub.publish(
-      events.EDITOR_STATE,{
-        'state' : "creating", 
-        'atomPos' : new THREE.Vector3(p.x, p.y, p.z),
-        'atomColor' : params.atomColor
-      }
-    ); */ 
+    ); 
     
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
@@ -457,9 +449,7 @@ define([
     var xFactor = 1;
     var yFactor = 1;
     var zFactor = 1;
-     
-     console.log(param);
-     
+      
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
@@ -1730,21 +1720,18 @@ define([
     } ;
       
     return r;
-  }; 
+  };   
   Motifeditor.prototype.updateFixedDimensions = function (latticeParams) {
 
     if(!_.isUndefined(latticeParams.scaleX) ) { 
-      if(this.latticeName !== 'hexagonal'){
-        $("#fixedX").val(parseFloat(latticeParams.scaleX));
+      if(this.latticeName !== 'hexagonal'){ 
         this.cellParameters.scaleX = parseFloat(latticeParams.scaleX) ; 
       }
     } 
-    if(!_.isUndefined(latticeParams.scaleY) ) {
-      $("#fixedY").val(parseFloat(latticeParams.scaleY));
+    if(!_.isUndefined(latticeParams.scaleY) ) { 
       this.cellParameters.scaleY = parseFloat(latticeParams.scaleY) ; 
     }
-    if(!_.isUndefined(latticeParams.scaleZ) ) {
-      $("#fixedZ").val(parseFloat(latticeParams.scaleZ));
+    if(!_.isUndefined(latticeParams.scaleZ) ) { 
       this.cellParameters.scaleZ = parseFloat(latticeParams.scaleZ) ; 
     }
   };
@@ -2004,7 +1991,7 @@ define([
     }
   }; 
   Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
-
+ 
     var _this = this ;  
     if(action === 'delete'){
        this.menu.editSavedAtom({
@@ -2027,7 +2014,7 @@ define([
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-     
+        
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -3103,8 +3090,7 @@ define([
         case "base":  
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-
+              _.times(2 , function(_z) { 
                 identity = "_"+_x+_y+_z; 
                 _this.unitCellAtoms.push(
                   createHelperObj(
@@ -3115,8 +3101,7 @@ define([
                     pos.y + _this.unitCellPositions[identity].position.y, 
                     pos.z + _this.unitCellPositions[identity].position.z
                   )
-                );
-
+                ); 
               });
             });
           }); 
@@ -3583,26 +3568,28 @@ define([
       }
     };  
     
-    // autosave feature
-    this.motifsAtoms.push(this.newSphere); 
-  
-    this.updateAtomList(
-      pos, 
-      this.newSphere.getID(), 
-      this.newSphere.getRadius(), 
-      this.newSphere.elementName,
-      'save',
-      'bg-light-gray',
-      this.newSphere.tangentParent,
-      this.newSphere.color,
-      this.newSphere.ionicIndex
-    );
-    PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
-    this.lastSphereAdded = this.newSphere ;
-    this.newSphere.blinkMode(false); 
-    this.newSphere = undefined ;
-    this.dragMode = false; 
-    // end
+    if(this.newSphere !== undefined){ 
+      // autosave feature
+      this.motifsAtoms.push(this.newSphere); 
+      
+      this.updateAtomList(
+        pos, 
+        this.newSphere.getID(), 
+        this.newSphere.getRadius(), 
+        this.newSphere.elementName,
+        'save',
+        'bg-light-gray',
+        this.newSphere.tangentParent,
+        this.newSphere.color,
+        this.newSphere.ionicIndex
+      );
+      PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
+      this.lastSphereAdded = this.newSphere ;
+      this.newSphere.blinkMode(false); 
+      this.newSphere = undefined ;
+      this.dragMode = false; 
+      // end
+    }
 
     this.createAdditionalAtoms();
   }; 
@@ -5845,7 +5832,11 @@ define([
     var _this = this, i = 0;   
     this.padlock = !(arg.padlock);
     this.globalTangency = !(arg.padlock);
-      
+    
+    if(restore !== undefined){
+      return;
+    }
+
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');
@@ -6497,9 +6488,12 @@ define([
 
   var uuid = -1;
 
-  function produceUuid () {
-    uuid++
-    return uuid;
+  Motifeditor.prototype.produceUuid = function(reset) {
+    if(reset !== undefined){
+      uuid = -1;
+      return;
+    }
+    return uuid++;
   }
   THREE.ShaderTypes = { 
     'phongDiffuse' : {

@@ -43,8 +43,7 @@ define([
     } 
   };
 
-  Sound.prototype.changeVolume = function(arg){ 
-     
+  Sound.prototype.changeVolume = function(arg){  
     if(arg.sound){
       this.universalGainNode.gain.value = parseFloat(arg.sound)/100;
     }
@@ -120,7 +119,7 @@ define([
   };
   Sound.prototype.switcher = function(start) {
     
-    if(this.procced && this.buffers.length === 0){  
+    if(this.procced && this.buffers.length === 0 && start === true){  
       for (var i = mp3names.length - 1; i >= 0; i--) {
         this.loadSamples(mp3names[i]);
       }; 
@@ -128,7 +127,7 @@ define([
 
     var _this = this ;
 
-    if(start){
+    if(start === true){
       this.mute = false ; 
       this.crystalHold = setInterval( function() { 
         var centroid = _this.soundSourcePos(); 

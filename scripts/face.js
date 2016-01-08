@@ -11,7 +11,7 @@ define([
   function Face(a,b,c,d, _opacity, _color, visibility, e,f) {
     var opacity = _opacity;
     var color = _color; 
-
+     
     var vertices = [];
     var faces = [];
 
@@ -43,7 +43,9 @@ define([
 
     geom.mergeVertices(); 
     
-    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( {  /* depthWrite: false, depthTest: false, */ side: THREE.DoubleSide, color: ("#"+color),opacity:opacity/10,  transparent: true } ) );
+    color = (color[0] === '#') ? color : '#'+color ;
+    
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( {  /* depthWrite: false, depthTest: false, */ side: THREE.DoubleSide, color:  color , opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     mesh.name = 'face' ;
     mesh.renderOrder = 2;  
@@ -61,10 +63,16 @@ define([
     this.object3d.material.opacity= opacity/10; 
   };
   Face.prototype.setColor = function(color) {
+    
     if(_.isUndefined(color)) return;
     this.color = color;
     this.object3d.material.needsUpdate = true;
-    this.object3d.material.color.setHex( "0x"+color ); 
+    if(color[0] === '#'){
+      this.object3d.material.color.set( color );
+    }
+    else{
+      this.object3d.material.color.setHex( color );
+    }
   }; 
   Face.prototype.destroy = function() {
     Explorer.remove(this);

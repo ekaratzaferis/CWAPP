@@ -314,7 +314,7 @@ define([
 
         var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
         var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
-        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
+        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'},"angles" : { "alpha" : '+this.motifeditor.cellParameters.alpha+', "beta" :'+this.motifeditor.cellParameters.beta+', "gamma" : '+this.motifeditor.cellParameters.gamma+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
         var newSphere = [];
         /*
@@ -423,6 +423,21 @@ define([
 
             motif.push('",');
 
+            motif.push('"tangentParent" : "');
+            motif.push(atom.tangentParent );
+
+            motif.push('",');
+            
+            motif.push('"ionicIndex" : "');
+            motif.push(atom.ionicIndex );
+
+            motif.push('",');
+
+            motif.push('"ionicValue" : "');
+            motif.push(atom.ionicValue );
+
+            motif.push('",');
+
             motif.push('"color" : "');
             motif.push(atom.color );
 
@@ -468,7 +483,8 @@ define([
         var directionsUnique = _.uniq(_this.lattice.millerDirections, function(d) { return d.id; }); 
 
         _.each(directionsUnique, function(directional ) {
-            if(counter>0) directions.push(', ');
+            
+            if(counter>0) directions.push(',');
             counter++;
 
             directions.push('{"visible" : ');
@@ -477,13 +493,13 @@ define([
             directions.push(',');
 
             directions.push('"id" : "');
-
+          
             directions.push(directional.id );
 
             directions.push('",');
 
             directions.push('"startPoint" : { "x" : '+directional.startPoint.x+', "y" :'+directional.startPoint.y+', "z" : '+directional.startPoint.z+'},'  );
-
+             
             directions.push('"endPoint" : { "x" : '+directional.endpointPoint.x+', "y" :'+directional.endpointPoint.y+', "z" : '+directional.endpointPoint.z+'}'  );
 
             directions.push(',');
@@ -495,6 +511,11 @@ define([
 
             directions.push('"color" : "');
             directions.push(directional.directionColor );
+
+            directions.push('",');
+
+            directions.push('"radius" : "');
+            directions.push(directional.dirRadius );
 
             directions.push('",');
 
@@ -516,7 +537,7 @@ define([
         });
 
         directions.push('], "planes":[ ');
-
+        
         counter = 0;
 
         var planesIDs = [];
@@ -557,6 +578,11 @@ define([
 
             planes.push('"opacity" : ');
             planes.push(plane.planeOpacity );
+
+            planes.push(',');
+
+            planes.push('"parallel" : ');
+            planes.push(plane.parallel );
 
             planes.push(',');
 
