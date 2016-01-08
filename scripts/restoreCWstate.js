@@ -19,7 +19,7 @@ define([
   AtomSphere
 ) {
   
-  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine )  {  
+  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes )  {  
     this.menu = menu ;
     this.lattice = lattice ;
     this.motifEditor = motifEditor ;
@@ -35,7 +35,9 @@ define([
     this.hudArrows = hudArrows ;
     this.motifRenderer = motifRenderer ;
     this.unitCellScene = unitCellScene ;
-    this.soundMachine = soundMachine
+    this.soundMachine = soundMachine;
+    this.renderingModes = renderingModes;
+    this.atomMaterialManager = atomMaterialManager;
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
@@ -44,14 +46,13 @@ define([
 
     this.globalReset();
     this.menu.restore(cwObj);
-    
+
     this.cwObj = cwObj;  
 
     this.configureCameraSettings();
-    this.configureAxisSettings(); 
-    this.configureGradeSettings(); 
-    this.configureVisualizationSettings();
 
+    this.configureGradeSettings(); 
+     
     this.soundMachine.switcher(this.cwObj.appUI.visualTab.visualTools.sound.state);
     this.soundMachine.changeVolume(this.cwObj.appUI.visualTab.visualTools.sound.volume);
   
@@ -78,6 +79,8 @@ define([
         this.lattice.recreateMotif 
       ]);   
     }
+
+    this.configureVisualizationSettings();
      
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
@@ -120,8 +123,8 @@ define([
         grid.grid.destroy(); 
       }); 
       _.each(this.lattice.faces, function(face, reference) {
-          face.destroy();
-        });
+        face.destroy();
+      });
 
       // reset global variables
 
@@ -288,9 +291,48 @@ define([
   };
   RestoreCWstate.prototype.configureVisualizationSettings = function() {
     var visualTab = this.cwObj.appUI.visualTab ; 
+    var crystalCam = this.orbitCrystal.camera ;
+    var cellCamera = this.orbitUnitCell.camera ; 
+    // toggles
 
+    var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
+
+    this.lattice.atomToggle(toggles.atomToggle);
+    this.lattice.togglePoints(toggles.latticePoints);
+    this.lattice.planeToggle(toggles.planes);
+    this.lattice.directionToggle(toggles.directions);
+    this.lattice.toggleRadius(toggles.atomRadiusSlider);
+    this.atomMaterialManager.setLabels(toggles.labelToggle);
+
+    this.crystalScene.axisMode({xyzAxes : toggles.xyzAxes, abcAxes : toggles.abcAxes});
+    
+    for (var prop in visualTab.visualParameters.renderizationMode) {
+      var mode = visualTab.visualParameters.renderizationMode[prop];
+      if( mode === true){
+        this.lattice.renderingModeChange({mode : mode});
+        this.motifEditor.renderingModeChange({mode : mode});
+     
+        this.renderingModes.setMode({mode : mode}); 
+
+        if(mode === 'toon'){
+          this.crystalRenderer.setGamma(true);
+          this.unitCellRenderer.setGamma(true);
+        }
+        else{
+          this.crystalRenderer.setGamma(false);
+          this.unitCellRenderer.setGamma(false);
+        }
+      }
+    }
+     
     this.crystalScene.fogActive = visualTab.visualTools.fog.state ;
-      
+    
+    
+    for (var i = this.lattice.planeName - 1; i >= 0; i--) {
+      Things[i]
+    };
+
+
     this.crystalScene.setFogProperties({
       "fogDensity" : visualTab.visualTools.fog.density,
       "fogColor" : visualTab.visualTools.fog.color,
@@ -315,6 +357,8 @@ define([
     this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph); 
+ 
+
   };
   RestoreCWstate.prototype.configureMotifEditorSettings = function() {
 
@@ -657,12 +701,7 @@ define([
       'gamma': params.latticeParams.lattice.defaults.gamma
     }; 
        
-  };  
-  RestoreCWstate.prototype.configureAxisSettings = function() { 
- 
-    this.crystalScene.axisMode({'xyzAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.xyzAxes}); 
-    this.crystalScene.axisMode({'abcAxes' : this.cwObj.appUI.menuRibbon.toggleButtons.abcAxes});  
-  }; 
+  };   
   RestoreCWstate.prototype.configureCameraSettings = function() { 
 
     var settings = this.cwObj.system.cameraSettings ;

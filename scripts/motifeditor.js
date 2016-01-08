@@ -1991,8 +1991,7 @@ define([
     }
   }; 
   Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
-    console.log(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) ;
-
+ 
     var _this = this ;  
     if(action === 'delete'){
        this.menu.editSavedAtom({
@@ -2015,18 +2014,7 @@ define([
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-      
-      console.log({
-        'action':action,
-        'id':id, 
-        'visible':true,
-        'elementCode':name.toLowerCase(),
-        'elementName':name,
-        'atomColor':atomColor,
-        'atomPos': atomPos,
-        'ionicIndex': ionicIndex
-      });
-
+        
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
