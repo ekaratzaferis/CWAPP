@@ -91,7 +91,7 @@ define([
             icheck: jQuery('input.icheckbox, input.iradio'),
             spinner: jQuery('.spinner'),
             tangency: jQuery('#tangency'),
-            selected: jQuery('#select_lattice')
+            selected: jQuery('#selected_lattice')
         };
         
         // Motif Tab //
