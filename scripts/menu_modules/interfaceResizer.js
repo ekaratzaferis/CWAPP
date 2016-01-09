@@ -17,6 +17,15 @@ define([
     customScrollbar
 ) 
 {
+    
+    /* This module takes care of: 
+        - resizing/readjustment of the app's menu 
+        - the canvas HTML elements 
+        - creating the scrollbars 
+        - adding the highlight effect on UI elements
+        - the progress bar
+    */
+    
     // Variables //
     var canvasHeight = undefined;
     var canvasWidth = undefined;
@@ -26,45 +35,17 @@ define([
     var $animating = undefined;
     var autoZoom = false;
     
-    // Canvases //
-    var $screenWrapper = jQuery('#screenWrapper');
-    var $appContainer = jQuery("#app-container");
-    
+    // How many pixels does the menu occupy on screen //
     var $menuWidthOpen;
     var $menuWidthClose;
+    // How many pixels is the menu shifted when it's toggled //
     var $menuShiftRight;
     var $menuShiftLeft;
     
-    // Selectors //
-    var $menuToggler = jQuery('#controls_toggler');
-    var $menu = jQuery('#main_controls_container');
-    var $xLabel = jQuery('#xLabel');
-    var $yLabel = jQuery('#yLabel');
-    var $zLabel = jQuery('#zLabel');
-    var $aLabel = jQuery('#aLabel');
-    var $bLabel = jQuery('#bLabel');
-    var $cLabel = jQuery('#cLabel');
-    var $unitCellRenderer = jQuery('#unitCellRenderer');
-    var $unitCellRendererMouse = jQuery('#unitCellRenderer');
-    var $appLogo = jQuery('#appLogo');
-    var $progressBarWrapper = jQuery('#progressBarWrapper');
-    var $progressBar = jQuery('#progressBar');
-    var $scrollBars = jQuery('.custom_scrollbar');
-    
     // Module References //
     var $tooltipGenerator = undefined;
-    
-    //Grouping //
-    var canvasXYZLabels = {
-        xLabel: jQuery('#xLabel'), 
-        yLabel: jQuery('#yLabel'),  
-        zLabel: jQuery('#zLabel')
-    }
-    var canvasABCLabels = {
-        aLabel: jQuery('#aLabel'), 
-        bLabel: jQuery('#bLabel'),  
-        cLabel: jQuery('#cLabel')
-    }
+    var $messages = undefined;
+    var html = undefined;
     
     // Contructor //
     function interfaceResizer(argument) {
@@ -78,12 +59,16 @@ define([
         // Acquire Module References //
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
         else return false;
+        if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
+        else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         // Create scrollbars //
-        $scrollBars.mCustomScrollbar();
+        html.interface.screen.scrollBars.mCustomScrollbar();
         
-        // Cancel Animation //
-        jQuery('body').on('click', function(){
+        // Cancel Animation (Highlight Effect) //
+        html.interface.screen.body.on('click', function(){
             if (!(_.isUndefined($animating))){
                 if ($animating.hasClass('stop')){
                     $animating.removeClass('highlight');
@@ -96,24 +81,25 @@ define([
             }
         });
         
-        // Swap Button //
+        // Add tooltip on the swap button //
         $tooltipGenerator.addOnHoverTooltip({
             target: 'swapButton',
-            message: 'Swap between crystal and motif screen',
+            message: $messages.getMessage(32),
             placement: 'left'
         });
         
         // Window //
         jQuery(window).ready(function(){
-            $progressBarWrapper.hide(2000);
-            jQuery('body').css('background-color','black');
-            $screenWrapper.show();
-            $menu.show();
+            // Hide Progress bar and then show canvas and menu //
+            html.interface.progress.wrapper.hide(2000);
+            html.interface.screen.body.css('background-color','black');
+            html.interface.screen.wrapper.show();
+            html.interface.sidebar.menu.show();
         });
         jQuery(window).resize(function() { resizeScene(); });
         jQuery(window).on('change update', function(){
             init_dimensions();
-            jQuery('#bravais_lattice_modal').on('shown.bs.modal', function()
+            html.interface.screen.bravaisModal.on('shown.bs.modal', function()
             {
                 init_dimensions();
             });
@@ -123,17 +109,19 @@ define([
             resizeScene();
         });
 
-        // Progress Bar //
+        // Strech Progress Bar all over the screen //
         refreshDimensions();
-        $progressBarWrapper.width(screenWidth);
-        $progressBarWrapper.height(screenHeight);        
+        html.interface.progress.wrapper.width(screenWidth);
+        html.interface.progress.wrapper.height(screenHeight);        
     };
+    // Refresh canvas and screen width/height //
     function refreshDimensions(){
         screenHeight = jQuery(window).height();
         screenWidth = jQuery(window).width();
-        canvasHeight = jQuery('#app-container').height();
-        canvasWidth = jQuery('#app-container').width();   
+        canvasHeight = html.interface.screen.appContainer.height();
+        canvasWidth = html.interface.screen.appContainer.width();   
     };
+    // Re-apply match-height on certain UI elements // 
     function init_dimensions(){
         jQuery('.mh_controls').matchHeight();
         jQuery('.mh_pnd_para_box').matchHeight();
@@ -142,13 +130,14 @@ define([
         jQuery('.mh_bravais_lattice_block').find('.bravais-lattice-block').matchHeight({byRow: false});
         jQuery('.mh_bravais_lattice_block').find('.block-image').matchHeight({byRow: false});
     };
+    // Re-adjust canvases + HTML elements //
     function resizeScene(){
         // Calculate current screen size.
         refreshDimensions();
         
-        // Calculate canvas resizing amount.
+        // Calculate canvas resizing amount and adjust menu if auto-zoom is enabled //
         var x = 0;
-        if ($menu.hasClass('controls-open')) {
+        if (html.interface.sidebar.menu.hasClass('controls-open')) {
             adjustMenu(true);
             x = $menuWidthOpen;
         }
@@ -158,77 +147,82 @@ define([
         }
 
         // Resize canvasses and slowly fade in.
-        $screenWrapper.width(screenWidth-x);
-        $screenWrapper.fadeIn(800);
-        $appContainer.width(screenWidth-x);
-        $progressBarWrapper.width(screenWidth);
-        $appLogo.width(screenWidth-x);
-        jQuery('.main-controls-inner').height(screenHeight);
+        html.interface.screen.wrapper.width(screenWidth-x);
+        html.interface.screen.wrapper.fadeIn(800);
+        html.interface.screen.appContainer.width(screenWidth-x);
+        html.interface.progress.wrapper.width(screenWidth);
+        html.interface.canvas.appLogo.width(screenWidth-x);
+        html.interface.sidebar.menuInner.height(screenHeight);
         
         // Resize Atom Radius Slider
-        jQuery('#atomRadiusSliderContainer').width((screenWidth-x)*0.18);
-        jQuery('#atomRadiusSliderContainer').css('left',(screenWidth-x)*0.08);
+        html.interface.canvas.atomRadiusSlider.width((screenWidth-x)*0.18);
+        html.interface.canvas.atomRadiusSlider.css('left',(screenWidth-x)*0.08);
 
         // Resize labels
-        _.each(canvasXYZLabels, function($parameter,k){
+        _.each(html.interface.canvas.xyz, function($parameter,k){
             $parameter.css('width',screenWidth*0.015); 
             $parameter.css('height',screenWidth*0.015); 
         });
-        _.each(canvasABCLabels, function($parameter,k){
+        _.each(html.interface.canvas.abc, function($parameter,k){
             $parameter.css('width',screenWidth*0.015); 
             $parameter.css('height',screenWidth*0.015); 
         });
 
+        // Render unit cell viewport //
         if ($viewport === true) {
-            $unitCellRenderer.width($appContainer.width()/5);
-            $unitCellRendererMouse.width($appContainer.width()/5);
-            $unitCellRenderer.height(screenHeight/5);
-            $unitCellRendererMouse.height(screenHeight/5);
+            html.interface.canvas.unitCellRenderer.width($appContainer.width()/5);
+            html.interface.canvas.unitCellRendererMouse.width($appContainer.width()/5);
+            html.interface.canvas.unitCellRenderer.height(screenHeight/5);
+            html.interface.canvas.unitCellRendererMouse.height(screenHeight/5);
         }
     };
+    // Resize Menu (zoom in/out) //
     function transformMenu(percentage,open){
-        jQuery('.main-controls-container').css('-webkit-transform','scale('+percentage+')');
-        jQuery('.main-controls-container').css('-webkit-transform-origin','0 0');
-        jQuery('.main-controls-container').css('transform','scale('+percentage+')');
-        jQuery('.main-controls-container').css('transform-origin','0 0');
-        var elem = jQuery(".main-controls-container"), scaledHeight = elem[0].getBoundingClientRect().height;
+        // Transform HTML //
+        html.interface.sidebar.menuContainer.css('-webkit-transform','scale('+percentage+')');
+        html.interface.sidebar.menuContainer.css('-webkit-transform-origin','0 0');
+        html.interface.sidebar.menuContainer.css('transform','scale('+percentage+')');
+        html.interface.sidebar.menuContainer.css('transform-origin','0 0');
+        // Update scrollbar //
+        var elem = html.interface.sidebar.menuContainer, scaledHeight = elem[0].getBoundingClientRect().height;
         elem.parents(".mCSB_container").css({
             "height": elem.outerHeight()!==scaledHeight ? scaledHeight : "auto"
         }); 
-        jQuery('body').mCustomScrollbar('update');
+        html.interface.screen.body.mCustomScrollbar('update');
+        // Calculate key values //
         switch(percentage){
             case 0.7:
                 $menuWidthOpen = 370;
                 $menuWidthClose = 78.3;
                 $menuShiftRight = -442;
                 $menuShiftLeft = -150;
-                if(open === true) jQuery('.main-controls-container').css('right','-150px');
+                if(open === true) html.interface.sidebar.menuContainer.css('right','-150px');
                 break;
             case 0.8:
                 $menuWidthOpen = 420;
                 $menuWidthClose = 86.6;
                 $menuShiftRight = -434;
                 $menuShiftLeft = -100;
-                if(open === true)  jQuery('.main-controls-container').css('right','-100px');
+                if(open === true)  html.interface.sidebar.menuContainer.css('right','-100px');
                 break;
             case 0.9:
                 $menuWidthOpen = 470;
                 $menuWidthClose = 94.9;
                 $menuShiftRight = -427;
                 $menuShiftLeft = -50;
-                if(open === true) jQuery('.main-controls-container').css('right','-50px');
+                if(open === true) html.interface.sidebar.menuContainer.css('right','-50px');
                 break;
             case 1:
                 $menuWidthOpen = 520;
                 $menuWidthClose = 103;
                 $menuShiftRight = -417;
                 $menuShiftLeft = 0;
-                if(open === true) jQuery('.main-controls-container').css('right','0px');
+                if(open === true) html.interface.sidebar.menuContainer.css('right','0px');
                 break;
         };
     };
+    // Choose a zoom value depending on the current screen width //
     function adjustMenu(open){
-        // Menu Zoom //
         if (autoZoom === true){
             var zoom = 1;
             if (screenWidth > 1300) zoom = 1;
@@ -239,115 +233,132 @@ define([
         }   
     };
     
+    // Module Interface //
+    // Transforms Menu (zoom in/out) //
     interfaceResizer.prototype.transformMenu = function(percentage){
         transformMenu(percentage,true);
+        // Force Resize //
         window.dispatchEvent(new Event('resize'));
     };
+    // Transforms any HTML element //
     interfaceResizer.prototype.transform = function(argument){
         argument.selector.css('-webkit-transform','scale('+argument.percentage+')');
         argument.selector.css('-webkit-transform-origin','0 0');
         argument.selector.css('transform','scale('+argument.percentage+')');
         argument.selector.css('transform-origin','0 0');
     };
+    // Checks if an HTML element fits inside the canvas //
     interfaceResizer.prototype.fitsCanvas = function(argument){
         refreshDimensions();
         if ( (argument.x + argument.width) > canvasWidth ) return 'width';
         if ( (argument.y + argument.height) > canvasHeight ) return 'height';
         return true;
     };
+    // Checks if an HTML element fits inside the screen //
     interfaceResizer.prototype.fitsScreen = function(argument){
         refreshDimensions();
         if ( (argument.x + argument.width) > screenWidth ) return 'width';
         if ( (argument.y + argument.height) > screeHeight ) return 'height';
         return false;
     };
+    // Slides Menu to the right //
     interfaceResizer.prototype.closeMenu = function(){
-        $menuToggler.find('.img-close').fadeOut('fast', function()
+        html.interface.sidebar.toggler.find('.img-close').fadeOut('fast', function()
         {
-            $menuToggler.find('.img-open').fadeIn('fast')
+            html.interface.sidebar.toggler.find('.img-open').fadeIn('fast')
         });
-        $screenWrapper.fadeOut('slow');
-        $menu.animate({'right': $menuShiftRight}, 500, function()
+        html.interface.screen.wrapper.fadeOut('slow');
+        html.interface.sidebar.menu.animate({'right': $menuShiftRight}, 500, function()
         {
-            $menu.removeClass('controls-open');
-            $menu.addClass('controls-close');
+            html.interface.sidebar.menu.removeClass('controls-open');
+            html.interface.sidebar.menu.addClass('controls-close');
             window.dispatchEvent(new Event('resize'));
         });
     };
+    // Slide Menu to the left //
     interfaceResizer.prototype.openMenu = function(tab){
         if( !( tab.hasClass('toggle_menu') ) ){
             if( !( tab.parent().hasClass('disabled') ) ){
-                $menuToggler.find('.img-open').fadeOut('fast', function()
+                html.interface.sidebar.toggler.find('.img-open').fadeOut('fast', function()
                 {
-                    $menuToggler.find('.img-close').fadeIn('fast')
+                    html.interface.sidebar.toggler.find('.img-close').fadeIn('fast')
                 });
-                if (! ($menu.hasClass('controls-open')) ) {
-                    $screenWrapper.fadeOut('slow');
-                    $menu.animate({'right': $menuShiftLeft}, 500, function()
+                if (! (html.interface.sidebar.menu.hasClass('controls-open')) ) {
+                    html.interface.screen.wrapper.fadeOut('slow');
+                    html.interface.sidebar.menu.animate({'right': $menuShiftLeft}, 500, function()
                     {
-                        $menu.removeClass('controls-close');
-                        $menu.addClass('controls-open');
+                        html.interface.sidebar.menu.removeClass('controls-close');
+                        html.interface.sidebar.menu.addClass('controls-open');
                         window.dispatchEvent(new Event('resize'));
                     });
                 }
             }
         }
     };
+    // Hide/Show xyz labels //
     interfaceResizer.prototype.showCanvasXYZLabels = function(state){
-        if (state === false) _.each(canvasXYZLabels, function($parameter,k){ $parameter.addClass('hiddenLabel'); });
-        else _.each(canvasXYZLabels, function($parameter,k){ $parameter.removeClass('hiddenLabel'); });
+        if (state === false) _.each(html.interface.canvas.xyz, function($parameter,k){ $parameter.addClass('hiddenLabel'); });
+        else _.each(html.interface.canvas.xyz, function($parameter,k){ $parameter.removeClass('hiddenLabel'); });
     };
+    // Hide/Show abc labels //
     interfaceResizer.prototype.showCanvasABCLabels = function(state){
-        if (state === false) _.each(canvasABCLabels, function($parameter,k){ $parameter.addClass('hiddenLabel'); });
-        else _.each(canvasABCLabels, function($parameter,k){ $parameter.removeClass('hiddenLabel'); });
+        if (state === false) _.each(html.interface.canvas.abc, function($parameter,k){ $parameter.addClass('hiddenLabel'); });
+        else _.each(html.interface.canvas.abc, function($parameter,k){ $parameter.removeClass('hiddenLabel'); });
     };
+    // Hide/Show Unit Cell Viewport //
     interfaceResizer.prototype.viewport = function(state){
         $viewport = state;
     };
+    // Reset and show Progress Bar //
     interfaceResizer.prototype.resetProgressBar = function(title) {
-        $progressBarWrapper.find('.progressLabel').text(title);
-        $progressBarWrapper.show();
+        html.interface.progress.wrapper.find('.progressLabel').text(title);
+        html.interface.progress.wrapper.show();
     };
+    // Hide Progress Bar //
     interfaceResizer.prototype.progressBarFinish = function(){
-        $progressBarWrapper.fadeOut('slow');
+        html.interface.progress.wrapper.fadeOut('slow');
     };
+    // Highlight HTML element (creates a white pulse around it) //
     interfaceResizer.prototype.highlightElement = function(argument){
         jQuery('#'+argument.id).addClass('highlight');
         $animating = jQuery('#'+argument.id);
     };
+    // Pick new label position inside the canvas //
     interfaceResizer.prototype.moveLabel = function(argument){
-        var x = argument['xCoord'] - ( parseFloat($xLabel.css('width')) / 2);
-        var y = argument['yCoord'] - ( parseFloat($xLabel.css('height')) / 2);
+        var x = argument['xCoord'] - ( parseFloat(html.interface.canvas.xyz.xLabel.css('width')) / 2);
+        var y = argument['yCoord'] - ( parseFloat(html.interface.canvas.xyz.xLabel.css('height')) / 2);
         switch(argument['label']){
             case 'x':
-                $xLabel.css('left',x);
-                $xLabel.css('top',y);
+                html.interface.canvas.xyz.xLabel.css('left',x);
+                html.interface.canvas.xyz.xLabel.css('top',y);
                 break;
             case 'y':
-                $yLabel.css('left',x);
-                $yLabel.css('top',y);
+                html.interface.canvas.xyz.yLabel.css('left',x);
+                html.interface.canvas.xyz.yLabel.css('top',y);
                 break;
             case 'z':
-                $zLabel.css('left',x);
-                $zLabel.css('top',y);
+                html.interface.canvas.xyz.zLabel.css('left',x);
+                html.interface.canvas.xyz.zLabel.css('top',y);
                 break;
             case 'a':
-                $aLabel.css('left',x);
-                $aLabel.css('top',y);
+                html.interface.canvas.abc.aLabel.css('left',x);
+                html.interface.canvas.abc.aLabel.css('top',y);
                 break;
             case 'b':
-                $bLabel.css('left',x);
-                $bLabel.css('top',y);
+                html.interface.canvas.abc.bLabel.css('left',x);
+                html.interface.canvas.abc.bLabel.css('top',y);
                 break;
             case 'c':
-                $cLabel.css('left',x);
-                $cLabel.css('top',y);
+                html.interface.canvas.abc.cLabel.css('left',x);
+                html.interface.canvas.abc.cLabel.css('top',y);
                 break;
         }  
     };
+    // Change Progress Bar Title //
     interfaceResizer.prototype.editProgressBarTitle = function(title){
-        $progressBar.siblings('.progressLabel').text(title);  
+        html.interface.progress.bar.siblings('.progressLabel').text(title);  
     };
+    // Enable auto-zoom feature //
     interfaceResizer.prototype.autoZoom = function(state){
         autoZoom = state;  
     };

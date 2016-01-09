@@ -20,57 +20,46 @@ define([
     icheck,
     jColor
 ) 
-{    
-    // Variables
-    var $selector = undefined;
+{ 
+    /* This module is used in order to enable/disable certain HTML elements, like inputs,buttons etc. */
     
-    // Module References
-    var $messages = undefined;
+    // Module References //
+    var html = undefined;
     
-    // Grouping //
-    var latticeParameters = {
-        scaleX: jQuery('#scaleX'),
-        scaleY: jQuery('#scaleY'),
-        scaleZ: jQuery('#scaleZ'),
-        alpha: jQuery('#alpha'),
-        beta: jQuery('#beta'),
-        gamma: jQuery('#gamma')
-    };
-    
-    // Contructor //
+    // Functions //
     function disableUIElement(argument) {
         // Acquire Module References
-        if (!(_.isUndefined(argument.messages))) $messages = argument.messages;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
     };
-    function takeAction(index,selector,value){
+    function takeAction(index,value,selector){
         switch(index){
             
             // Lattice Tab //
             case 'latticePadlock':{
                 if (value === false){
-                    selector.find('a').prop('disabled', false);
-                    selector.removeClass('disabled');
+                    html.lattice.padlocks.lattice.find('a').prop('disabled', false);
+                    html.lattice.padlocks.lattice.removeClass('disabled');
                 }
                 else {
-                    selector.find('a').prop('disabled', true);
-                    selector.addClass('disabled');
+                    html.lattice.padlocks.lattice.find('a').prop('disabled', true);
+                    html.lattice.padlocks.lattice.addClass('disabled');
                 }
                 break;   
             }
             case 'motifPadlock':{
                 if (value === false){
-                    selector.find('a').prop('disabled', false);
-                    selector.removeClass('disabled');
+                    html.lattice.padlocks.motif.find('a').prop('disabled', false);
+                    html.lattice.padlocks.motif.removeClass('disabled');
                 }
                 else {
-                    selector.find('a').prop('disabled', true);
-                    selector.addClass('disabled');
+                    html.lattice.padlocks.motif.find('a').prop('disabled', true);
+                    html.lattice.padlocks.motif.addClass('disabled');
                 }
                 break;   
             }
             case 'latticeParameters':{
-                _.each(latticeParameters, function($parameter,k){
+                _.each(html.lattice.parameters, function($parameter,k){
                     if (value === true){
                         $parameter.prop('disabled',value);
                         jQuery('#'+k+'Slider').slider('disable');
@@ -83,287 +72,286 @@ define([
             }
             case 'select_lattice': {
                 if (value === true) {
-                    jQuery('#selected_lattice').parent().addClass('disabled');
-                    jQuery('#selected_lattice').addClass('disabled');
+                    html.lattice.other.selected.parent().addClass('disabled');
+                    html.lattice.other.selected.addClass('disabled');
                 }
                 else {
-                    jQuery('#selected_lattice').parent().removeClass('disabled');
-                    jQuery('#selected_lattice').removeClass('disabled');
+                    html.lattice.other.selected.parent().removeClass('disabled');
+                    html.lattice.other.selected.removeClass('disabled');
                 }
                 break;
             }
             case 'latticeRefreshButtons':{
-                if (value === true) jQuery('.latticeButtons').hide();
-                else jQuery('.latticeButtons').show();
+                if (value === true) html.lattice.other.refreshButtons.hide();
+                else html.lattice.other.refreshButtons.show();
                 break;   
             }
             case 'repeatX':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.repeatX.prop('disabled', value);
                 break;
             }
             case 'repeatY':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.repeatY.prop('disabled', value);
                 break;
             }
             case 'repeatZ':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.repeatZ.prop('disabled', value);
                 break;
             }
             case 'scaleX':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.scaleX.prop('disabled', value);
                 break;
             }
             case 'scaleY':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.scaleY.prop('disabled', value);
                 break;
             }
             case 'scaleZ':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.scaleZ.prop('disabled', value);
                 break;
             }
             case 'alpha':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.alpha.prop('disabled', value);
                 break;
             }
             case 'beta':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.beta.prop('disabled', value);
                 break;
             }
             case 'gamma':{
-                selector.prop('disabled', value);
+                html.lattice.parameters.gamma.prop('disabled', value);
                 break;
             }
                 
             // PnD Tab //
             case 'planeName':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.planeName.prop('disabled', value);
                 break;
             }
             case 'planeColor':{
-                if (value === true) selector.spectrum('disable');
-                else selector.spectrum('enable');
+                if (value === true) html.pnd.planeParameters.planeColor.spectrum('disable');
+                else html.pnd.planeParameters.planeColor.spectrum('enable');
                 break;
             }
             case 'planeOpacity':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.planeOpacity.prop('disabled', value);
                 break;
             }
             case 'millerH':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.millerH.prop('disabled', value);
                 break;
             }
             case 'millerK':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.millerK.prop('disabled', value);
                 break;
             }
             case 'millerL':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.millerL.prop('disabled', value);
                 break;
             }
             case 'millerI':{
-                selector.prop('disabled', value);
+                html.pnd.planeParameters.millerI.prop('disabled', value);
                 break;
             }
             case 'directionName':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.directionName.prop('disabled', value);
                 break;
             }
             case 'directionColor':{
-                if (value === true) selector.spectrum('disable');
-                else selector.spectrum('enable');
+                if (value === true) html.pnd.directionParameters.directionColor.spectrum('disable');
+                else html.pnd.directionParameters.directionColor.spectrum('enable');
                 break;
             }
             case 'dirRadius':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.dirRadius.prop('disabled', value);
                 break;
             }
             case 'millerU':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.millerU.prop('disabled', value);
                 break;
             }
             case 'millerV':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.millerV.prop('disabled', value);
                 break;
             }
             case 'millerW':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.millerW.prop('disabled', value);
                 break;
             }
             case 'millerT':{
-                selector.prop('disabled', value);
+                html.pnd.directionParameters.millerT.prop('disabled', value);
                 break;
             }
             case 'savePlane':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.savePlane.addClass('disabled');
+                else html.pnd.planeButtons.savePlane.removeClass('disabled');
                 break;
             }
             case 'deletePlane':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.deletePlane.addClass('disabled');
+                else html.pnd.planeButtons.deletePlane.removeClass('disabled');
                 break;
             }
             case 'newPlane':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.newPlane.addClass('disabled');
+                else html.pnd.planeButtons.newPlane.removeClass('disabled');
                 break;
             }
             case 'parallelPlane':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.planeButtons.parallelPlane.addClass('disabled');
+                else html.pnd.planeButtons.parallelPlane.removeClass('disabled');
                 break;
             }
             case 'saveDirection':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.saveDirection.addClass('disabled');
+                else html.pnd.directionButtons.saveDirection.removeClass('disabled');
                 break;
             }
             case 'deleteDirection':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.deleteDirection.addClass('disabled');
+                else html.pnd.directionButtons.deleteDirection.removeClass('disabled');
                 break;
             }
             case 'newDirection':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.pnd.directionButtons.newDirection.addClass('disabled');
+                else html.pnd.directionButtons.newDirection.removeClass('disabled');
                 break;
             }
                 
-            
             // Motif Tab //
             case 'motifPadlock':{
                 if (value === false){
-                    selector.find('a').prop('disabled', false);
-                    selector.removeClass('disabled');
+                    html.lattice.padlocks.motif.find('a').prop('disabled', false);
+                    html.lattice.padlocks.motif.removeClass('disabled');
                 }
                 else {
-                    selector.find('a').prop('disabled', true);
-                    selector.add('disabled');
+                    html.lattice.padlocks.motif.find('a').prop('disabled', true);
+                    html.lattice.padlocks.motif.add('disabled');
                 }
                 break;   
             }
             case 'atomPosX':{
-                selector.prop('disabled', value);
+                html.motif.motifInputs.atomPosX.prop('disabled', value);
                 break;
             }
             case 'atomPosXSlider':{
-                if(value === true) selector.slider('disable');
-                else selector.slider('enable');
+                if(value === true) html.motif.motifSliders.atomPosX.slider('disable');
+                else html.motif.motifSliders.atomPosX.slider('enable');
                 break;
             }
             case 'atomPosY':{
-                selector.prop('disabled', value);
+                html.motif.motifInputs.atomPosY.prop('disabled', value);
                 break;
             }
             case 'atomPosYSlider':{
-                if(value === true) selector.slider('disable');
-                else selector.slider('enable');
+                if(value === true) html.motif.motifSliders.atomPosY.slider('disable');
+                else html.motif.motifSliders.atomPosY.slider('enable');
                 break;
             }
             case 'atomPosZ':{
-                selector.prop('disabled', value);
+                html.motif.motifInputs.atomPosZ.prop('disabled', value);
                 break;
             }
             case 'atomPosZSlider':{
-                if(value === true) selector.slider('disable');
-                else selector.slider('enable');
+                if(value === true) html.motif.motifSliders.atomPosZ.slider('disable');
+                else html.motif.motifSliders.atomPosZ.slider('enable');
                 break;
             }
             case 'tangentR':{
-                selector.prop('disabled', value);
+                html.motif.panel.tangentR.prop('disabled', value);
                 break;
             }
             case 'rotAngleTheta':{
-                selector.prop('disabled', value);
+                html.motif.rotatingAngles.combo.rotAngleTheta.prop('disabled', value);
                 break;
             }
             case 'rotAnglePhi':{
-                selector.prop('disabled', value);
+                html.motif.rotatingAngles.combo.rotAnglePhi.prop('disabled', value);
                 break;
             }
             case 'atomOpacity':{
-                selector.prop('disabled', value);
-                takeAction('atomOpacitySlider',jQuery('#atomOpacitySlider'),value);
+                html.motif.atomParameters.atomOpacity.prop('disabled', value);
+                takeAction('atomOpacitySlider',value);
                 break;
             }
             case 'atomOpacitySlider':{
-                if(value === true) selector.slider('disable');
-                else selector.slider('enable');
+                if(value === true) html.motif.panel.opacitySlider.slider('disable');
+                else html.motif.panel.opacitySlider.slider('enable');
                 break;
             }
             case 'atomColor':{
-                if (value === true) selector.spectrum('disable');
-                else selector.spectrum('enable');
+                if (value === true) html.motif.panel.color.spectrum('disable');
+                else html.motif.panel.color.spectrum('enable');
                 break;
             }
             case 'atomPositioningXYZ':{
                 if (value === true){
-                    selector.addClass('disabled');
-                    selector.parent().addClass('disabled');
+                    html.motif.panel.atomPositioningXYZ.addClass('disabled');
+                    html.motif.panel.atomPositioningXYZ.parent().addClass('disabled');
                 }
                 else {
-                    selector.removeClass('disabled');
-                    selector.parent().removeClass('disabled');
+                    html.motif.panel.atomPositioningXYZ.removeClass('disabled');
+                    html.motif.panel.atomPositioningXYZ.parent().removeClass('disabled');
                 }
                 break;
             }
             case 'atomPositioningABC':{
                 if (value === true){
-                    selector.addClass('disabled');
-                    selector.parent().addClass('disabled');
+                    html.motif.panel.atomPositioningABC.addClass('disabled');
+                    html.motif.panel.atomPositioningABC.parent().addClass('disabled');
                 }
                 else {
-                    selector.removeClass('disabled');
-                    selector.parent().removeClass('disabled');
+                    html.motif.panel.atomPositioningABC.removeClass('disabled');
+                    html.motif.panel.atomPositioningABC.parent().removeClass('disabled');
                 }
                 break;
             }
             case 'saveAtomChanges':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.motif.actions.save.addClass('disabled');
+                else html.motif.actions.save.removeClass('disabled');
                 break;
             }
             case 'atomPalette':{
                 if (value === true) {
-                    selector.children().removeAttr('data-toggle');
-                    selector.addClass('disabled');
+                    html.motif.actions.add.children().removeAttr('data-toggle');
+                    html.motif.actions.add.addClass('disabled');
                 }
                 else {
-                    selector.children().attr('data-toggle','modal');
-                    selector.removeClass('disabled');   
+                    html.motif.actions.add.children().attr('data-toggle','modal');
+                    html.motif.actions.add.removeClass('disabled');   
                 }
                 break;
             }
             case 'deleteAtom':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.motif.actions.delete.addClass('disabled');
+                else html.motif.actions.delete.removeClass('disabled');
                 break;
             }
             case 'tangency':{
-                if (value === true) selector.parent().addClass('disabled');
-                else selector.parent().removeClass('disabled');
+                if (value === true) html.motif.panel.tangency.parent().addClass('disabled');
+                else html.motif.panel.tangency.parent().removeClass('disabled');
                 break;
             }
             case 'cellVolume':{
-                selector.prop('disabled', value);
-                takeAction('cellVolumeSlider',jQuery('#cellVolumeSlider'),value);
+                html.motif.other.cellVolume.prop('disabled', value);
+                takeAction('cellVolumeSlider',value);
                 break;
             }
             case 'cellVolumeSlider':{
-                if(value === true) selector.slider('disable');
-                else selector.slider('enable');
+                if(value === true) html.motif.other.cellVolumeSlider.slider('disable');
+                else html.motif.other.cellVolumeSlider.slider('enable');
                 break;
             }
             case 'rotAngleSection':{
-                if (value === true) jQuery('.tangent-properties-container').show('slow');
-                else jQuery('.tangent-properties-container').hide('slow');
+                if (value === true) html.motif.rotatingAngles.section.show('slow');
+                else html.motif.rotatingAngles.section.hide('slow');
                 break;   
             }
             case 'hideChainIcon':{
-                if (value.value === true) jQuery('#atomTable').find('#'+value.id).find('.chain').addClass('hiddenIcon');
-                else jQuery('#atomTable').find('#'+value.id).find('.chain').removeClass('hiddenIcon');
+                if (value.value === true) html.motif.other.atomTable.find('#'+value.id).find('.chain').addClass('hiddenIcon');
+                else html.motif.other.atomTable.find('#'+value.id).find('.chain').removeClass('hiddenIcon');
                 break;
-            }
+            }     
             case 'entryVisibility':{
                 if(value === true){ 
                     selector.find('img').attr('src','Images/visible-icon-sm.png');
@@ -374,184 +362,184 @@ define([
                     selector.removeClass('visible');
                 }
                 break;   
-            }
+            }// REQUIRES SELECTOR FROM THE CALLER //
                 
             // Note Tab
             case 'noteOpacity':{
-                selector.prop('disabled', value);
+                html.notes.properties.opacity.prop('disabled', value);
                 break;
             }
             case 'noteTitle':{
-                selector.prop('disabled', value);
+                html.notes.properties.title.prop('disabled', value);
                 break;
             }
             case 'noteBody':{
-                selector.prop('disabled', value);
+                html.notes.other.body.prop('disabled', value);
                 break;
             }
             case 'noteColor':{
-                if (value === true) selector.spectrum('disable');
-                else selector.spectrum('enable');
+                if (value === true) html.notes.properties.color.spectrum('disable');
+                else html.notes.properties.color.spectrum('enable');
                 break;
             }
             case 'newNote':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.notes.actions.new.addClass('disabled');
+                else html.notes.actions.new.removeClass('disabled');
                 break;
             }
             case 'deleteNote':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.notes.actions.delete.addClass('disabled');
+                else html.notes.actions.delete.removeClass('disabled');
                 break;
             }
             case 'saveNote':{
-                if (value === true) selector.addClass('disabled');
-                else selector.removeClass('disabled');
+                if (value === true) html.notes.actions.save.addClass('disabled');
+                else html.notes.actions.save.removeClass('disabled');
                 break;
             }
                 
             // Visual Tab
             case 'realistic':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.renderizationMode.realistic.css('background','white');
+                    html.visual.parameters.renderizationMode.realistic.removeClass('active');
+                    html.visual.parameters.renderizationMode.realistic.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.renderizationMode.realistic.css('background','#36383d');
+                    html.visual.parameters.renderizationMode.realistic.removeClass('disabled');
                 }
                 break;   
             }
             case 'wireframe':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.renderizationMode.wireframe.css('background','white');
+                    html.visual.parameters.renderizationMode.wireframe.removeClass('active');
+                    html.visual.parameters.renderizationMode.wireframe.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.renderizationMode.wireframe.css('background','#36383d');
+                    html.visual.parameters.renderizationMode.wireframe.removeClass('disabled');
                 }
                 break;   
             }
             case 'toon':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.renderizationMode.toon.css('background','white');
+                    html.visual.parameters.renderizationMode.toon.removeClass('active');
+                    html.visual.parameters.renderizationMode.toon.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.renderizationMode.toon.css('background','#36383d');
+                    html.visual.parameters.renderizationMode.toon.removeClass('disabled');
                 }
                 break;   
             }
             case 'flat':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.renderizationMode.flat.css('background','white');
+                    html.visual.parameters.renderizationMode.flat.removeClass('active');
+                    html.visual.parameters.renderizationMode.flat.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.renderizationMode.flat.css('background','#36383d');
+                    html.visual.parameters.renderizationMode.flat.removeClass('disabled');
                 }
                 break;   
             }
             case 'crystalClassic':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.crystalMode.crystalClassic.css('background','white');
+                    html.visual.parameters.crystalMode.crystalClassic.removeClass('active');
+                    html.visual.parameters.crystalMode.crystalClassic.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.crystalMode.crystalClassic.css('background','#36383d');
+                    html.visual.parameters.crystalMode.crystalClassic.removeClass('disabled');
                 }
                 break;   
             }
             case 'crystalSubstracted':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.crystalMode.crystalSubstracted.css('background','white');
+                    html.visual.parameters.crystalMode.crystalSubstracted.removeClass('active');
+                    html.visual.parameters.crystalMode.crystalSubstracted.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.crystalMode.crystalSubstracted.css('background','#36383d');
+                    html.visual.parameters.crystalMode.crystalSubstracted.removeClass('disabled');
                 }
                 break;   
             }
             case 'crystalSolidVoid':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.crystalMode.crystalSolidVoid.css('background','white');
+                    html.visual.parameters.crystalMode.crystalSolidVoid.removeClass('active');
+                    html.visual.parameters.crystalMode.crystalSolidVoid.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.crystalMode.crystalSolidVoid.css('background','#36383d');
+                    html.visual.parameters.crystalMode.crystalSolidVoid.removeClass('disabled');
                 }
                 break;   
             }
             case 'crystalGradeLimited':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.crystalMode.crystalGradeLimited.css('background','white');
+                    html.visual.parameters.crystalMode.crystalGradeLimited.removeClass('active');
+                    html.visual.parameters.crystalMode.crystalGradeLimited.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.crystalMode.crystalGradeLimited.css('background','#36383d');
+                    html.visual.parameters.crystalMode.crystalGradeLimited.removeClass('disabled');
                 }
                 break;   
             }
             case 'cellClassic':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.unitCellMode.cellClassic.css('background','white');
+                    html.visual.parameters.unitCellMode.cellClassic.removeClass('active');
+                    html.visual.parameters.unitCellMode.cellClassic.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.unitCellMode.cellClassic.css('background','#36383d');
+                    html.visual.parameters.unitCellMode.cellClassic.removeClass('disabled');
                 }
                 break;   
             }
             case 'cellSubstracted':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.unitCellMode.cellSubstracted.css('background','white');
+                    html.visual.parameters.unitCellMode.cellSubstracted.removeClass('active');
+                    html.visual.parameters.unitCellMode.cellSubstracted.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.unitCellMode.cellSubstracted.css('background','#36383d');
+                    html.visual.parameters.unitCellMode.cellSubstracted.removeClass('disabled');
                 }
                 break;   
             }
             case 'cellSolidVoid':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.unitCellMode.cellSolidVoid.css('background','white');
+                    html.visual.parameters.unitCellMode.cellSolidVoid.removeClass('active');
+                    html.visual.parameters.unitCellMode.cellSolidVoid.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.unitCellMode.cellSolidVoid.css('background','#36383d');
+                    html.visual.parameters.unitCellMode.cellSolidVoid.removeClass('disabled');
                 }
                 break;   
             }
             case 'cellGradeLimited':{
                 if (value === true){
-                    selector.css('background','white');
-                    selector.removeClass('active');
-                    selector.addClass('disabled');
+                    html.visual.parameters.unitCellMode.cellGradeLimited.css('background','white');
+                    html.visual.parameters.unitCellMode.cellGradeLimited.removeClass('active');
+                    html.visual.parameters.unitCellMode.cellGradeLimited.addClass('disabled');
                 }
                 else {
-                    selector.css('background','#36383d');
-                    selector.removeClass('disabled');
+                    html.visual.parameters.unitCellMode.cellGradeLimited.css('background','#36383d');
+                    html.visual.parameters.unitCellMode.cellGradeLimited.removeClass('disabled');
                 }
                 break;   
             }
@@ -560,84 +548,94 @@ define([
             case 'reset':{
                 
                 // Lattice
-                takeAction('latticeRefreshButtons',jQuery('.latticeButtons'),true);
-                takeAction('latticePadlock',jQuery('#latticePadlock'),true);
-                takeAction('motifPadlock',jQuery('#motifPadlock'),true);
+                takeAction('latticeRefreshButtons',true);
+                takeAction('latticePadlock',true);
+                takeAction('motifPadlock',true);
                 
                 // Motif
-                takeAction('atomPalette',jQuery('#atomPalette'),false);
-                takeAction('saveAtomChanges ',jQuery('.saveAtomChanges'),true);
-                takeAction('atomPositioningXYZ',jQuery('#atomPositioningXYZ'),true);
-                takeAction('atomPositioningABC',jQuery('#atomPositioningABC'),true);
-                takeAction('atomPosX',jQuery('#atomPosX'),true);
-                takeAction('atomPosXSlider',jQuery('#atomPosXSlider'),true);
-                takeAction('atomPosY',jQuery('#atomPosY'),true);
-                takeAction('atomPosYSlider',jQuery('#atomPosYSlider'),true);
-                takeAction('atomPosZ',jQuery('#atomPosZ'),true);
-                takeAction('atomPosZSlider',jQuery('#atomPosZSlider'),true);
-                takeAction('atomColor',jQuery('#atomColor'),true);
-                takeAction('atomOpacity',jQuery('#atomOpacity'),true);
-                takeAction('atomOpacitySlider',jQuery('#atomOpacitySlider'),true);
-                takeAction('rotAngleSection','',false);
-                jQuery('#atomTable').hide();
+                takeAction('atomPalette',false);
+                takeAction('saveAtomChanges ',true);
+                takeAction('atomPositioningXYZ',true);
+                takeAction('atomPositioningABC',true);
+                takeAction('atomPosX',true);
+                takeAction('atomPosXSlider',true);
+                takeAction('atomPosY',true);
+                takeAction('atomPosYSlider',true);
+                takeAction('atomPosZ',true);
+                takeAction('atomPosZSlider',true);
+                takeAction('atomColor',true);
+                takeAction('atomOpacity',true);
+                takeAction('atomOpacitySlider',true);
+                takeAction('rotAngleSection',false);
+                html.motif.other.atomTable.hide();
                 
                 // PnD
-                takeAction('newPlane',jQuery('#newPlane'),false);
-                takeAction('savePlane',jQuery('#savePlane'),true);
-                takeAction('deletePlane',jQuery('#deletePlane'),true);
-                takeAction('millerH',jQuery('#millerH'),true);
-                takeAction('millerK',jQuery('#millerK'),true);
-                takeAction('millerL',jQuery('#millerL'),true);
-                takeAction('millerI',jQuery('#millerI'),true);
-                takeAction('planeColor',jQuery('#planeColor'),true);
-                takeAction('planeName',jQuery('#planeName'),true);
-                takeAction('planeOpacity',jQuery('#planeOpacity'),true);
-                jQuery('#planesTable').hide();
-                takeAction('newDirection',jQuery('#newDirection'),false);
-                takeAction('saveDirection',jQuery('#saveDirection'),true);
-                takeAction('deleteDirection',jQuery('#deleteDirection'),true);
-                takeAction('millerU',jQuery('#millerU'),true);
-                takeAction('millerV',jQuery('#millerV'),true);
-                takeAction('millerW',jQuery('#millerW'),true);
-                takeAction('millerT',jQuery('#millerT'),true);
-                takeAction('directionColor',jQuery('#directionColor'),true);
-                takeAction('directionName',jQuery('#directionName'),true);
-                takeAction('dirRadius',jQuery('#dirRadius'),true);
-                jQuery('#directionTable').hide();
+                takeAction('newPlane',false);
+                takeAction('savePlane',true);
+                takeAction('deletePlane',true);
+                takeAction('millerH',true);
+                takeAction('millerK',true);
+                takeAction('millerL',true);
+                takeAction('millerI',true);
+                takeAction('planeColor',true);
+                takeAction('planeName',true);
+                takeAction('planeOpacity',true);
+                html.pnd.tables.planes.hide();
+                takeAction('newDirection',false);
+                takeAction('saveDirection',true);
+                takeAction('deleteDirection',true);
+                takeAction('millerU',true);
+                takeAction('millerV',true);
+                takeAction('millerW',true);
+                takeAction('millerT',true);
+                takeAction('directionColor',true);
+                takeAction('directionName',true);
+                takeAction('dirRadius',true);
+                html.pnd.tables.directions.hide();
                 
                 // Notes
-                takeAction('newNote',jQuery('#newNote'),false);
-                takeAction('saveNote',jQuery('#saveNote'),true);
-                takeAction('deleteNote',jQuery('#deleteNote'),true);
-                takeAction('noteTitle',jQuery('#noteTitle'),true);
-                takeAction('noteOpacity',jQuery('#noteOpacity'),true);
-                takeAction('noteBody',jQuery('#noteBody'),true);
-                takeAction('noteColor',jQuery('#noteColor'),true);
-                jQuery('#notesTable').hide();
+                takeAction('newNote',false);
+                takeAction('saveNote',true);
+                takeAction('deleteNote',true);
+                takeAction('noteTitle',true);
+                takeAction('noteOpacity',true);
+                takeAction('noteBody',true);
+                takeAction('noteColor',true);
+                html.notes.other.table.hide();
             }
         };
     };
-    
+
+    // Module Interface //
+    /* This function is called by passing multiple objects, like:
+        {
+            element#1: {
+                value: true/false,
+                other: HTML selector [This is optional, see line 360]
+            },
+            element#2:{
+                ...
+            },
+            ...
+        }
+    */
     disableUIElement.prototype.disableElement = function(argument){
         if (Object.keys(argument).length <= 0) return false;
         else {
             _.each(argument,function($parameter, k){
-                
-                // Read Value adn run action
-                if (!(_.isUndefined($parameter.value))) {
-                    // Select Element
-                    if (_.isUndefined($parameter.other)) $selector = jQuery('#'+k);
-                    else $selector = $parameter.other;
-                    takeAction(k,$selector,$parameter.value);
-                }
-        
+                // Read Value and run action
+                var selector = undefined;
+                if (_.isUndefined($parameter.other)) selector = '';
+                else selector = $parameter.other;
+                if (!(_.isUndefined($parameter.value))) takeAction(k,$parameter.value,selector);
             });
         }
     };
+    /* This functions restores some HTML elements to the state described by the data argument, which is a JSON parsed object. */
     disableUIElement.prototype.restoreUI = function(data){
-        takeAction('latticePadlock',jQuery('#latticePadlock'),data.latticeTab.padlocks.lattice.disabled);
-        takeAction('motifPadlock',jQuery('#motifPadlock'),data.latticeTab.padlocks.motif.disabled);
-        takeAction('select_lattice',jQuery('#select_lattice'),data.latticeTab.latticeSelecion.selectedLatticeDisable);
+        takeAction('latticePadlock',data.latticeTab.padlocks.lattice.disabled);
+        takeAction('motifPadlock',data.latticeTab.padlocks.motif.disabled);
+        takeAction('select_lattice',data.latticeTab.latticeSelecion.selectedLatticeDisable);
     };
     
     return disableUIElement;

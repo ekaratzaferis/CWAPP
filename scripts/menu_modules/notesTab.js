@@ -17,6 +17,10 @@ define([
     bootstrap
 ) 
 {
+    /* This module handles the user notes.
+            Each note can be connect to an atom (via IAC) or not.
+            Each note may appear on the canvas.
+    */
     // Variables
     var target = undefined;
     var notes = {};
@@ -28,17 +32,7 @@ define([
     var $disableUIElement = undefined;
     var $menuRibbon = undefined;
     var $stringEditor = undefined;
-    
-    // Selectors //
-    var $newNote = jQuery('#newNote');
-    var $saveNote = jQuery('#saveNote');
-    var $deleteNote = jQuery('#deleteNote');
-    var $noteTitle = jQuery('#noteTitle');
-    var $noteColor = jQuery('#noteColor');
-    var $noteOpacity = jQuery('#noteOpacity');
-    var $noteBody = jQuery('#noteBody');
-    var $notesTable = jQuery('#notesTable');
-    var $screen = jQuery('#screenWrapper');
+    var html = undefined;
     
     // Contructor //
     function notesTab(argument) {
@@ -53,42 +47,42 @@ define([
         else return false;
         if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
         
         // Inputs //
-        $noteOpacity.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
-        $noteOpacity.selectpicker();
-        $noteOpacity.selectpicker('val','10');
-        $noteOpacity.on('change',function(){
-            $screen.find('#'+notes.activeEntry).css('-ms-filter','progid:DXImageTransform.Microsoft.Alpha(Opacity='+$stringEditor.multiply10($noteOpacity.val())+')');
-            $screen.find('#'+notes.activeEntry).css('filter','alpha(opacity='+$stringEditor.multiply10($noteOpacity.val())+')');
-            $screen.find('#'+notes.activeEntry).css('opacity',$stringEditor.divide10($noteOpacity.val()));
+        html.notes.properties.opacity.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
+        html.notes.properties.opacity.selectpicker();
+        html.notes.properties.opacity.selectpicker('val','10');
+        html.notes.properties.opacity.on('change',function(){
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).css('-ms-filter','progid:DXImageTransform.Microsoft.Alpha(Opacity='+$stringEditor.multiply10(html.notes.properties.opacity.val())+')');
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).css('filter','alpha(opacity='+$stringEditor.multiply10(html.notes.properties.opacity.val())+')');
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).css('opacity',$stringEditor.divide10(html.notes.properties.opacity.val()));
         });
-        $noteColor.spectrum({
-            color: "#ffffff",
+        html.notes.properties.color.spectrum({
+            color: "#000000",
             allowEmpty:true,
             chooseText: "Choose",
             cancelText: "Close",
             move: function(){
                 $setUIValue.setValue({
                     noteColor:{
-                        other: $noteColor,
-                        publish: { id: notes.activeEntry, color: '#'+$noteColor.spectrum('get').toHex() },
-                        value: '#'+$noteColor.spectrum('get').toHex()
+                        publish: { id: notes.activeEntry, color: '#'+html.notes.properties.color.spectrum('get').toHex() },
+                        value: '#'+html.notes.properties.color.spectrum('get').toHex()
                     }
                 });
-                $screen.find('#'+notes.activeEntry).css('background-color','#'+$noteColor.spectrum('get').toHex());
-                $screen.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+$noteColor.spectrum('get').toHex());
+                html.interface.screen.wrapper.find('#'+notes.activeEntry).css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
+                html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
             },
             change: function(){
                 $setUIValue.setValue({
                     noteColor:{
-                        other: $noteColor,
-                        publish: { id: notes.activeEntry, color: '#'+$noteColor.spectrum('get').toHex() },
-                        value: '#'+$noteColor.spectrum('get').toHex()
+                        publish: { id: notes.activeEntry, color: '#'+html.notes.properties.color.spectrum('get').toHex() },
+                        value: '#'+html.notes.properties.color.spectrum('get').toHex()
                     }
                 });
-                $screen.find('#'+notes.activeEntry).css('background-color','#'+$noteColor.spectrum('get').toHex());
-                $screen.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+$noteColor.spectrum('get').toHex());
+                html.interface.screen.wrapper.find('#'+notes.activeEntry).css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
+                html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
             }
         });
         $disableUIElement.disableElement({
@@ -105,11 +99,11 @@ define([
                 value: true    
             }
         });
-        $notesTable.hide('slow');
+        html.notes.other.table.hide('slow');
         
         // Buttons //
-        $newNote.on('click',function(){
-            if (!($newNote.hasClass('disabled'))){
+        html.notes.actions.new.on('click',function(){
+            if (!(html.notes.actions.new.hasClass('disabled'))){
                 highlightNote(notes.activeEntry,false);
                 highlightNote(addNote(),true);
                 $disableUIElement.disableElement({
@@ -137,13 +131,13 @@ define([
                 });
             }
         });
-        $saveNote.on('click',function(){
-            if (!($saveNote.hasClass('disabled'))){
+        html.notes.actions.save.on('click',function(){
+            if (!(html.notes.actions.save.hasClass('disabled'))){
                 editNote({
-                    title: $noteTitle.val(),
-                    body: $noteBody.val(),
-                    color: '#'+$noteColor.spectrum('get').toHex(),
-                    opacity: $noteOpacity.val(),
+                    title: html.notes.properties.title.val(),
+                    body: html.notes.other.body.val(),
+                    color: '#'+html.notes.properties.color.spectrum('get').toHex(),
+                    opacity: html.notes.properties.opacity.val(),
                     atomNote: notes[notes.activeEntry].atomNote,
                     x: notes[notes.activeEntry].x,
                     y: notes[notes.activeEntry].y
@@ -173,8 +167,8 @@ define([
                 });
             }
         });
-        $deleteNote.on('click',function(){
-            if (!($deleteNote.hasClass('disabled'))){
+        html.notes.actions.delete.on('click',function(){
+            if (!(html.notes.actions.delete.hasClass('disabled'))){
                 deleteNote();
                 $disableUIElement.disableElement({
                     noteTitle:{
@@ -203,31 +197,34 @@ define([
         });
     };
     
+    // Add note to Table //
     function addNote(newID,restore){
         var id = undefined;
         var atomNote = false;
         
-        // Clear Forms
-        $noteTitle.val('');
-        $noteBody.val('');
-        $noteOpacity.selectpicker('val','10');
-        $noteColor.children().css('background','transparent');
+        // Clear Forms //
+        html.notes.properties.opacity.val('');
+        html.notes.other.body.val('');
+        html.notes.properties.opacity.selectpicker('val','10');
+        html.notes.properties.color.children().css('background','transparent');
         
-        // Add Note //
+        // Note is not related to an atom //
         if (_.isUndefined(newID)) {
             do{
                 id = 'note'+idCounter;
                 idCounter++;
             } while(!(_.isUndefined(notes[id])));
         }
+        // Restore Note //
         else if (_.isUndefined(restore)){
             atomNote = true;
             id = newID;
         }
+        // Atom Related //
         else id = newID;
         
-        $notesTable.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
-        $notesTable.show('slow');
+        html.notes.other.table.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
+        html.notes.other.table.show('slow');
         
         // Create Database Entry //
         notes[id] = {
@@ -239,24 +236,26 @@ define([
             x: 0,
             y: 0
         };
+        // Create on Canvas //
         createCanvasNote(id);
         
         // Handlers //
-        $notesTable.find('#'+id).find('.selectable').on('click',function(){
+        html.notes.other.table.find('#'+id).find('.selectable').on('click',function(){
             selectNote(id);
         });
-        $notesTable.find('#'+id).find('.noteButton').on('click', function(){
+        // Note Visibility //
+        html.notes.other.table.find('#'+id).find('.noteButton').on('click', function(){
             var value = undefined;
-            ($notesTable.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
+            (html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
             $setUIValue.setValue({
                 noteVisibility:{
                     value: value,
-                    other: $notesTable.find('#'+id)
+                    other: html.notes.other.table.find('#'+id)
                 }
             });
             if (notes[id].atomNote === true) {
-                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
                 notes[id].x = x;
                 notes[id].y = y;
                 $setUIValue.setValue({
@@ -267,7 +266,8 @@ define([
             }
             showCanvasNote(id,value);
         });
-        $notesTable.find('#'+id).on('hide',function(){
+        // Remote Hide/Show Note //
+        html.notes.other.table.find('#'+id).on('hide',function(){
             if(_.isUndefined(notes[id].temp)) return false;
             else{
                 if (notes[id].temp === true){
@@ -275,15 +275,15 @@ define([
                     $setUIValue.setValue({
                         noteVisibility:{
                             value: false,
-                            other: $notesTable.find('#'+id)
+                            other: html.notes.other.table.find('#'+id)
                         }
                     });
                     showCanvasNote(id.toString(),false);
                     notes[id].temp = undefined;
                     
                     // System //
-                    var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                    var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                    var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
                     notes[id].x = x;
                     notes[id].y = y;
                     $setUIValue.setValue({
@@ -294,13 +294,14 @@ define([
                 }
             }
         });
+        
+        // Initiation //
         $setUIValue.setValue({
             noteVisibility:{
                 value: false,
-                other: $notesTable.find('#'+id)
+                other: html.interface.screen.wrapper.find('#'+id)
             }
         });
-        
         if (atomNote === true) $setUIValue.setValue({
             atomNoteTable: { 
                 publish: {
@@ -312,6 +313,7 @@ define([
         
         return id;
     };
+    // Edit note //
     function editNote(note){
         // Update Database //
         if (notes.activeEntry !== false) notes[notes.activeEntry] = note;
@@ -319,20 +321,20 @@ define([
         
         // Update Entry //
         if (note.title !== '') {
-            $notesTable.find('#'+notes.activeEntry).find('.note-name').html(note.title);
-            $screen.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
+            html.notes.other.table.find('#'+notes.activeEntry).find('.note-name').html(note.title);
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
         }
-        if (note.body !== '') $screen.find('#'+notes.activeEntry).find('.notes').html(note.body);
+        if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
         highlightNote(notes.activeEntry,false);
         
-        // Clear Forms
-        $noteTitle.val('');
-        $noteBody.val('');
-        $noteOpacity.selectpicker('val','10');
-        $noteColor.children().css('background','transparent');
+        // Clear Forms //
+        html.notes.properties.title.val('');
+        html.notes.other.body.val('');
+        html.notes.properties.opacity.selectpicker('val','10');
+        html.notes.properties.color.children().css('background','transparent');
     };
+    // Delete note //
     function deleteNote(){
-        
         // Update Database //
         if (notes.activeEntry !== false) {
             if (notes[notes.activeEntry].atomNote === true) {
@@ -351,25 +353,26 @@ define([
         else return false;
         
         // Remove Entry //
-        $notesTable.find('#'+notes.activeEntry).remove();
+        html.notes.other.table.find('#'+notes.activeEntry).remove();
         deleteCanvasNote(notes.activeEntry);
         highlightNote('q',false);
         
-        // Clear Forms
-        $noteTitle.val('');
-        $noteBody.val('');
-        $noteOpacity.selectpicker('val','10');
-        $noteColor.children().css('background','transparent');
+        // Clear Forms //
+        html.notes.properties.title.val('');
+        html.notes.other.body.val('');
+        html.notes.properties.opacity.selectpicker('val','10');
+        html.notes.properties.color.children().css('background','transparent');
     };
+    // Select Active Note //
     function selectNote(id){
         highlightNote(notes.activeEntry,false);
-        $noteTitle.val(notes[id].title);
-        $noteBody.val(notes[id].body);
+        html.notes.properties.title.val(notes[id].title);
+        html.notes.other.body.val(notes[id].body);
         if (notes[id].color !== '') {
-            $noteColor.spectrum('set',notes[id].color);
-            $noteColor.children().css('background',notes[id].color);
+            html.notes.properties.color.spectrum('set',notes[id].color);
+            html.notes.properties.color.children().css('background',notes[id].color);
         }
-        if (notes[id].opacity !== '') $noteOpacity.selectpicker('val',notes[id].opacity);
+        if (notes[id].opacity !== '') html.notes.properties.opacity.selectpicker('val',notes[id].opacity);
         highlightNote(id,true);
         $disableUIElement.disableElement({
             noteTitle:{
@@ -395,27 +398,30 @@ define([
             }
         });
     };
+    // Highlight Table Entry //
     function highlightNote(id,state){
         var color = (state) ? 'bg-light-purple' : 'bg-dark-gray';
-        $notesTable.find('#'+id).removeAttr('class');
-        $notesTable.find('#'+id).attr('class',color);
+        html.notes.other.table.find('#'+id).removeAttr('class');
+        html.notes.other.table.find('#'+id).attr('class',color);
         if (state === true) notes.activeEntry = id;
         else notes.activeEntry = false;
     };
+    // Show/Hide on Canvas //
     function showCanvasNote(id,value){
-        if (value === true) $screen.find('#'+id).show('slow');
-        else $screen.find('#'+id).hide('slow');
+        if (value === true) html.interface.screen.wrapper.find('#'+id).show('slow');
+        else html.interface.screen.wrapper.find('#'+id).hide('slow');
     };
+    // Create note on Canvas //
     function createCanvasNote(id){
-        $screen.prepend('<div id="'+id+'" class="noteWrapper"><div class="noteBar"><img src="Images/close.png" /><div class="noteTitle">Notes</div></div><div class="wordwrap notes">'+notes[id].body+'</div></div>');
-        var notepad = $screen.find('#'+id);
+        html.interface.screen.wrapper.prepend('<div id="'+id+'" class="noteWrapper"><div class="noteBar"><img src="Images/close.png" /><div class="noteTitle">Notes</div></div><div class="wordwrap notes">'+notes[id].body+'</div></div>');
+        var notepad = html.interface.screen.wrapper.find('#'+id);
         notepad.hide();
         notepad.draggable({
             scroll: false,
             drag: function(event, ui){
                 if (notes[id].atomNote === true){
-                    var x = parseInt(ui.position.left) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                    var y = parseInt(ui.position.top) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                    var x = parseInt(ui.position.left) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                    var y = parseInt(ui.position.top) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
                     notes[id].x = x;
                     notes[id].y = y;
                     $setUIValue.setValue({
@@ -425,19 +431,20 @@ define([
                     });
                 }
             },
-            containment: jQuery('#app-container')
+            containment: html.interface.screen.appContainer
         });
+        // Close Note Handler //
         notepad.find('img').on('click',function(){
             showCanvasNote(id,false);
             $setUIValue.setValue({
                 noteVisibility:{
                     value: false,
-                    other: $notesTable.find('#'+id)
+                    other: html.notes.other.table.find('#'+id)
                 }
             });
             if (notes[id].atomNote === true) {
-                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
                 notes[id].x = x;
                 notes[id].y = y;
                 $setUIValue.setValue({
@@ -448,15 +455,17 @@ define([
             }
         });  
     };
+    // Delete note from canvas //
     function deleteCanvasNote(id){
-        $screen.find('#'+id).remove();
+        html.interface.screen.wrapper.find('#'+id).remove();
     };
+    // Get all notes //
     function getAtomNoteTable(){
         var table = [];
         _.each(notes, function($parameter,k){
             if ($parameter.atomNote === true) {
-                var x = parseInt($screen.find('#'+k).css('left'),10) + parseInt($screen.find('#'+k).css('width'),10) / 2;
-                var y = parseInt($screen.find('#'+k).css('top'),10) + parseInt($screen.find('#'+k).css('height'),10) / 2;
+                var x = parseInt(html.interface.screen.wrapper.find('#'+k).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+k).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+k).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+k).css('height'),10) / 2;
                 notes[k].x = x;
                 notes[k].y = y;
                 table.push({
@@ -469,8 +478,11 @@ define([
         return table;
     };
     
+    // Module Interface //
+    // Focus note on Note Tab //
     notesTab.prototype.moveToNote = function(id){
         $menuRibbon.switchTab('notesTab');
+        // Create new note if none is specified //
         if (_.isUndefined(notes[id])) {
             highlightNote(notes.activeEntry,false);
             highlightNote(addNote(id),true);
@@ -503,23 +515,24 @@ define([
     notesTab.prototype.getAtomNoteTable = function(){
         return getAtomNoteTable();  
     };
+    // Show Note on Canvas //
     notesTab.prototype.focusNote = function(id){
         if(_.isUndefined(notes[id.toString()])) return false;
         else{
-            if($notesTable.find('#'+id).find('.noteButton').hasClass('visible')) return true;
+            if(html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) return true;
             else {
                 $setUIValue.setValue({
                     noteVisibility:{
                         value: true,
-                        other: $notesTable.find('#'+id)
+                        other: html.notes.other.table.find('#'+id)
                     }
                 });
                 showCanvasNote(id.toString(),true);
                 // Mark to close
                 notes[id.toString()].temp = true;
                 // System //
-                var x = parseInt($screen.find('#'+id).css('left'),10) + parseInt($screen.find('#'+id).css('width'),10) / 2;
-                var y = parseInt($screen.find('#'+id).css('top'),10) + parseInt($screen.find('#'+id).css('height'),10) / 2;
+                var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
                 $setUIValue.setValue({
                     noteVisibility:{
                         publish: {id:id, visible: true, x: x, y: y, color: notes[id.toString()].color}
@@ -531,6 +544,7 @@ define([
     notesTab.prototype.getNotes = function(){
         return notes;  
     };
+    // Restore UI + Database //
     notesTab.prototype.restoreNotes = function(notesJSON){
         _.each(notesJSON, function($parameter,k){
             if (k !== 'activeEntry') {
@@ -557,9 +571,8 @@ define([
         });
     };
     notesTab.prototype.resetTable = function(){
-        $notesTable.find('tbody').html('');
+        html.notes.other.table.find('tbody').html('');
     };
-    
     
     return notesTab;
 });

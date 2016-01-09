@@ -19,9 +19,11 @@ define([
     jColor
 ) 
 {    
+    /* This module is used in order to get the current value/state of an HTML element. */
     
     // Variables //
     var $selector = undefined;
+    var html = undefined;
     
     // Modules References //
     var $stringEditor = undefined;
@@ -31,419 +33,433 @@ define([
         // Acquire Module References //
         if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
         else return false;
+        if (!(_.isUndefined(argument.html))) html = argument.html;
+        else return false;
     };
     
+    // Retrieve value using the combination of ID + selector //
     function retrieveValue(index,selector){
-        
         switch(index){
             case 'planeVisibility':{
-                if (jQuery('#planesTable').find('#'+selector).find('.planeButton').hasClass('visible')) return true;
+                if (html.pnd.tables.planes.find('#'+selector).find('.planeButton').hasClass('visible')) return true;
                 else return false;
             }
             case 'parallel':{
-                if (jQuery('#planesTable').find('#'+selector).find('.parallel').hasClass('active')) return true;
+                if (html.pnd.tables.planes.find('#'+selector).find('.parallel').hasClass('active')) return true;
                 else return false;
             }
             case 'interception':{
-                if (jQuery('#planesTable').find('#'+selector).find('.interception').hasClass('active')) return true;
+                if (html.pnd.tables.planes.find('#'+selector).find('.interception').hasClass('active')) return true;
                 else return false;
             }
         };
     };
+    
+    // Retrieve value based on the ID only //
     function retrieveValueFromID(index){
         switch(index){
             
             case 'activeTab':{
-                if (jQuery('#latticeTab').hasClass('active')) return 'latticeTab';
-                else if (jQuery('#motifLI').hasClass('active')) return 'motifTab';
-                else if (jQuery('#visualTab').hasClass('active')) return 'visualTab';
-                else if (jQuery('#millerPI').hasClass('active')) return 'pndTab';
-                else if (jQuery('#notesTab').hasClass('active')) return 'notesTab';
-                else if (jQuery('#publicTab').hasClass('active')) return 'publicTab';
+                if (html.menu.tabs.latticeTab.hasClass('active')) return 'latticeTab';
+                else if (html.menu.tabs.motifTab.hasClass('active')) return 'motifTab';
+                else if (html.menu.tabs.visualTab.hasClass('active')) return 'visualTab';
+                else if (html.menu.tabs.pndTab.hasClass('active')) return 'pndTab';
+                else if (html.menu.tabs.notesTab.hasClass('active')) return 'notesTab';
+                else if (html.menu.tabs.publicTab.hasClass('active')) return 'publicTab';
             }
             case 'tabDisable':{
                 var result = {};
-                if (jQuery('#latticeTab').hasClass('disabled')) result.latticeTab = true;
+                if (html.menu.tabs.latticeTab.hasClass('disabled')) result.latticeTab = true;
                 else result.latticeTab = false;
-                if (jQuery('#motifLI').hasClass('disabled')) result.motifTab = true;
+                if (html.menu.tabs.motifTab.hasClass('disabled')) result.motifTab = true;
                 else result.motifTab = false;
-                if (jQuery('#visualTab').hasClass('disabled')) result.visualTab = true;
+                if (html.menu.tabs.visualTab.hasClass('disabled')) result.visualTab = true;
                 else result.visualTab = false;
-                if (jQuery('#millerPI').hasClass('disabled')) result.pndTab = true;
+                if (html.menu.tabs.pndTab.hasClass('disabled')) result.pndTab = true;
                 else result.pndTab = false;
-                if (jQuery('#notesTab').hasClass('disabled')) result.notesTab = true;
+                if (html.menu.tabs.notesTab.hasClass('disabled')) result.notesTab = true;
                 else result.notesTab = false;
-                if (jQuery('#publicTab').hasClass('disabled')) result.publicTab = true;
+                if (html.menu.tabs.publicTab.hasClass('disabled')) result.publicTab = true;
                 else result.publicTab = false;
                 return result;
             }
             case 'toggleButtons':{
                 var result = {};
-                if (jQuery('#latticePoints').parent().hasClass('lightThemeActive')) result.latticePoints = true;
+                if (html.menu.toggles.latticePoints.parent().hasClass('lightThemeActive')) result.latticePoints = true;
                 else result.latticePoints = false;
-                if (jQuery('#edges').parent().hasClass('lightThemeActive')) result.edges = true;
+                if (html.menu.toggles.edges.parent().hasClass('lightThemeActive')) result.edges = true;
                 else result.edges = false;
-                if (jQuery('#faces').parent().hasClass('lightThemeActive')) result.faces = true;
+                if (html.menu.toggles.faces.parent().hasClass('lightThemeActive')) result.faces = true;
                 else result.faces = false;
-                if (jQuery('#xyzAxes').parent().hasClass('lightThemeActive')) result.xyzAxes = true;
+                if (html.menu.toggles.xyzAxes.parent().hasClass('lightThemeActive')) result.xyzAxes = true;
                 else result.xyzAxes = false;
-                if (jQuery('#abcAxes').parent().hasClass('lightThemeActive')) result.abcAxes = true;
+                if (html.menu.toggles.abcAxes.parent().hasClass('lightThemeActive')) result.abcAxes = true;
                 else result.abcAxes = false;
-                if (jQuery('#unitCellViewport').parent().hasClass('lightThemeActive')) result.unitCellViewport = true;
+                if (html.menu.toggles.unitCellViewport.parent().hasClass('lightThemeActive')) result.unitCellViewport = true;
                 else result.unitCellViewport = false;
-                if (jQuery('#planes').parent().hasClass('lightThemeActive')) result.planes = true;
+                if (html.menu.toggles.planes.parent().hasClass('lightThemeActive')) result.planes = true;
                 else result.planes = false;
-                if (jQuery('#directions').parent().hasClass('lightThemeActive')) result.directions = true;
+                if (html.menu.toggles.directions.parent().hasClass('lightThemeActive')) result.directions = true;
                 else result.directions = false;
-                if (jQuery('#atomRadius').parent().hasClass('lightThemeActive')) result.atomRadius = true;
+                if (html.menu.toggles.atomRadius.parent().hasClass('lightThemeActive')) result.atomRadius = true;
                 else result.atomRadius = false;
-                if (jQuery('#atomToggle').parent().hasClass('lightThemeActive')) result.atomToggle = true;
+                if (html.menu.toggles.atomToggle.parent().hasClass('lightThemeActive')) result.atomToggle = true;
                 else result.atomToggle = false;
-                if (jQuery('#labelToggle').parent().hasClass('lightThemeActive')) result.labelToggle = true;
+                if (html.menu.toggles.labelToggle.parent().hasClass('lightThemeActive')) result.labelToggle = true;
                 else result.labelToggle = false;
-                if (jQuery('#highlightTangency').parent().hasClass('lightThemeActive')) result.highlightTangency = true;
+                if (html.menu.toggles.highlightTangency.parent().hasClass('lightThemeActive')) result.highlightTangency = true;
                 else result.highlightTangency = false;
                 
-                result.atomRadiusSlider = jQuery('#atomRadiusSlider').slider('value');
+                result.atomRadiusSlider = html.menu.other.atomRadiusSlider.slider('value');
                 return result;
             }
                 
             // Motif Tab
             case 'tangency':{
-                if (jQuery('#tangency').parent().hasClass('purpleThemeActive')) return true;
+                if (html.motif.panel.tangency.parent().hasClass('purpleThemeActive')) return true;
                 else return false;
             }
             case 'lockCameras':{
-                if (jQuery('#lockCameraIcon').hasClass('active')) return true;
+                if (html.motif.other.lockCameras.hasClass('active')) return true;
                 else return false;
             }
             case 'atomOpacity':{
-                return $stringEditor.inputIsNumber(jQuery('#atomOpacity').val());
+                return $stringEditor.inputIsNumber(html.motif.atomParameters.atomOpacity.val());
             }
             case 'atomColor':{
-                return jQuery('#atomColor').spectrum('get').toHex();
+                return html.motif.panel.color.spectrum('get').toHex();
             }
             case 'atomPosX':{
-                return $stringEditor.inputIsNumber(jQuery('#atomPosX').val());
+                return $stringEditor.inputIsNumber(html.motif.motifInputs.atomPosX.val());
             }
             case 'atomPosY':{
-                return $stringEditor.inputIsNumber(jQuery('#atomPosY').val());
+                return $stringEditor.inputIsNumber(html.motif.motifInputs.atomPosY.val());
             }
             case 'atomPosZ':{
-                return $stringEditor.inputIsNumber(jQuery('#atomPosZ').val());
+                return $stringEditor.inputIsNumber(html.motif.motifInputs.atomPosZ.val());
             }
             case 'rotAngleTheta':{
-                return jQuery('#rotAngleTheta').val();
+                return html.motif.rotatingAngles.rotAngleTheta.val();
             }
             case 'rotAnglePhi':{
-                return jQuery('#rotAnglePhi').val();
+                return html.motif.rotatingAngles.rotAnglePhi.val();
             }
             case 'tangentR':{
-                return jQuery('#tangentR').val();
+                return html.motif.panel.tangentR.val();
             }
             case 'rotAngleX':{
-                return jQuery('#rotAngleX').text();
+                return html.motif.rotatingAngles.x.text();
             }
             case 'rotAngleY':{
-                return jQuery('#rotAngleY').text();
+                return html.motif.rotatingAngles.y.text();
             }
             case 'rotAngleZ':{
-                return jQuery('#rotAngleZ').text();
+                return html.motif.rotatingAngles.z.text();
             }
             case 'cellVolume':{
-                return $stringEditor.inputIsNumber(jQuery('#cellVolume').val());  
+                return $stringEditor.inputIsNumber(html.motif.other.cellVolume.val());  
             }
             case 'atomPositioningABC':{
-                if (jQuery('#atomPositioningABC').hasClass('buttonPressed')) return true;
+                if (html.motif.panel.atomPositioningABC.hasClass('buttonPressed')) return true;
                 else return false;
             }
             case 'atomPositioningXYZ':{
-                if (jQuery('#atomPositioningXYZ').hasClass('buttonPressed')) return true;
+                if (html.motif.panel.atomPositioningXYZ.hasClass('buttonPressed')) return true;
                 else return false;
             }
             case 'atomName':{
-                return jQuery('.element-symbol-container').find('a').html();
+                return html.motif.other.name.html();
             }
             case 'motifLabels':{
                 var result = {};
-                result.a = jQuery('#meLengthA').html();
-                result.b = jQuery('#meLengthB').html();
-                result.c = jQuery('#meLengthC').html();
-                result.alpha = jQuery('#meAngleA').html();
-                result.beta = jQuery('#meAngleB').html();
-                result.gamma = jQuery('#meAngleG').html();
+                result.a = html.motif.latticeLabels.scaleX.html();
+                result.b = html.motif.latticeLabels.scaleY.html();
+                result.c = html.motif.latticeLabels.scaleZ.html();
+                result.alpha = html.motif.latticeLabels.alpha.html();
+                result.beta = html.motif.latticeLabels.beta.html();
+                result.gamma = html.motif.latticeLabels.gamma.html();
                 return result;
             }
                 
             // Lattice Tab
             case 'repeatX':{
-                return $stringEditor.inputIsInteger(jQuery('#repeatX').val());
+                return $stringEditor.inputIsInteger(html.lattice.parameters.repeatX.val());
             }
             case 'repeatY':{
-                return $stringEditor.inputIsInteger(jQuery('#repeatY').val());
+                return $stringEditor.inputIsInteger(html.lattice.parameters.repeatY.val());
             }
             case 'repeatZ':{
-                return $stringEditor.inputIsInteger(jQuery('#repeatZ').val());
+                return $stringEditor.inputIsInteger(html.lattice.parameters.repeatZ.val());
             }
             case 'scaleX':{
-                return $stringEditor.inputIsNumber(jQuery('#scaleX').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.scaleX.val());
             }
             case 'scaleY':{
-                return $stringEditor.inputIsNumber(jQuery('#scaleY').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.scaleY.val());
             }
             case 'scaleZ':{
-                return $stringEditor.inputIsNumber(jQuery('#scaleZ').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.scaleZ.val());
             }
             case 'alpha':{
-                return $stringEditor.inputIsNumber(jQuery('#alpha').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.alpha.val());
             }
             case 'beta':{
-                return $stringEditor.inputIsNumber(jQuery('#beta').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.beta.val());
             }
             case 'gamma':{
-                return $stringEditor.inputIsNumber(jQuery('#gamma').val());
+                return $stringEditor.inputIsNumber(html.lattice.parameters.gamma.val());
             }
             case 'selectedLattice':{
-                return jQuery('#selected_lattice').html();
+                return html.lattice.other.selected.html();
             }
             case 'latticePadlock':{
-                if (jQuery('#latticePadlock').children().hasClass('active')) return true;
+                if (html.lattice.padlocks.lattice.children().hasClass('active')) return true;
                 else return false;
             }
             case 'motifPadlock':{
-                if (jQuery('#motifPadlock').children().hasClass('active')) return true;
+                if (html.lattice.padlocks.motif.children().hasClass('active')) return true;
                 else return false;
             }
             case 'borderColor':{
-                return '#'+jQuery('#cube_color_border').spectrum('get').toHex();
+                return '#'+html.lattice.visual.edgeColorPicker.spectrum('get').toHex();
             }
             case 'filledColor':{
-                return '#'+jQuery('#cube_color_filled').spectrum('get').toHex();
+                return '#'+html.lattice.visual.faceColorPicker.spectrum('get').toHex();
             }
             case 'radius':{
-                return $stringEditor.inputIsInteger(jQuery('#radius').val());
+                return $stringEditor.inputIsInteger(html.lattice.visual.radius.val());
             }
             case 'opacity':{
-                return $stringEditor.inputIsInteger(jQuery('#faceOpacity').val());
+                return $stringEditor.inputIsInteger(html.lattice.visual.opacity.val());
             }
                 
             // PnD Tab
             case 'planeColor':{
-                return '#'+jQuery('#planeColor').spectrum('get').toHex();
+                return '#'+html.pnd.planeParameters.planeColor.spectrum('get').toHex();
             }
             case 'planeName':{
-                return jQuery('#planeName').val();
+                return html.pnd.planeParameters.planeName.val();
             }
             case 'planeOpacity':{
-                return $stringEditor.inputIsNumber(jQuery('#planeOpacity').val());
+                return $stringEditor.inputIsNumber(html.pnd.planeParameters.planeOpacity.val());
             }
             case 'millerH':{
-                return $stringEditor.inputIsInteger(jQuery('#millerH').val());
+                return $stringEditor.inputIsInteger(html.pnd.planeParameters.millerH.val());
             }
             case 'millerK':{
-                return $stringEditor.inputIsInteger(jQuery('#millerK').val());
+                return $stringEditor.inputIsInteger(html.pnd.planeParameters.millerK.val());
             }
             case 'millerL':{
-                return $stringEditor.inputIsInteger(jQuery('#millerL').val());
+                return $stringEditor.inputIsInteger(html.pnd.planeParameters.millerL.val());
             }
             case 'millerI':{
-                return $stringEditor.inputIsInteger(jQuery('#millerI').val());
+                return $stringEditor.inputIsInteger(html.pnd.planeParameters.millerI.val());
             }
             case 'directionColor':{
-                return jQuery('#directionColor').spectrum('get').toHex();
+                return html.pnd.directionParameters.directionColor.spectrum('get').toHex();
             }
             case 'directionName':{
-                return jQuery('#directionName').val();
+                return html.pnd.directionParameters.directionName.val();
             }
             case 'dirRadius':{
-                return $stringEditor.divide10(jQuery('#dirRadius').val()).toString();
+                return $stringEditor.divide10(html.pnd.directionParameters.dirRadius.val()).toString();
             }
             case 'millerU':{
-                return $stringEditor.inputIsInteger(jQuery('#millerU').val());
+                return $stringEditor.inputIsInteger(html.pnd.directionParameters.millerU.val());
             }
             case 'millerV':{
-                return $stringEditor.inputIsInteger(jQuery('#millerV').val());
+                return $stringEditor.inputIsInteger(html.pnd.directionParameters.millerV.val());
             }
             case 'millerW':{
-                return $stringEditor.inputIsInteger(jQuery('#millerW').val());
+                return $stringEditor.inputIsInteger(html.pnd.directionParameters.millerW.val());
             }
             case 'millerT':{
-                return $stringEditor.inputIsInteger(jQuery('#millerT').val());
+                return $stringEditor.inputIsInteger(html.pnd.directionParameters.millerT.val());
             }
             
             // Visual Tab
             case 'wireframe':{
-                if (jQuery('#wireframe').hasClass('active')) return true;
+                if (html.visual.parameters.renderizationMode.wireframe.hasClass('active')) return true;
                 else return false;
             }
             case 'toon':{
-                if (jQuery('#toon').hasClass('active')) return true;
+                if (html.visual.parameters.renderizationMode.toon.hasClass('active')) return true;
                 else return false;
             }
             case 'flat':{
-                if (jQuery('#flat').hasClass('active')) return true;
+                if (html.visual.parameters.renderizationMode.flat.hasClass('active')) return true;
                 else return false;
             }
             case 'realistic':{
-                if (jQuery('#realistic').hasClass('active')) return true;
+                if (html.visual.parameters.renderizationMode.realistic.hasClass('active')) return true;
                 else return false;
             }
             case 'lights':{
-                if (jQuery('#lights').hasClass('active')) return true;
+                if (html.visual.parameters.lights.hasClass('active')) return true;
                 else return false;
             }
             case 'ssao':{
-                if (jQuery('#ssao').hasClass('active')) return true;
+                if (html.visual.parameters.ssao.hasClass('active')) return true;
                 else return false;
             }
             case 'shadows':{
-                if (jQuery('#shadows').hasClass('active')) return true;
+                if (html.visual.parameters.shadows.hasClass('active')) return true;
                 else return false;
             }
             case 'distortionOn':{
-                if (jQuery('#distortionOn').hasClass('active')) return true;
+                if (html.visual.parameters.distortionOn.hasClass('active')) return true;
                 else return false;
             }
             case 'distortionOff':{
-                if (jQuery('#distortionOff').hasClass('active')) return true;
+                if (html.visual.parameters.distortionOff.hasClass('active')) return true;
                 else return false;
             }
             case 'anaglyph':{
-                if (jQuery('#anaglyph').hasClass('active')) return true;
+                if (html.visual.parameters.anaglyph.hasClass('active')) return true;
                 else return false;
             }
             case 'oculus':{
-                if (jQuery('#oculus').hasClass('active')) return true;
+                if (html.visual.parameters.oculus.hasClass('active')) return true;
                 else return false;
             }
             case 'sideBySide3D':{
-                if (jQuery('#3DsideBySide').hasClass('active')) return true;
+                if (html.visual.parameters.sideBySide3D.hasClass('active')) return true;
                 else return false;
             }
             case 'onTop3D':{
-                if (jQuery('#3DonTop').hasClass('active')) return true;
+                if (html.visual.parameters.onTop3D.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalCamTargetOn':{
-                if (jQuery('#crystalCamTargetOn').hasClass('active')) return true;
+                if (html.visual.parameters.crystalCamTargetOn.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalCamTargetOff':{
-                if (jQuery('#crystalCamTargetOff').hasClass('active')) return true;
+                if (html.visual.parameters.crystalCamTargetOff.hasClass('active')) return true;
                 else return false;
             }
             case 'fullScreen':{
-                if (jQuery('#fullScreen').hasClass('active')) return true;
+                if (html.visual.parameters.fullScreen.hasClass('active')) return true;
                 else return false;
             }
             case 'leapMotion':{
-                if (jQuery('#leapMotion').hasClass('active')) return true;
+                if (html.visual.parameters.leapMotion.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalClassic':{
-                if (jQuery('#crystalClassic').hasClass('active')) return true;
+                if (html.visual.parameters.crystalMode.crystalClassic.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalSubstracted':{
-                if (jQuery('#crystalSubstracted').hasClass('active')) return true;
+                if (html.visual.parameters.crystalMode.crystalSubstracted.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalSolidVoid':{
-                if (jQuery('#crystalSolidVoid').hasClass('active')) return true;
+                if (html.visual.parameters.crystalMode.crystalSolidVoid.hasClass('active')) return true;
                 else return false;
             }
             case 'crystalGradeLimited':{
-                if (jQuery('#crystalGradeLimited').hasClass('active')) return true;
+                if (html.visual.parameters.crystalMode.crystalGradeLimited.hasClass('active')) return true;
                 else return false;
             }
             case 'cellClassic':{
-                if (jQuery('#cellClassic').hasClass('active')) return true;
+                if (html.visual.parameters.unitCellMode.cellClassic.hasClass('active')) return true;
                 else return false;
             }
             case 'cellSubstracted':{
-                if (jQuery('#cellSubstracted').hasClass('active')) return true;
+                if (html.visual.parameters.unitCellMode.cellSubstracted.hasClass('active')) return true;
                 else return false;
             }
             case 'cellSolidVoid':{
-                if (jQuery('#cellSolidVoid').hasClass('active')) return true;
+                if (html.visual.parameters.unitCellMode.cellSolidVoid.hasClass('active')) return true;
                 else return false;
             }
             case 'cellGradeLimited':{
-                if (jQuery('#cellGradeLimited').hasClass('active')) return true;
+                if (html.visual.parameters.unitCellMode.cellGradeLimited.hasClass('active')) return true;
                 else return false;
             }
             case 'zoom100':{
-                if (jQuery('#zoom100').hasClass('active')) return true;
+                if (html.visual.tools.zoomOptions.zoom100.hasClass('active')) return true;
                 else return false;
             }
             case 'zoom90':{
-                if (jQuery('#zoom90').hasClass('active')) return true;
+                if (html.visual.tools.zoomOptions.zoom90.hasClass('active')) return true;
                 else return false;
             }
             case 'zoom80':{
-                if (jQuery('#zoom80').hasClass('active')) return true;
+                if (html.visual.tools.zoomOptions.zoom80.hasClass('active')) return true;
                 else return false;
             }
             case 'zoom70':{
-                if (jQuery('#zoom70').hasClass('active')) return true;
+                if (html.visual.tools.zoomOptions.zoom70.hasClass('active')) return true;
                 else return false;
             }
             case 'autoZoom':{
-                if (jQuery('#autoZoom').hasClass('active')) return true;
+                if (html.visual.tools.zoomOptions.autoZoom.hasClass('active')) return true;
                 else return false;
             }
             case 'fog':{
-                if (jQuery('[name="fog"]').hasClass('active')) return true;
+                if (html.visual.fog.checkbox.hasClass('active')) return true;
                 else return false;
             }
             case 'fogColor':{
-                return '#'+jQuery('#fogColor').spectrum('get').toHex();
+                return '#'+html.visual.fog.color.spectrum('get').toHex();
             }
             case 'fogDensity':{
-                return jQuery('#fogDensity').val();   
+                return html.visual.fog.density.val();   
             }
             case 'sounds':{
-                if (jQuery('#sounds').hasClass('active')) return true;
+                if (html.visual.sound.sounds.hasClass('active')) return true;
                 else return false;
             }
             case 'soundVolume':{
-                return jQuery('#soundSlider').slider('value');   
+                return html.visual.sound.soundSlider.slider('value');   
             }
             case 'crystalScreenColor':{
-                return '#'+jQuery('#crystalScreenColor').spectrum('get').toHex();
+                return '#'+html.visual.tools.colorPickers.crystalScreen.spectrum('get').toHex();
             }
             case 'cellScreenColor':{
-                return '#'+jQuery('#cellScreenColor').spectrum('get').toHex();
+                return '#'+html.visual.tools.colorPickers.cellScreen.spectrum('get').toHex();
             }
             case 'motifXScreenColor':{
-                return '#'+jQuery('#motifXScreenColor').spectrum('get').toHex();
+                return '#'+html.visual.tools.colorPickers.motifXScreen.spectrum('get').toHex();
             }
             case 'motifYScreenColor':{
-                return '#'+jQuery('#motifYScreenColor').spectrum('get').toHex();
+                return '#'+html.visual.tools.colorPickers.motifYScreen.spectrum('get').toHex();
             }
             case 'motifZScreenColor':{
-                return '#'+jQuery('#motifZScreenColor').spectrum('get').toHex();
+                return '#'+html.visual.tools.colorPickers.motifZScreen.spectrum('get').toHex();
             }
                 
         };
     };
+    
+    // Determine whether an element is accessible by the app user (enabled/disabled) //
     function retrieveAccessibility(index){
         switch(index){
             case 'latticePadlockDisable':{
-                if (jQuery('#latticePadlock').hasClass('disabled')) return true;
+                if (html.lattice.padlocks.lattice.hasClass('disabled')) return true;
                 else return false;
             }
             case 'motifPadlockDisable':{
-                if (jQuery('#motifPadlock').hasClass('disabled')) return true;
+                if (html.lattice.padlocks.motif.hasClass('disabled')) return true;
                 else return false;
             }
             case 'selectedLattice':{
-                if (jQuery('#selectedLattice').hasClass('disabled')) return true;
+                if (html.lattice.other.selected.hasClass('disabled')) return true;
                 else return false;
             }
         };
     };
     
+    // Module Interface //
+    /* This functions collects all values/states of every HTML element. Returns the following object:
+        {
+            activeTab: value,
+            tabDisable: value,
+            ...
+        }
+    */
     getUIValue.prototype.getAppState = function(){
         var app = {};
         
@@ -523,16 +539,31 @@ define([
         
         return app;
     };
+    /* This functions is called by passing multiple objects, like:
+        {
+            element#1: {
+                id: elementID,
+                selector: HTML Selector [This is optional]
+            },
+            element#2: {
+                ...
+            }
+        }
+        and returns the following object:
+        {
+            element#1: value,
+            element#2: value,
+            ...
+        }
+    */
     getUIValue.prototype.getValue = function(argument){
         var returnObject = {};
         if (Object.keys(argument).length <= 0) return false;
         else {
             _.each(argument,function($parameter, k){
-                
                 // Retrieve value
                 if (!(_.isUndefined($parameter.selector))) returnObject[k] = retrieveValue($parameter.id,$parameter.selector);
                 else returnObject[k] = retrieveValueFromID($parameter.id);
-                
             });
         }
         return returnObject;

@@ -3977,3 +3977,16 @@ ul.tagit input[type="text"]{
     line-height: 21px;
     color: #6a6a6e;
 }
+.footerLink{
+    text-transform: uppercase;
+    font-family: "Open Sans", sans-serif;
+    font-size: 15.4px;
+    font-weight: 900;
+    line-height: 15.4px;
+    color: #6a6a6e;
+    margin-bottom: 30px;
+    margin-top: 20px;
+    margin-left: 100px;
+    cursor: pointer;
+}
+.footerLink:hover{text-decoration: none!important; color:#443771!important;}

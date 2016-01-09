@@ -173,31 +173,37 @@ define([
     function Menu() {
 
         var _this = this;
-        html = new menu_html();
-        
+        _this.events = events;
+
         // Independent Modules //
         toolTipGeneratorModule = new tooltipGenerator();
         stringEditorModule = new stringEditor();
         messagesModule = new messages();
+        html = new menu_html();
 
         // 1st level dependency //
         userDialogModule = new userDialog({
-            messages:messagesModule
+            messages:messagesModule,
+            html:html
         });
         interfaceResizerModule = new interfaceResizer({
-            tooltipGenerator:toolTipGeneratorModule
+            tooltipGenerator:toolTipGeneratorModule,
+            messages:messagesModule,
+            html:html
         });
         getUIValueModule = new getUIValue({
             stringEditor: stringEditorModule,
+            html: html
         });
         disableUIElementModule = new disableUIElement({
-            messages: messagesModule 
+            html: html
         });
         setUIValueModule = new setUIValue({
             messages: messagesModule,
             stringEditor: stringEditorModule,
             tooltipGenerator: toolTipGeneratorModule,
-            menu: _this
+            menu: _this,
+            html: html
         });
         
         // 2nd level dependency //   
@@ -207,20 +213,23 @@ define([
             setUIValue: setUIValueModule,
             userDialog: userDialogModule,
             stringEditor: stringEditorModule,
-            tooltipGenerator: toolTipGeneratorModule
+            tooltipGenerator: toolTipGeneratorModule,
+            html: html
         });
         visualTabModule = new visualTab({
             userDialog: userDialogModule,
             getUIValue: getUIValueModule,
             setUIValue: setUIValueModule,
-            disableUIElement: disableUIElementModule
+            disableUIElement: disableUIElementModule,
+            html:html
         });
         pndTabModule = new pndTab({
             getUIValue: getUIValueModule,   
             setUIValue: setUIValueModule, // Co-dependent
             disableUIElement: disableUIElementModule,   
             tooltipGenerator: toolTipGeneratorModule,   
-            messages: messagesModule 
+            messages: messagesModule,
+            html:html
         });
         menuRibbonModule = new menuRibbon({
             messages:messagesModule,
@@ -228,14 +237,16 @@ define([
             interfaceResizer:interfaceResizerModule, 
             userDialog:userDialogModule, 
             setUIValue:setUIValueModule,
-            latticeTab:latticeTabModule
+            latticeTab:latticeTabModule,
+            html:html
         });
         notesTabModule = new notesTab({
             tooltipGenerator:toolTipGeneratorModule,
             disableUIElement:disableUIElementModule,
             menuRibbon:menuRibbonModule,
             setUIValue:setUIValueModule,
-            stringEditor:stringEditorModule
+            stringEditor:stringEditorModule,
+            html:html
         });
         libraryTabModule = new libraryTab({
             disableUIElement: disableUIElementModule, 
@@ -244,14 +255,17 @@ define([
             messages: messagesModule,
             getUIValue: getUIValueModule,
             notesTab: notesTabModule,
-            userDialog: userDialogModule
+            userDialog: userDialogModule,
+            html: html,
+            menu: _this
         });
         individualAtomControllerModule = new individualAtomController({
             stringEditor:stringEditorModule,
             tooltipGenerator:toolTipGeneratorModule,
             interfaceResizer:interfaceResizerModule,
             setUIValue:setUIValueModule,
-            notesTab:notesTabModule
+            notesTab:notesTabModule,
+            html:html
         });
         modalsModule = new modals({
             setUIValue: setUIValueModule,
@@ -259,7 +273,8 @@ define([
             getUIValue: getUIValueModule,
             disableUIElement: disableUIElementModule,
             latticeTab: latticeTabModule,
-            messages: messagesModule
+            messages: messagesModule,
+            html: html
         });
         motifTabModule = new motifTab({
             getUIValue: getUIValueModule,   
@@ -268,9 +283,45 @@ define([
             tooltipGenerator: toolTipGeneratorModule,   
             messages: messagesModule,
             latticeTab: latticeTabModule,
-            menuRibbon: menuRibbonModule
+            menuRibbon: menuRibbonModule,
+            html: html,
+            stringEditor: stringEditorModule
         });
         
+        libraryTabModule.importSearchResults({
+            result1: {
+                slug: '#91',
+                name: "Fernando's Project",
+                description: 'Old unsatiable our now but considered travelling impression. In excuse hardly summer in basket misery. By rent an part need. At wrong of of water those linen. Needed oppose seemed how all. Very mrs shed shew gave you.',
+                tags: {
+                    1: 'Old',
+                    2: 'considered',
+                    3: 'impression'
+                }
+            }, 
+            result2: {
+                slug: '#92',
+                name: "Thanos's Project",
+                description: 'Far quitting dwelling graceful the likewise received building. An fact so to that show am shed sold cold. Unaffected remarkably get yet introduced excellence terminated led. Result either design saw she esteem and.',
+                tags: {
+                    1: 'esteem',
+                    2: 'quitting',
+                    3: 'likewise',
+                    4: 'received',
+                    5: 'fact',
+                    6: 'Unaffected',
+                }
+            },
+            result3: {
+                slug: '#93',
+                name: "Alex's Project",
+                description: 'Departure so attention pronounce satisfied daughters am. But shy tedious pressed studied opinion entered windows off.',
+                tags: {
+                    1: 'Departure',
+                    2: 'daughters'
+                }
+            }
+        });
         
     /* --------------
        Hover Tooltips
@@ -537,9 +588,6 @@ define([
     };
 
     // Motif Tab //
-    Menu.prototype.toggleExtraParameter = function(choice, action){
-        motifTabModule.toggleExtraParameter(choice,action);
-    };
     Menu.prototype.editSavedAtom = function(argument){
         motifTabModule.editAtom(argument);
     };
@@ -548,8 +596,7 @@ define([
         _.each(values, function($parameter, k) {
             if (k === 'atomName'){
                 argument[k] = {
-                    value: {atomName: values.atomName, ionicIndex: values.ionicIndex, atomColor: values.atomColor},
-                    other: jQuery('.element-symbol-container')
+                    value: {atomName: values.atomName, ionicIndex: values.ionicIndex, atomColor: values.atomColor}
                 }
             }
             else{
@@ -644,6 +691,9 @@ define([
     Menu.prototype.getTangency = function(){
        return getUIValueModule.getValue({ 'tangency': { 'id': 'tangency' } });
     };
+    Menu.prototype.getAtomList = function(){
+        return motifTabModule.tableToObject();  
+    };
                 
     // PnD Tab //
     Menu.prototype.editPlaneInputs = function(values){
@@ -702,6 +752,9 @@ define([
     };
     Menu.prototype.setPlaneEntryVisibility = function(argument){
         pndTabModule.setPlaneEntryVisibility(argument);
+    };
+    Menu.prototype.toggleExtraParameter = function(choice, action){
+        pndTabModule.toggleExtraParameter(choice,action);
     };
 
     Menu.prototype.editDirectionInputs = function(values){
@@ -824,6 +877,7 @@ define([
         setUIValueModule.restoreUI(data.appUI,data.info);
         disableUIElementModule.restoreUI(data.appUI);
         notesTabModule.restoreNotes(data.notes);
+        motifTabModule.restoreTable(data.atomList);
     };
     Menu.prototype.reset = function(argument){
         switch(argument){
