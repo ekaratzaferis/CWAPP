@@ -63,6 +63,7 @@ define([
     var $tooltipGenerator = undefined;
     var $latticeTab = undefined;
     var $disableUIElement = undefined;
+    var $stringEditor = undefined;
     var html = undefined;
     
     // Contructor //
@@ -82,6 +83,8 @@ define([
         if (!(_.isUndefined(argument.menuRibbon))) $menuRibbon = argument.menuRibbon;
         else return false;
         if (!(_.isUndefined(argument.latticeTab))) $latticeTab = argument.latticeTab;
+        else return false;
+        if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
         else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
@@ -701,7 +704,7 @@ define([
                 visibility: current.find('.visibility').hasClass('visible'),
                 chain: !(current.find('.chain').hasClass('hiddenIcon')),
                 level: current.find('#level').html(),
-                element: current.find('.element').attr('class'),
+                element: current.find('.element').attr('element'),
                 sup: current.find('.element sup').html(),
                 atomPos: current.find('.element-serial a').html()
             };
@@ -742,7 +745,7 @@ define([
                     constructor.elementName = $parameter;
                     break;
                 case 'ionicIndex':
-                    if ($parameter !== '0' && $parameter !== '3b') constructor.elementName = '<span style="font-size:13px;">'+constructor.elementName+'<sup>'+argument['ionicIndex']+'</sup></span>';
+                    if ($parameter !== '0' && $parameter !== '3b' && $parameter !== 'undefined') constructor.elementName = '<span style="font-size:13px;">'+constructor.elementName+'<sup>'+argument['ionicIndex']+'</sup></span>';
                     break;
                 case 'atomPos':
                     constructor.atomPos = $parameter;
@@ -766,7 +769,7 @@ define([
         }
 
         // Construct HTML Query //
-        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+constructor.atomPos+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td element="'+constructor.elementCode+'" class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+constructor.atomPos+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
         // Add, Remove, Edit Entry
         switch(argument['action']){
@@ -919,7 +922,18 @@ define([
     };
     // Restore Atom List //
     motifTab.prototype.restoreTable = function(data){
-        
+        var _this = this;
+        _.each(data, function(entry,id){
+            _this.editAtom({
+                id: id,
+                action: 'save',
+                visible: entry.visibility,
+                elementCode: entry.element,
+                elementName: $stringEditor.capitalizeFirstLetter(entry.element),
+                ionicIndex: entry.sup,
+                atomPos: entry.atomPos
+            });
+        });
     };
     
     return motifTab;

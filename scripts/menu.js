@@ -284,7 +284,8 @@ define([
             messages: messagesModule,
             latticeTab: latticeTabModule,
             menuRibbon: menuRibbonModule,
-            html: html
+            html: html,
+            stringEditor: stringEditorModule
         });
         
         libraryTabModule.importSearchResults({

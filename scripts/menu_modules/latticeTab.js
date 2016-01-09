@@ -869,7 +869,7 @@ define([
     // Unlock Motif Padlock //
     function unlockMotifPadlock(){    
         // Toggle //
-        if (!(html.lattice.padlocks.motif.children().addClass('active'))) html.lattice.padlocks.motif.find('a').button('toggle');
+        if (!(html.lattice.padlocks.motif.children().hasClass('active'))) html.lattice.padlocks.motif.find('a').button('toggle');
         html.lattice.padlocks.motif.children().addClass('active');
         
         // Turn off tangency //
@@ -898,7 +898,7 @@ define([
     // Lock Motif Padlock //
     function lockMotifPadlock(){     
         // Toggle //
-        if (html.lattice.padlocks.motif.children().addClass('active')) html.lattice.padlocks.motif.find('a').button('toggle');
+        if (html.lattice.padlocks.motif.children().hasClass('active')) html.lattice.padlocks.motif.find('a').button('toggle');
         html.lattice.padlocks.motif.children().removeClass('active');
         
         // Turn on tangency //
@@ -1104,6 +1104,42 @@ define([
             jQuery('#'+k+'Collision').css('background-color','white'); 
             delete collisions[k];
         });  
+    };
+    // Restore Padlocks //
+    latticeTab.prototype.restorePadlocks = function(lattice,motif){
+        
+        /* 
+            lattice === false --> LOCK
+            lattice === true --> UNLOCK
+            
+            motif === false ---> LOCK
+            motif === true ---> UNLOCK
+        */
+        // Grab HTML State //
+        var latticeUnlocked = html.lattice.padlocks.lattice.children().hasClass('active');
+        var motifUnlocked = html.lattice.padlocks.motif.children().hasClass('active');
+        
+        // LATTICE //
+        if ( (lattice === false) && (latticeUnlocked === true)) {
+            html.lattice.padlocks.lattice.find('a').button('toggle');
+            html.lattice.padlocks.lattice.children().removeClass('active');
+        }
+        // Unlock when it is locked //
+        else if ((lattice === true) && (latticeUnlocked === false)) {
+            html.lattice.padlocks.lattice.find('a').button('toggle');
+            html.lattice.padlocks.lattice.children().addClass('active');
+        };
+        
+        // MOTIF //
+        if ( (motif === false) && (motifUnlocked === true)) {
+            html.lattice.padlocks.motif.find('a').button('toggle');
+            html.lattice.padlocks.motif.children().removeClass('active');
+        }
+        // Unlock when it is locked //
+        else if ((motif === true) && (motifUnlocked === false)) {
+            html.lattice.padlocks.motif.find('a').button('toggle');
+            html.lattice.padlocks.motif.children().addClass('active');
+        }; 
     };
     
     return latticeTab;

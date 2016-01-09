@@ -156,7 +156,7 @@ define([
             if (value === true) {
                 $setUI.setValue({
                     crystalCamTargetOn:{
-                        publish:{center:value},
+                        publish:{center:true},
                         value:value
                     }
                 });
@@ -167,7 +167,7 @@ define([
             if (value === true) {
                 $setUI.setValue({
                     crystalCamTargetOff:{
-                        publish:{center:value},
+                        publish:{center:false},
                         value:value
                     }
                 });

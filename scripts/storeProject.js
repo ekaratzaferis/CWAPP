@@ -148,7 +148,7 @@ define([
             checkIteration = true;
             if (k === 'activeEntry') jsonText = jsonText + '"activeEntry":false,';
             else {
-                jsonText = jsonText + '"' + k + '":{'
+                jsonText = jsonText + '"' + k + '":{';
                 jsonText = jsonText + '"title":"' + $parameter.title + '",';
                 jsonText = jsonText + '"body":"' + $parameter.body + '",';
                 jsonText = jsonText + '"color":"' + $parameter.color + '",';
@@ -165,6 +165,27 @@ define([
         }
         jsonText = jsonText + '},'; // Close Notes //
 
+        // Atom List //
+        jsonText = jsonText + '"atomList":{';
+        _.each(argument.atomList, function($parameter,k){
+            jsonText = jsonText + '"' + k + '":{';
+            jsonText = jsonText + '"role":"' + $parameter.role + '",';
+            jsonText = jsonText + '"tangentTo":"' + $parameter.tangentTo + '",';
+            jsonText = jsonText + '"visibility":' + $parameter.visibility + ',';
+            jsonText = jsonText + '"chain":' + $parameter.chain + ',';
+            jsonText = jsonText + '"level":"' + $parameter.level + '",';
+            jsonText = jsonText + '"element":"' + $parameter.element + '",';
+            jsonText = jsonText + '"sup":"' + $parameter.sup + '",';
+            jsonText = jsonText + '"atomPos":"' + $parameter.atomPos + '"},';
+            checkIteration = true;
+        });
+        // Remove last comma //
+        if (checkIteration === true){
+            jsonText = jsonText.slice(0, -1);
+            checkIteration = false;
+        }
+        jsonText = jsonText + '},';
+        
         // System //
         jsonText = jsonText + '"system": '+ this.getSystemState() +' ';
 
