@@ -480,7 +480,7 @@ require([
     if(!_.isUndefined(arg.crystalScreenColor)){ 
       crystalRenderer.backgroundColor = ('#'+arg.crystalScreenColor);
     }
-    else if(!_.isUndefined(arg.cellScreenColor)){
+    else if(!_.isUndefined(arg.cellScreenColor)){ 
       unitCellRenderer.backgroundColor = ('#'+arg.cellScreenColor);
     } 
     else if(!_.isUndefined(arg.motifXScreenColor)){ 
@@ -526,7 +526,8 @@ require([
     crystalScene.updateShadowCameraProperties( centroid.length());
 
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
-    unitCellScene.updateShadowCameraProperties( p.length()/2);
+    
+    unitCellScene.updateShadowCameraProperties( p.length());
 
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
@@ -757,8 +758,7 @@ require([
   menu.onRendModeChange(function(message, arg) { 
 
     lattice.renderingModeChange(arg);
-    motifEditor.renderingModeChange(arg);
- 
+    motifEditor.renderingModeChange(arg); 
     renderingModes.setMode(arg); 
 
     if(arg.mode === 'toon'){
@@ -798,7 +798,7 @@ require([
   menu.onPlaneInterception(function(message, arg) { 
     lattice.interceptedPlane(arg);
   }); 
-  menu.targetOfCamChange(function(message, arg) { 
+  menu.targetOfCamChange(function(message, arg) {  
     if(arg.center){
       orbitCrystal.control.target = new THREE.Vector3(0,0,0) ;
     }

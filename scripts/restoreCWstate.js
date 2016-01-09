@@ -64,9 +64,7 @@ define([
 
       this.configureLatticeSettings(); 
       this.configureMillerObjectsSettings();
-
-      this.configureMotifEditorSettings();
-
+  
       this.lattice.setGradeChoices( {'faceCheckButton': this.cwObj.system.cellVisualization.faces.visible} );
       this.lattice.setGradeChoices( {'gridCheckButton': this.cwObj.system.cellVisualization.edges.visible} );
       
@@ -78,6 +76,8 @@ define([
         this.lattice.reCreateMillers, 
         this.lattice.recreateMotif 
       ]);   
+
+      this.configureMotifEditorSettings();
     }
 
     this.configureVisualizationSettings();
@@ -138,10 +138,7 @@ define([
 
       this.lattice.points = {}; 
       this.lattice.mutex = false;
-      this.lattice.currentMotif = [];
-      this.lattice.latticeName = 'none';  
-      this.lattice.latticeType = 'none';  
-      this.lattice.latticeSystem = 'none';  
+      this.lattice.currentMotif = [];  
       this.lattice.actualAtoms = []; 
 
       // grade
@@ -152,6 +149,7 @@ define([
       this.lattice.faces = [];
       this.lattice.gradeParameters = {"radius" : 2, "cylinderColor" : "A19EA1" , "faceOpacity" : 3 , "faceColor" : "907190"};
       this.lattice.hexagonalShapes = [] ;
+
       // miller
       this.lattice.millerParameters = []; 
 
@@ -293,6 +291,8 @@ define([
     var visualTab = this.cwObj.appUI.visualTab ; 
     var crystalCam = this.orbitCrystal.camera ;
     var cellCamera = this.orbitUnitCell.camera ; 
+    var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
+      
     // toggles
 
     var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
@@ -305,14 +305,15 @@ define([
     this.atomMaterialManager.setLabels(toggles.labelToggle);
 
     this.crystalScene.axisMode({xyzAxes : toggles.xyzAxes, abcAxes : toggles.abcAxes});
+    this.crystalScene.updateAbcAxes({alpha : latticeParams.alpha, beta : latticeParams.beta, gamma :  latticeParams.gamma}, this.orbitCrystal.camera);
     
     for (var prop in visualTab.visualParameters.renderizationMode) {
       var mode = visualTab.visualParameters.renderizationMode[prop];
       if( mode === true){
-        this.lattice.renderingModeChange({mode : mode});
-        this.motifEditor.renderingModeChange({mode : mode});
+        this.lattice.renderingModeChange({mode : prop});
+        this.motifEditor.renderingModeChange({mode : prop});
      
-        this.renderingModes.setMode({mode : mode}); 
+        this.renderingModes.setMode({mode : prop}); 
 
         if(mode === 'toon'){
           this.crystalRenderer.setGamma(true);
@@ -366,8 +367,7 @@ define([
     var atoms = this.cwObj.system.motif ;
     var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
     
-    var anglesScales = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
-
+    var anglesScales =  { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
     this.motifEditor.cellParameters = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
     if(this.motifEditor.newSphere){ 
@@ -568,7 +568,7 @@ define([
       ); 
       
  
-      this.motifEditor.updateAtomList(
+      /*this.motifEditor.updateAtomList(
         new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z), 
         atoms[i].id, 
         atoms[i].radius , 
@@ -578,7 +578,7 @@ define([
         undefined,
         atoms[i].color,
         atoms[i].ionicIndex
-      );
+      );*/
  
       if(atoms[i].id == cell.lastSphereAdded) {
         this.motifEditor.lastSphereAdded = atom ;
@@ -709,7 +709,7 @@ define([
     var cellCamera = this.orbitUnitCell.camera ; 
 
     crystalCam.position.set(settings.crystalCamera.position.x, settings.crystalCamera.position.y, settings.crystalCamera.position.z);
-    cellCamera.position.set(settings.cellCamera.position.x, settings.crystalCamera.position.y, settings.crystalCamera.position.z);
+    cellCamera.position.set(settings.cellCamera.position.x, settings.cellCamera.position.y, settings.cellCamera.position.z);
  
     this.motifXcam.position.set(settings.motifCameras.xCam.position.x, settings.motifCameras.xCam.position.y, settings.motifCameras.xCam.position.z);  
     this.motifYcam.position.set(settings.motifCameras.yCam.position.x, settings.motifCameras.yCam.position.y, settings.motifCameras.yCam.position.z);  

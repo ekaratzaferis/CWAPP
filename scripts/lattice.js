@@ -2091,7 +2091,7 @@ define([
         millerI: "",
         millerK: $('#millerK').val(),
         millerL: $('#millerL').val(),
-        planeColor: '#'+($('#planeColor').spectrum("get").toHex()), //alex fix
+        planeColor: '#'+($('#planeColor').spectrum("get").toHex()), // alex fix
         planeName: "",
         planeOpacity: $('#planeOpacity').val(),
         parallel: arg.parallel
@@ -4465,7 +4465,7 @@ define([
     this.createMillerDirection(params, true, false); 
   };  
   Lattice.prototype.submitDirectional = function(millerParameters) { 
-  console.log(millerParameters); 
+  
     if(
       ( millerParameters.millerU === "" || 
         millerParameters.millerV === "" || 

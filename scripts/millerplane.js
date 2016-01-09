@@ -12,7 +12,7 @@ define([
 ) {
 
   function MillerPlane( b, a, c, d, e, opacity, color, visible) {
-
+ 
     if(color.charAt(0) === '#'){
       this.color = color; 
     }
@@ -98,13 +98,7 @@ define([
   };
   MillerPlane.prototype.setColor = function(color) {
     if(_.isUndefined(color)){ 
-      this.object3d.material.needsUpdate = true;
-      if(this.color[0] === '#'){
-        this.object3d.material.color.set( this.color );
-      }
-      else{
-        this.object3d.material.color.setHex( this.color );
-      } 
+      return;
     }
     else{  
       this.color =  color ;

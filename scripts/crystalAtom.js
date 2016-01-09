@@ -17,7 +17,7 @@ define([
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling) { 
-      
+       
     var _this = this; 
     this.radius = radius;  
     this.material;
@@ -46,7 +46,7 @@ define([
 
     this.labeling = labeling;
 
-    this.addMaterial(color, position, opacity, renderingMode,id, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
+    this.addMaterial(color, position, opacity, renderingMode, id, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
 
     // private vars
     var originalColor = color;
@@ -58,6 +58,13 @@ define([
     }
     
   };
+  function validateColor(color){
+
+    var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+    console.log(color);
+    console.log(isOk);
+    //return hexColor;
+  }
   CrystalAtom.prototype.setVisibility = function( bool) {
 
     this.visibility = bool;  
@@ -106,8 +113,8 @@ define([
   CrystalAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, identity, image) {
     var _this = this ;
 
-    var wireMat; 
- 
+    var wireMat;  
+
     if(renderingMode === 'wireframe') {
       wireMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 

@@ -20,7 +20,7 @@ define([
     this.object3d = mesh; 
     Explorer.add(this);
     this.scale = 2;
-
+    this.color;
   }
 
   Grid.prototype.destroy = function() {
@@ -36,20 +36,45 @@ define([
 
   };
   
-  Grid.prototype.setVisible= function(x) { this.object3d.visible = x; };
+  Grid.prototype.setVisible= function(x) { 
+    this.object3d.visible = x; 
+  };
 
   Grid.prototype.setColor = function(color) {
 
-    if(_.isUndefined(color)) return;  
-    if(color[0] === '#'){
-      this.object3d.material.color.set( color );
-    } 
-    else if(color[0] === '0'){
-      this.object3d.material.color.setHex( color );
-    }
+    if(_.isUndefined(color)) return;
+ 
+    color = validateColor(color);
+ 
+    this.color = color;
+    this.object3d.material.color.setHex( this.color );
+    this.object3d.material.needsUpdate = true;
+
     this.setRadius(this.scale);
 
   };
+  function validateColor(color){
 
-   return Grid;
+    var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+  
+    if(isOk === true){
+      if(color.charAt(0) === '#'){
+        color = color.slice(1,7);
+        color = '0x' + color;
+      }
+      console.log(color);
+      return color; 
+    }
+    else{
+      if(color.charAt(0) !== '#' && (color.charAt(0) !== '0' || color.charAt(1) !== 'x' )){
+        return ('0x'+color); 
+      } 
+      else { 
+        return 0xffffff;
+      } 
+    }
+     
+  }
+  
+  return Grid;
 });

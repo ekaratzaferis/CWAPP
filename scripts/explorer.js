@@ -447,20 +447,23 @@ define([
 
   }
   Explorer.prototype.axisMode = function(arg){
+    
     var _this = this;
+    
     if(arg.xyzAxes !== undefined){
-      if(arg.xyzAxes){ 
+      if(arg.xyzAxes){  
         this.zAxisLine.visible = true;
         this.yAxisLine.visible = true;
         this.xAxisLine.visible = true; 
       }
-      else{
+      else{ 
         this.zAxisLine.visible = false;
         this.yAxisLine.visible = false;
         this.xAxisLine.visible = false; 
       }
     }
-    else if(arg.abcAxes !== undefined){
+    
+    if(arg.abcAxes !== undefined){
       if(arg.abcAxes){ 
         this.aAxisLine.visible = true;
         this.bAxisLine.visible = true;

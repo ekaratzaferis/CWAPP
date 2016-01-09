@@ -41,7 +41,7 @@ define([
     this.atom;
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: false }); 
     this.backgroundColor =  '#000000' ;
-    this.renderer.setClearColor( '#000000', 0 );
+    this.renderer.setClearColor( '#000000');
     this.renderer.setSize( width, height);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // options are THREE.BasicShadowMap | THREE.PCFShadowMap | THREE.PCFSoftShadowMap
@@ -257,7 +257,7 @@ define([
       if(this.container === 'unitCellRenderer') {
         this.renderer.clear();
       }
- 
+      this.renderer.setClearColor( this.backgroundColor );
       this.cameras[0].aspect = this.containerWidth/this.containerHeight;
       this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
       this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 

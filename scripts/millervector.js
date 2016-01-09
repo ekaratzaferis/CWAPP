@@ -12,7 +12,7 @@ define([
 ) {
 
   function MillerVector(start , end, color, radius) {
-     
+  
     this.radius = radius ;
     this.color = color ;
     this.tubeMesh = { 'object3d' : undefined } ; 

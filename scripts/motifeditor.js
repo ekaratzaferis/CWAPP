@@ -119,11 +119,6 @@ define([
   };  
   Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem, restore) {
 
-    if(this.editorState.updated === true || !anglesScales) {
-      return;
-    }
-    this.editorState.updated = true ;
-
     this.latticeType   = latticeType; 
     this.latticeName   = latticeName;   
     this.latticeSystem = latticeSystem;   
@@ -132,19 +127,6 @@ define([
     this.initialLatticeParams.beta  = anglesScales.beta ;
     this.initialLatticeParams.gamma = anglesScales.gamma ; 
     
-    if(this.padlock === false){   
-      this.cellParameters.alpha = parseInt($("#alpha").val());
-      this.cellParameters.beta = parseInt($("#beta").val());
-      this.cellParameters.gamma = parseInt($("#gamma").val());
-    }
-    else {   
-      this.cellParameters.alpha = this.initialLatticeParams.alpha ;
-      this.cellParameters.beta  = this.initialLatticeParams.beta ;
-      this.cellParameters.gamma = this.initialLatticeParams.gamma ;
-    }  
-    if(_.isUndefined(restore) ) {
-      this.configureCellPoints('manual');
-    } 
   };
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
@@ -2932,6 +2914,7 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore, ionicIndex){  
     var _this = this;  
     var dimensions, identity ;
+
     this.menu.setLatticeCollision({
       scaleX: false,
       scaleY: false, 
