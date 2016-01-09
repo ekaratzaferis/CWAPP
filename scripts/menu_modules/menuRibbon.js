@@ -210,7 +210,7 @@ define([
             $setUI.setValue({
                 xyzAxes:{
                     value: value,
-                    publish: {xyxAxes:value}
+                    publish: {xyzAxes:value}
                 }
             });
         });
