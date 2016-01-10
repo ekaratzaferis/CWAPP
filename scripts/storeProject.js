@@ -68,7 +68,7 @@ define([
     
     // Update Library Tab
     function updateLibraryTab(slug){
-        var link = 'cw.gl/#'+slug;
+        var link = 'cw.gl/'+slug;
         // Update QR //
         jQuery('#QRImage').trigger('update',[link]);
         // Update Links //
