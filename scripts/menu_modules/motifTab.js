@@ -533,7 +533,7 @@ define([
         return level;
     };
     // Correlate two atoms with the relationship parent/child //
-    function tangent(id){
+    function tangent(id,restore){
         var arg = {};
         var current = html.motif.other.atomTable.find('#'+id);
         var above = current.prev('tr');
@@ -547,7 +547,7 @@ define([
                 // Publish Event //
                 arg["dragMode"]= false;
                 arg["parentId"]= current.attr('tangentTo');
-                PubSub.publish('menu.drag_atom', arg);
+                if (restore === undefined) PubSub.publish('menu.drag_atom', arg);
 
                 // Assign role empty and deactivate button //
                 current.attr('role','empty');
@@ -595,7 +595,7 @@ define([
                         // Publish Event //
                         arg["dragMode"]= true;
                         arg["parentId"]= above.attr('id');
-                        PubSub.publish('menu.drag_atom', arg);
+                        if (restore === undefined) PubSub.publish('menu.drag_atom', arg);
                     }
                 }
             }
@@ -939,7 +939,7 @@ define([
                 color: 'bg-light-purple'
             });
             // Make atom tangent to the above //
-            if (entry.tangentTo !== 'x') tangent(id);
+            if (entry.tangentTo !== 'x') tangent(id,true);
             // De-highlight entry //
             _this.highlightAtomEntry({
                 id: id,
