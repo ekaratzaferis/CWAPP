@@ -716,7 +716,6 @@ define([
     
     // Add, Save, Delete atoms from the Table //
     motifTab.prototype.editAtom = function(argument){
-        
         var constructor = {};
         constructor.eyeButton = '';
         constructor.visible = '';
@@ -924,6 +923,7 @@ define([
     motifTab.prototype.restoreTable = function(data){
         var _this = this;
         _.each(data, function(entry,id){
+            // Add Table Entry //
             _this.editAtom({
                 id: id,
                 action: 'save',
@@ -932,6 +932,18 @@ define([
                 elementName: $stringEditor.capitalizeFirstLetter(entry.element),
                 ionicIndex: entry.sup,
                 atomPos: entry.atomPos
+            });
+            // Highlight entry //
+            _this.highlightAtomEntry({
+                id: id,
+                color: 'bg-light-purple'
+            });
+            // Make atom tangent to the above //
+            if (entry.tangentTo !== 'x') tangent(id);
+            // De-highlight entry //
+            _this.highlightAtomEntry({
+                id: id,
+                color: 'bg-light-gray'
             });
         });
     };
