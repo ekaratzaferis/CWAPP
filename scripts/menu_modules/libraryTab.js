@@ -217,6 +217,42 @@ define([
         
         // Search Area //
         html.library.search.preview.hide();
+        html.library.search.searchName.hide();
+        html.library.search.searchTags.hide();
+        html.library.search.searchDesc.hide();
+        html.library.search.databaseLoader.hide();
+        
+        // Database Service //
+        html.library.search.searchField.on('submit', function(){
+            
+            html.interface.screen.body.mCustomScrollbar("scrollTo",'bottom');
+            html.library.search.databaseLoader.show();
+            
+            var service = 'https://cwgl.herokuapp.com?format=json&qs=';
+            var nameQuery = '{"info":{"name":"'+html.library.search.searchQuery.val()+'"}}';
+            var descQuery = '{"info":{"description":"'+html.library.search.searchQuery.val()+'"}}';
+            var tagsQuery = '{"info":{"tags":["'+html.library.search.searchQuery.val()+'"]}}';
+            
+            // Request Search by Name //
+            $.ajax(service + encodeURIComponent(nameQuery),{
+                method: 'GET',
+                crossDomain: true,
+                 headers: {
+                    "Accept":"Access-Control-Allow-Origin: *'"
+                },
+                beforeSend: function(xmlHttpRequest) {
+                    xmlHttpRequest.withCredentials = true;
+                }
+            })
+            .done(function(res) {  
+                console.log(res); 
+                console.log(res.data);
+                html.library.search.databaseLoader.hide();
+            });
+            
+            // Cancel Submit //
+            return false;
+        });
         
     };
     // Read mandatory project details before allowing any save/open process //
@@ -247,7 +283,11 @@ define([
     };
     
     // Module Interface //
-    libraryTab.prototype.importSearchResults = function(data){
+    libraryTab.prototype.importSearchResults = function(data, category){
+        // Update Headers //
+        jQuery('#search'+category).find('a').html(category + ': '+ Object.keys(data).length +' matches found.');
+        jQuery('#search'+category).show();
+        
         _.each(data, function($parameter, k){
             // Read project information //
             var projectName = $parameter.name;
@@ -258,7 +298,7 @@ define([
             
             // Create HTML query and append to the search results area //
             var query = '<div class="col col-sm-6"><div class="project-block" id="'+k+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';
-            html.library.search.results.append(query);
+            jQuery('#search'+category).after(query);
             
             // Hover //
             jQuery('#'+k).hover(
@@ -304,9 +344,18 @@ define([
             });
         });
         if (Object.keys(data).length > 1) {
-            html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
+            //html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
         }
         else html.library.search.footer.remove();
+    };
+    libraryTab.prototype.updateLibrary = function(link){
+        // Update QR Image //
+        html.modals.qr.image.trigger('update',[link]);
+        // Update Links //
+        html.library.saveOnline.link.val(link);
+        html.modals.qr.link.val(link);
+        // Hide user dialog //
+        menu.hideInfoDialog();
     };
     
     return libraryTab;

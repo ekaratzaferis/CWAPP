@@ -288,6 +288,41 @@ define([
             stringEditor: stringEditorModule
         });
         
+        /*libraryTabModule.importSearchResults({
+            result1: {
+                slug: '#91',
+                name: "Fernando's Project",
+                description: 'Old unsatiable our now but considered travelling impression. In excuse hardly summer in basket misery. By rent an part need. At wrong of of water those linen. Needed oppose seemed how all. Very mrs shed shew gave you.',
+                tags: {
+                    1: 'Old',
+                    2: 'considered',
+                    3: 'impression'
+                }
+            }, 
+            result2: {
+                slug: '#92',
+                name: "Thanos's Project",
+                description: 'Far quitting dwelling graceful the likewise received building. An fact so to that show am shed sold cold. Unaffected remarkably get yet introduced excellence terminated led. Result either design saw she esteem and.',
+                tags: {
+                    1: 'esteem',
+                    2: 'quitting',
+                    3: 'likewise',
+                    4: 'received',
+                    5: 'fact',
+                    6: 'Unaffected',
+                }
+            },
+            result3: {
+                slug: '#93',
+                name: "Alex's Project",
+                description: 'Departure so attention pronounce satisfied daughters am. But shy tedious pressed studied opinion entered windows off.',
+                tags: {
+                    1: 'Departure',
+                    2: 'daughters'
+                }
+            }
+        },'Name');
+        
         libraryTabModule.importSearchResults({
             result1: {
                 slug: '#91',
@@ -321,7 +356,7 @@ define([
                     2: 'daughters'
                 }
             }
-        });
+        },'Tags');*/
         
     /* --------------
        Hover Tooltips
@@ -511,6 +546,9 @@ define([
     Menu.prototype.transformMenu = function(argument){
         interfaceResizerModule.transformMenu(argument);    
     };
+    Menu.prototype.updateLibrary = function(argument){
+        libraryTabModule.updateLibrary(argument);  
+    };
 
     // Tooltips //
     Menu.prototype.canvasTooltip = function(argument){
@@ -543,6 +581,9 @@ define([
     };
     Menu.prototype.showWarningDialog = function(argument){
         userDialogModule.showWarningDialog(argument);
+    };
+    Menu.prototype.hideInfoDialog = function(){
+        userDialogModule.hideInfoDialog();  
     };
 
     // Individual Atom Customizer //

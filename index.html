@@ -1737,30 +1737,39 @@
                                                                 </div>
 																<div class="box-body">
 																	<div class="project-search-form-container">
-																		<form action="#">
+																		<form id="searchField">
 																			<div class="form-group">
-																				<input type="text" class="form-control" placeholder="Project Name" name="project"/>
+																				<input id="searchQuery" type="text" class="form-control" placeholder="Name, Tags, Description" name="project"/>
 																			</div>
 																			<div class="btn-search">
 																				<button class="btn btn-purple-dark"><img src="Images/search-icon.png" class="img-responsive" alt="Search"/></button>
 																			</div>
 																		</form>
 																	</div>
+                                                                    <div class="loader" id="databaseLoader"></div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchName">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchDesc">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchTags">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 																	<div class="project-blocks-container">
 																		<div class="row row-5" id="searchResults">
-																			
-                                                                            <!--
-																			<div class="col col-sm-6">
-																				<div class="project-block">
-																					<div class="block-image">
-																						<img src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
-																					</div>
-																					<div class="block-title">
-																						<h4>Project Name 1</h4>
-																					</div>
-																				</div>
-																			</div>
-                                                                            -->
 																			<div class="col col-sm-12" id="resultPreviewBig">
 																				<div class="project-block-xl">
 																					<div class="block-image">

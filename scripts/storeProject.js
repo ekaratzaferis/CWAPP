@@ -13,9 +13,10 @@ define([
 ) {
     // Zipper //
    var zip = new jszip();
+   var menu = undefined;
     
     // Constructor //
-    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer,stlExporter,menu) { 
+    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer,stlExporter,menuIn) { 
         this.idle = false;
         this.lattice = lattice;
         this.motifeditor = motifeditor;
@@ -26,7 +27,7 @@ define([
         this.camera = camera;
         this.crystalRenderer = crystalRenderer;
         this.stlExporter = stlExporter;
-        this.menu = menu;
+        menu = menuIn;
     };
     
     // Randomizer //
@@ -38,8 +39,10 @@ define([
         return text;
     };
     
-    // Send JSON to Database - With Callback //
-    function sendToDatabase(text,callback){
+    // Send JSON to Database //
+    function sendToDatabase(text){
+        
+        var _this = this;
         
         var obj =  JSON.parse(text);  
         var str =  JSON.stringify(obj);
@@ -62,19 +65,8 @@ define([
         })
         .done(function(res) {  
             hash = res.slug;
-            callback(hash);
+            menu.updateLibrary('cw.gl/'+hash);
         });
-    };
-    
-    // Update Library Tab
-    function updateLibraryTab(slug){
-        var link = 'cw.gl/'+slug;
-        // Update QR //
-        jQuery('#QRImage').trigger('update',[link]);
-        // Update Links //
-        jQuery('#saveOnlineLink').val(link);
-        jQuery('#saveOnlineLinkQR').val(link);
-        jQuery('#info_modal').trigger('finish');
     };
     
     // Construct JSON File //
@@ -254,7 +246,7 @@ define([
     };
     StoreProject.prototype.saveOnline = function(argument){
         var json = this.constructJSONString(argument);
-        sendToDatabase(json,updateLibraryTab);
+        sendToDatabase(json);
     };
     StoreProject.prototype.exportJSON = function(argument){ 
         // Force User Download //
