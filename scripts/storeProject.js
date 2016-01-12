@@ -335,65 +335,10 @@ define([
 
         var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
         var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
-        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'},"angles" : { "alpha" : '+this.motifeditor.cellParameters.alpha+', "beta" :'+this.motifeditor.cellParameters.beta+', "gamma" : '+this.motifeditor.cellParameters.gamma+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
+        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'},"angles" : { "alpha" : '+this.motifeditor.cellParameters.alpha+', "beta" :'+this.motifeditor.cellParameters.beta+', "gamma" : '+this.motifeditor.cellParameters.gamma+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "cellVolume" : { "xInitVal" : '+this.motifeditor.cellVolume.xInitVal+', "yInitVal" :'+this.motifeditor.cellVolume.yInitVal+', "zInitVal" : '+this.motifeditor.cellVolume.zInitVal+' }, "initialLatticeParams" : { "alpha" : '+this.motifeditor.initialLatticeParams.alpha+' , "beta" : '+this.motifeditor.initialLatticeParams.beta+', "gamma" : '+this.motifeditor.initialLatticeParams.gamma+' ,"scaleX" : '+this.motifeditor.initialLatticeParams.scaleX+', "scaleY" :'+this.motifeditor.initialLatticeParams.scaleY+', "scaleZ" : '+this.motifeditor.initialLatticeParams.scaleZ+' }, "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
         var newSphere = [];
-        /*
-        if(this.motifeditor.newSphere !== undefined){  
-            newSphere.push('"visible" : ');
-            newSphere.push(this.motifeditor.newSphere.visible );
-
-            newSphere.push(',');
-
-            newSphere.push('"manualSetCellDims" : ');
-            newSphere.push(this.motifeditor.manualAabc );
-
-            newSphere.push(','); 
-
-            newSphere.push('"id" : "');
-
-            newSphere.push(this.motifeditor.newSphere.myID );
-
-            newSphere.push('",');
-
-            newSphere.push('"radius" : ');
-            newSphere.push(this.motifeditor.newSphere.radius );
-
-            newSphere.push(',');
-
-            newSphere.push('"elementName" : "');
-            newSphere.push(this.motifeditor.newSphere.elementName );
-
-            newSphere.push('",');
-
-            newSphere.push('"color" : "');
-            newSphere.push(this.motifeditor.newSphere.color );
-
-            newSphere.push('",');
-
-            newSphere.push('"blinking" : "');
-            newSphere.push(this.motifeditor.newSphere.blinkingMode );
-
-            newSphere.push('",');
-
-            newSphere.push('"position" : { "x" : '+this.motifeditor.newSphere.object3d.position.x+', "y" :'+this.motifeditor.newSphere.object3d.position.y+', "z" : '+this.motifeditor.newSphere.object3d.position.z+'}'  );
-
-            newSphere.push(',');
-
-            newSphere.push('"opacity" : ');
-            newSphere.push(this.motifeditor.newSphere.radius );
-
-            newSphere.push(','); 
-
-            newSphere.push('"texture" : "');
-            newSphere.push(this.motifeditor.newSphere.texture );
-
-            newSphere.push('",');
-
-            newSphere.push('"wireframe" : ' );
-            newSphere.push(this.motifeditor.newSphere.wireframe );
-        }*/
-
+         
         newSphere.push(' }, "positions" : [  ');
 
         var i = 0 , positions = [];

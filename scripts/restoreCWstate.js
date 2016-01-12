@@ -367,7 +367,7 @@ define([
     var atoms = this.cwObj.system.motif ;
     var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
     
-    var anglesScales =  { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
+    var anglesScales =  { 'alpha': cell.initialLatticeParams.alpha, 'beta': cell.initialLatticeParams.beta, 'gamma': cell.initialLatticeParams.gamma, 'scaleX': cell.initialLatticeParams.scaleX, 'scaleY': cell.initialLatticeParams.scaleY, 'scaleZ':cell.initialLatticeParams.scaleZ  };
     this.motifEditor.cellParameters = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
     if(this.motifEditor.newSphere){ 
@@ -376,133 +376,26 @@ define([
     }
   
     this.motifEditor.editorState_("initial");
-    // todo this.motifEditor.setCSGmode("cellClassic");
+
+    this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
      
     this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
-  
-    this.motifEditor.padlockMode({padlock : cell.padlock}, true ) ;
     
-    this.motifEditor.unitCellPositions ={};
+    this.motifEditor.padlockMode({padlock : !cell.padlock}, true ) ;
+    
+    this.motifEditor.unitCellPositions = {};
 
     for (var i = cell.positions.length - 1; i >= 0; i--) { 
       this.motifEditor.unitCellPositions[cell.positions[i].reference] = {"position" : new THREE.Vector3(  cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), "latticeIndex" : cell.positions[i].reference }  ;
     };
- 
-    /*if( (this.cwObj.latticeParams.lattice.latticeSystem === 'hexagonal'  && this.cwObj.latticeParams.lattice.latticeType === 'hexagonal')){
-
-      var a = latticeParams.scaleZ ;
-      var c = latticeParams.scaleY ; 
-
-      var vertDist = a * Math.sqrt(3);
-
-      _.times(2, function(_y) {
-        _.times(1 , function(_x) {
-          _.times(1 , function(_z) { 
-            _.times(6 , function(_r) {
-              for (var i = _this.unitCellAtoms.length - 1; i >= 0; i--) {  
-                var v = new THREE.Vector3( a, 0, 0 );
-
-                var axis = new THREE.Vector3( 0, 1, 0 );
-                var angle = (Math.PI / 3) * _r ; 
-                v.applyAxisAngle( axis, angle );
-
-                var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
-                var y =  v.y + _y*c ;
-                var x = v.x + _x*a*1.5 ;
-                var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
-                var yC =  _y*c ;
-                var xC =  _x*a*1.5 ;
-                var position = new THREE.Vector3( x, y, z);  
-                var positionC = new THREE.Vector3( xC, yC, zC);  
-
-                var reference = 'h_'+_x+_y+_z+_r ;
-                var referenceC = 'hc_'+_x+_y+_z ;
-
-                
-                this.motifEditor.unitCellPositions[reference] = {"position" : new THREE.Vector3( position.x, position.y, position.z), "latticeIndex" : reference} ;  
-                this.motifEditor.unitCellPositions[referenceC] = {"position" : new THREE.Vector3( positionC.x, positionC.y, positionC.z), "latticeIndex" : referenceC} ;  
-                 
-              }    
-            });
-          });
-        });
-      }); 
-    }
-    else{  
-      switch(this.cwObj.latticeParams.lattice.latticeType) {
-        case "primitive":    
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                
-                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {
-                    "position" : new THREE.Vector3(cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), 
-                    "latticeIndex" : "_"+_x+_y+_z 
-                    
-                } 
-              });
-            });
-          }); 
-          break;
-        case "face":   
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                 
-                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( cell.positions[i].x, cell.positions[i].y, cell.positions[i].z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                  
-              });
-            });
-          }); 
-          for (var i = 0; i <= 1; i ++) {
-            if(recreate){
-              this.motifEditor.unitCellPositions["_"+i] = {"position" : new THREE.Vector3( dimensions.xDim *i, dimensions.yDim *0.5, dimensions.zDim *0.5), "latticeIndex" : "_"+i } ;  
-              this.motifEditor.unitCellPositions["__"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *i, dimensions.zDim *0.5), "latticeIndex" : "__"+i } ;  
-              this.motifEditor.unitCellPositions["___"+i] = {"position" : new THREE.Vector3( dimensions.xDim *0.5, dimensions.yDim *0.5, dimensions.zDim *i), "latticeIndex" : "___"+i } ;  
-            } 
-          };
-          break;
-        case "body":   
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                
-                this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3(  dimensions.xDim *_x, dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                 
-              });
-            });
-          }); 
-          
-          this.motifEditor.unitCellPositions["_c"] = {"position" : new THREE.Vector3( (1/2) * dimensions.xDim , (1/2) * dimensions.yDim , (1/2) * dimensions.zDim ), "latticeIndex" : '_c' } ;  
-           
-          break;
-        case "base":   
-          _.times(2 , function(_x) {
-            _.times(2 , function(_y) {
-              _.times(2 , function(_z) {
-                if(recreate){
-                  this.motifEditor.unitCellPositions["_"+_x+_y+_z] = {"position" : new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z), "latticeIndex" : "_"+_x+_y+_z } ;  
-                }
-                else{
-                  this.motifEditor.unitCellPositions["_"+_x+_y+_z].position = new THREE.Vector3( dimensions.xDim *_x,  dimensions.yDim *_y, dimensions.zDim *_z) ;
-                }
-              });
-            });
-          });  
-          
-          this.motifEditor.unitCellPositions["_up"] = {"position" : new THREE.Vector3( dimensions.xDim /2 ,  dimensions.yDim , dimensions.zDim /2 ), "latticeIndex" : "_up" } ;  
-          this.motifEditor.unitCellPositions["_down"] = {"position" : new THREE.Vector3( dimensions.xDim /2, 0 ,  dimensions.zDim /2), "latticeIndex" : "_down" } ;  
-           
-          break; 
-      } 
-    }  */
   
-    this.motifEditor.updateLatticeParameters(
-      anglesScales,
-      this.cwObj.system.latticeParams.lattice.latticeType, 
-      this.cwObj.system.latticeParams.bravaisLattice, 
-      this.cwObj.system.latticeParams.lattice.latticeSystem,
-      1  
+    this.motifEditor.setLatticeParameters({ 
+        defaults : anglesScales,  
+        latticeType : this.cwObj.system.latticeParams.lattice.latticeType, 
+        latticeName : this.cwObj.system.latticeParams.bravaisLattice, 
+        latticeSystem : this.cwObj.system.latticeParams.lattice.latticeSystem,
+        restore : true  
+      }
     );
 
     this.motifEditor.produceUuid(true);
@@ -563,23 +456,10 @@ define([
         atoms[i].id,  
         atoms[i].opacity*10,
         false,
-        1,
+        true,
         atoms[i].ionicIndex
       ); 
-      
- 
-      /*this.motifEditor.updateAtomList(
-        new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z), 
-        atoms[i].id, 
-        atoms[i].radius , 
-        atoms[i].elementName,
-        'save',
-        'bg-light-gray',
-        undefined,
-        atoms[i].color,
-        atoms[i].ionicIndex
-      );*/
- 
+   
       if(atoms[i].id == cell.lastSphereAdded) {
         this.motifEditor.lastSphereAdded = atom ;
       }

@@ -43,7 +43,7 @@ define([
     this.latticeName = 'none';  
     this.latticeType = 'none'; // may be useless
     this.latticeSystem = 'none'; // may be useless 
-    this.actualAtoms = []; 
+    this.actualAtoms = [];  
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -1659,22 +1659,7 @@ define([
       });
     }); 
   
-  };
-  Lattice.prototype.getAnglesScales = function(){
-    if(!this.lattice) {
-      return;
-    }
-    var anglesScales = {  
-      "alpha" : this.lattice.defaults.alpha, 
-      "beta" : this.lattice.defaults.beta, 
-      "gamma" : this.lattice.defaults.gamma,
-      "scaleX" : this.parameters.scaleX,
-      "scaleY" : this.parameters.scaleY,
-      "scaleZ" : this.parameters.scaleZ  
-    }; 
-     
-    return anglesScales ; 
-  };
+  }; 
   Lattice.prototype.load = function(latticeName) {   
     if (_.isEmpty(latticeName)) {
       this.lattice = null;
@@ -1705,6 +1690,7 @@ define([
         _this.menu.toggleExtraParameter('t', 'none');
       }
       _this.update();
+       
       PubSub.publish(events.LOAD, lattice); 
     }); 
   };
@@ -4636,24 +4622,7 @@ define([
       }
     }
   };
-  //
-
-  Lattice.prototype.getLatticeType = function(){
-    if(!this.lattice){
-      return;
-    }
-    var lattice = this.lattice;
-    var l = lattice.latticeType; 
-    return l;
-  };
-  Lattice.prototype.getLatticeSystem = function(){
-    if(!this.lattice){
-      return;
-    }
-    var lattice = this.lattice;
-    var l = lattice.latticeSystem; 
-    return l;
-  };
+    
   Lattice.prototype.atomToggle = function(arg){ 
     var visible = arg.atomToggle ; 
     this.actualAtoms.forEach(function(atom, i) {   
@@ -4683,13 +4652,7 @@ define([
     _.each(this.points, function(point, reference) {
       point.object3d.visible = arg.latticePoints; 
     }); 
-  };
-  Lattice.prototype.getLatticeName = function(){ 
-    if(!this.lattice){
-      return;
-    }
-    return this.latticeName;
-  };
+  }; 
   Lattice.prototype.revertScalingMiller = function() {
     this.transformMiller(reverseScaling, function(value) {
       return (value === 0 ? 0 : 1 / value);
