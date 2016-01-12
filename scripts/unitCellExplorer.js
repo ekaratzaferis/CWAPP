@@ -107,12 +107,13 @@ define([
     var l2 = l*4; 
     
     if(this.light.shadowCamera){ 
-      this.light.shadowCamera.far = l2*3;
-      this.light.shadowCamera.left = -l2;
-      this.light.shadowCamera.right = l2;
-      this.light.shadowCamera.bottom = -l2;
-      this.light.shadowCamera.top = l2; 
-      setTimeout(function(){ _this.light.shadowCamera.updateProjectionMatrix();},1000);
+      this.light.shadowCamera.far = 10 ;//l2*3;
+      this.light.shadowCamera.near = 1 ;//l2*3;
+      this.light.shadowCamera.left = 10 ;//-l2;
+      this.light.shadowCamera.right = 10 ;//l2;
+      this.light.shadowCamera.bottom = 10 ;//-l2;
+      this.light.shadowCamera.top = 10 ;//l2; 
+      this.light.shadowCamera.updateProjectionMatrix(); 
     }
   
   };
