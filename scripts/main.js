@@ -372,6 +372,7 @@ require([
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     lattice.load(latticeName);
+    motifEditor.latticeName = latticeName;
     dollGearBarME.setWalkStep(2);
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
@@ -527,7 +528,7 @@ require([
 
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
     
-    unitCellScene.updateShadowCameraProperties( p.length());
+    unitCellScene.updateShadowCameraProperties( p.length()*2);
 
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
@@ -827,6 +828,7 @@ require([
   lattice.onLoad(function(message, lattice) {
     if (_.isObject(lattice)) {
       menu.setLatticeParameters(lattice.defaults);  
+      motifEditor.setLatticeParameters(lattice);  
       menu.setLatticeRestrictions(lattice.restrictions);
       dollEditor.levelLabels[1].allowed = true;
     }

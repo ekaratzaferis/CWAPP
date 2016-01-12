@@ -43,13 +43,12 @@ define([
     this.unitCellAtoms = [];
     this.unitCellPositions = {}; 
     this.viewMode = 'cellClassic';
-    this.editorState = {state : "initial", fixed: false, atomPosMode : 'absolute', updated : false } ; 
+    this.editorState = {state : "initial", atomPosMode : 'absolute' } ; 
     this.isEmpty = true ;
     this.latticeName = 'none';
     this.latticeType = 'none';  
     this.latticeSystem = 'none';
- 
-    this.manualSetCellAngles = false;
+  
     this.leastCellLengths = {'x' : 0, 'y' : 0, 'z' : 0 };
     this.leastCellAngles = {'alpha' : 2, 'beta' : 2, 'gamma' : 2 };
     this.cellVolume =  {col : false, xInitVal : 0.5, yInitVal : 0.5, zInitVal : 0.5, aCol : false, bCol : false, cCol : false};
@@ -77,7 +76,7 @@ define([
   
   }; 
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
-    
+   
     this.menu.rotAnglesSection(arg.dragMode);
 
     this.dragMode = arg.dragMode;
@@ -86,7 +85,7 @@ define([
       if(!_.isUndefined(this.newSphere)) {
         this.newSphere.blinkMode(true, '#58D3F7');  
       }
-         
+          
       this.selectAtom(arg.parentId, doNotRepos, true);
       this.newSphere.tangentParent = arg.parentId ;
     }
@@ -117,17 +116,29 @@ define([
     this.configureCellPoints();
       
   };  
-  Motifeditor.prototype.updateLatticeParameters = function(anglesScales, latticeType, latticeName, latticeSystem, restore) {
+  Motifeditor.prototype.setLatticeParameters = function(data) {
+    if(data.restore === undefined){ 
+      this.cellParameters.alpha = data.defaults.alpha ;
+      this.cellParameters.beta  = data.defaults.beta ;
+      this.cellParameters.gamma = data.defaults.gamma ; 
 
-    this.latticeType   = latticeType; 
-    this.latticeName   = latticeName;   
-    this.latticeSystem = latticeSystem;   
+      this.cellParameters.scaleX = data.defaults.scaleX ;
+      this.cellParameters.scaleY  = data.defaults.scaleY ;
+      this.cellParameters.scaleZ = data.defaults.scaleZ ;
+    }
 
-    this.initialLatticeParams.alpha = anglesScales.alpha ;
-    this.initialLatticeParams.beta  = anglesScales.beta ;
-    this.initialLatticeParams.gamma = anglesScales.gamma ; 
-    
-  };
+    this.initialLatticeParams.alpha = data.defaults.alpha ;
+    this.initialLatticeParams.beta  = data.defaults.beta ;
+    this.initialLatticeParams.gamma = data.defaults.gamma ; 
+
+    this.initialLatticeParams.scaleX = data.defaults.scaleX ;
+    this.initialLatticeParams.scaleY  = data.defaults.scaleY ;
+    this.initialLatticeParams.scaleZ = data.defaults.scaleZ ; 
+
+    this.latticeType = data.latticeType; 
+       
+    this.latticeSystem = data.latticeSystem; 
+  }; 
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
   };
@@ -1552,27 +1563,7 @@ define([
     } 
         
     this.cellMutex = true ; 
-  };
- 
-  Motifeditor.prototype.setAnglesManually = function(par){
-    
-    // deprecated
-
-    if( par.manualSetCellAngles) { 
-      $(".manualAngles").css("display", "inline"); 
-      $('input[name=manualSetCellAngles]').attr('checked', true);
-      
-      $("#cellAlpha").val(this.cellParameters.alpha);
-      $("#cellBeta").val(this.cellParameters.beta);
-      $("#cellGamma").val(this.cellParameters.gamma);
-
-      this.menu.setSliderValue("cellAlpha", this.cellParameters.alpha);
-      this.menu.setSliderValue("cellBeta", this.cellParameters.beta);
-      this.menu.setSliderValue("cellGamma", this.cellParameters.gamma);
-
-      this.checkForAngleFix(); // calculate the least acceptable angle for the cell
-    } 
-  };
+  }; 
 
   Motifeditor.prototype.setDimsManually = function(par){
     
@@ -2353,7 +2344,7 @@ define([
     }
      
   }; 
-  Motifeditor.prototype.getConfirmationAnswer = function(arg){  
+  Motifeditor.prototype.getConfirmationAnswer = function(arg){   
       
     if(arg.result === true){
       this.selectAtom(this.whichToConfirm, undefined, undefined, true);
@@ -2519,12 +2510,13 @@ define([
     } 
   };
   Motifeditor.prototype.configureCellPoints = function(manual){  
-    
+  
     var _this = this;  
+
     if(this.isEmpty) {
       return; 
     }
-
+ 
     var dimensions; 
 
     if( (!this.padlock && this.globalTangency === false) || (manual !== undefined)){   
@@ -3177,7 +3169,7 @@ define([
     
     if(this.padlock === true || this.globalTangency === true){
 
-      this.leastVolume();  
+      this.leastVolume(restore);  
 
       this.cellVolume.xInitVal = this.cellParameters.scaleX;
       this.cellVolume.yInitVal = this.cellParameters.scaleY;
@@ -3551,7 +3543,7 @@ define([
       }
     };  
     
-    if(this.newSphere !== undefined){ 
+    if(this.newSphere !== undefined){  
       // autosave feature
       this.motifsAtoms.push(this.newSphere); 
       
@@ -3591,11 +3583,15 @@ define([
       this.newSphere.object3d.visible = arg.visible;
     }
   };
-  Motifeditor.prototype.leastVolume = function(){ 
+  Motifeditor.prototype.leastVolume = function(restore){ 
     
+    if(restore !== undefined){
+      return;
+    }
+
     var coll = false;
     var step = 100;   
-    
+      
     this.menu.resetProgressBar('Constructing cell...');
 
     while(coll === false && this.unitCellAtoms.length !== 0){ 
@@ -3608,12 +3604,7 @@ define([
     }   
     
     this.menu.progressBarFinish();
-
-    /*
-    $("#cellVolume").val(100);  
-    this.menu.setSliderValue("cellVolume", 100 );
-    this.menu.setSliderMin("cellVolume", 90 );
-    */
+ 
   };
   Motifeditor.prototype.reconstructCellPoints = function(restore){
     var _this = this; 
@@ -5807,8 +5798,7 @@ define([
     var r = _.min(this.motifsAtoms, function(atom){ return (atom.getRadius()); });  
     return r.getRadius() ;
   };
-  Motifeditor.prototype.setTangency = function(arg){
- 
+  Motifeditor.prototype.setTangency = function(arg){ 
     this.globalTangency =  arg.tangency ; 
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
@@ -5823,13 +5813,15 @@ define([
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');
+
+      /*
       this.cellParameters.alpha = this.initialLatticeParams.alpha ;
       this.cellParameters.beta = this.initialLatticeParams.beta ;
       this.cellParameters.gamma = this.initialLatticeParams.gamma ;
       
       this.menu.setSliderValue("alpha", this.initialLatticeParams.alpha );
       this.menu.setSliderValue("beta", this.initialLatticeParams.beta );
-      this.menu.setSliderValue("gamma", this.initialLatticeParams.gamma );
+      this.menu.setSliderValue("gamma", this.initialLatticeParams.gamma );*/
  
       this.configureCellPoints();
  
@@ -5856,7 +5848,7 @@ define([
   }; 
 
   Motifeditor.prototype.initVolumeState = function(){   
-
+   
     if(this.padlock === true || this.globalTangency === true){
       this.leastVolume();
             

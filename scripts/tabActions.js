@@ -52,8 +52,7 @@ define([
       this.sceneResizer.resize('motifScreen');
                                                                             
       this.unitCellRenderer.startAnimation();                                                                    
-      this.motifRenderer.startAnimation(); 
-      this.motifEditor.updateLatticeParameters(this.lattice.getAnglesScales(), this.lattice.getLatticeType(), this.lattice.getLatticeName(), this.lattice.getLatticeSystem());
+      this.motifRenderer.startAnimation();  
 
       this.crystalScreenEvents.state = 'motifScreen';
  
