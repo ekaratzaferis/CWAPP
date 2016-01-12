@@ -318,7 +318,8 @@ define([
             searchDesc: jQuery('#searchDesc'),
             searchTags: jQuery('#searchTags'),
             searchField: jQuery('#searchField'),
-            searchQuery: jQuery('#searchQuery')
+            searchQuery: jQuery('#searchQuery'),
+            databaseLoader: jQuery('#databaseLoader')
         };
         
         // IAC //

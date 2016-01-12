@@ -220,28 +220,36 @@ define([
         html.library.search.searchName.hide();
         html.library.search.searchTags.hide();
         html.library.search.searchDesc.hide();
+        html.library.search.databaseLoader.hide();
         
         // Database Service //
-        html.library.search.searchField.on('submit', function(){ https://cwgl.herokuapp.com
-            var service = 'https://cwgl.herokuapp.com';
-            var fileFormat = '?format=json';
-            var nameQuery = '?qs={"info":{"name":"'+html.library.search.searchQuery.val()+'"}}'
-            var descQuery = '?qs={"info":{"description":"'+html.library.search.searchQuery.val()+'"}}'
-            var tagsQuery = '?qs={"info":{"tags":["'+html.library.search.searchQuery.val()+'"]}}'
+        html.library.search.searchField.on('submit', function(){
             
-            console.log(service + fileFormat + nameQuery);
+            html.interface.screen.body.mCustomScrollbar("scrollTo",'bottom');
+            html.library.search.databaseLoader.show();
+            
+            var service = 'https://cwgl.herokuapp.com?format=json&qs=';
+            var nameQuery = '{"info":{"name":"'+html.library.search.searchQuery.val()+'"}}';
+            var descQuery = '{"info":{"description":"'+html.library.search.searchQuery.val()+'"}}';
+            var tagsQuery = '{"info":{"tags":["'+html.library.search.searchQuery.val()+'"]}}';
             
             // Request Search by Name //
-            $.ajax(service + fileFormat + nameQuery,{
+            $.ajax(service + encodeURIComponent(nameQuery),{
                 method: 'GET',
+                crossDomain: true,
+                 headers: {
+                    "Accept":"Access-Control-Allow-Origin: *'"
+                },
                 beforeSend: function(xmlHttpRequest) {
                     xmlHttpRequest.withCredentials = true;
                 }
             })
             .done(function(res) {  
                 console.log(res); 
-                console.log(res.data); 
-            }); 
+                console.log(res.data);
+                html.library.search.databaseLoader.hide();
+            });
+            
             // Cancel Submit //
             return false;
         });
@@ -339,6 +347,15 @@ define([
             //html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
         }
         else html.library.search.footer.remove();
+    };
+    libraryTab.prototype.updateLibrary = function(link){
+        // Update QR Image //
+        html.modals.qr.image.trigger('update',[link]);
+        // Update Links //
+        html.library.saveOnline.link.val(link);
+        html.modals.qr.link.val(link);
+        // Hide user dialog //
+        menu.hideInfoDialog();
     };
     
     return libraryTab;

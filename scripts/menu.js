@@ -546,6 +546,9 @@ define([
     Menu.prototype.transformMenu = function(argument){
         interfaceResizerModule.transformMenu(argument);    
     };
+    Menu.prototype.updateLibrary = function(argument){
+        libraryTabModule.updateLibrary(argument);  
+    };
 
     // Tooltips //
     Menu.prototype.canvasTooltip = function(argument){
