@@ -312,7 +312,13 @@ define([
             previewTags: jQuery('#previewTags'),
             openPreview: jQuery('#openPreview'),
             openPreviewQR: jQuery('#openPreviewQR'),
-            footer: jQuery('.footerLink')
+            footer: jQuery('.footerLink'),
+            categories: jQuery('.seachCat'),
+            searchName: jQuery('#searchName'),
+            searchDesc: jQuery('#searchDesc'),
+            searchTags: jQuery('#searchTags'),
+            searchField: jQuery('#searchField'),
+            searchQuery: jQuery('#searchQuery')
         };
         
         // IAC //

@@ -3990,3 +3990,16 @@ ul.tagit input[type="text"]{
     cursor: pointer;
 }
 .footerLink:hover{text-decoration: none!important; color:#443771!important;}
+.searchCat { padding-bottom: 10px; padding-top: 5px; }
+.searchCat a {
+    display: block;
+    padding: 8px 40px;
+    padding-left: 30px;
+    text-transform: uppercase;
+    text-decoration: none!important;
+    background: #6f6299;
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 17.6px;
+    color: #fff; }

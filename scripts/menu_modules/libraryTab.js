@@ -217,6 +217,34 @@ define([
         
         // Search Area //
         html.library.search.preview.hide();
+        html.library.search.searchName.hide();
+        html.library.search.searchTags.hide();
+        html.library.search.searchDesc.hide();
+        
+        // Database Service //
+        html.library.search.searchField.on('submit', function(){ https://cwgl.herokuapp.com
+            var service = 'https://cwgl.herokuapp.com';
+            var fileFormat = '?format=json';
+            var nameQuery = '?qs={"info":{"name":"'+html.library.search.searchQuery.val()+'"}}'
+            var descQuery = '?qs={"info":{"description":"'+html.library.search.searchQuery.val()+'"}}'
+            var tagsQuery = '?qs={"info":{"tags":["'+html.library.search.searchQuery.val()+'"]}}'
+            
+            console.log(service + fileFormat + nameQuery);
+            
+            // Request Search by Name //
+            $.ajax(service + fileFormat + nameQuery,{
+                method: 'GET',
+                beforeSend: function(xmlHttpRequest) {
+                    xmlHttpRequest.withCredentials = true;
+                }
+            })
+            .done(function(res) {  
+                console.log(res); 
+                console.log(res.data); 
+            }); 
+            // Cancel Submit //
+            return false;
+        });
         
     };
     // Read mandatory project details before allowing any save/open process //
@@ -247,7 +275,11 @@ define([
     };
     
     // Module Interface //
-    libraryTab.prototype.importSearchResults = function(data){
+    libraryTab.prototype.importSearchResults = function(data, category){
+        // Update Headers //
+        jQuery('#search'+category).find('a').html(category + ': '+ Object.keys(data).length +' matches found.');
+        jQuery('#search'+category).show();
+        
         _.each(data, function($parameter, k){
             // Read project information //
             var projectName = $parameter.name;
@@ -258,7 +290,7 @@ define([
             
             // Create HTML query and append to the search results area //
             var query = '<div class="col col-sm-6"><div class="project-block" id="'+k+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';
-            html.library.search.results.append(query);
+            jQuery('#search'+category).after(query);
             
             // Hover //
             jQuery('#'+k).hover(
@@ -304,7 +336,7 @@ define([
             });
         });
         if (Object.keys(data).length > 1) {
-            html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
+            //html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
         }
         else html.library.search.footer.remove();
     };
