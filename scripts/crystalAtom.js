@@ -62,7 +62,7 @@ define([
 
     var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
     console.log(color);
-    console.log(isOk);
+    console.log('ok : '+isOk);
     //return hexColor;
   }
   CrystalAtom.prototype.setVisibility = function( bool) {

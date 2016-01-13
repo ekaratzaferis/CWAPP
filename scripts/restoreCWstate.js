@@ -44,9 +44,31 @@ define([
       
     var _this = this; 
 
-    this.globalReset();
-    this.menu.restore(cwObj);
 
+    require(['lattice/' + cwObj.system.latticeParams.lattice.latticeName], function(lattice) {
+      _this.lattice.lattice = lattice; 
+      _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
+      _this.lattice.latticeType = _this.lattice.lattice.latticeType ; 
+      if(_this.lattice.latticeType === 'hexagonal' && _this.lattice.latticeSystem === 'hexagonal'){ 
+        _this.menu.toggleExtraParameter('i', 'block');
+        _this.menu.toggleExtraParameter('t', 'block');
+      }
+      else{
+        _this.menu.toggleExtraParameter('i', 'none');
+        _this.menu.toggleExtraParameter('t', 'none');
+      }  
+
+      _this.menu.restore(cwObj); 
+      _this.menu.setLatticeRestrictions(lattice.restrictions);
+
+      _this.beginRestoring(cwObj);
+    }); 
+
+    this.globalReset();
+
+  };
+  RestoreCWstate.prototype.beginRestoring = function(cwObj) { 
+  
     this.cwObj = cwObj;  
 
     this.configureCameraSettings();
@@ -81,7 +103,19 @@ define([
     }
 
     this.configureVisualizationSettings();
-     
+    
+    /////
+
+    this.lattice.currentMotif = this.motifEditor.getMotif();
+    this.lattice.offsetMotifsForViews();
+
+    var i = 0;
+
+    while(i < this.lattice.cachedAtoms.length ){ 
+      this.lattice.cachedAtoms[i].setVisibility(false); 
+      i++;
+    }
+
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -108,7 +142,7 @@ define([
         this.lattice.tempPlanes[i].plane.destroy(); 
       }; 
       for (var i = 0; i < this.lattice.cachedAtoms.length; i++) { 
-        this.cachedAtoms[i].destroy();  
+        this.lattice.cachedAtoms[i].destroy();  
       } 
       for (var i = 0; i<this.lattice.actualAtoms.length; i++) { 
         this.lattice.actualAtoms[i].removesubtractedForCache();  
@@ -237,7 +271,7 @@ define([
       this.motifEditor.renderingMode = 'realistic';  
       this.motifEditor.cellNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
       this.motifEditor.cachedAtoms = [];
-      this.motifEditor.cachedAtomsPositions = {};
+      this.motifEditor.cachedAtomsPositions = {} ;
       this.motifEditor.box3 = {bool : false, pos : undefined};  
    
       this.motifEditor.labeling = false;
@@ -330,7 +364,7 @@ define([
     
     
     for (var i = this.lattice.planeName - 1; i >= 0; i--) {
-      Things[i]
+      // /Things[i]
     };
 
 
@@ -404,6 +438,8 @@ define([
       this.motifEditor.isEmpty = false;
     }
 
+    this.motifEditor.offsetMotifsPointsScaling(true);
+
     var helperMotif = [];
 
     for (var i = 0; i < atoms.length; i++) { 
@@ -466,9 +502,7 @@ define([
 
       this.motifEditor.produceUuid();
     } 
-     
-    var _this = this ;
-
+       
     this.lattice.currentMotif = helperMotif ; 
   };
   RestoreCWstate.prototype.configureMillerObjectsSettings = function() {
@@ -568,7 +602,7 @@ define([
     // todo this.lattice.setCSGmode("crystalClassic");
 
     this.lattice.lattice = this.cwObj.system.latticeParams.lattice ; 
-    
+    this.latticeType = 
     this.lattice.parameters =  {
       'repeatX': params.latticeParams.repeatX, 
       'repeatY': params.latticeParams.repeatY, 

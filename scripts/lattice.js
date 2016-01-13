@@ -149,7 +149,7 @@ define([
  
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
     var renderingMode = this.renderingMode; 
-
+  
     if(this.latticeType === 'face'){ 
       while(j <this.currentMotif.length) {
         
@@ -591,8 +591,8 @@ define([
         j++;
       }
     } 
-    else if(this.latticeType === 'body'){
-      while(j <this.currentMotif.length) {
+    else if(this.latticeType === 'body'){ 
+      while(j < this.currentMotif.length) {  
         var p = this.currentMotif[j].object3d.position.clone(); 
         var radius = this.currentMotif[j].radius;
         var color = this.currentMotif[j].color ;
@@ -1228,7 +1228,7 @@ define([
     this.parameters.gamma = params.gamma ;
 
     this.forwardTransformations();  
-    
+ 
     _.each(this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
       _.each(motif, function(atom) {  
@@ -1615,9 +1615,10 @@ define([
   Lattice.prototype.recreateMotif = function() {
     
     this.resetPlaneToggles();
+
     var _this = this;
-    
-    if(_this.currentMotif.length === 0 ) return ;
+
+    if(this.currentMotif.length === 0 ) return ;
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) {  
@@ -1675,8 +1676,8 @@ define([
     }
 
     var _this = this;
-
-    _this.latticeName = latticeName;
+ 
+    this.latticeName = latticeName;
     require(['lattice/' + latticeName], function(lattice) {
       _this.lattice = lattice; 
       _this.latticeSystem = _this.lattice.latticeSystem ;

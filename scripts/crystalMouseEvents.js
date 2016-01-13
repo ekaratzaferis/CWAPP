@@ -68,7 +68,10 @@ define([
     raycaster.setFromCamera( mouse, this.camera ); 
 
     var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
-      
+    
+    console.log(crystalobjsIntersects[0].object.parent.name);
+    console.log(crystalobjsIntersects[0].object.parent.uniqueID);
+
     if ( crystalobjsIntersects.length > 0 ) {   
       if(crystalobjsIntersects[0].object.parent.name === 'atom'){
  
@@ -77,7 +80,9 @@ define([
         if(filteredAtom === undefined){
           filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
         } 
-         
+        
+        console.log(filteredAtom);
+        
         if(filteredAtom !== undefined){
           this.atomCustomizer.atomJustClicekd(filteredAtom, this.keyboard.pressed("ctrl"));
         } 

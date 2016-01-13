@@ -104,6 +104,7 @@ define([
           'id' : atom_.uniqueID,
           'single' : !ctrl
         } 
+        
         this.menu.openAtomCustomizer(arg);
       }
     }
