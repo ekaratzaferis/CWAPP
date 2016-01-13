@@ -242,6 +242,7 @@ define([
                 },
                 beforeSend: function(xmlHttpRequest) {
                     xmlHttpRequest.withCredentials = true;
+                    xmlHttpRequest.setRequestHeader("Access-Control-Allow-Origin",'*');
                 }
             })
             .done(function(res) {  
