@@ -383,6 +383,11 @@ require([
     }
     lattice.setParameters(latticeParameters); 
     motifEditor.updateFixedDimensions(latticeParameters);
+
+    var params = lattice.getParameters();
+
+    crystalScene.updateShadowCameraProperties( params);
+
   });
   menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
     hudArrows.updateLengths(latticeParameters);
@@ -512,22 +517,13 @@ require([
     atomRelationshipManager.checkCrystalforOverlap(); 
     motifEditor.checkCellForCollisions();
     motifEditor.checkMotifForCollisions();
+  
+    var params = lattice.getParameters();
 
-    var g = lattice.customBox(lattice.viewBox);
-    var centroid = new THREE.Vector3(0,0,0);
-
-    if(g !== undefined){ 
-      centroid = new THREE.Vector3(); 
-      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
-        centroid.add( g.vertices[ z ] ); 
-      }  
-      centroid.divideScalar( g.vertices.length );
-    }
-
-    crystalScene.updateShadowCameraProperties( centroid.length());
+    crystalScene.updateShadowCameraProperties( params);
 
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
-    
+     
     unitCellScene.updateShadowCameraProperties( p.length()*2);
 
   }); 
@@ -582,18 +578,9 @@ require([
     atomRelationshipManager.checkCrystalforOverlap();
     motifEditor.checkMotifForCollisions();
 
-    var g = lattice.customBox(lattice.viewBox);
-    var centroid = new THREE.Vector3(0,0,0);
+    var params = lattice.getParameters();
 
-    if(g !== undefined){ 
-      centroid = new THREE.Vector3(); 
-      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
-        centroid.add( g.vertices[ z ] ); 
-      }  
-      centroid.divideScalar( g.vertices.length );
-    }
-    
-    crystalScene.updateShadowCameraProperties( centroid.length());
+    crystalScene.updateShadowCameraProperties( params);
  
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
     unitCellScene.updateShadowCameraProperties( p.length()/2);
@@ -687,18 +674,9 @@ require([
     atomRelationshipManager.checkCrystalforOverlap();
     motifEditor.checkCellForCollisions();
 
-    var g = lattice.customBox(lattice.viewBox);
-    var centroid = new THREE.Vector3(0,0,0);
+    var params = lattice.getParameters();
 
-    if(g !== undefined){ 
-      centroid = new THREE.Vector3(); 
-      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
-        centroid.add( g.vertices[ z ] ); 
-      }  
-      centroid.divideScalar( g.vertices.length );
-    }
-
-    crystalScene.updateShadowCameraProperties( centroid.length());
+    crystalScene.updateShadowCameraProperties( params);
 
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
     unitCellScene.updateShadowCameraProperties( p.length()/2);

@@ -27,15 +27,15 @@ define([
     this.object3d.fog = new THREE.FogExp2( '#000000', 0); //0.0125 );
 
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    this.light.position.set( 2, 10, 2 ); 
+    this.light.position.set(5, 5, 1.5 ); 
     
     this.light.castShadow = true;
     this.light.shadowMapSoft = true;
     //this.light.shadowCameraVisible = true;
     this.light.shadowCameraNear = 1;
-    this.light.shadowCameraFar = 14; 
-    this.light.shadowBias = 0.0039;
-    this.light.shadowDarkness = 0.3;
+    this.light.shadowCameraFar = 10; 
+    this.light.shadowBias = 0;
+    this.light.shadowDarkness = 0.0;
     this.light.shadowMapWidth = 1024;
     this.light.shadowMapHeight = 1024;
     this.light.shadowCameraLeft = -8;
@@ -98,21 +98,20 @@ define([
   UnitCellExplorer.prototype.updateShadowCameraProperties = function(l){ 
 
     var _this = this;
-    return;
-    var posV = new THREE.Vector3(7,5,2);
-    posV.setLength(l*5);
+ 
+    var posV = new THREE.Vector3(4, 6, 4);
+    posV.setLength(l*1.5);
 
     this.light.position.set( posV.x, posV.y, posV.z); 
   
-    var l2 = l*4; 
-    
+    var l2 = l*2; 
+    console.log(posV);
     if(this.light.shadowCamera){ 
-      this.light.shadowCamera.far = 10 ;//l2*3;
-      this.light.shadowCamera.near = 1 ;//l2*3;
-      this.light.shadowCamera.left = 10 ;//-l2;
-      this.light.shadowCamera.right = 10 ;//l2;
-      this.light.shadowCamera.bottom = 10 ;//-l2;
-      this.light.shadowCamera.top = 10 ;//l2; 
+      this.light.shadowCamera.far = l2*1.5 ; 
+      this.light.shadowCamera.left = -l2;
+      this.light.shadowCamera.right = l2;
+      this.light.shadowCamera.bottom = -l2;
+      this.light.shadowCamera.top = l2; 
       this.light.shadowCamera.updateProjectionMatrix(); 
     }
   

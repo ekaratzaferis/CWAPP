@@ -15,7 +15,7 @@ define([
   var globGeometry = new THREE.SphereGeometry(1,32, 16);
   // tangency is not used anymore!
   function AtomSphere(visible, position, radius, color, tangency, elementName, id, opacity, wireframe, ionicIndex, labeling) {
-     
+       
     var _this = this; 
     this.radius = radius;  
     this.ionicIndex = ionicIndex;  

@@ -119,6 +119,28 @@ define([
     Explorer.remove(this);
     Explorer.remove(this.tubeMesh);
   }; 
+  function validateColor(color){
+
+    var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+  
+    if(isOk === true){
+      if(color.charAt(0) === '#'){
+        color = color.slice(1,7);
+        color = '0x' + color;
+      }
+    
+      return color; 
+    }
+    else{
+      if(color.charAt(0) !== '#' && (color.charAt(0) !== '0' || color.charAt(1) !== 'x' )){
+        return ('0x'+color); 
+      } 
+      else { 
+        return 0xffffff;
+      } 
+    }
+     
+  }
   function hexToRgb(hex) {
      
     var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;

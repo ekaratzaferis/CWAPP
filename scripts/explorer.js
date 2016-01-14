@@ -40,16 +40,14 @@ define([
     var _this = this;
      
     this.light = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    this.light.position.set( 7, 7, 2 ); 
-    this.shadowCameraNear = 50;
-    this.shadowCameraFar = 5000;
- 
+    this.light.position.set( 4, 6, 4 );  
+   
     this.light.castShadow = true;
     this.light.shadowMapSoft = true;
     //this.light.shadowCameraVisible = true;
-    this.light.shadowCameraNear = 5;
+    this.light.shadowCameraNear = 1;
     this.light.shadowCameraFar = 10; 
-    this.light.shadowBias = 0.0039;
+    this.light.shadowBias = -0.0009;
     this.light.shadowDarkness = 0.3;
     this.light.shadowMapWidth = 1024;
     this.light.shadowMapHeight = 1024;
@@ -178,24 +176,29 @@ define([
     }
 
   };
-  Explorer.prototype.updateShadowCameraProperties = function(l){ 
+  Explorer.prototype.updateShadowCameraProperties = function(params){ 
 
     var _this = this;
+     
+    var posV = new THREE.Vector3(4, 6, 4);  
 
-    var posV = new THREE.Vector3(7,5,2);
-    posV.setLength(l*5);
-
+    var xVal = params.scaleX * params.repeatX ;
+    var yVal = params.scaleY * params.repeatY ;
+    var zVal = params.scaleZ * params.repeatZ ;
+    
+    var max = _.max([xVal, yVal, zVal]);
+    posV.setLength(max * 4.5);
+    
     this.light.position.set( posV.x, posV.y, posV.z); 
-  
-    var l2 = l*3; 
+     
+    this.light.shadowCamera.far = max * 6;
+    this.light.shadowCamera.left = -max * 3;
+    this.light.shadowCamera.right = max * 3 ;
+    this.light.shadowCamera.bottom = -max * 3;
+    this.light.shadowCamera.top = max * 3;  
    
-    this.light.shadowCamera.far = l2*3;
-    this.light.shadowCamera.left = -l2;
-    this.light.shadowCamera.right = l2;
-    this.light.shadowCamera.bottom = -l2;
-    this.light.shadowCamera.top = l2; 
-    setTimeout(function(){ _this.light.shadowCamera.updateProjectionMatrix();},1000);
- 
+    this.light.shadowCamera.updateProjectionMatrix();
+
   };
   Explorer.prototype.toScreenPosition = function(obj, camera){ 
     var vector = new THREE.Vector3();

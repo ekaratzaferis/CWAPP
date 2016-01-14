@@ -101,9 +101,7 @@ define([
 
       this.configureMotifEditorSettings();
     }
-
-    this.configureVisualizationSettings();
-    
+ 
     /////
 
     this.lattice.currentMotif = this.motifEditor.getMotif();
@@ -115,6 +113,8 @@ define([
       this.lattice.cachedAtoms[i].setVisibility(false); 
       i++;
     }
+
+    this.configureVisualizationSettings();
 
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
@@ -322,6 +322,7 @@ define([
       this.soundMachine.changeVolume(75);
   };
   RestoreCWstate.prototype.configureVisualizationSettings = function() {
+
     var visualTab = this.cwObj.appUI.visualTab ; 
     var crystalCam = this.orbitCrystal.camera ;
     var cellCamera = this.orbitUnitCell.camera ; 
@@ -331,12 +332,12 @@ define([
 
     var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
 
-    this.lattice.atomToggle(toggles.atomToggle);
-    this.lattice.togglePoints(toggles.latticePoints);
-    this.lattice.planeToggle(toggles.planes);
-    this.lattice.directionToggle(toggles.directions);
-    this.lattice.toggleRadius(toggles.atomRadiusSlider);
-    this.atomMaterialManager.setLabels(toggles.labelToggle);
+    this.lattice.atomToggle({atomToggle : toggles.atomToggle});
+    this.lattice.togglePoints({latticePoints : toggles.latticePoints});
+    this.lattice.planeToggle({planeToggle : toggles.planes});
+    this.lattice.directionToggle({directionToggle : toggles.directions});
+    this.lattice.toggleRadius({atomRadius : toggles.atomRadiusSlider});
+    this.atomMaterialManager.setLabels({labelToggle : toggles.labelToggle});
 
     this.crystalScene.axisMode({xyzAxes : toggles.xyzAxes, abcAxes : toggles.abcAxes});
     this.crystalScene.updateAbcAxes({alpha : latticeParams.alpha, beta : latticeParams.beta, gamma :  latticeParams.gamma}, this.orbitCrystal.camera);
@@ -388,7 +389,10 @@ define([
 
     this.crystalRenderer.shadowing(visualTab.visualParameters.lights.shadows); 
     this.unitCellRenderer.shadowing(visualTab.visualParameters.lights.shadows);
- 
+    
+    var params = this.lattice.getParameters(); 
+    this.crystalScene.updateShadowCameraProperties( params);
+
     this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph); 
@@ -410,9 +414,7 @@ define([
     }
   
     this.motifEditor.editorState_("initial");
-
-    this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
-     
+ 
     this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
     
     this.motifEditor.padlockMode({padlock : !cell.padlock}, true ) ;
@@ -453,13 +455,15 @@ define([
         atoms[i].elementName, 
         atoms[i].id, 
         atoms[i].opacity*10, 
-        atoms[i].wireframe
+        atoms[i].wireframe,
+        atoms[i].ionicIndex,
+        this.motifEditor.labeling
       );
 
       this.motifEditor.motifsAtoms.push(atom); 
        
       var radius = atoms[i].radius ;
-      
+  
       helperMotif.push(
 
         {
@@ -502,7 +506,9 @@ define([
 
       this.motifEditor.produceUuid();
     } 
-       
+    
+    this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
+
     this.lattice.currentMotif = helperMotif ; 
   };
   RestoreCWstate.prototype.configureMillerObjectsSettings = function() {

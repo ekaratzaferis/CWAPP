@@ -1246,7 +1246,7 @@ define([
           color = atom.color;
           a = atom.object3d.position.clone(); 
         }
-
+ 
         _this.actualAtoms.push( 
           new CrystalAtom(
             new THREE.Vector3(p.x + a.x, p.y + a.y, p.z + a.z), 
@@ -1618,13 +1618,14 @@ define([
 
     var _this = this;
 
-    if(this.currentMotif.length === 0 ) return ;
+    if( this.currentMotif.length === 0 ) return ;
     _.each(_this.points, function(point,kk) { 
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) {  
         var a = atom.object3d.position; 
         var ionicIndex = atom.ionicIndex; 
         var color, texture, opacity, wireframe;
+  
         if(!_.isUndefined(atom.object3d) && !atom.object3d.children) { 
           color = atom.color; 
           texture = undefined;
@@ -4632,7 +4633,7 @@ define([
   };
   Lattice.prototype.planeToggle = function(arg){ 
     var _this = this;
-    _.each(this.millerPlanes, function(p, reference) {
+    _.each(this.millerPlanes, function(p, reference) { 
       p.plane.setVisible(arg.planeToggle); 
     });
     _.each(this.tempPlanes, function(p, reference) {

@@ -1,5 +1,4 @@
-
-'use strict';
+ 
 
 define([
   'three',
@@ -17,7 +16,7 @@ define([
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling) { 
-       
+      
     var _this = this; 
     this.radius = radius;  
     this.material;
@@ -174,12 +173,12 @@ define([
   };
   CrystalAtom.prototype.flatMode = function(bool){
     
-    this.object3d.children[0].material =  new THREE.MeshLambertMaterial( {color : this.color, transparent:true, opacity:this.opacity} );  
+    this.object3d.children[0].material = new THREE.MeshLambertMaterial( {color : this.color, transparent:true, opacity:this.opacity} );  
     this.object3d.children[0].material.needsUpdate = true; 
 
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
 
-    this.object3d.children[2].material =  new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
+    this.object3d.children[2].material = new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
     this.object3d.children[2].material.needsUpdate = true; 
     this.object3d.children[2].material.needsUpdate = true;     
   };

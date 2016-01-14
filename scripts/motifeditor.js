@@ -4777,7 +4777,7 @@ define([
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
-       
+
     if(this.latticeType === 'face'){  
     
         for ( i = 0; i < 4; i ++ ) {
