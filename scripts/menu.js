@@ -92,8 +92,6 @@ define([
     var events = {
         SET_SSAO: 'menu.set_ssao',
         SET_SHADOWS: 'menu.set_shadows',
-        SIDE_BY_SIDE_3D: 'menu.side_by_side_3d',
-        ON_TOP_3D: 'menu.on_top_3d',
         RESET: 'menu.reset',
         NOTE_MOVEMENT: 'menu.note_movement',
         NOTE_COLOR: 'menu.note_color',
@@ -147,7 +145,14 @@ define([
         CELL_VOLUME_CHANGE: 'menu.cell_volume_change',
         CRYSTAL_CAM_TARGET: 'menu.crystal_cam_target',
         STORE_PROJECT: 'menu.store_project',
-        ANAGLYPH_EFFECT: 'menu.anaglyph_effect',
+        ANAGLYPH_EFFECT_CRYSTAL: 'menu.anaglyph_effect_crystal',
+        OCULUS_CRYSTAL: 'menu.ocuclus_crystal',
+        SIDE_BY_SIDE_3D_CRYSTAL: 'menu.side_by_side_3d_crystal',
+        ON_TOP_3D_CRYSTAL: 'menu.on_top_3d_crystal',
+        ANAGLYPH_EFFECT_UNIT_CELL: 'menu.anaglyph_effect_unit_cell',
+        OCULUS_UNIT_CELL: 'menu.ocuclus_unit_cell',
+        SIDE_BY_SIDE_3D_UNIT_CELL: 'menu.side_by_side_3d_unit_cell',
+        ON_TOP_3D_UNIT_CELL: 'menu.on_top_3d_unit_cell',
         SET_PADLOCK: 'menu.set_padlock',
         FOG_CHANGE: 'menu.fog_change',
         FOG_PARAMETER_CHANGE: 'menu.fog_parameter_change',
@@ -288,75 +293,6 @@ define([
             stringEditor: stringEditorModule
         });
         
-        /*libraryTabModule.importSearchResults({
-            result1: {
-                slug: '#91',
-                name: "Fernando's Project",
-                description: 'Old unsatiable our now but considered travelling impression. In excuse hardly summer in basket misery. By rent an part need. At wrong of of water those linen. Needed oppose seemed how all. Very mrs shed shew gave you.',
-                tags: {
-                    1: 'Old',
-                    2: 'considered',
-                    3: 'impression'
-                }
-            }, 
-            result2: {
-                slug: '#92',
-                name: "Thanos's Project",
-                description: 'Far quitting dwelling graceful the likewise received building. An fact so to that show am shed sold cold. Unaffected remarkably get yet introduced excellence terminated led. Result either design saw she esteem and.',
-                tags: {
-                    1: 'esteem',
-                    2: 'quitting',
-                    3: 'likewise',
-                    4: 'received',
-                    5: 'fact',
-                    6: 'Unaffected',
-                }
-            },
-            result3: {
-                slug: '#93',
-                name: "Alex's Project",
-                description: 'Departure so attention pronounce satisfied daughters am. But shy tedious pressed studied opinion entered windows off.',
-                tags: {
-                    1: 'Departure',
-                    2: 'daughters'
-                }
-            }
-        },'Name');
-        
-        libraryTabModule.importSearchResults({
-            result1: {
-                slug: '#91',
-                name: "Fernando's Project",
-                description: 'Old unsatiable our now but considered travelling impression. In excuse hardly summer in basket misery. By rent an part need. At wrong of of water those linen. Needed oppose seemed how all. Very mrs shed shew gave you.',
-                tags: {
-                    1: 'Old',
-                    2: 'considered',
-                    3: 'impression'
-                }
-            }, 
-            result2: {
-                slug: '#92',
-                name: "Thanos's Project",
-                description: 'Far quitting dwelling graceful the likewise received building. An fact so to that show am shed sold cold. Unaffected remarkably get yet introduced excellence terminated led. Result either design saw she esteem and.',
-                tags: {
-                    1: 'esteem',
-                    2: 'quitting',
-                    3: 'likewise',
-                    4: 'received',
-                    5: 'fact',
-                    6: 'Unaffected',
-                }
-            },
-            result3: {
-                slug: '#93',
-                name: "Alex's Project",
-                description: 'Departure so attention pronounce satisfied daughters am. But shy tedious pressed studied opinion entered windows off.',
-                tags: {
-                    1: 'Departure',
-                    2: 'daughters'
-                }
-            }
-        },'Tags');*/
         
     /* --------------
        Hover Tooltips
@@ -548,6 +484,9 @@ define([
     };
     Menu.prototype.updateLibrary = function(argument){
         libraryTabModule.updateLibrary(argument);  
+    };
+    Menu.prototype.hideMenu = function(argument){
+        interfaceResizerModule.hideMenu(argument);  
     };
 
     // Tooltips //
@@ -1060,11 +999,17 @@ define([
     Menu.prototype.storeProject = function(callback) { 
         PubSub.subscribe(events.STORE_PROJECT, callback);
     };
-    Menu.prototype.setAnaglyph = function(callback) { 
-        PubSub.subscribe(events.ANAGLYPH_EFFECT, callback);
+    Menu.prototype.setAnaglyphCrystal = function(callback) { 
+        PubSub.subscribe(events.ANAGLYPH_EFFECT_CRYSTAL, callback);
     };
-    Menu.prototype.setOculus = function(callback) { 
-        PubSub.subscribe(events.OCULUS, callback);
+    Menu.prototype.setAnaglyphUnitCell = function(callback) { 
+        PubSub.subscribe(events.ANAGLYPH_EFFECT_UNIT_CELL, callback);
+    };
+    Menu.prototype.setOculusCrystal = function(callback) { 
+        PubSub.subscribe(events.OCULUS_CRYSTAL, callback);
+    };
+    Menu.prototype.setOculusUnitCell = function(callback) { 
+        PubSub.subscribe(events.OCULUS_UNIT_CELL, callback);
     }; 
     Menu.prototype.onFogParameterChange = function(callback) { 
         PubSub.subscribe(events.FOG_PARAMETER_CHANGE, callback);
@@ -1171,11 +1116,17 @@ define([
     Menu.prototype.onSaveOnline = function(callback){
         PubSub.subscribe(events.SAVE_ONLINE, callback);
     };
-    Menu.prototype.onSideBySide3D = function(callback){
-        PubSub.subscribe(events.SIDE_BY_SIDE_3D, callback);
+    Menu.prototype.onSideBySide3DCrystal = function(callback){
+        PubSub.subscribe(events.SIDE_BY_SIDE_3D_CRYSTAL, callback);
     };
-    Menu.prototype.onOnTop3D = function(callback){
-        PubSub.subscribe(events.ON_TOP_3D, callback);
+    Menu.prototype.onOnTop3DCrystal = function(callback){
+        PubSub.subscribe(events.ON_TOP_3D_CRYSTAL, callback);
+    };
+    Menu.prototype.onSideBySide3DUnitCell = function(callback){
+        PubSub.subscribe(events.SIDE_BY_SIDE_3D_UNIT_CELL, callback);
+    };
+    Menu.prototype.onOnTop3DUnitCell = function(callback){
+        PubSub.subscribe(events.ON_TOP_3D_UNIT_CELL, callback);
     };
     Menu.prototype.onReset = function(callback){
         PubSub.subscribe(events.RESET, callback);

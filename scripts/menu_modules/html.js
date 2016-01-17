@@ -19,7 +19,7 @@ define([
     // Add new element according to their visual position in the application. ex. new element on Public Library tab, goes to Library section. //
     
     // Contructor //
-    function userDialog() {
+    function html() {
         // Menu Ribbon //
         this.menu = {};
         this.menu.tabs = {
@@ -182,6 +182,10 @@ define([
             oculus: jQuery('#oculus'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop'),
+            anaglyphCell: jQuery('#anaglyphCell'),
+            oculusCell: jQuery('#oculusCell'),
+            sideBySide3DCell: jQuery('#3DsideBySideCell'),
+            onTop3DCell: jQuery('#3DonTopCell'),
             fullScreen: jQuery('#fullScreen'),
             leapMotion: jQuery('#leapMotion'),
             crystalCamTargetOn: jQuery("#crystalCamTargetOn"),
@@ -192,6 +196,12 @@ define([
             oculus: jQuery('#oculus'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop')
+        };
+        this.visual.stereoscopicCell = {
+            anaglyphCell: jQuery('#anaglyphCell'),
+            oculusCell: jQuery('#oculusCell'),
+            sideBySide3DCell: jQuery('#3DsideBySideCell'),
+            onTop3DCell: jQuery('#3DonTopCell')
         };
         this.visual.parameters.renderizationMode = {
             realistic: jQuery('#realistic'),
@@ -319,7 +329,8 @@ define([
             searchTags: jQuery('#searchTags'),
             searchField: jQuery('#searchField'),
             searchQuery: jQuery('#searchQuery'),
-            databaseLoader: jQuery('#databaseLoader')
+            databaseLoader: jQuery('#databaseLoader'),
+            sResults: jQuery('.searchResults')
         };
         
         // IAC //
@@ -429,5 +440,5 @@ define([
         };
     };
     
-    return userDialog;
+    return html;
 });

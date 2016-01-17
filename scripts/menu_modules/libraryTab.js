@@ -21,6 +21,25 @@ define([
         
         * QR Image and link are updated through this module.
         * All files are constructed in the storeProject.js module.
+        
+        HOW TO IMPORT SEARCH RESULTS
+        importSearchResults({
+            result1: {
+                id: 3,           <- 1st Level
+                slug: '#91',     <- 2nd Level
+                data: {          <- Data response OR JSON entry
+                    info: {      <- 3rd Level 
+                        name: "Fernando's Project",
+                        description: 'Old unsatiable our now but considered travelling impression. In excuse hardly summer in basket misery. By rent an part need. At wrong of of water those linen. Needed oppose seemed how all. Very mrs shed shew gave you.',
+                        tags: {
+                            1: 'Old',
+                            2: 'considered',
+                            3: 'impression'
+                        }
+                    }
+                }
+            }
+        },'Name'); <-- Name OR Desc OR Tags, depending on what we're searching for!
     */
     
     // Module References //
@@ -36,6 +55,9 @@ define([
     
     // Contructor //
     function libraryTab(argument) {
+        
+        var _this = this;
+        
         if (!(_.isUndefined(argument.setUIValue))) $setUIValue = argument.setUIValue;
         else return false;
         if (!(_.isUndefined(argument.getUIValue))) $getUIValue = argument.getUIValue;
@@ -196,6 +218,7 @@ define([
         
         // Open JSON File //
         html.library.json.open.on('click', function(){
+            menu.hideMenu(true);
             html.library.json.openDialog.trigger('click');
         });
         html.library.json.openDialog.change(function(event){
@@ -225,29 +248,58 @@ define([
         // Database Service //
         html.library.search.searchField.on('submit', function(){
             
+            // Loader //
             html.interface.screen.body.mCustomScrollbar("scrollTo",'bottom');
-            html.library.search.databaseLoader.show();
             
-            var service = 'https://cwgl.herokuapp.com?format=json&qs=';
+            // Hide Headers and clear previous results //
+            html.library.search.databaseLoader.show();
+            html.library.search.searchName.hide();
+            html.library.search.searchTags.hide();
+            html.library.search.searchDesc.hide();
+            html.library.search.preview.hide();
+            _.each(jQuery(html.library.search.sResults.selector), function($param, a){
+                $param.remove();
+            });
+            
+            var service = 'https://cwgl.herokuapp.com?format=json&';
+            var prefix1 = 'qs=';
+            var prefix2 = 'qv=';
             var nameQuery = '{"info":{"name":"'+html.library.search.searchQuery.val()+'"}}';
             var descQuery = '{"info":{"description":"'+html.library.search.searchQuery.val()+'"}}';
             var tagsQuery = '{"info":{"tags":["'+html.library.search.searchQuery.val()+'"]}}';
             
             // Request Search by Name //
-            $.ajax(service + encodeURIComponent(nameQuery),{
+            $.ajax(service + prefix1 + encodeURIComponent(nameQuery),{
                 method: 'GET',
-                crossDomain: true,
-                 headers: {
-                    "Accept":"Access-Control-Allow-Origin: *'"
-                },
                 beforeSend: function(xmlHttpRequest) {
                     xmlHttpRequest.withCredentials = true;
-                    xmlHttpRequest.setRequestHeader("Access-Control-Allow-Origin",'*');
                 }
             })
-            .done(function(res) {  
-                console.log(res); 
-                console.log(res.data);
+            .done(function(res) {
+                _this.importSearchResults(res.documents,'Name');
+            });
+            
+            // Request Search by Description //
+            $.ajax(service + prefix1 + encodeURIComponent(descQuery),{
+                method: 'GET',
+                beforeSend: function(xmlHttpRequest) {
+                    xmlHttpRequest.withCredentials = true;
+                }
+            })
+            .done(function(res) {
+                _this.importSearchResults(res.documents,'Desc');
+            });
+            
+            // Request Search by Tags //
+            $.ajax(service + prefix2 + encodeURIComponent(tagsQuery),{
+                method: 'GET',
+                beforeSend: function(xmlHttpRequest) {
+                    xmlHttpRequest.withCredentials = true;
+                }
+            })
+            .done(function(res) {
+                _this.importSearchResults(res.documents,'Tags');
+                // Hide Loader //
                 html.library.search.databaseLoader.hide();
             });
             
@@ -283,42 +335,43 @@ define([
         }
     };
     
-    // Module Interface //
-    libraryTab.prototype.importSearchResults = function(data, category){
+    // Module Interface / category = 'Name' OR 'Desc' OR 'Tags' //
+    libraryTab.prototype.importSearchResults = function(results, category){
         // Update Headers //
-        jQuery('#search'+category).find('a').html(category + ': '+ Object.keys(data).length +' matches found.');
+        jQuery('#search'+category).find('a').html(category + ': '+ results.length +' matches found.');
         jQuery('#search'+category).show();
         
-        _.each(data, function($parameter, k){
+        _.each(results, function($parameter, k){
             // Read project information //
-            var projectName = $parameter.name;
-            var projectDescription = $parameter.description;
-            var projectTags = $parameter.tags;
+            var projectName = $parameter.data.info.name;
+            var projectDescription = $parameter.data.info.description;
+            var projectTags = $parameter.data.info.tags;
             var projectSlug = $parameter.slug;
+            var projectID = $parameter.id;
             var thumbnail = 'Images/project-screenshot.png';
             
             // Create HTML query and append to the search results area //
-            var query = '<div class="col col-sm-6"><div class="project-block" id="'+k+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';
+            var query = '<div class="col col-sm-6 searchResults"><div class="project-block" id="'+projectID+category+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';
             jQuery('#search'+category).after(query);
             
             // Hover //
-            jQuery('#'+k).hover(
+            jQuery('#'+projectID+category).hover(
                 function(){
-                    jQuery('#'+k).find('.block-image').css('background','#6f6299');
-                    jQuery('#'+k).find('.block-title').css('background','#443771');
-                    jQuery('#'+k).find('h4').css('color','#fff');
-                    jQuery('#'+k).css('cursor','pointer');
+                    jQuery('#'+projectID+category).find('.block-image').css('background','#6f6299');
+                    jQuery('#'+projectID+category).find('.block-title').css('background','#443771');
+                    jQuery('#'+projectID+category).find('h4').css('color','#fff');
+                    jQuery('#'+projectID+category).css('cursor','pointer');
                 },
                 function(){
-                    jQuery('#'+k).find('.block-image').css('background','#25272b');
-                    jQuery('#'+k).find('.block-title').css('background','#1c1d21');
-                    jQuery('#'+k).find('h4').css('color','#6a6a6e');
-                    jQuery('#'+k).css('cursor','auto');
+                    jQuery('#'+projectID+category).find('.block-image').css('background','#25272b');
+                    jQuery('#'+projectID+category).find('.block-title').css('background','#1c1d21');
+                    jQuery('#'+projectID+category).find('h4').css('color','#6a6a6e');
+                    jQuery('#'+projectID+category).css('cursor','auto');
                 }
             );
             
             // Handler //
-            jQuery('#'+k).on('click',function(){
+            jQuery('#'+projectID+category).on('click',function(){
                 // Fill in Preview information //
                 html.library.search.previewTitle.html(projectName);
                 html.library.search.previewDescription.html(projectDescription);
@@ -338,13 +391,13 @@ define([
                 html.modals.qr.link.val('cw.gl/'+projectSlug);
                 
                 // Update Project Link //
-                html.library.search.openPreview.attr('href','http://cw.gl/'+projectSlug)
+                html.library.search.openPreview.attr('href','https://cw.gl/'+projectSlug)
                 
                 html.library.search.preview.show();
                 html.interface.screen.body.mCustomScrollbar("scrollTo",html.library.search.preview);
             });
         });
-        if (Object.keys(data).length > 1) {
+        if (Object.keys(results).length > 1) {
             //html.library.search.results.append('<a class="footerLink">Load More Results</a>');   
         }
         else html.library.search.footer.remove();

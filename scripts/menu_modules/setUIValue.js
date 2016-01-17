@@ -1012,6 +1012,38 @@ define([
                 else html.visual.stereoscopic.onTop3D.removeClass('active');
                 break;
             }
+            case 'anaglyphCell':{
+                if (value === true){
+                    _.each(html.visual.stereoscopicCell, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopicCell.anaglyphCell.addClass('active');
+                }
+                else html.visual.stereoscopicCell.anaglyphCell.removeClass('active');
+                break;
+            }
+            case 'oculusCell':{
+                if (value === true){
+                    _.each(html.visual.stereoscopicCell, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopicCell.oculusCell.addClass('active');
+                }
+                else html.visual.stereoscopicCell.oculusCell.removeClass('active');
+                break;
+            }
+            case 'sideBySideCell':{
+                if (value === true){
+                    _.each(html.visual.stereoscopicCell, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopicCell.sideBySide3DCell.addClass('active');
+                }
+                else html.visual.stereoscopicCell.sideBySide3DCell.removeClass('active');
+                break;
+            }
+            case 'onTopCell':{
+                if (value === true){
+                    _.each(html.visual.stereoscopicCell, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopicCell.onTop3DCell.addClass('active');
+                }
+                else html.visual.stereoscopicCell.onTop3DCell.removeClass('active');
+                break;
+            }
             case 'crystalCamTargetOn':{
                 if (value === true) {
                     html.visual.parameters.crystalCamTargetOn.addClass('active');
@@ -1771,19 +1803,35 @@ define([
                 break;
             }
             case 'anaglyph':{
-                PubSub.publish(events.ANAGLYPH_EFFECT, value);
+                PubSub.publish(events.ANAGLYPH_EFFECT_CRYSTAL, value);
                 break;
             }
             case 'oculus':{
-                PubSub.publish(events.OCULUS, value);
+                PubSub.publish(events.OCULUS_CRYSTAL, value);
                 break;
             }
             case 'sideBySide':{
-                PubSub.publish(events.SIDE_BY_SIDE_3D, value);
+                PubSub.publish(events.SIDE_BY_SIDE_3D_CRYSTAL, value);
                 break;
             }
             case 'onTop':{
-                PubSub.publish(events.ON_TOP_3D, value);
+                PubSub.publish(events.ON_TOP_3D_CRYSTAL, value);
+                break;
+            }
+            case 'anaglyphCell':{
+                PubSub.publish(events.ANAGLYPH_EFFECT_UNIT_CELL, value);
+                break;
+            }
+            case 'oculusCell':{
+                PubSub.publish(events.OCULUS_UNIT_CELL, value);
+                break;
+            }
+            case 'sideBySideCell':{
+                PubSub.publish(events.SIDE_BY_SIDE_3D_UNIT_CELL, value);
+                break;
+            }
+            case 'onTopCell':{
+                PubSub.publish(events.ON_TOP_3D_UNIT_CELL, value);
                 break;
             }
             case 'crystalCamTargetOn':{
@@ -1977,7 +2025,7 @@ define([
         takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.highlightTangency);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.other.atomRadiusSlider);
         
         // Lattice Tab //
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);

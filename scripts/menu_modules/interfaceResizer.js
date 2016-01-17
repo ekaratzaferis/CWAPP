@@ -362,6 +362,11 @@ define([
     interfaceResizer.prototype.autoZoom = function(state){
         autoZoom = state;  
     };
+    // Hide/Show Menu //
+    interfaceResizer.prototype.hideMenu = function(state){
+        if (state === false) html.interface.sidebar.menu.show();
+        else if (state === true) html.interface.sidebar.menu.hide();
+    };
     
     return interfaceResizer;
 });
