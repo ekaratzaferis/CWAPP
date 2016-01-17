@@ -151,6 +151,42 @@ define([
                 }
             });
         });
+        html.visual.parameters.anaglyphCell.on('click', function() {
+            (html.visual.parameters.anaglyphCell.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                anaglyphCell:{
+                    publish:{anaglyphCell:value},
+                    value:value
+                }
+            });
+        });
+        html.visual.parameters.oculusCell.on('click', function() {
+            (html.visual.parameters.oculusCell.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                oculusCell:{
+                    publish:{oculusCell:value},
+                    value:value
+                }
+            });
+        });
+        html.visual.parameters.sideBySide3DCell.on('click', function() {
+            (html.visual.parameters.sideBySide3DCell.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                sideBySideCell:{
+                    publish:{sideBySideCell:value},
+                    value:value
+                }
+            });
+        });
+        html.visual.parameters.onTop3DCell.on('click', function() {
+            (html.visual.parameters.onTop3DCell.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                onTopCell:{
+                    publish:{onTopCell:value},
+                    value:value
+                }
+            });
+        });
         html.visual.parameters.crystalCamTargetOn.on('click', function(){
             (html.visual.parameters.crystalCamTargetOn.hasClass('active')) ? value = false : value = true;
             if (value === true) {
