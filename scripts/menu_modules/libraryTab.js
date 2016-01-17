@@ -218,7 +218,6 @@ define([
         
         // Open JSON File //
         html.library.json.open.on('click', function(){
-            menu.hideMenu(true);
             html.library.json.openDialog.trigger('click');
         });
         html.library.json.openDialog.change(function(event){
