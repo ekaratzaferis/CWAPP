@@ -437,7 +437,7 @@ require([
   lattice.onDirectionStateChange(function(message, state) {
     lattice.directionState(state);
   });  
-  menu.setAnaglyph(function(message, arg) {
+  menu.setAnaglyphCrystal(function(message, arg) {
     crystalRenderer.setAnaglyph(arg);
     motifRenderer.setAnaglyph(arg);
     unitCellRenderer.setAnaglyph(arg);
@@ -850,7 +850,7 @@ require([
   menu.onExportJSON(function(message, arg) { 
     storingMachine.exportJSON(arg);
   });
-  menu.setOculus(function(message, arg) { 
+  menu.setOculusCrystal(function(message, arg) { 
     crystalRenderer.initOculusEffect(arg);
   });
   menu.onExportPNG(function(message, arg) { 
