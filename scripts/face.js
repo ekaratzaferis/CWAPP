@@ -86,7 +86,7 @@ define([
         color = color.slice(1,7);
         color = '0x' + color;
       }
-      console.log(color);
+    
       return color; 
     }
     else{

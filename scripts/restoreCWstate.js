@@ -44,9 +44,31 @@ define([
       
     var _this = this; 
 
-    this.globalReset();
-    this.menu.restore(cwObj);
 
+    require(['lattice/' + cwObj.system.latticeParams.lattice.latticeName], function(lattice) {
+      _this.lattice.lattice = lattice; 
+      _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
+      _this.lattice.latticeType = _this.lattice.lattice.latticeType ; 
+      if(_this.lattice.latticeType === 'hexagonal' && _this.lattice.latticeSystem === 'hexagonal'){ 
+        _this.menu.toggleExtraParameter('i', 'block');
+        _this.menu.toggleExtraParameter('t', 'block');
+      }
+      else{
+        _this.menu.toggleExtraParameter('i', 'none');
+        _this.menu.toggleExtraParameter('t', 'none');
+      }  
+
+      _this.menu.restore(cwObj); 
+      _this.menu.setLatticeRestrictions(lattice.restrictions);
+
+      _this.beginRestoring(cwObj);
+    }); 
+
+    this.globalReset();
+
+  };
+  RestoreCWstate.prototype.beginRestoring = function(cwObj) { 
+  
     this.cwObj = cwObj;  
 
     this.configureCameraSettings();
@@ -79,9 +101,21 @@ define([
 
       this.configureMotifEditorSettings();
     }
+ 
+    /////
+
+    this.lattice.currentMotif = this.motifEditor.getMotif();
+    this.lattice.offsetMotifsForViews();
+
+    var i = 0;
+
+    while(i < this.lattice.cachedAtoms.length ){ 
+      this.lattice.cachedAtoms[i].setVisibility(false); 
+      i++;
+    }
 
     this.configureVisualizationSettings();
-     
+
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -108,7 +142,7 @@ define([
         this.lattice.tempPlanes[i].plane.destroy(); 
       }; 
       for (var i = 0; i < this.lattice.cachedAtoms.length; i++) { 
-        this.cachedAtoms[i].destroy();  
+        this.lattice.cachedAtoms[i].destroy();  
       } 
       for (var i = 0; i<this.lattice.actualAtoms.length; i++) { 
         this.lattice.actualAtoms[i].removesubtractedForCache();  
@@ -237,7 +271,7 @@ define([
       this.motifEditor.renderingMode = 'realistic';  
       this.motifEditor.cellNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
       this.motifEditor.cachedAtoms = [];
-      this.motifEditor.cachedAtomsPositions = {};
+      this.motifEditor.cachedAtomsPositions = {} ;
       this.motifEditor.box3 = {bool : false, pos : undefined};  
    
       this.motifEditor.labeling = false;
@@ -288,6 +322,7 @@ define([
       this.soundMachine.changeVolume(75);
   };
   RestoreCWstate.prototype.configureVisualizationSettings = function() {
+
     var visualTab = this.cwObj.appUI.visualTab ; 
     var crystalCam = this.orbitCrystal.camera ;
     var cellCamera = this.orbitUnitCell.camera ; 
@@ -297,12 +332,12 @@ define([
 
     var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
 
-    this.lattice.atomToggle(toggles.atomToggle);
-    this.lattice.togglePoints(toggles.latticePoints);
-    this.lattice.planeToggle(toggles.planes);
-    this.lattice.directionToggle(toggles.directions);
-    this.lattice.toggleRadius(toggles.atomRadiusSlider);
-    this.atomMaterialManager.setLabels(toggles.labelToggle);
+    this.lattice.atomToggle({atomToggle : toggles.atomToggle});
+    this.lattice.togglePoints({latticePoints : toggles.latticePoints});
+    this.lattice.planeToggle({planeToggle : toggles.planes});
+    this.lattice.directionToggle({directionToggle : toggles.directions});
+    this.lattice.toggleRadius({atomRadius : toggles.atomRadiusSlider});
+    this.atomMaterialManager.setLabels({labelToggle : toggles.labelToggle});
 
     this.crystalScene.axisMode({xyzAxes : toggles.xyzAxes, abcAxes : toggles.abcAxes});
     this.crystalScene.updateAbcAxes({alpha : latticeParams.alpha, beta : latticeParams.beta, gamma :  latticeParams.gamma}, this.orbitCrystal.camera);
@@ -330,7 +365,7 @@ define([
     
     
     for (var i = this.lattice.planeName - 1; i >= 0; i--) {
-      Things[i]
+      // /Things[i]
     };
 
 
@@ -354,7 +389,10 @@ define([
 
     this.crystalRenderer.shadowing(visualTab.visualParameters.lights.shadows); 
     this.unitCellRenderer.shadowing(visualTab.visualParameters.lights.shadows);
- 
+    
+    var params = this.lattice.getParameters(); 
+    this.crystalScene.updateShadowCameraProperties( params);
+
     this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph); 
@@ -376,9 +414,7 @@ define([
     }
   
     this.motifEditor.editorState_("initial");
-
-    this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
-     
+ 
     this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
     
     this.motifEditor.padlockMode({padlock : !cell.padlock}, true ) ;
@@ -404,6 +440,8 @@ define([
       this.motifEditor.isEmpty = false;
     }
 
+    this.motifEditor.offsetMotifsPointsScaling(true);
+
     var helperMotif = [];
 
     for (var i = 0; i < atoms.length; i++) { 
@@ -417,13 +455,15 @@ define([
         atoms[i].elementName, 
         atoms[i].id, 
         atoms[i].opacity*10, 
-        atoms[i].wireframe
+        atoms[i].wireframe,
+        atoms[i].ionicIndex,
+        this.motifEditor.labeling
       );
 
       this.motifEditor.motifsAtoms.push(atom); 
        
       var radius = atoms[i].radius ;
-      
+  
       helperMotif.push(
 
         {
@@ -466,8 +506,8 @@ define([
 
       this.motifEditor.produceUuid();
     } 
-     
-    var _this = this ;
+    
+    this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
 
     this.lattice.currentMotif = helperMotif ; 
   };
@@ -568,7 +608,7 @@ define([
     // todo this.lattice.setCSGmode("crystalClassic");
 
     this.lattice.lattice = this.cwObj.system.latticeParams.lattice ; 
-    
+    this.latticeType = 
     this.lattice.parameters =  {
       'repeatX': params.latticeParams.repeatX, 
       'repeatY': params.latticeParams.repeatY, 

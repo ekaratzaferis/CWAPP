@@ -83,7 +83,7 @@ define([
 
   };
   MillerPlane.prototype.setVisible = function(bool) {
-      
+       
     this.object3d.visible = bool ;
     this.visible = bool ; 
 
@@ -96,9 +96,12 @@ define([
     this.object3d.material.opacity= opacity/10;
 
   };
-  MillerPlane.prototype.setColor = function(color) {
-    if(_.isUndefined(color)){ 
-      return;
+  MillerPlane.prototype.setColor = function(color) {  
+    if(_.isUndefined(color)){  
+      this.object3d.material.needsUpdate = true;
+      
+      this.object3d.material.color.set( this.color );
+       
     }
     else{  
       this.color =  color ;
@@ -115,7 +118,28 @@ define([
   MillerPlane.prototype.destroy = function() {
     Explorer.remove(this);
   }; 
+  function validateColor(color){
 
+    var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+  
+    if(isOk === true){
+      if(color.charAt(0) === '#'){
+        color = color.slice(1,7);
+        color = '0x' + color;
+      }
+    
+      return color; 
+    }
+    else{
+      if(color.charAt(0) !== '#' && (color.charAt(0) !== '0' || color.charAt(1) !== 'x' )){
+        return ('0x'+color); 
+      } 
+      else { 
+        return 0xffffff;
+      } 
+    }
+     
+  }
   return MillerPlane;
 
 });

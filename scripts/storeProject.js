@@ -16,6 +16,7 @@ define([
    var menu = undefined;
     
     // Constructor //
+
     function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer,stlExporter,menuIn) { 
         this.idle = false;
         this.lattice = lattice;
@@ -193,47 +194,65 @@ define([
         }
         else if (argument.extention === 'png'){
             // Caprture Snapshot //
-            this.crystalRenderer.renderer.clear();
-            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
-            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
+            
+            var whatToPrint = $('#app-container'); 
 
-            // Create Download Link //
-            var dlLink = document.createElement('a');
-            dlLink.download = argument.name + '.' + argument.extention;
-            dlLink.href = imgURL;
-            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+            html2canvas(whatToPrint, {
+              onrendered: function (canvas) { 
+                var imgSrc = canvas.toDataURL();
+                //var popup = window.open(imgSrc);
 
-            // Trigger and Dispose Link //
-            document.body.appendChild(dlLink);
-            dlLink.click();
-            document.body.removeChild(dlLink);
+                // Create Download Link //
+                var dlLink = document.createElement('a');
+                dlLink.download = argument.name + '.' + argument.extention;
+                dlLink.href = imgSrc;
+                dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+
+                // Trigger and Dispose Link //
+                document.body.appendChild(dlLink);
+                dlLink.click();
+                document.body.removeChild(dlLink);
+
+              }
+            });
+            
+           //this.crystalRenderer.renderer.clear();
+           // this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
+            
         }
         else if (argument.extention === 'zip'){
             
             // Gather Info //
             var content = null;
-            var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
-            this.crystalRenderer.renderer.clear();
-            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
-            var imgURL = document.getElementsByTagName("canvas")[1].toDataURL();
-            var stl = this.stlExporter.saveSTL(this.crystalRenderer.explorer.object3d);
-            
-            // Zip File //
-            zip.file('CrystalWalk/settings.json',settings);
-            zip.file('CrystalWalk/snapShot.png',imgURL);
-            zip.file('CrystalWalk/object.stl',stl);
-            content = zip.generate();
-            
-            // Create Download Link //
-            var dlLink = document.createElement('a');
-            dlLink.download = argument.name + '.' + argument.extention;
-            dlLink.href = "data:application/zip;base64,"+content;
-            dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
 
-            // Trigger and Dispose Link //
-            document.body.appendChild(dlLink);
-            dlLink.click();
-            document.body.removeChild(dlLink);
+            var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
+            var stl = this.stlExporter.saveSTL(this.crystalRenderer.explorer.object3d);
+
+            var whatToPrint = $('#app-container'); 
+            var pngImage ;
+
+            html2canvas(whatToPrint, {
+              onrendered: function (canvas) { 
+                pngImage = canvas.toDataURL();  
+                console.log(pngImage);
+                // Zip File //
+                zip.file('CrystalWalk/settings.json',settings);
+                zip.file('CrystalWalk/snapShot.png',pngImage);
+                zip.file('CrystalWalk/object.stl',stl);
+                content = zip.generate();
+                
+                // Create Download Link //
+                var dlLink = document.createElement('a');
+                dlLink.download = argument.name + '.' + argument.extention;
+                dlLink.href = "data:application/zip;base64,"+content;
+                dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
+
+                // Trigger and Dispose Link //
+                document.body.appendChild(dlLink);
+                dlLink.click();
+                document.body.removeChild(dlLink);
+                }
+            });
         }
     };
     StoreProject.prototype.downloadProject = function(argument){
@@ -275,7 +294,7 @@ define([
             var originArray = JSON.stringify(this.lattice.lattice.originArray);
 
             latticeParams = 
-                '{"latticeParams": { "type": "object", "lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+                '{"latticeParams": { "type": "object", "lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'","latticeName":"'+this.lattice.latticeName+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
         }
         else{
             latticeParams = '{"latticeParams": { "type": "object" ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';

@@ -19,10 +19,7 @@ define([
 ) { 
   var raycaster = new THREE.Raycaster(); 
   var mouse = new THREE.Vector2();
-
-  //
-  // possible useless FILE and will be DELETED
-  //
+ 
 
   function CrystalMouseEvents( client, _camera, domElement, state, dollEditor, atomCustomizer, keyboard ) {
     
@@ -39,6 +36,7 @@ define([
     this.offset = new THREE.Vector3(); 
     this.coloredAtomsExist = false;
     this.keyboard = keyboard; 
+    this.coloredPlanesExist = false; 
 
     var mMoove = this.onDocumentMouseMove.bind(this) ; 
     document.getElementById(this.container).addEventListener("mousemove", mMoove, false); 
@@ -68,7 +66,8 @@ define([
     raycaster.setFromCamera( mouse, this.camera ); 
 
     var crystalobjsIntersects = raycaster.intersectObjects( this.getCrystalObjects() );
-      
+     
+
     if ( crystalobjsIntersects.length > 0 ) {   
       if(crystalobjsIntersects[0].object.parent.name === 'atom'){
  
@@ -77,7 +76,7 @@ define([
         if(filteredAtom === undefined){
           filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
         } 
-         
+
         if(filteredAtom !== undefined){
           this.atomCustomizer.atomJustClicekd(filteredAtom, this.keyboard.pressed("ctrl"));
         } 
@@ -118,9 +117,10 @@ define([
         document.getElementById(this.container).style.cursor = 'pointer';   
       } 
     }
-    else{
+    else{ 
+
       if(this.coloredPlanesExist === true){ 
-        for (var i = this.client.millerPlanes.length - 1; i >= 0; i--) {
+        for (var i = this.client.millerPlanes.length - 1; i >= 0; i--) {  
           this.client.millerPlanes[i].plane.setColor();
         };
         for (var i = this.client.tempPlanes.length - 1; i >= 0; i--) {

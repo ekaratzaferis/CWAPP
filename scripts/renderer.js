@@ -39,7 +39,7 @@ define([
 
     this.animateAtom = false;
     this.atom;
-    this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: false }); 
+    this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: true }); 
     this.backgroundColor =  '#000000' ;
     this.renderer.setClearColor( '#000000');
     this.renderer.setSize( width, height);

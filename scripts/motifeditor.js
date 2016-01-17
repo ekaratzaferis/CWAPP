@@ -4777,7 +4777,6 @@ define([
     var downPos = new THREE.Vector3(halfX, 0, halfZ);
 
     var centerPos = new THREE.Vector3(halfX, halfY, halfZ);
-     
 
     if(this.latticeType === 'face'){  
     
@@ -4986,7 +4985,7 @@ define([
     if(this.newSphere !== undefined){
       this.motifsAtoms.push(this.newSphere);
     }
-     
+      
     if(this.latticeType === 'face'){ 
       while(j <this.motifsAtoms.length) {
 
