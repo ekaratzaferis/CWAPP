@@ -5,8 +5,9 @@
  * @author kjlubick / https://github.com/kjlubick
  * @author kovacsv / http://kovacsv.hu/
  * @author mrdoob / http://mrdoob.com/
- *and edited by Thanos Saringelos
+ * and edited by Thanos Saringelos
  */
+
 define([
   'three',
   'jquery', 
@@ -32,6 +33,8 @@ define([
 
 	        parse: ( function () {
 
+              var atomUUIDs = {};
+
 	            var vector = new THREE.Vector3();
 	            var normalMatrixWorld = new THREE.Matrix3();
 
@@ -41,8 +44,8 @@ define([
 
 	                output += 'solid exported\n';
 
-	                scene.traverse( function ( object ) {
-                         
+	                scene.traverse( function ( object ) { 
+
 	                    if ( 
                             object instanceof THREE.ArrowHelper ||
                             (   
@@ -64,18 +67,19 @@ define([
                                 ||
                                 (   
                                     object.parent &&
-                                    object.parent.visible === true &&
-                                    (
-                                        
-                                        object.parent.name === 'atom' 
-                                         
-                                    ) 
+                                    object.parent.visible === true && 
+                                    atomUUIDs[object.parent.uuid] === undefined && 
+                                    object.parent.name === 'atom' 
+                                          
                                 )
                             )
                         )
                         {
 
-                            
+                          atomUUIDs[object.parent.uuid] = object.parent.uuid;
+
+                          console.log(atomUUIDs);
+
                           var geometry;
                           
                           if(object.name === 'direction'){
