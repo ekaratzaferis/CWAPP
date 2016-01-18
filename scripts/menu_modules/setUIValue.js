@@ -2025,7 +2025,7 @@ define([
         takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',appUI.menuRibbon.other.atomRadiusSlider);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.atomRadiusSlider);
         
         // Lattice Tab //
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);

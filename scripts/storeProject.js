@@ -234,7 +234,7 @@ define([
             html2canvas(whatToPrint, {
               onrendered: function (canvas) { 
                 pngImage = canvas.toDataURL();  
-                console.log(pngImage);
+                
                 // Zip File //
                 zip.file('CrystalWalk/settings.json',settings);
                 zip.file('CrystalWalk/snapShot.png',pngImage);

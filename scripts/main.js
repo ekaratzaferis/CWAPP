@@ -455,9 +455,8 @@ require([
     soundMachine.changeVolume(arg); 
   });
   menu.on3DPrinting(function(message, arg) {  
-    var scene = new THREE.Scene();
-    console.log(arg);
-    stlExporter.saveSTL(crystalScene.object3d, 'stl_FIle');
+    var scene = new THREE.Scene(); 
+    stlExporter.saveSTL(crystalScene.object3d, 'stl_FIle', arg.resolution);
   });
   menu.onSwapScreen(function(message, arg) {  
     tabActionsManager.tabClick(arg.swap);

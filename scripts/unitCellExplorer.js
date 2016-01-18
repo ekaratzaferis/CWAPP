@@ -105,7 +105,7 @@ define([
     this.light.position.set( posV.x, posV.y, posV.z); 
   
     var l2 = l*2; 
-    console.log(posV);
+    
     if(this.light.shadowCamera){ 
       this.light.shadowCamera.far = l2*1.5 ; 
       this.light.shadowCamera.left = -l2;

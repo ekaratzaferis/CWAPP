@@ -76,7 +76,7 @@ define([
  
     var color =  this.color ;
      
-    var meshGeometry = new THREE.CylinderGeometry( 0.001, 0.001, 0.001, 8, 8 ); 
+    var meshGeometry = new THREE.CylinderGeometry( 0.001, 0.001, 0.001, 4, 1 ); 
     var mesh = new THREE.Mesh( meshGeometry, new THREE.MeshBasicMaterial({color : color })  );  
 
     var pointA = start.clone();  

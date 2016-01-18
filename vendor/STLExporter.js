@@ -33,12 +33,14 @@ define([
 
 	        parse: ( function () {
 
-              var atomUUIDs = {};
+              
 
 	            var vector = new THREE.Vector3();
 	            var normalMatrixWorld = new THREE.Matrix3();
 
-	            return function ( scene ) {
+	            return function ( scene , resolution) {
+
+                  var atomUUIDs = {};
 
 	                var output = '';
 
@@ -74,12 +76,10 @@ define([
                                 )
                             )
                         )
-                        {
+                        { 
 
                           atomUUIDs[object.parent.uuid] = object.parent.uuid;
-
-                          console.log(atomUUIDs);
-
+ 
                           var geometry;
                           
                           if(object.name === 'direction'){
@@ -91,12 +91,15 @@ define([
                           }
 	                        else{
                               object.updateMatrix();
-                              geometry = object.geometry;
-                          }
+                                
+                              geometry = calcGeometry( resolution, object );
+                               
+                          } 
+
 	                        var matrixWorld = object.matrixWorld;
 
-	                        if ( geometry instanceof THREE.Geometry ) {
-
+	                        if ( (geometry instanceof THREE.Geometry) || (geometry instanceof THREE.CylinderGeometry) ) {
+                           
 	                            var vertices = geometry.vertices;
 	                            var faces = geometry.faces;
 
@@ -143,12 +146,42 @@ define([
 	    };
         
     }
-
-    STLExporter.prototype.saveSTL = function(scene, name){
+    function calcGeometry( res, object){
+      var geometry;
+      
+      if(object.parent.name === 'atom' || object.name === 'point' ){
+        if(res === 'high') {
+          geometry = object.geometry;  
+        }
+        else if(res === 'medium'){
+            geometry = new THREE.SphereGeometry(object.geometry.parameters.radius, 16, 16);
+        }
+        else{ 
+            geometry = new THREE.SphereGeometry(object.geometry.parameters.radius, 16, 8 );
+        } 
+      }
+      else if(object.name === 'grid'){
+        if(res === 'high') {
+          geometry = object.geometry; 
+        }
+        else if(res === 'medium'){
+            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 4, 1 )
+        }
+        else{ 
+            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 )
+        } 
+      }
+      else{
+        geometry = object.geometry;
+      }
+       
+      return geometry;
+    }
+    STLExporter.prototype.saveSTL = function(scene, name, resolution){
 
     	
     	var exporter = new THREE.STLExporter();
-      var stlString = exporter.parse(scene);
+      var stlString = exporter.parse(scene, resolution);
 
       if(name === undefined){
         return stlString;

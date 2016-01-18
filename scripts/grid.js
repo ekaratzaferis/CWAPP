@@ -11,7 +11,7 @@ define([
 
   function Grid(pointA, pointB, visibility) {
 
-    var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 8, 8 ); 
+    var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 8, 1 ); 
     var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( { color: 0xA19EA1 } ) ); 
     mesh.visible = visibility;
     mesh.name = 'grid';
