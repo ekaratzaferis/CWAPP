@@ -90,46 +90,41 @@ define([
 
                           }
 	                        else{
-                              object.updateMatrix();
-                                
+                              object.updateMatrix(); 
                               geometry = calcGeometry( resolution, object );
                                
                           } 
 
 	                        var matrixWorld = object.matrixWorld;
+ 
+                          var vertices = geometry.vertices;
+                          var faces = geometry.faces;
 
-	                        if ( (geometry instanceof THREE.Geometry) || (geometry instanceof THREE.CylinderGeometry) ) {
-                           
-	                            var vertices = geometry.vertices;
-	                            var faces = geometry.faces;
+                          normalMatrixWorld.getNormalMatrix( matrixWorld );
 
-	                            normalMatrixWorld.getNormalMatrix( matrixWorld );
+                          for ( var i = 0, l = faces.length; i < l; i ++ ) {
 
-	                            for ( var i = 0, l = faces.length; i < l; i ++ ) {
+                              var face = faces[ i ];
 
-	                                var face = faces[ i ];
+                              vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
 
-	                                vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
+                              output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
+                              output += '\t\touter loop\n';
 
-	                                output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-	                                output += '\t\touter loop\n';
+                              var indices = [ face.a, face.b, face.c ];
 
-	                                var indices = [ face.a, face.b, face.c ];
+                              for ( var j = 0; j < 3; j ++ ) {
 
-	                                for ( var j = 0; j < 3; j ++ ) {
+                                  vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
 
-	                                    vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
+                                  output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
 
-	                                    output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
+                              }
 
-	                                }
+                              output += '\t\tendloop\n';
+                              output += '\tendfacet\n';
 
-	                                output += '\t\tendloop\n';
-	                                output += '\tendfacet\n';
-
-	                            }
-
-	                        }
+                          } 
 
 	                    }
 
@@ -149,6 +144,7 @@ define([
     function calcGeometry( res, object){
       var geometry;
       
+      console.log(object.name)
       if(object.parent.name === 'atom' || object.name === 'point' ){
         if(res === 'high') {
           geometry = object.geometry;  
@@ -160,20 +156,20 @@ define([
             geometry = new THREE.SphereGeometry(object.geometry.parameters.radius, 16, 8 );
         } 
       }
-      else if(object.name === 'grid'){
+      else if( object.name === 'dirLine'){
+        geometry = object.geometry; 
+      }
+      else if(object.name === 'grid'  ){
         if(res === 'high') {
           geometry = object.geometry; 
         }
         else if(res === 'medium'){
-            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 4, 1 )
+            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 4, 1 );
         }
         else{ 
-            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 )
+            geometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 );
         } 
-      }
-      else{
-        geometry = object.geometry;
-      }
+      } 
        
       return geometry;
     }
