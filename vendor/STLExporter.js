@@ -24,31 +24,31 @@ define([
   MotifExplorer
   
 ) {  
-	function STLExporter() {
-	    THREE.STLExporter = function () {};
-	      
-	    THREE.STLExporter.prototype = {
+    function STLExporter() {
+        THREE.STLExporter = function () {};
+          
+        THREE.STLExporter.prototype = {
 
-	        constructor: THREE.STLExporter,
+            constructor: THREE.STLExporter,
 
-	        parse: ( function () {
+            parse: ( function () {
 
               
 
-	            var vector = new THREE.Vector3();
-	            var normalMatrixWorld = new THREE.Matrix3();
+                var vector = new THREE.Vector3();
+                var normalMatrixWorld = new THREE.Matrix3();
 
-	            return function ( scene , resolution) {
+                return function ( scene , resolution) {
 
                   var atomUUIDs = {};
 
-	                var output = '';
+                    var output = '';
 
-	                output += 'solid exported\n';
+                    output += 'solid exported\n';
 
-	                scene.traverse( function ( object ) { 
+                    scene.traverse( function ( object ) { 
 
-	                    if ( 
+                        if ( 
                             object instanceof THREE.ArrowHelper ||
                             (   
                                 object instanceof THREE.Mesh && 
@@ -56,7 +56,7 @@ define([
                                     object.visible === true &&
                                     (
                                         
-                                        object.parent.name === 'subtractedAtom' || 
+                                        (object.parent.name === 'subtractedAtom' && object.parent.visible === true) || 
                                         object.name === 'grid' || 
                                         object.name === 'plane' || 
                                         object.name === 'point' || 
@@ -82,21 +82,11 @@ define([
                           atomUUIDs[object.parent.uuid] = object.parent.uuid;
  
                           var geometry;
-                          
-                          if(object.name === 'direction'){
-                              geometry = new THREE.Geometry();
-
-                              object.cone.updateMatrix();
-                              geometry.merge( object.cone.geometry.clone(), object.cone.matrix ); 
-
-                          }
-	                        else{
-                              object.updateMatrix(); 
-                              geometry = calcGeometry( resolution, object );
+                           
+                          object.updateMatrix(); 
+                          geometry = calcGeometry( resolution, object );
                                
-                          } 
-
-	                        var matrixWorld = object.matrixWorld;
+                          var matrixWorld = object.matrixWorld;
  
                           var vertices = geometry.vertices;
                           var faces = geometry.faces;
@@ -108,6 +98,8 @@ define([
                               var face = faces[ i ];
 
                               vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
+ 
+                              //var vec1 = roundVec(vector, resolution); 
 
                               output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
                               output += '\t\touter loop\n';
@@ -127,25 +119,43 @@ define([
 
                           } 
 
-	                    }
+                        }
 
-	                } );
+                    } );
 
-	                output += 'endsolid exported\n';
+                    output += 'endsolid exported\n';
 
-	                return output;
+                    return output;
 
-	            };
+                };
 
-	        }() )
+            }() )
 
-	    };
+        };
         
     }
+    function roundVec( vec, resolution){
+      var vector = new THREE.Vector3();
+
+      if(resolution === 'medium'){
+        vector.set((vec.x).toFixed(10), (vec.y).toFixed(10), (vec.z).toFixed(10)  ); 
+      }
+      else if(resolution === 'low'){
+        vector.set((vec.x).toFixed(7), (vec.y).toFixed(7), (vec.z).toFixed(7)  );
+      }
+      else{
+        vector = vec.clone();
+      }
+
+      return vector;
+    };
     function calcGeometry( res, object){
       var geometry;
       
-      console.log(object.name)
+      if(object.name === 'plane' || object.name === 'face' || object.parent.name === 'subtractedAtom' || object.name === 'crystalSolidVoid' ){
+        
+        geometry = object.geometry;
+      }
       if(object.parent.name === 'atom' || object.name === 'point' ){
         if(res === 'high') {
           geometry = object.geometry;  
@@ -156,6 +166,12 @@ define([
         else{ 
             geometry = new THREE.SphereGeometry(object.geometry.parameters.radius, 16, 8 );
         } 
+      }
+      else if( object.name === 'direction'){
+        geometry = new THREE.Geometry();
+
+        object.cone.updateMatrix();
+        geometry.merge( object.cone.geometry , object.cone.matrix );
       }
       else if( object.name === 'dirLine'){
         geometry = object.geometry; 
@@ -176,8 +192,8 @@ define([
     }
     STLExporter.prototype.saveSTL = function(scene, name, resolution){
 
-    	
-    	var exporter = new THREE.STLExporter();
+        
+        var exporter = new THREE.STLExporter();
       var stlString = exporter.parse(scene, resolution);
 
       if(name === undefined){

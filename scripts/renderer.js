@@ -235,7 +235,7 @@ define([
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
-    if(this.rS !== undefined && this.rstatsON === true){  
+    if(this.rS !== undefined && this.rstatsON === true && false ){  
       this.rS( 'frame' ).start();
       this.glS.start();
       
@@ -397,7 +397,7 @@ define([
       }
     }  
     
-    if(this.rS !== undefined && this.rstatsON === true){ 
+    if(this.rS !== undefined && this.rstatsON === true && false){ 
 
       this.rS( 'render' ).end();
 

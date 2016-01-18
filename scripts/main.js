@@ -303,7 +303,7 @@ require([
   var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube',  [orbitUnitCell,orbitCrystal], soundMachine, hudCube );
  
   // storing mechanism  
-  var storingMachine = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, stlExporter, menu );
+  var storeMechanism = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, stlExporter, menu );
 
   // Gear Bar Tour
   var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
@@ -362,7 +362,7 @@ require([
   lattice.atomRelationshipManager = atomRelationshipManager;
   
   // restoring
-  var storeRestoreMech = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes );
+  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes );
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
@@ -817,7 +817,7 @@ require([
     atomRelationshipManager.checkForOverlap(arg); 
   }); 
   menu.onReset(function(message, arg) { 
-    storeRestoreMech.globalReset(arg); 
+    restoreMechanism.globalReset(arg); 
   });
   menu.updateNotes(function(message, arg) { 
     noteManager.addNote(arg); 
@@ -841,22 +841,22 @@ require([
   });
 
   menu.onDownloadProject(function(message, arg) { 
-    storingMachine.downloadProject(arg);
+    storeMechanism.downloadProject(arg);
   });
   menu.onSaveOnline(function(message, arg) { 
-    storingMachine.saveOnline(arg);
+    storeMechanism.saveOnline(arg);
   });
   menu.onExportJSON(function(message, arg) { 
-    storingMachine.exportJSON(arg);
+    storeMechanism.exportJSON(arg);
   });
   menu.setOculusCrystal(function(message, arg) { 
     crystalRenderer.initOculusEffect(arg);
   });
   menu.onExportPNG(function(message, arg) { 
-    storingMachine.exportPNG(arg);
+    storeMechanism.exportPNG(arg);
   });
   menu.onOpenJSON(function(message, arg) { 
-    storeRestoreMech.configureState(arg);
+    restoreMechanism.configureState(arg);
   });
 
   ///////////////////////
@@ -866,13 +866,14 @@ require([
   // to read the json file
   
 
-  var hash = window.location.hash.substr(1);
-  var service = 'https://cwgl.herokuapp.com' ;
-
-  if(hash.length>0){
-    console.log(service + '/' + hash + '.json') ;
-
+  var hash = window.location.hash;
+  var service = 'https://cwgl.herokuapp.com' ; 
+  console.log(window.location);
+  console.log(hash);
+  
+  if(hash.length>0){ 
     var slug = hash.replace(/^#/, '');
+    console.log(service + '/' + slug + '.json');
     $.ajax(service + '/' + slug + '.json', {
       method: 'GET',
       beforeSend: function(xmlHttpRequest) {
@@ -880,7 +881,9 @@ require([
       }
     })
     .done(function(res) {  
-      storeRestoreMech.configureState(res.data); 
+      if(res){
+        restoreMechanism.configureState(res.data); 
+      } 
     }); 
   } 
   
