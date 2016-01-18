@@ -70,18 +70,16 @@ define([
                                 (   
                                     object.parent &&
                                     object.parent.visible === true &&  
+                                    atomUUIDs[object.parent.uuid] === undefined &&  
                                     object.parent.name === 'atom' 
                                           
                                 )
                             )
                         )
-<<<<<<< HEAD
+ 
                         { 
 
                           atomUUIDs[object.parent.uuid] = object.parent.uuid;
-=======
-                        {
->>>>>>> fc67a74539c178d822c9c808470a83fcc2ca5141
  
                           var geometry;
                           
