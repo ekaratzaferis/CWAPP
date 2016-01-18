@@ -67,19 +67,14 @@ define([
                                 ||
                                 (   
                                     object.parent &&
-                                    object.parent.visible === true && 
-                                    atomUUIDs[object.parent.uuid] === undefined && 
+                                    object.parent.visible === true &&  
                                     object.parent.name === 'atom' 
                                           
                                 )
                             )
                         )
                         {
-
-                          atomUUIDs[object.parent.uuid] = object.parent.uuid;
-
-                          console.log(atomUUIDs);
-
+ 
                           var geometry;
                           
                           if(object.name === 'direction'){
