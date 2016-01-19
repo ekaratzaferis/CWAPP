@@ -106,9 +106,11 @@ function NavCube( scene, latticeParams) {
 
 };
 NavCube.prototype.setVisibility = function(bool){
-  this.cube.visible = bool;
-  this.arHead.visible = bool;
-  this.arLine.visible = bool; 
+  if(this.cube !== undefined){ 
+    this.cube.visible = bool;
+    this.arHead.visible = bool;
+    this.arLine.visible = bool; 
+  }
 };  
 NavCube.prototype.addMaterial = function(text, index) {
   var _this = this ; 

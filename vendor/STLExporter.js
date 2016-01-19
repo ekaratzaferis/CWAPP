@@ -33,105 +33,141 @@ define([
 
             parse: ( function () {
 
-              
+        var vector = new THREE.Vector3();
+        var normalMatrixWorld = new THREE.Matrix3();
 
-                var vector = new THREE.Vector3();
-                var normalMatrixWorld = new THREE.Matrix3();
+        return function parse( scene, resolution ) {
 
-                return function ( scene , resolution) {
+            var atomUUIDs = {};
 
-                  var atomUUIDs = {};
+            var triangles = 0;
+            scene.traverse( function ( object ) {
 
-                    var output = '';
+              if ( 
+                  object instanceof THREE.ArrowHelper ||
+                  (   
+                      object instanceof THREE.Mesh && 
+                      (
+                          object.visible === true &&
+                          (
+                              
+                              (object.parent.name === 'subtractedAtom' && object.parent.visible === true) || 
+                              object.name === 'grid' || 
+                              object.name === 'plane' || 
+                              object.name === 'point' || 
+                              object.name === 'direction' || 
+                              object.name === 'dirLine' || 
+                              object.name === 'crystalSolidVoid' ||  
+                              object.name === 'face'
+                          )  
+                      ) 
+                      ||
+                      (   
+                          object.parent &&
+                          object.parent.visible === true &&  
+                          atomUUIDs[object.parent.uuid] === undefined &&  
+                          object.parent.name === 'atom' 
+                                
+                      )
+                  )
+              )
 
-                    output += 'solid exported\n';
+              {  
+                atomUUIDs[object.parent.uuid] = object.parent.uuid;
+                triangles += object.geometry.faces.length;
+              }
 
-                    scene.traverse( function ( object ) { 
+            } );
+            
+            atomUUIDs = {};
+            
+            var offset = 80; // skip header
+            var bufferLength = triangles * 2 + triangles * 3 * 4 * 4 + 80 + 4;
+            var arrayBuffer = new ArrayBuffer( bufferLength );
+            var output = new DataView( arrayBuffer );
+            output.setUint32( offset, triangles, true ); offset += 4;
 
-                        if ( 
-                            object instanceof THREE.ArrowHelper ||
-                            (   
-                                object instanceof THREE.Mesh && 
-                                (
-                                    object.visible === true &&
-                                    (
-                                        
-                                        (object.parent.name === 'subtractedAtom' && object.parent.visible === true) || 
-                                        object.name === 'grid' || 
-                                        object.name === 'plane' || 
-                                        object.name === 'point' || 
-                                        object.name === 'direction' || 
-                                        object.name === 'dirLine' || 
-                                        object.name === 'crystalSolidVoid' ||  
-                                        object.name === 'face'
-                                    )  
-                                ) 
-                                ||
-                                (   
-                                    object.parent &&
-                                    object.parent.visible === true &&  
-                                    atomUUIDs[object.parent.uuid] === undefined &&  
-                                    object.parent.name === 'atom' 
-                                          
-                                )
-                            )
-                        )
- 
-                        { 
+            scene.traverse( function ( object ) {
+              if ( 
+                  object instanceof THREE.ArrowHelper ||
+                  (   
+                      object instanceof THREE.Mesh && 
+                      (
+                          object.visible === true &&
+                          (
+                              
+                              (object.parent.name === 'subtractedAtom' && object.parent.visible === true) || 
+                              object.name === 'grid' || 
+                              object.name === 'plane' || 
+                              object.name === 'point' || 
+                              object.name === 'direction' || 
+                              object.name === 'dirLine' || 
+                              object.name === 'crystalSolidVoid' ||  
+                              object.name === 'face'
+                          )  
+                      ) 
+                      ||
+                      (   
+                          object.parent &&
+                          object.parent.visible === true &&  
+                          atomUUIDs[object.parent.uuid] === undefined &&  
+                          object.parent.name === 'atom' 
+                                
+                      )
+                  )
+              )
 
-                          atomUUIDs[object.parent.uuid] = object.parent.uuid;
- 
-                          var geometry;
-                           
-                          object.updateMatrix(); 
-                          geometry = calcGeometry( resolution, object );
-                               
-                          var matrixWorld = object.matrixWorld;
- 
-                          var vertices = geometry.vertices;
-                          var faces = geometry.faces;
+              { 
 
-                          normalMatrixWorld.getNormalMatrix( matrixWorld );
+                  atomUUIDs[object.parent.uuid] = object.parent.uuid;
 
-                          for ( var i = 0, l = faces.length; i < l; i ++ ) {
+                  var geometry = object.geometry;
 
-                              var face = faces[ i ];
+                  object.updateMatrix(); 
+                  geometry = calcGeometry( resolution, object );
 
-                              vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
- 
-                              //var vec1 = roundVec(vector, resolution); 
+                  var matrixWorld = object.matrixWorld;
 
-                              output += '\tfacet normal ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
-                              output += '\t\touter loop\n';
+                  var vertices = geometry.vertices;
+                  var faces = geometry.faces;
 
-                              var indices = [ face.a, face.b, face.c ];
+                  normalMatrixWorld.getNormalMatrix( matrixWorld );
 
-                              for ( var j = 0; j < 3; j ++ ) {
+                  for ( var i = 0, l = faces.length; i < l; i ++ ) {
 
-                                  vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
+                      var face = faces[ i ];
 
-                                  output += '\t\t\tvertex ' + vector.x + ' ' + vector.y + ' ' + vector.z + '\n';
+                      vector.copy( face.normal ).applyMatrix3( normalMatrixWorld ).normalize();
 
-                              }
+                      output.setFloat32( offset, vector.x, true ); offset += 4; // normal
+                      output.setFloat32( offset, vector.y, true ); offset += 4;
+                      output.setFloat32( offset, vector.z, true ); offset += 4;
 
-                              output += '\t\tendloop\n';
-                              output += '\tendfacet\n';
+                      var indices = [ face.a, face.b, face.c ];
 
-                          } 
+                      for ( var j = 0; j < 3; j ++ ) {
 
-                        }
+                          vector.copy( vertices[ indices[ j ] ] ).applyMatrix4( matrixWorld );
 
-                    } );
+                          output.setFloat32( offset, vector.x, true ); offset += 4; // vertices
+                          output.setFloat32( offset, vector.y, true ); offset += 4;
+                          output.setFloat32( offset, vector.z, true ); offset += 4;
 
-                    output += 'endsolid exported\n';
+                      }
 
-                    return output;
+                      output.setUint16( offset, 0, true ); offset += 2; // attribute byte count
 
-                };
+                  }
+              }
+            } );
 
-            }() )
+            return output;
 
         };
+
+    }() )
+
+    };
         
     }
     function roundVec( vec, resolution){

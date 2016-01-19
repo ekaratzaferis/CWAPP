@@ -21,6 +21,7 @@ define([
     // Contructor //
     function html() {
         // Menu Ribbon //
+        
         this.menu = {};
         this.menu.tabs = {
            'latticeTab':jQuery('#latticeTab'),
