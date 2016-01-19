@@ -866,7 +866,7 @@ require([
   // to read the json file
   
 
-  var hash = window.location.hash.substr(3);
+  var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ; 
   console.log(window.location);
   console.log(hash);
