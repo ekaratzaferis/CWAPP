@@ -72,15 +72,16 @@ define([
                   )
               )
 
-              {  
+              {   
                 atomUUIDs[object.parent.uuid] = object.parent.uuid;
-                triangles += object.geometry.faces.length;
+                var tempGeom =  calcGeometry( resolution, object );
+                triangles += tempGeom.faces.length;
               }
 
             } );
             
             atomUUIDs = {};
-            
+
             var offset = 80; // skip header
             var bufferLength = triangles * 2 + triangles * 3 * 4 * 4 + 80 + 4;
             var arrayBuffer = new ArrayBuffer( bufferLength );
