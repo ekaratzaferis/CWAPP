@@ -169,7 +169,7 @@ define([
         });
 
         // Render unit cell viewport //
-        if ($viewport === true) {
+        if ($viewport === true ) {
             html.interface.canvas.unitCellRenderer.width($appContainer.width()/5);
             html.interface.canvas.unitCellRendererMouse.width($appContainer.width()/5);
             html.interface.canvas.unitCellRenderer.height(screenHeight/5);

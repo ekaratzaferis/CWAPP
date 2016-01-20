@@ -17,7 +17,7 @@ define([
     
     // Constructor //
 
-    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam,motifYcam,motifZcam,crystalRenderer,stlExporter,menuIn) { 
+    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam, motifYcam, motifZcam, crystalRenderer, stlExporter, menuIn, gearTour) { 
         this.idle = false;
         this.lattice = lattice;
         this.motifeditor = motifeditor;
@@ -28,6 +28,7 @@ define([
         this.camera = camera;
         this.crystalRenderer = crystalRenderer;
         this.stlExporter = stlExporter;
+        this.gearTour = gearTour;
         menu = menuIn;
     };
     
@@ -294,7 +295,7 @@ define([
             var originArray = JSON.stringify(this.lattice.lattice.originArray);
 
             latticeParams = 
-                '{"latticeParams": { "type": "object", "lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'","latticeName":"'+this.lattice.latticeName+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
+                '{"latticeParams": { "type": "object", "gearTourState" : '+this.gearTour.state+', "lattice" : {"defaults" : {  "scaleX":'+this.lattice.parameters.scaleX+',  "scaleY":'+this.lattice.parameters.scaleY+', "scaleZ":'+this.lattice.parameters.scaleZ+',"alpha":'+this.lattice.parameters.alpha+', "beta":'+this.lattice.parameters.beta+', "gamma":'+this.lattice.parameters.gamma+' }, "latticeType":"'+this.lattice.lattice.latticeType+'","latticeName":"'+this.lattice.latticeName+'", "latticeSystem":"'+this.lattice.lattice.latticeSystem+'",  "vector" : { "x" : '+this.lattice.lattice.vector.x+', "y" :'+this.lattice.lattice.vector.y+', "z" : '+this.lattice.lattice.vector.z+'}, "restrictions" :  '+restrictions+', "gridPoints" :  '+gridPoints+',"originArray" :  '+originArray+' }, "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';
         }
         else{
             latticeParams = '{"latticeParams": { "type": "object" ,"lattice" : '+null+', "repeatX":'+this.lattice.parameters.repeatX+', "repeatY":'+this.lattice.parameters.repeatY+', "repeatZ":'+this.lattice.parameters.repeatZ+',  "viewState": "todo"  },  ';

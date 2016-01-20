@@ -19,7 +19,7 @@ define([
   AtomSphere
 ) {
   
-  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes )  {  
+  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor )  {  
     this.menu = menu ;
     this.lattice = lattice ;
     this.motifEditor = motifEditor ;
@@ -38,37 +38,46 @@ define([
     this.soundMachine = soundMachine;
     this.renderingModes = renderingModes;
     this.atomMaterialManager = atomMaterialManager;
+    this.gearTour = gearTour;
+    this.dollEditor = dollEditor; 
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
       
     var _this = this; 
+    
+    if(cwObj.system.latticeParams.lattice){ 
+      require(['lattice/' + cwObj.system.latticeParams.lattice.latticeName], function(lattice) {
+        _this.lattice.lattice = lattice; 
+        _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
+        _this.lattice.latticeType = _this.lattice.lattice.latticeType ; 
+        if(_this.lattice.latticeType === 'hexagonal' && _this.lattice.latticeSystem === 'hexagonal'){ 
+          _this.menu.toggleExtraParameter('i', 'block');
+          _this.menu.toggleExtraParameter('t', 'block');
+        }
+        else{
+          _this.menu.toggleExtraParameter('i', 'none');
+          _this.menu.toggleExtraParameter('t', 'none');
+        }  
 
+        _this.menu.restore(cwObj); 
+        _this.menu.setLatticeRestrictions(lattice.restrictions);
 
-    require(['lattice/' + cwObj.system.latticeParams.lattice.latticeName], function(lattice) {
-      _this.lattice.lattice = lattice; 
-      _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
-      _this.lattice.latticeType = _this.lattice.lattice.latticeType ; 
-      if(_this.lattice.latticeType === 'hexagonal' && _this.lattice.latticeSystem === 'hexagonal'){ 
-        _this.menu.toggleExtraParameter('i', 'block');
-        _this.menu.toggleExtraParameter('t', 'block');
-      }
-      else{
-        _this.menu.toggleExtraParameter('i', 'none');
-        _this.menu.toggleExtraParameter('t', 'none');
-      }  
-
-      _this.menu.restore(cwObj); 
-      _this.menu.setLatticeRestrictions(lattice.restrictions);
-
-      _this.beginRestoring(cwObj);
-    }); 
+        _this.beginRestoring(cwObj);
+      }); 
+    }
+    else{
+      this.menu.restore(cwObj); 
+      this.beginRestoring(cwObj);
+    }
 
     this.globalReset();
 
   };
   RestoreCWstate.prototype.beginRestoring = function(cwObj) { 
-  
+    
+    var _this = this;
+
     this.cwObj = cwObj;  
 
     this.configureCameraSettings();
@@ -305,6 +314,12 @@ define([
       this.unitCellScene.light.castShadow = true;
       this.lattice.editObjectsInScene('crystalSolidVoid', 'remove', true);
 
+      // GEAR BAR 
+
+      this.gearTour.crystalHasChanged = true;
+      this.gearTour.state = 1 ;
+      this.dollEditor.gearBarSlider.position.y = -7.05;
+
       // RENDERERS
 
       this.crystalRenderer.setAnaglyph(false);
@@ -326,21 +341,13 @@ define([
     var visualTab = this.cwObj.appUI.visualTab ; 
     var crystalCam = this.orbitCrystal.camera ;
     var cellCamera = this.orbitUnitCell.camera ; 
-    var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
-      
-    // toggles
-
+ 
     var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
-
-    this.lattice.atomToggle({atomToggle : toggles.atomToggle});
-    this.lattice.togglePoints({latticePoints : toggles.latticePoints});
-    this.lattice.planeToggle({planeToggle : toggles.planes});
-    this.lattice.directionToggle({directionToggle : toggles.directions});
-    this.lattice.toggleRadius({atomRadius : toggles.atomRadiusSlider});
+  
     this.atomMaterialManager.setLabels({labelToggle : toggles.labelToggle});
 
     this.crystalScene.axisMode({xyzAxes : toggles.xyzAxes, abcAxes : toggles.abcAxes});
-    this.crystalScene.updateAbcAxes({alpha : latticeParams.alpha, beta : latticeParams.beta, gamma :  latticeParams.gamma}, this.orbitCrystal.camera);
+    this.crystalScene.updateAbcAxes({alpha : this.cwObj.appUI.latticeTab.latticeAngle.alpha, beta : this.cwObj.appUI.latticeTab.latticeAngle.beta, gamma :  this.cwObj.appUI.latticeTab.latticeAngle.gamma}, this.orbitCrystal.camera);
     
     for (var prop in visualTab.visualParameters.renderizationMode) {
       var mode = visualTab.visualParameters.renderizationMode[prop];
@@ -605,10 +612,12 @@ define([
   
     this.lattice.gradeChoice = {"face":this.cwObj.system.cellVisualization.edges.visible, "grid":this.cwObj.system.cellVisualization.faces.visible};
     
-    // todo this.lattice.setCSGmode("crystalClassic");
+    var toggles = this.cwObj.appUI.menuRibbon.toggleButtons ; 
+
+    this.lattice.toggleStates = {crystalAtoms : toggles.atomToggle, points : toggles.latticePoints, planes : toggles.planes, directions : toggles.directions}; 
 
     this.lattice.lattice = this.cwObj.system.latticeParams.lattice ; 
-    this.latticeType = 
+    
     this.lattice.parameters =  {
       'repeatX': params.latticeParams.repeatX, 
       'repeatY': params.latticeParams.repeatY, 

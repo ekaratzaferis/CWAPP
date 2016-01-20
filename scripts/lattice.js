@@ -44,6 +44,7 @@ define([
     this.latticeType = 'none'; // may be useless
     this.latticeSystem = 'none'; // may be useless 
     this.actualAtoms = [];  
+    this.toggleStates = {crystalAtoms : true, points : true, planes : true, directions : true};  
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -53,6 +54,7 @@ define([
     this.faces = [];
     this.gradeParameters = {"radius" : 2, "cylinderColor" : "A19EA1" , "faceOpacity" : 3 , "faceColor" : "907190"};
     this.hexagonalShapes = [] ;
+
     // miller
     this.millerParameters = []; 
 
@@ -60,12 +62,12 @@ define([
     this.planeState = {state:"initial", editing : undefined };
     this.planeList =[];
     this.tempPlanes =[];
+    this.planesUnique = [];
 
     this.millerDirections = [];
     this.directionalState = {state:"initial", editing : undefined };    
     this.directionalList =[];
-    this.tempDirs = [] ;
-    this.planesUnique = [];
+    this.tempDirs = [] ; 
     this.directionsUnique = [] ;
 
     //view
@@ -1263,7 +1265,8 @@ define([
             _this.renderingMode,
             kk,
             ionicIndex,
-            _this.labeling
+            _this.labeling,
+            _this.toggleStates.crystalAtoms
           )  
         );
       });
@@ -1423,7 +1426,8 @@ define([
     var spawnCounter, spawns = 0;
      
     var lattice = this.lattice;  
-    
+    var visible = this.toggleStates.points;
+
     this.destroyPoints();
     this.destroyGrids();
 
@@ -1478,7 +1482,7 @@ define([
                     reference = 'r_' + _x + '_' + _y + '_' + _z + '_' + index;
                      
                     if (_.isUndefined(_this.points[reference])) {  
-                      _this.points[reference] = new Point(position);   
+                      _this.points[reference] = new Point(visible, position);   
                     }
                   }                   
                 }  
@@ -1514,7 +1518,7 @@ define([
             var y =  _y*c ;
             var x = _x*a*1.5 ;
             var reference = 'h_'+(x).toFixed(2)+(y).toFixed(2)+(z).toFixed(2) ; 
-            _this.points[reference] = new Point(new THREE.Vector3(x,y,z)); 
+            _this.points[reference] = new Point(visible, new THREE.Vector3(x,y,z)); 
             // point in the middle 
 
             _.times(6 , function(_r) {
@@ -1535,7 +1539,7 @@ define([
               var reference = 'h_'+(x).toFixed(2)+(y).toFixed(2)+z ;
               hexPoints.push(position);
               if (_.isUndefined( _this.points[reference])) { 
-                _this.points[reference] = new Point(position);   
+                _this.points[reference] = new Point(visible,position);   
                 if(_y>0) _this.createHexGrid([position, new THREE.Vector3(position.x, position.y - c, position.z)],true);
               }  
 
@@ -1655,7 +1659,8 @@ define([
             _this.renderingMode,
             kk,
             ionicIndex,
-            _this.labeling
+            _this.labeling,
+            _this.toggleStates.crystalAtoms
           )  
         );
       });
@@ -2944,7 +2949,7 @@ define([
       }
        
       var visible;
-      if(m === 1 || millerParameters.parallel === true){
+      if((m === 1 || millerParameters.parallel === true) && this.toggleStates.planes === true) {
         visible = true;
       }
       else{
@@ -3011,7 +3016,6 @@ define([
                   if(e !== undefined){
                     var e_ = new THREE.Vector3(e.x + _x, e.y + _y, e.z + _z);
                   }
-
 
                   var x =  new MillerPlane(a_, b_, c_, d_, e_, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor, visible );
                     
@@ -4071,7 +4075,8 @@ define([
     var parameters = this.parameters ;
     var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
     var id, checkVals = parseFloat(u + v) * -1 ; 
-    
+    var visible = this.toggleStates.directions;
+
     if(hexagonal){
       if(t != checkVals ) {   
         return null ;
@@ -4102,7 +4107,7 @@ define([
       
       a1.add(a2.add(a3.add(c)));
 
-      new MillerVector(new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor, millerParameters.dirRadius) ;  
+      //new MillerVector(visible, new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor, millerParameters.dirRadius) ;  
        
     }
     else{
@@ -4152,7 +4157,7 @@ define([
               };
                
               _this.forwardTransformationsMiller(_this.millerDirections[id]); 
-              _this.millerDirections[id].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ;
+              _this.millerDirections[id].direction  = new MillerVector(visible, startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ;
             
             }
             else{  
@@ -4199,7 +4204,7 @@ define([
                 });
               }
               _this.forwardTransformationsMiller(_this.tempDirs[_this.tempDirs.length-1]); 
-              _this.tempDirs[_this.tempDirs.length-1].direction  = new MillerVector(startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ;
+              _this.tempDirs[_this.tempDirs.length-1].direction  = new MillerVector(visible, startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ;
             }
           });
         });
@@ -4627,21 +4632,39 @@ define([
     
   Lattice.prototype.atomToggle = function(arg){ 
     var visible = arg.atomToggle ; 
-    this.actualAtoms.forEach(function(atom, i) {   
+    this.toggleStates.crystalAtoms = arg.atomToggle ; 
+    this.actualAtoms.forEach(function(atom, i) {  
       atom.setVisibility(visible) ;
     });
   };
   Lattice.prototype.planeToggle = function(arg){ 
     var _this = this;
-    _.each(this.millerPlanes, function(p, reference) { 
-      p.plane.setVisible(arg.planeToggle); 
+    this.toggleStates.planes = arg.planeToggle ;
+ 
+    _.each(this.millerPlanes, function(p, reference) {    
+      if(_this.toggleStates.planes === false){
+        p.plane.setVisible(false); 
+      }
+      else{
+        if( p.parallelIndex === 1){
+          p.plane.setVisible(true); 
+        }
+      }  
     });
     _.each(this.tempPlanes, function(p, reference) {
-      p.plane.setVisible(arg.planeToggle);  
+      if(_this.toggleStates.planes === false){
+        p.plane.setVisible(false); 
+      }
+      else{
+        if( p.parallelIndex === 1){
+          p.plane.setVisible(true); 
+        }
+      }  
     }); 
   };
   Lattice.prototype.directionToggle = function(arg){
-  var _this = this;
+    var _this = this;
+    this.toggleStates.directions = arg.directionToggle ;
     _.each(this.millerDirections, function(d, reference) {
       d.direction.setVisible(arg.directionToggle); 
     }); 
@@ -4651,6 +4674,7 @@ define([
   };
   Lattice.prototype.togglePoints = function(arg){  
     var _this = this;
+    this.toggleStates.points = arg.latticePoints ;
     _.each(this.points, function(point, reference) {
       point.object3d.visible = arg.latticePoints; 
     }); 

@@ -301,12 +301,12 @@ require([
 
   // navigation cube
   var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube',  [orbitUnitCell,orbitCrystal], soundMachine, hudCube );
- 
-  // storing mechanism  
-  var storeMechanism = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, stlExporter, menu );
-
+  
   // Gear Bar Tour
   var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
+
+  // storing mechanism  
+  var storeMechanism = new StoreProject( lattice, motifEditor, crystalRenderer.getMainCamera(), unitCellRenderer.getMainCamera(),motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, stlExporter, menu, gearTour );
  
   // handel keyboard keys
   var keyboardControl = new THREEx.KeyboardState();
@@ -362,7 +362,7 @@ require([
   lattice.atomRelationshipManager = atomRelationshipManager;
   
   // restoring
-  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes );
+  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor);
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
@@ -868,12 +868,10 @@ require([
 
   var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ; 
-  console.log(window.location);
-  console.log(hash);
   
   if(hash.length>0){ 
     var slug = hash.replace(/^#/, '');
-    console.log(service + '/' + slug + '.json');
+    
     $.ajax(service + '/' + slug + '.json', {
       method: 'GET',
       beforeSend: function(xmlHttpRequest) {

@@ -11,7 +11,7 @@ define([
   _
 ) {
 
-  function MillerVector(start , end, color, radius) {
+  function MillerVector(visible, start , end, color, radius) {
   
     this.radius = radius ;
     this.color = color ;
@@ -21,6 +21,7 @@ define([
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
     var arrow = new THREE.ArrowHelper( direction , start, length , color, length/8, length/20);
     arrow.name = 'direction' ;
+    arrow.visible = (visible === undefined) ? true : visible ;
     this.object3d = arrow;
     Explorer.add(this);
 
