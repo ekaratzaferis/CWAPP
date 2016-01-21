@@ -125,6 +125,20 @@ define([
 
     /////
 
+    if ( this.keyboard.pressed("s") && this.keyboard.pressed("e")  ){
+
+      if(this.mutex === false){ 
+        this.mutex = true;
+        if( $( "#secretMenu" ).is(":visible")){ console.log(0);
+          $( "#secretMenu" ).hide();
+        }
+        else{
+          $( "#secretMenu" ).show();
+        } 
+      }
+
+      setTimeout(function(){ _this.mutex = false;}, 200 );
+    };
     if ( this.keyboard.pressed("P") ){
          
       if(this.mutex === false){ 

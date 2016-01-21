@@ -1106,7 +1106,7 @@ define([
         });  
     };
     // Restore Padlocks //
-    latticeTab.prototype.restorePadlocks = function(lattice,motif){
+    latticeTab.prototype.restorePadlocks = function(lattice, motif){
         
         /* 
             lattice === false --> LOCK
@@ -1116,6 +1116,7 @@ define([
             motif === true ---> UNLOCK
         */
         // Grab HTML State //
+ 
         var latticeUnlocked = html.lattice.padlocks.lattice.children().hasClass('active');
         var motifUnlocked = html.lattice.padlocks.motif.children().hasClass('active');
         

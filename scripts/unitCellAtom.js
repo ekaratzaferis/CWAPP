@@ -14,7 +14,8 @@ define([
   ThreeCSG,
   AtomMaterialManager 
 ) { 
-  var globGeometry = new THREE.SphereGeometry(1,32, 32);
+   var globGeometry = new THREE.SphereGeometry(1,32, 32);
+ // var globGeometry = new THREE.OctahedronGeometry(1,4);
   
   function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
     

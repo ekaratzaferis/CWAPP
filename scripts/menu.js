@@ -172,7 +172,9 @@ define([
         SWAP_SCREEN: 'menu.swap_screen',
         DIALOG_RESULT: 'menu.dialog_result',
         LABEL_TOGGLE: 'menu.label_toggle',
-        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency'
+        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency',
+        SET_OCTAHEDRON_DETAIL: 'menu.SET_OCTAHEDRON_DETAIL',
+        SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS'
     };
             
     function Menu() {
@@ -406,35 +408,7 @@ define([
         _.each(listLeft, function($element, k){
             toolTipGeneratorModule.addOnHoverTooltip({ target: k.toString(), message: i, placement: $element.toString() });
             i++;
-        });
-
-        
-        /*$
-
-        _.each(fixedDimensions, function($parameter, k) {
-          $parameter.on('change', function() {
-            argument = {};
-            argument[k] = $parameter.val();
-            PubSub.publish(events.MOTIF_CELLDIMENSIONS_CHANGE, argument);
-          });
-        });
-
-        $storeState.on('click', function() {
-          PubSub.publish(events.STORE_PROJECT, argument);   
-        });
-        */   
-        
-        /*this.setLatticeCollision({
-            scaleX: 7,
-            scaleZ: 7,
-            beta: 50,
-            gamma: 50
-        });
-        
-        this.setMotifCollision({
-            cellVolume: 140,
-            atomPosZ: 0.2
-        });*/
+        }); 
 
     };
 
@@ -1149,6 +1123,55 @@ define([
     Menu.prototype.onOpenJSON = function(callback){
         PubSub.subscribe(events.OPEN_JSON, callback);
     };
+
+
+
+
+    // secret menu - to be deleted
+
+    Menu.prototype.setOctahedronDetail = function(callback){
+        PubSub.subscribe(events.SET_OCTAHEDRON_DETAIL, callback);
+    };
+    Menu.prototype.setSphereSegments = function(callback){
+        PubSub.subscribe(events.SET_SPHERE_SEGMENTS, callback);
+    };
+
+     
+    $( "#sliderDetail" ).slider({
+        value:4,
+        min: 0,
+        max: 5,
+        step: 1,
+        slide: function( event, ui ) {
+            $( "#Detailvalue" ).html( ui.value );
+            PubSub.publish(events.SET_OCTAHEDRON_DETAIL, ui.value);
+        }
+    });
+
+    $( "#sliderWS" ).slider({
+        value:32,
+        min: 3,
+        max: 32,
+        step: 1,
+        slide: function( event, ui ) {
+            $( "#ws" ).html( ui.value );
+            PubSub.publish(events.SET_SPHERE_SEGMENTS, { ws : ui.value, hs : parseInt($( "#hs" ).text())});
+        }
+    });
+
+    $( "#sliderHS" ).slider({
+        value:32,
+        min: 2,
+        max: 32,
+        step: 1,
+        slide: function( event, ui ) {
+            $( "#hs" ).html( ui.value );
+            PubSub.publish(events.SET_SPHERE_SEGMENTS, { hs : ui.value, ws : parseInt($( "#ws" ).text())});
+        }
+    });
+
+
+    /////////
 
     return Menu;
 });

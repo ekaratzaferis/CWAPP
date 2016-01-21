@@ -82,6 +82,33 @@ define([
     this.atomRelationshipManager;
     this.labeling = false;
   }; 
+  Lattice.prototype.setOctahedronDetail = function(arg) { 
+    console.log( ' lattice called with '+arg);
+    var g = new THREE.OctahedronGeometry(1, arg); 
+
+    for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
+        
+        var chs = this.actualAtoms[i].object3d.children;
+
+        for (var j = 0, k = chs.length; j < k; j++) {
+            chs[j].geometry.dispose();
+            chs[j].geometry = g ;
+        } 
+    } 
+
+    for (var i = 0, len = this.cachedAtoms.length; i < len; i++) {
+        
+        var chs = this.cachedAtoms[i].object3d.children;
+
+        for (var j = 0, k = chs.length; j < k; j++) {
+            chs[j].geometry.dispose();
+            chs[j].geometry = g ;
+        } 
+    }
+
+    $( "#vertices" ).html( g.vertices.length );
+    
+  };
   Lattice.prototype.renderingModeChange = function(arg) {
     
     this.renderingMode = arg.mode;

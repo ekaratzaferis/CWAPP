@@ -12,7 +12,7 @@ define([
   AtomMaterialManager
 ) {
   
-  var globGeometry = new THREE.SphereGeometry(1,32, 32);
+  var globGeometry = new THREE.OctahedronGeometry(1,4);
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
@@ -92,6 +92,7 @@ define([
     ];
 
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , this.materials);
+ 
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.identity = identity ;
@@ -100,7 +101,7 @@ define([
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true; 
     this.object3d = sphere;
-    console.log(this.visibility);
+   
     this.object3d.visible = this.visibility; 
     this.object3d.position.set(position.x, position.y, position.z);
     Explorer.add(this);  

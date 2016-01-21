@@ -48,7 +48,7 @@ define([
         
         var obj =  JSON.parse(text);  
         var str =  JSON.stringify(obj);
-            
+          
         // Send Request //
         var service = 'https://cwgl.herokuapp.com';
         var hash ='';
@@ -57,7 +57,7 @@ define([
             url: document.location.origin,
             data: str
         };
-
+        
         $.ajax(service + '/add', {
             method: 'POST',
             data: data,
@@ -72,12 +72,15 @@ define([
     };
     
     // Construct JSON File //
-    StoreProject.prototype.constructJSONString = function (argument){
+    StoreProject.prototype.constructJSONString = function (argument, imgPreview){
         var checkIteration = false;
-
+       
         // Start with App Info //
         var jsonText = '{"info":{';
         jsonText = jsonText + '"name":"'+argument.name+'","description":"'+argument.description+'",';
+        if(imgPreview) {
+            jsonText = jsonText + '"preview":"'+imgPreview+'",';
+        }
         if(argument.tags.length > 0){
             jsonText = jsonText + '"tags":{';
             _.each(argument.tags,function($parameter,k){
@@ -104,7 +107,22 @@ define([
         _.each(argument.app.tabDisable, function($parameter,k){ jsonText = jsonText + '"' + k + '":' + $parameter + ','; });
         jsonText = jsonText.slice(0, -1);
         jsonText = jsonText + '}, "toggleButtons":{';
-        _.each(argument.app.toggleButtons, function($parameter,k){ jsonText = jsonText + '"' + k + '":' + $parameter + ','; });
+        _.each(argument.app.toggleButtons, function($parameter,k){ 
+
+            // fix_ by Thanos - to be removed
+ 
+            // my temp fix
+            if( $parameter === true ||  $parameter === false){
+                jsonText = jsonText + '"' + k + '":' + $parameter + ','; 
+            } 
+            else{
+                jsonText = jsonText + '"' + k + '":' + 10.2 + ','; 
+            }
+            //
+
+            // old code : jsonText = jsonText + '"' + k + '":' + $parameter + ','; 
+
+        });
         jsonText = jsonText.slice(0, -1);
         jsonText = jsonText + '}},'; // Close Toggle Buttons and Menu Ribbon //
         
@@ -113,7 +131,21 @@ define([
         jsonText = jsonText + '"latticeRepetition": { "repeatX":' + parseFloat(argument.app.repeatX) + ', "repeatY":' + parseFloat(argument.app.repeatY) + ', "repeatZ":' + parseFloat(argument.app.repeatZ) + '},';
         jsonText = jsonText + '"latticeLength": { "scaleX":' + parseFloat(argument.app.scaleX) + ', "scaleY":' + parseFloat(argument.app.scaleY) + ', "scaleZ":' + parseFloat(argument.app.scaleZ) + '},';
         jsonText = jsonText + '"latticeAngle": { "alpha":' + parseFloat(argument.app.alpha) + ', "beta":' + parseFloat(argument.app.beta) + ', "gamma":' + parseFloat(argument.app.gamma) + '},';
-        jsonText = jsonText + '"padlocks": { "lattice": { "state":' + argument.app.latticePadlock + ', "disabled":' + argument.app.latticePadlockDisable + '}, "motif": { "state":' + argument.app.motifPadlock + ', "disabled":' + argument.app.motifPadlockDisable + '}},';
+
+        // fix_ by Thanos - to be removed
+ 
+        // my temp fix
+
+        jsonText = jsonText + '"padlocks": { "lattice": { "state":' + !argument.app.latticePadlock + ', "disabled":' + !argument.app.latticePadlockDisable + '}, "motif": { "state":' + !argument.app.motifPadlock + ', "disabled":' + !argument.app.motifPadlockDisable + '}},';
+        
+        //
+
+        // old code
+        
+        //jsonText = jsonText + '"padlocks": { "lattice": { "state":' + argument.app.latticePadlock + ', "disabled":' + argument.app.latticePadlockDisable + '}, "motif": { "state":' + argument.app.motifPadlock + ', "disabled":' + argument.app.motifPadlockDisable + '}},';
+
+        //
+
         jsonText = jsonText + '"cellVisualization": { "cellEdge": { "color":"' + argument.app.borderColor + '", "radius":' + parseFloat(argument.app.radius) + '}, "cellFace": { "color":"' + argument.app.filledColor + '", "opacity":' + parseFloat(argument.app.opacity) + '}}},';
         
         // Motif Tab //
@@ -184,14 +216,17 @@ define([
         jsonText = jsonText + '"system": '+ this.getSystemState() +' ';
 
         jsonText = jsonText + '}'; // Close Object //
+         
         return jsonText;
     };
     StoreProject.prototype.downLoadfile = function(argument){
         // json = application/json
-        // text = application/text        
+        // text = application/text    
+    
         if (argument.extention === 'json'){
             var blob = new Blob([JSON.stringify(JSON.parse(argument.data),null,2)], {type: argument.type});
             saveAs(blob, argument.name + '.' + argument.extention);
+
         }
         else if (argument.extention === 'png'){
             // Caprture Snapshot //
@@ -223,6 +258,8 @@ define([
         }
         else if (argument.extention === 'zip'){
             
+            return;
+
             // Gather Info //
             var content = null;
 
@@ -265,17 +302,41 @@ define([
         });
     };
     StoreProject.prototype.saveOnline = function(argument){
-        var json = this.constructJSONString(argument);
-        sendToDatabase(json);
+
+        var _this = this;
+        
+        var whatToPrint = $('#app-container'); 
+
+        html2canvas(whatToPrint, {
+          onrendered: function (canvas) { 
+            var imgPreview = canvas.toDataURL(); 
+            var json = _this.constructJSONString(argument, imgPreview);
+            sendToDatabase(json);
+          }
+        });
+ 
     };
     StoreProject.prototype.exportJSON = function(argument){ 
         // Force User Download //
-        this.downLoadfile({
-            data: this.constructJSONString(argument),
-            type: 'application/json;charset=utf-8;',
-            extention: 'json',
-            name: 'cwSettings_: ' + argument.name
+        var _this = this;
+
+        var whatToPrint = $('#app-container'); 
+
+        html2canvas(whatToPrint, {
+          onrendered: function (canvas) { 
+            var imgPreview = canvas.toDataURL();   
+            _this.downLoadfile({
+                data: _this.constructJSONString(argument, imgPreview),
+                type: 'application/json;charset=utf-8;',
+                extention: 'json',
+                name: 'cwSettings_: ' + argument.name
+            });
+
+          }
         });
+
+
+        
     };
     StoreProject.prototype.exportPNG = function(argument){ 
         // Force User Download //

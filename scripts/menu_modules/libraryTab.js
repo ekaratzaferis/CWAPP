@@ -340,6 +340,7 @@ define([
         jQuery('#search'+category).find('a').html(category + ': '+ results.length +' matches found.');
         jQuery('#search'+category).show();
         
+
         _.each(results, function($parameter, k){
             // Read project information //
             var projectName = $parameter.data.info.name;
@@ -347,7 +348,7 @@ define([
             var projectTags = $parameter.data.info.tags;
             var projectSlug = $parameter.slug;
             var projectID = $parameter.id;
-            var thumbnail = 'Images/project-screenshot.png';
+            var thumbnail = $parameter.data.info.preview; 
             
             // Create HTML query and append to the search results area //
             var query = '<div class="col col-sm-6 searchResults"><div class="project-block" id="'+projectID+category+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';

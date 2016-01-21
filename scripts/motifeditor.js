@@ -75,6 +75,32 @@ define([
     this.labeling = false;
   
   }; 
+  Motifeditor.prototype.setSphereSegments = function(arg) { 
+    console.log( arg);
+    var g = new THREE.SphereGeometry(1, arg.ws, arg.hs);
+
+    for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
+        
+        var chs = this.unitCellAtoms[i].object3d.children;
+
+        for (var j = 0, k = chs.length; j < k; j++) {
+            chs[j].geometry.dispose();
+            chs[j].geometry = g ;
+        } 
+    } 
+
+    for (var i = 0, len = this.cachedAtoms.length; i < len; i++) {
+        
+        var chs = this.cachedAtoms[i].object3d.children;
+
+        for (var j = 0, k = chs.length; j < k; j++) {
+            chs[j].geometry.dispose();
+            chs[j].geometry = g ;
+        } 
+    }
+  
+    $( "#verticesOld" ).html( g.vertices.length );
+  };
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
    
     this.menu.rotAnglesSection(arg.dragMode);

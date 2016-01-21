@@ -60,7 +60,26 @@ define([
             }
             case 'latticeParameters':{
                 _.each(html.lattice.parameters, function($parameter,k){
-                    if (value === true){
+
+                    // fix_ by Thanos - to be removed
+
+                    // my temp fix
+                    if(k !== 'repeatX' && k !== 'repeatY' && k !== 'repeatZ' )
+                    {
+                        if (value === true){
+                            $parameter.prop('disabled',value);
+                            jQuery('#'+k+'Slider').slider('disable');
+                        }
+                        else {
+                            $parameter.prop('disabled',value);
+                            jQuery('#'+k+'Slider').slider('enable');
+                        }
+                    }
+                    //
+
+                    // old code
+                     /*
+                     if (value === true){
                         $parameter.prop('disabled',value);
                         jQuery('#'+k+'Slider').slider('disable');
                     }
@@ -68,6 +87,8 @@ define([
                         $parameter.prop('disabled',value);
                         jQuery('#'+k+'Slider').slider('enable');
                     }
+                    */
+
                 });   
             }
             case 'select_lattice': {

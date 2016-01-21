@@ -838,8 +838,7 @@ require([
   menu.onSSAOChange(function(message, arg) { 
     crystalRenderer.ssaoEffect(arg);
     unitCellRenderer.ssaoEffect(arg);
-  });
-
+  }); 
   menu.onDownloadProject(function(message, arg) { 
     storeMechanism.downloadProject(arg);
   });
@@ -858,6 +857,17 @@ require([
   menu.onOpenJSON(function(message, arg) { 
     restoreMechanism.configureState(arg);
   });
+
+  // secret menu - to be deleted
+
+  menu.setOctahedronDetail(function(message, arg) { 
+    lattice.setOctahedronDetail(arg);
+  }); 
+  menu.setSphereSegments(function(message, arg) { 
+    motifEditor.setSphereSegments(arg);
+  });
+
+  //
 
   ///////////////////////
   ///////////////////////

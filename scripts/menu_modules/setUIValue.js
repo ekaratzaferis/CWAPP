@@ -2037,7 +2037,7 @@ define([
         takeAction('scaleZ',appUI.latticeTab.latticeLength.scaleZ);
         takeAction('alpha',appUI.latticeTab.latticeAngle.alpha);
         takeAction('beta',appUI.latticeTab.latticeAngle.beta);
-        takeAction('gamma',appUI.latticeTab.latticeAngle.gamma);
+        takeAction('gamma',appUI.latticeTab.latticeAngle.gamma); 
         $menu.restorePadlocks(appUI.latticeTab.padlocks.lattice.state,appUI.latticeTab.padlocks.motif.state);
         takeAction('cellEdgeColor',appUI.latticeTab.cellVisualization.cellEdge.color);
         takeAction('cellFaceColor',appUI.latticeTab.cellVisualization.cellFace.color);

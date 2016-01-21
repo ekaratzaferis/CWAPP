@@ -6,29 +6,13 @@ Educational Game Development Ideas
 - Test, Iterate, Test 
 
 
-So currently, if the  "Highlight Overlapped atoms" is ON, it rusn in these points :
-  for Crystal : every time the crystal is refreshed in any way.
-  for Cell : 1.every time the user drags and leaves an atom,  2. every time he uses the length/angle sliders, 3. every time an atom is deleted/added
-  for Motif : 1.every time the user drags and leaves an atom,  2.. every time an atom is deleted/added
- 
- ray apo point se point-fernw katheto sto plane tou triangle !!!!!!!
- 
-   
-5. fps drop in unit cell renderern motif renderer
-  6. suggest merge in crystal because atoms do not move.
-7. kleidwma geometriwn gia performance
-8. share material by atom for better perf
- small todo : 
- 
- /* allages se updateDirectionList kai na kaleitai mono auti kai selectDirection
-    setPlaneEntryVisibility
-    setDirectionEntryVisibility
-    setAtomEntryVisibility 
-{'action':true,'id':'eimai mpines'}
-*/
- 
-gia kapoio logo planes/directions me dekadiko exoun themata sto idi
+ALEX UI BUGS 
+1. uc viewport (resize and restore)
+2. atomRadius slider (restore) - fix on storeProject.js line : 109
+3. Locker (restore)  - fix on storeProject.js line : 132
+4. when go to ME and add atom repeatX,Y,Z are locked (!) - fix on disableUIElement - fix on line 64
 
+  
 TODO list 
     
     6.  hex faces optimization 
@@ -50,7 +34,7 @@ List with Ideas
     2. Public library of CW Projects - search by keywords, most popular etc
     3. Miller object use sliders for indexes
     4. all screens resizable 
-    5. parameters for lighting (maybe this is too much)
+    5. give user a point to move light
     6. When applying new motif to crystal auto position camera far from crystal.
         
  
