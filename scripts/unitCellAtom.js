@@ -14,8 +14,8 @@ define([
   ThreeCSG,
   AtomMaterialManager 
 ) { 
-   var globGeometry = new THREE.SphereGeometry(1,32, 32);
- // var globGeometry = new THREE.OctahedronGeometry(1,4);
+  //var globGeometry = new THREE.SphereGeometry(1,32, 32);
+  var globGeometry = new THREE.OctahedronGeometry(1,3);
   
   function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
     
@@ -294,7 +294,7 @@ define([
       UnitCellExplorer.remove({'object3d':this.object3d});
     }
 
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );  
+    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius,3) , new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z);
     
     var cube = THREE.CSG.toCSG(box);

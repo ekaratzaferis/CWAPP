@@ -10,7 +10,7 @@ define([
   _
 ) {
   //var globGeometry = new THREE.SphereGeometry(0.04, 16, 16);
-  var globGeometry = new THREE.OctahedronGeometry(0.04,4);
+  var globGeometry = new THREE.OctahedronGeometry(0.04,2);
   var material = new THREE.MeshBasicMaterial({color: 0xffffff});
 
   function Point(visible, position) {

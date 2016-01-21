@@ -1138,7 +1138,7 @@ define([
 
      
     $( "#sliderDetail" ).slider({
-        value:4,
+        value:3,
         min: 0,
         max: 5,
         step: 1,

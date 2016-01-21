@@ -12,7 +12,9 @@ define([
   AtomMaterialManager
 ) {
   
-  var globGeometry = new THREE.OctahedronGeometry(1,4);
+  //var globGeometry = new THREE.SphereGeometry(1,32, 32);
+  var globGeometry = new THREE.OctahedronGeometry(1,3);
+  
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
@@ -222,8 +224,9 @@ define([
     if(gear === undefined){
       Explorer.remove({'object3d':this.object3d});
     }
+        console.log(this.object3d);
         
-    var atomMesh = new THREE.Mesh( new THREE.SphereGeometry(this.radius, 32, 32), new THREE.MeshPhongMaterial() );
+    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius,3) , new THREE.MeshPhongMaterial() );
     atomMesh.position.set(pos.x, pos.y, pos.z); 
 
     var cube = THREE.CSG.toCSG(box); 
@@ -285,7 +288,7 @@ define([
     var toDestroy = this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ _this.colorMaterial ]); 
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ this.colorMaterial ]); 
     sphere.scale.set(this.radius, this.radius, this.radius);
 
     sphere.children[0].receiveShadow = true; 
