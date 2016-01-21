@@ -348,7 +348,7 @@ define([
             var projectTags = $parameter.data.info.tags;
             var projectSlug = $parameter.slug;
             var projectID = $parameter.id;
-            var thumbnail = $parameter.data.info.preview; 
+            var thumbnail = ($parameter.data.info.preview) ? $parameter.data.info.preview : ' '  ; 
             
             // Create HTML query and append to the search results area //
             var query = '<div class="col col-sm-6 searchResults"><div class="project-block" id="'+projectID+category+'"><div class="block-image"><img src="'+thumbnail+'" class="img-responsive img-fullwidth" alt=""/></div><div class="block-title"><h4>'+projectName+'</h4></div></div></div>';
@@ -373,6 +373,7 @@ define([
             // Handler //
             jQuery('#'+projectID+category).on('click',function(){
                 // Fill in Preview information //
+                
                 html.library.search.previewTitle.html(projectName);
                 html.library.search.previewDescription.html(projectDescription);
                 html.library.search.previewTags.html('');
@@ -394,6 +395,8 @@ define([
                 html.library.search.openPreview.attr('href','https://cw.gl/'+projectSlug)
                 
                 html.library.search.preview.show();
+                html.library.search.previewResultImg.prop('src', thumbnail);
+
                 html.interface.screen.body.mCustomScrollbar("scrollTo",html.library.search.preview);
             });
         });

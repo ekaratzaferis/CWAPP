@@ -318,6 +318,7 @@ define([
         this.library.search = {
             results: jQuery('#searchResults'),
             preview: jQuery('#resultPreviewBig'),
+            previewResultImg: jQuery('#selectedProjectPreview'),
             previewTitle: jQuery('#previewTitle h4'),
             previewDescription: jQuery('#previewDescription p'),
             previewTags: jQuery('#previewTags'),
