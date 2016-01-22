@@ -220,14 +220,13 @@ define([
     var _this = this;  
 
     this.viewModeBeen.crystalSubstracted = true;
+ 
+    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius, this.object3d.children[0].geometry.parameters.detail) , new THREE.MeshPhongMaterial() );
+    atomMesh.position.set(pos.x, pos.y, pos.z); 
 
     if(gear === undefined){
       Explorer.remove({'object3d':this.object3d});
-    }
-        console.log(this.object3d);
-        
-    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius,3) , new THREE.MeshPhongMaterial() );
-    atomMesh.position.set(pos.x, pos.y, pos.z); 
+    } 
 
     var cube = THREE.CSG.toCSG(box); 
     cube = cube.inverse();
@@ -264,9 +263,12 @@ define([
     this.object3d.scale.set(ratio,ratio,ratio); 
     this.scale = scale; 
   };
-  CrystalAtom.prototype.removesubtractedForCache = function() {
-    Explorer.remove({'object3d' : this.subtractedForCache.object3d});  
-    this.subtractedForCache.object3d = undefined;
+  CrystalAtom.prototype.removesubtractedForCache = function() { 
+   
+    if(this.subtractedForCache.object3d !== undefined){
+      Explorer.remove({'object3d' : this.subtractedForCache.object3d});  
+      this.subtractedForCache.object3d = undefined;
+    } 
   };
   CrystalAtom.prototype.SolidVoid = function( pos) {
     var _this = this;   

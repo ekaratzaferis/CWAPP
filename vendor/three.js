@@ -8285,7 +8285,9 @@ THREE.Object3D.prototype = {
 
 		for ( var i = 0, l = children.length; i < l; i ++ ) {
 
-			children[ i ].traverse( callback );
+			if(children[i] !== undefined){
+				children[ i ].traverse( callback );
+			} 
 
 		}
 

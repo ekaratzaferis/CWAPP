@@ -83,7 +83,7 @@ define([
     this.labeling = false;
   }; 
   Lattice.prototype.setOctahedronDetail = function(arg) { 
-    console.log( ' lattice called with '+arg);
+  
     var g = new THREE.OctahedronGeometry(1, arg); 
 
     for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
@@ -154,14 +154,16 @@ define([
       }
     }
   };
-  Lattice.prototype.offsetMotifsForViews = function(){
+  Lattice.prototype.createAdditionalAtoms = function(){
     var objName = 'crystalGradeLimited' ;
     var atoms = this.cachedAtoms; 
      
     for (var d = atoms.length - 1; d >= 0; d--) { 
+      atoms[d].removesubtractedForCache();
       Explorer.remove({'object3d' : atoms[d].object3d}); 
     };
     atoms.splice(0);
+
     var i = 0, j = 0;
  
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
@@ -799,16 +801,35 @@ define([
     while(i < atoms.length ){    
       Explorer.add({'object3d' : atoms[i].object3d});  
       i++;
-    }  
- 
+    }   
   }; 
-  Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
-    var finished = false, found = false;
+  Lattice.prototype.monitorScene = function(action, name){ 
+    
+    var found = false, numOfObj = 0;
+
     var scene = Explorer.getInstance().object3d;
+
     scene.traverse (function (object)
-    {  
-      if (object.name === name){
-        
+    {   
+      if (object.name == name){
+        if( action === 'count'){
+          numOfObj++;
+        }
+      }  
+    });
+  
+    return numOfObj;
+  };
+  Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
+    
+    var found = false;
+
+    var scene = Explorer.getInstance().object3d;
+
+    scene.traverse (function (object)
+    {   
+      if (object.name == name){
+       
         found = true;
         if(action === 'remove'){ 
           scene.remove(object);
@@ -846,7 +867,7 @@ define([
     if(this.viewMode === 'crystalSubstracted'){
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
-
+       
       if(this.crystalNeedsRecalculation.crystalSubstracted === false && this.actualAtoms[0].subtractedForCache.object3d !== undefined){
         while(i < this.actualAtoms.length ){ 
           this.actualAtoms[i].setVisibility(false) ; 
@@ -1091,18 +1112,15 @@ define([
         }
         this.editObjectsInScene('crystalSolidVoid', 'visibility', false);
       }
-      else{
-        this.offsetMotifsForViews(); 
-        this.editObjectsInScene('crystalSolidVoid', 'remove', true);
+      else{  
 
-        i =0;
+        this.createAdditionalAtoms(); 
+        i = 0;
         while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].setVisibility(false);  
-          if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
-            Explorer.remove({'object3d' : this.cachedAtoms[i].subtractedForCache.object3d});  
-          }  
+          this.cachedAtoms[i].setVisibility(false);    
           i++;
-        } 
+        }  
+        this.editObjectsInScene('crystalSolidVoid', 'remove', true); 
       }  
     } 
     
@@ -1207,6 +1225,12 @@ define([
       point.destroy();
       delete _this.points[reference];
     });
+    setTimeout( function(){ 
+    console.log(Explorer.getInstance().object3d.children.length);
+    console.log('grids : '+(_this.monitorScene('count', 'grid')));
+    console.log('points : '+(_this.monitorScene('count', 'point'))); 
+
+  }, 1000);
   }; 
   Lattice.prototype.destroyGrids = function() {
     var _this = this; 
@@ -1243,6 +1267,7 @@ define([
     this.currentMotif = motif ;
 
     _.each(this.actualAtoms, function(atom,k) {
+      atom.removesubtractedForCache();
       atom.destroy();   
     }); 
     this.actualAtoms.splice(0); 
@@ -2291,7 +2316,10 @@ define([
 
       if (_.indexOf(deltaKeys, 'repeatX') !== -1 || _.indexOf(deltaKeys, 'repeatY') !== -1 || _.indexOf(deltaKeys, 'repeatZ') !== -1) {  
          
-        _.each(_this.actualAtoms, function(atom,k) {  atom.destroy(); });
+        _.each(_this.actualAtoms, function(atom,k) {  
+          atom.removesubtractedForCache(); 
+          atom.destroy(); 
+        });
          
         this.actualAtoms.splice(0); 
         
@@ -2317,7 +2345,8 @@ define([
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
       _.each(this.actualAtoms, function(atom,k) { 
-        atom.destroy(); 
+        atom.removesubtractedForCache(); 
+        atom.destroy();
       });
       this.actualAtoms.splice(0); 
       this.updatePoints();   

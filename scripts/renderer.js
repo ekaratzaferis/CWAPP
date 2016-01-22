@@ -21,8 +21,8 @@ define([
 
   function Renderer(scene, container, type) {
      
-    var width = (type==='crystal') ? jQuery('#app-container').width() : 0;
-    var height = (type==='crystal') ? jQuery(window).height() : 0; 
+    var width = (type === 'crystal') ? jQuery('#app-container').width() : 0;
+    var height = (type === 'crystal') ? jQuery(window).height() : 0; 
 
     this.rType = type;
     this.rstatsON = false;

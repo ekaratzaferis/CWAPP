@@ -1153,6 +1153,7 @@ define([
         min: 3,
         max: 32,
         step: 1,
+        disabled: true,
         slide: function( event, ui ) {
             $( "#ws" ).html( ui.value );
             PubSub.publish(events.SET_SPHERE_SEGMENTS, { ws : ui.value, hs : parseInt($( "#hs" ).text())});
@@ -1164,6 +1165,7 @@ define([
         min: 2,
         max: 32,
         step: 1,
+        disabled: true,
         slide: function( event, ui ) {
             $( "#hs" ).html( ui.value );
             PubSub.publish(events.SET_SPHERE_SEGMENTS, { hs : ui.value, ws : parseInt($( "#ws" ).text())});

@@ -289,14 +289,14 @@ define([
   UnitCellAtom.prototype.subtractedSolidView = function(box, pos, gear) {
     var _this = this; 
     this.viewModeBeen.cellSubstracted = true;
-    
+     
+    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius, this.object3d.children[0].geometry.parameters.detail) , new THREE.MeshPhongMaterial() );
+    atomMesh.position.set(pos.x, pos.y, pos.z); 
+
     if(gear === undefined){
       UnitCellExplorer.remove({'object3d':this.object3d});
-    }
+    } 
 
-    var atomMesh = new THREE.Mesh( new THREE.OctahedronGeometry(this.radius,3) , new THREE.MeshPhongMaterial() );
-    atomMesh.position.set(pos.x, pos.y, pos.z);
-    
     var cube = THREE.CSG.toCSG(box);
     cube = cube.inverse();
     var sphere = THREE.CSG.toCSG(atomMesh);
@@ -305,6 +305,8 @@ define([
     var finalGeom = assignUVs(geom);
     
     var sphereCut = THREE.SceneUtils.createMultiMaterialObject( finalGeom, [this.object3d.children[0].material.clone(), this.object3d.children[1].material.clone()]); 
+    sphereCut.name = 'subtractedAtom';
+    
     sphereCut.children[0].receiveShadow = true; 
     sphereCut.children[0].castShadow = true; 
  
@@ -324,8 +326,10 @@ define([
     this.viewMode = 'cellSubstracted'; 
   };
   UnitCellAtom.prototype.removesubtractedForCache = function() {
-    UnitCellExplorer.remove({'object3d' : this.subtractedForCache.object3d});  
-    this.subtractedForCache.object3d = undefined;
+    if(this.subtractedForCache.object3d !== undefined){
+      UnitCellExplorer.remove({'object3d' : this.subtractedForCache.object3d});  
+      this.subtractedForCache.object3d = undefined;
+    } 
   };
   UnitCellAtom.prototype.SolidVoid = function( pos) {
     var _this = this; 

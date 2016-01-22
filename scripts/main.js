@@ -862,9 +862,11 @@ require([
 
   menu.setOctahedronDetail(function(message, arg) { 
     lattice.setOctahedronDetail(arg);
+    motifEditor.setOctahedronDetail(arg);
   }); 
   menu.setSphereSegments(function(message, arg) { 
-    motifEditor.setSphereSegments(arg);
+    
+    //motifEditor.setSphereSegments(arg);
   });
 
   //

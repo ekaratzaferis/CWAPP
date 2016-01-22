@@ -75,9 +75,10 @@ define([
     this.labeling = false;
   
   }; 
-  Motifeditor.prototype.setSphereSegments = function(arg) { 
-    console.log( arg);
-    var g = new THREE.SphereGeometry(1, arg.ws, arg.hs);
+  Motifeditor.prototype.setOctahedronDetail = function(arg) { 
+    
+    //var g = new THREE.SphereGeometry(1, arg.ws, arg.hs);
+    var g = new THREE.OctahedronGeometry(1, arg);
 
     for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
         
@@ -180,6 +181,7 @@ define([
       this.menu.breakChain({id : this.newSphere.getID(), remove : true});
       this.deleteTangentChild(this.newSphere.getID());
       this.newSphere.destroy();
+      this.newSphere.removesubtractedForCache();
       if(!_.isUndefined( this.motifsAtoms[0])) {   
         this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
         this.newSphere =  undefined; 
@@ -1765,6 +1767,7 @@ define([
           this.menu.breakChain({id : this.newSphere.getID(), remove : true});
           this.deleteTangentChild(this.newSphere.getID());
           this.newSphere.destroy();
+          this.newSphere.removesubtractedForCache(); 
           if(!_.isUndefined( this.motifsAtoms[0])) {   
             this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
             this.newSphere =  undefined; 
@@ -1811,6 +1814,7 @@ define([
           this.removeFromUnitCell(this.newSphere.getID());
           this.menu.breakChain({id : this.newSphere.getID(), remove : true});
           this.newSphere.destroy();
+          this.newSphere.removesubtractedForCache();
           this.updateAtomList(
             undefined, 
             this.newSphere.getID(), 
@@ -2500,6 +2504,7 @@ define([
       
       if(!_.isUndefined(this.newSphere) && doNotDestroy === false) { 
         this.newSphere.destroy() ; 
+        this.newSphere.removesubtractedForCache() ; 
         this.removeFromUnitCell(this.newSphere.getID());
         this.initVolumeState();
       }
@@ -2924,7 +2929,7 @@ define([
     
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
-      this.setCSGmode({mode : 'cellClassic'});
+      this.setCSGmode({mode : 'cellClassic'} , 'reset');
       this.menu.chooseActiveUnitCellMode('cellClassic');
     } 
    
@@ -5385,7 +5390,7 @@ define([
   
     return found;
   };
-  Motifeditor.prototype.setCSGmode = function(arg){ 
+  Motifeditor.prototype.setCSGmode = function(arg, reset){ 
     var _this = this, i = 0;
      
     this.viewMode = arg.mode;
@@ -5641,26 +5646,40 @@ define([
       PubSub.publish(events.VIEW_STATE,"cellGradeLimited"); 
     }
     else if(this.viewMode === 'cellClassic'){ 
-  
-      while(i < this.unitCellAtoms.length ){ 
-        this.unitCellAtoms[i].object3d.visible = true; 
-        if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
-          this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
+      
+      if(reset === undefined){ 
+        while(i < this.unitCellAtoms.length ){ 
+          this.unitCellAtoms[i].object3d.visible = true; 
+          if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
+            this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
+          }
+          
+          i++;
         }
-        
-        i++;
-      }
 
-      i =0;
-      while(i < this.cachedAtoms.length ){ 
-        this.cachedAtoms[i].object3d.visible = false; 
-        if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
-          this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
-        }  
-        i++;
+        i =0;
+        while(i < this.cachedAtoms.length ){ 
+          this.cachedAtoms[i].object3d.visible = false; 
+          if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
+            this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
+          }  
+          i++;
+        }
+
+        this.editObjectsInScene('cellSolidVoid', 'visibility', false);
+      }
+      else{
+
+        i = 0;
+        while(i < this.cachedAtoms.length ){ 
+          this.cachedAtoms[i].setVisibility(false);    
+          i++;
+        } 
+
+        this.createAdditionalAtoms();
+        this.editObjectsInScene('cellSolidVoid', 'remove', true);
       }
       
-      this.editObjectsInScene('cellSolidVoid', 'visibility', false);
 
       PubSub.publish(events.VIEW_STATE,"cellClassic");
     };
@@ -5891,6 +5910,7 @@ define([
     for (var i = 0; i<this.unitCellAtoms.length; i++) {
       if(this.unitCellAtoms[i].getID() === id ){
         this.unitCellAtoms[i].destroy();
+        this.unitCellAtoms[i].removesubtractedForCache();
         pos.push(i); 
       } 
     } 
@@ -5901,6 +5921,7 @@ define([
     for (var i = 0; i<this.cachedAtoms.length; i++) {
       if(this.cachedAtoms[i].getID() === id ){ 
         this.cachedAtoms[i].destroy(); 
+        this.cachedAtoms[i].removesubtractedForCache(); 
         pos2.push(i); 
       } 
     } 
@@ -5926,7 +5947,7 @@ define([
     }  
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
-      this.setCSGmode({mode : 'cellClassic'});
+      this.setCSGmode({mode : 'cellClassic'} , 'reset');
       this.menu.chooseActiveUnitCellMode('cellClassic'); 
     } 
   }; 
@@ -5944,7 +5965,7 @@ define([
     }
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
-      this.setCSGmode({mode : 'cellClassic'});
+      this.setCSGmode({mode : 'cellClassic'} , 'reset');
       this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   };
@@ -5970,7 +5991,7 @@ define([
     }
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic'){
-      this.setCSGmode({mode : 'cellClassic'});
+      this.setCSGmode({mode : 'cellClassic'} , 'reset');
       this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   }; 
