@@ -904,8 +904,8 @@ define([
 
       i = 0;
 
-      var globalG = new THREE.SphereGeometry(1, 32, 32);
-
+      var globalG = (this.actualAtoms[0] === undefined) ? undefined : this.actualAtoms[0].object3d.children[0].geometry.clone();
+ 
       while(i < this.actualAtoms.length ) {  
         this.actualAtoms[i].SolidVoid(this.actualAtoms[i].object3d.position);  
         var mesh = new THREE.Mesh(globalG, new THREE.MeshBasicMaterial() );
@@ -1102,7 +1102,7 @@ define([
         while(i < this.cachedAtoms.length ){ 
           this.cachedAtoms[i].setVisibility(false);    
           i++;
-        }  
+        }   //ftiaksimo sto classic de epanaferontia ola komple
         this.editObjectsInScene('crystalSolidVoid', 'remove', true); 
       }  
     } 

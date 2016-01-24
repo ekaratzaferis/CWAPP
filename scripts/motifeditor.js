@@ -5437,7 +5437,7 @@ define([
 
       i = 0;
 
-      var globalG = new THREE.SphereGeometry(1, 32, 32);
+      var globalG = (this.unitCellAtoms[0] === undefined) ? undefined : this.unitCellAtoms[0].object3d.children[0].geometry.clone();
 
       while(i < this.unitCellAtoms.length ) {  
         this.unitCellAtoms[i].SolidVoid(this.unitCellAtoms[i].object3d.position);  
@@ -5625,7 +5625,7 @@ define([
          
           if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
             this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
-          }
+          } 
         }
         i++;
         
