@@ -62,8 +62,7 @@ define([
     this.cellMutex = true ;
     this.globalTangency = true;
     this.padlock = true;
-
-
+    
     // rendering mode
     this.renderingMode = 'realistic'; // todo change that to realistic 
     this.cellNeedsRecalculation = {'cellSolidVoid' : false, 'cellSubstracted' : false};
@@ -71,37 +70,11 @@ define([
     this.cachedAtomsPositions = {};
     this.box3 = {bool : false, pos : undefined}; // temporal. must be removed after testing
 
+    this.LOD = {level : 3}; 
     this.atomRelationshipManager;
     this.labeling = false;
   
-  }; 
-  Motifeditor.prototype.setOctahedronDetail = function(arg) { 
-    
-    //var g = new THREE.SphereGeometry(1, arg.ws, arg.hs);
-    var g = new THREE.OctahedronGeometry(1, arg);
-
-    for (var i = 0, len = this.unitCellAtoms.length; i < len; i++) {
-        
-        var chs = this.unitCellAtoms[i].object3d.children;
-
-        for (var j = 0, k = chs.length; j < k; j++) {
-            chs[j].geometry.dispose();
-            chs[j].geometry = g ;
-        } 
-    } 
-
-    for (var i = 0, len = this.cachedAtoms.length; i < len; i++) {
-        
-        var chs = this.cachedAtoms[i].object3d.children;
-
-        for (var j = 0, k = chs.length; j < k; j++) {
-            chs[j].geometry.dispose();
-            chs[j].geometry = g ;
-        } 
-    }
-  
-    $( "#verticesOld" ).html( g.vertices.length );
-  };
+  };  
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
    
     this.menu.rotAnglesSection(arg.dragMode);
@@ -223,7 +196,7 @@ define([
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
       params.atomColor,
-      params.tangency, 
+      this.LOD.level, 
       params.element, 
       newId, 
       1,
@@ -237,8 +210,7 @@ define([
     this.addAtomInCell( 
       new THREE.Vector3(p.x,p.y,p.z), 
       radius, 
-      params.atomColor, 
-      params.tangency, 
+      params.atomColor,   
       params.element, 
       newId,
       1,
@@ -2547,7 +2519,13 @@ define([
     if(this.isEmpty) {
       return; 
     }
- 
+    
+    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true};
+    if(this.viewMode !== 'cellClassic' ){ 
+      this.setCSGmode({mode : 'cellClassic'} , 'reset', 'reconstruct');
+      this.menu.chooseActiveUnitCellMode('cellClassic');
+    } 
+
     var dimensions; 
 
     if( (!this.padlock && this.globalTangency === false) || (manual !== undefined)){   
@@ -2925,16 +2903,9 @@ define([
           });
         });
       });
-    } 
-    
-    this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
-    if(this.viewMode !== 'cellClassic' ){
-      this.setCSGmode({mode : 'cellClassic'} , 'reset');
-      this.menu.chooseActiveUnitCellMode('cellClassic');
-    } 
-   
+    }   
   };
-  Motifeditor.prototype.addAtomInCell = function(pos, radius, color, tang, name, id, opacity, wireframe, restore, ionicIndex){  
+  Motifeditor.prototype.addAtomInCell = function(pos, radius, color, name, id, opacity, wireframe, restore, ionicIndex){  
     var _this = this;  
     var dimensions, identity ;
 
@@ -3216,7 +3187,7 @@ define([
                 identity = "_"+_x+_y+_z;
                  
                 _this.unitCellAtoms.push(
-                  new UnitCellAtom( 
+                  new UnitCellAtom( _this.LOD.level, 
                     new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 
@@ -3224,7 +3195,7 @@ define([
                     ), 
                     radius, 
                     color, 
-                    tang, 
+                    true, 
                     name, 
                     id, 
                     identity,
@@ -3250,7 +3221,7 @@ define([
               _.times(2 , function(_z) {
                 identity = "_"+_x+_y+_z;
                 _this.unitCellAtoms.push(
-                  new UnitCellAtom( 
+                  new UnitCellAtom( _this.LOD.level, 
                     new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 
@@ -3258,7 +3229,7 @@ define([
                     ), 
                     radius, 
                     color, 
-                    tang, 
+                    true, 
                     name, 
                     id,  
                     identity, 
@@ -3277,7 +3248,7 @@ define([
           }); 
           for (var i = 0; i <= 1; i ++) {
             identity = "_"+i ;
-            _this.unitCellAtoms.push(new UnitCellAtom( 
+            _this.unitCellAtoms.push(new UnitCellAtom( _this.LOD.level, 
                 new THREE.Vector3(
                   pos.x + _this.unitCellPositions[identity].position.x, 
                   pos.y + _this.unitCellPositions[identity].position.y, 
@@ -3285,7 +3256,7 @@ define([
                 ), 
                 radius, 
                 color, 
-                tang, 
+                true, 
                 name, 
                 id,
                 identity, 
@@ -3302,7 +3273,7 @@ define([
             /////////////////
             identity = "__"+i ;
             _this.unitCellAtoms.push(
-                new UnitCellAtom( 
+                new UnitCellAtom( _this.LOD.level, 
                   new THREE.Vector3(
                   pos.x + _this.unitCellPositions["__"+i].position.x, 
                   pos.y + _this.unitCellPositions["__"+i].position.y, 
@@ -3310,7 +3281,7 @@ define([
                 ), 
                 radius,
                 color, 
-                tang, 
+                true, 
                 name, 
                 id,
                 "__"+i, 
@@ -3328,14 +3299,14 @@ define([
 
             identity = "___"+i ;
             _this.unitCellAtoms.push(
-              new UnitCellAtom( 
+              new UnitCellAtom( _this.LOD.level, 
                 new THREE.Vector3(
                   pos.x + _this.unitCellPositions["___"+i].position.x, 
                   pos.y + _this.unitCellPositions["___"+i].position.y, 
                   pos.z + _this.unitCellPositions["___"+i].position.z), 
                 radius, 
                 color, 
-                tang, 
+                true, 
                 name, 
                 id, 
                 "___"+i, 
@@ -3358,14 +3329,14 @@ define([
                 
                 identity = "_"+_x+_y+_z ;
                 _this.unitCellAtoms.push(
-                    new UnitCellAtom( 
+                    new UnitCellAtom( _this.LOD.level, 
                       new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 
                       pos.z + _this.unitCellPositions[identity].position.z), 
                     radius, 
                     color, 
-                    tang, 
+                    true, 
                     name, 
                     id,
                     identity, 
@@ -3385,14 +3356,14 @@ define([
 
           identity = "_c" ;
           _this.unitCellAtoms.push(
-            new UnitCellAtom( 
+            new UnitCellAtom( _this.LOD.level, 
               new THREE.Vector3(
                 pos.x + _this.unitCellPositions[identity].position.x, 
                 pos.y + _this.unitCellPositions[identity].position.y, 
                 pos.z + _this.unitCellPositions[identity].position.z), 
               radius, 
               color, 
-              tang, 
+              true, 
               name, 
               id,
               identity, 
@@ -3415,13 +3386,14 @@ define([
                 identity = "_"+_x+_y+_z;
                 _this.unitCellAtoms.push(
                   new UnitCellAtom( 
+                    _this.LOD.level, 
                     new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 
                       pos.z + _this.unitCellPositions[identity].position.z), 
                     radius, 
                     color, 
-                    tang, 
+                    true, 
                     name, 
                     id,
                     identity, 
@@ -3442,13 +3414,14 @@ define([
           identity = "_up";
           _this.unitCellAtoms.push(
             new UnitCellAtom( 
+              _this.LOD.level, 
               new THREE.Vector3(
                 pos.x + _this.unitCellPositions[identity].position.x, 
                 pos.y + _this.unitCellPositions[identity].position.y, 
                 pos.z + _this.unitCellPositions[identity].position.z), 
               radius, 
               color, 
-              tang, 
+              true, 
               name, 
               id, 
               identity, 
@@ -3467,13 +3440,14 @@ define([
           identity = "_down" ;
           _this.unitCellAtoms.push(
             new UnitCellAtom( 
+              _this.LOD.level, 
               new THREE.Vector3(
                 pos.x + _this.unitCellPositions[identity].position.x, 
                 pos.y + _this.unitCellPositions[identity].position.y, 
                 pos.z + _this.unitCellPositions[identity].position.z), 
               radius, 
               color, 
-              tang, 
+              true, 
               name, 
               id, 
               identity, 
@@ -3501,13 +3475,14 @@ define([
           _.times(1 , function(_z) {  
             var y =  _y*c ;  
             _this.unitCellAtoms.push(new UnitCellAtom( 
-              new THREE.Vector3(
-                pos.x , 
-                pos.y + y, 
-                pos.z), 
+                _this.LOD.level, 
+                new THREE.Vector3(
+                  pos.x , 
+                  pos.y + y, 
+                  pos.z), 
                 radius, 
                 color,
-                tang, 
+                true, 
                 name, 
                 id, 
                 'hc_'+_x+_y+_z, 
@@ -3540,13 +3515,14 @@ define([
                 
               _this.unitCellAtoms.push(
                 new UnitCellAtom( 
+                  _this.LOD.level, 
                   new THREE.Vector3(
                     pos.x + position.x, 
                     pos.y + position.y, 
                     pos.z + position.z), 
                   radius, 
                   color, 
-                  tang, 
+                  true, 
                   name, 
                   id, 
                   reference, 
@@ -4996,6 +4972,11 @@ define([
     var objName = 'cellGradeLimited';
     var _this = this;
 
+    for (var d = atoms.length - 1; d >= 0; d--) { 
+      atoms[d].removesubtractedForCache();
+      UnitCellExplorer.remove({'object3d' : atoms[d].object3d}); 
+    };
+
     var i = 0, j = 0;
 
     var arr = [{a : 0, b : 1},{a : 1, b : 0},{a : 0, b : -1},{a : -1, b : 0}];
@@ -5033,6 +5014,7 @@ define([
           identity = "face"+i+'_1';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5040,7 +5022,7 @@ define([
               ), 
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5057,6 +5039,7 @@ define([
           identity = "face"+i+'_2';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5064,7 +5047,7 @@ define([
               ),  
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5080,6 +5063,7 @@ define([
           identity = "face"+i+'_3';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5087,7 +5071,7 @@ define([
               ), 
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5104,6 +5088,7 @@ define([
           identity = "face"+i+'_4';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5111,7 +5096,7 @@ define([
               ), 
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5128,6 +5113,7 @@ define([
           identity = "face"+i+'_5';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5135,7 +5121,7 @@ define([
               ),  
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5151,6 +5137,7 @@ define([
           identity = "face"+i+'_6';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5158,7 +5145,7 @@ define([
               ), 
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5190,6 +5177,7 @@ define([
           identity = "base"+i+'_1'; 
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5197,7 +5185,7 @@ define([
               ),  
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5214,6 +5202,7 @@ define([
           identity = "base"+i+'_2';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5221,7 +5210,7 @@ define([
               ),  
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5254,6 +5243,7 @@ define([
           identity = "body"+i+'_1';
           this.cachedAtoms.push(
             new UnitCellAtom( 
+              this.LOD.level, 
               new THREE.Vector3( 
                 p.x + this.cachedAtomsPositions[identity].position.x,
                 p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5261,7 +5251,7 @@ define([
               ),  
               radius, 
               color, 
-              undefined, 
+              false, 
               elementName, 
               id, 
               identity,
@@ -5280,6 +5270,7 @@ define([
       identity = 'body_1';
       this.cachedAtoms.push(
         new UnitCellAtom( 
+          this.LOD.level, 
           new THREE.Vector3( 
             p.x + this.cachedAtomsPositions[identity].position.x,
             p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5287,7 +5278,7 @@ define([
           ),  
           radius, 
           color, 
-          undefined, 
+          false, 
           elementName, 
           id, 
           identity,
@@ -5304,6 +5295,7 @@ define([
       identity = 'body_2';
       this.cachedAtoms.push(
         new UnitCellAtom( 
+          this.LOD.level, 
           new THREE.Vector3( 
             p.x + this.cachedAtomsPositions[identity].position.x,
             p.y + this.cachedAtomsPositions[identity].position.y,
@@ -5311,7 +5303,7 @@ define([
           ), 
           radius, 
           color, 
-          undefined, 
+          false, 
           elementName, 
           id, 
           identity,
@@ -5329,30 +5321,7 @@ define([
     if(this.newSphere !== undefined){
       this.motifsAtoms.pop();
     }
-    /*
-    var matrix = transformationMatrix({alpha : this.cellParameters.alpha});  
-    _.each(atoms, function(atom) { 
-      atom.position.applyMatrix4(matrix);    
-    });  
-    var matrix = transformationMatrix({beta : this.cellParameters.beta});  
-    _.each(atoms, function(atom) { 
-      atom.position.applyMatrix4(matrix);    
-    }); 
-  
-    var matrix = transformationMatrix({gamma : this.cellParameters.gamma});  
-    _.each(atoms, function(atom) { 
-      atom.position.applyMatrix4(matrix);    
-    }); 
-    if(this.newSphere !== undefined){
-      this.motifsAtoms.pop();
-    } 
-    */
-    i=0;
-    while(i < this.cachedAtoms.length ){   
-      //atoms[i].visible = true; 
-      i++;
-    }    
-   
+        
   }; 
   Motifeditor.prototype.subtractedSolidView = function(box, mesh) {
     var _this = this; 
@@ -5390,7 +5359,7 @@ define([
   
     return found;
   };
-  Motifeditor.prototype.setCSGmode = function(arg, reset){ 
+  Motifeditor.prototype.setCSGmode = function(arg, reset, reconstruct){ 
     var _this = this, i = 0;
      
     this.viewMode = arg.mode;
@@ -5647,32 +5616,39 @@ define([
     }
     else if(this.viewMode === 'cellClassic'){ 
       
-      if(reset === undefined){ 
-        while(i < this.unitCellAtoms.length ){ 
-          this.unitCellAtoms[i].object3d.visible = true; 
+      i = 0;  
+      
+      while(i < this.unitCellAtoms.length ){ 
+         
+        if(this.unitCellAtoms[i].setVisibility !== undefined){ 
+          this.unitCellAtoms[i].setVisibility(true);  
+         
           if(this.unitCellAtoms[i].subtractedForCache.object3d !== undefined){
             this.unitCellAtoms[i].subtractedForCache.object3d.visible = false;  
           }
-          
-          i++;
         }
+        i++;
+        
+      }
+      
 
-        i =0;
+      if(reset === undefined){  
+        i = 0;
         while(i < this.cachedAtoms.length ){ 
           this.cachedAtoms[i].object3d.visible = false; 
           if(this.cachedAtoms[i].subtractedForCache.object3d !== undefined){
             this.cachedAtoms[i].subtractedForCache.object3d.visible = false;  
           }  
           i++;
-        }
-
+        } 
+         
         this.editObjectsInScene('cellSolidVoid', 'visibility', false);
       }
       else{
 
         i = 0;
-        while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].setVisibility(false);    
+        while(i < this.cachedAtoms.length ){  
+          this.cachedAtoms[i].destroy();    
           i++;
         } 
 
@@ -5965,7 +5941,7 @@ define([
     }
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic' ){
-      this.setCSGmode({mode : 'cellClassic'} , 'reset');
+      this.setCSGmode({mode : 'cellClassic'} , 'reset' );
       this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   };
@@ -5991,7 +5967,7 @@ define([
     }
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; // for view modes
     if(this.viewMode !== 'cellClassic'){
-      this.setCSGmode({mode : 'cellClassic'} , 'reset');
+      this.setCSGmode({mode : 'cellClassic'} , 'reset'  );
       this.menu.chooseActiveUnitCellMode('cellClassic');
     }
   }; 

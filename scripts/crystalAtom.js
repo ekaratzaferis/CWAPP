@@ -13,17 +13,18 @@ define([
 ) {
   
   //var globGeometry = new THREE.SphereGeometry(1,32, 32);
-  var globGeometry = new THREE.OctahedronGeometry(1,3);
+  var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
   
   var uniqueId = -1; 
 
-  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, texture, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
+  function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, lod, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
        
     var _this = this; 
     this.radius = radius;  
     this.material;
     this.materialLetter;
     this.scale = 1;
+    this.lod = lod;
     this.identity = id ;
     this.materialls; 
     this.color = color; 
@@ -85,7 +86,7 @@ define([
     
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
     
-    this.materialLetter = new THREE.MeshPhongMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
 
     this.materials =  [  
       this.colorMaterial, 
@@ -93,7 +94,7 @@ define([
       this.materialLetter
     ];
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry , this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod] , this.materials);
  
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
@@ -114,6 +115,14 @@ define([
     
     //return hexColor;
   }
+  CrystalAtom.prototype.setNewLodGeometry = function( ) {
+
+    var chs = this.object3d.children; 
+    for (var j = 0, k = chs.length; j < k; j++) {
+      chs[j].geometry.dispose();
+      chs[j].geometry = globGeometries[this.lod] ;
+    }
+  };
   CrystalAtom.prototype.setVisibility = function( bool) {
 
     this.visibility = bool;  
@@ -264,7 +273,7 @@ define([
     this.scale = scale; 
   };
   CrystalAtom.prototype.removesubtractedForCache = function() { 
-   
+
     if(this.subtractedForCache.object3d !== undefined){
       Explorer.remove({'object3d' : this.subtractedForCache.object3d});  
       this.subtractedForCache.object3d = undefined;
@@ -290,7 +299,7 @@ define([
     var toDestroy = this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [/*_this.materialLetter,*/ this.colorMaterial ]); 
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], [/*_this.materialLetter,*/ this.colorMaterial ]); 
     sphere.scale.set(this.radius, this.radius, this.radius);
 
     sphere.children[0].receiveShadow = true; 

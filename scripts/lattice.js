@@ -45,6 +45,7 @@ define([
     this.latticeSystem = 'none'; // may be useless 
     this.actualAtoms = [];  
     this.toggleStates = {crystalAtoms : true, points : true, planes : true, directions : true};  
+    this.LOD = {level : 3};  
 
     // grade
     this.gradeChoice = {"face":false, "grid":false};
@@ -82,33 +83,6 @@ define([
     this.atomRelationshipManager;
     this.labeling = false;
   }; 
-  Lattice.prototype.setOctahedronDetail = function(arg) { 
-  
-    var g = new THREE.OctahedronGeometry(1, arg); 
-
-    for (var i = 0, len = this.actualAtoms.length; i < len; i++) {
-        
-        var chs = this.actualAtoms[i].object3d.children;
-
-        for (var j = 0, k = chs.length; j < k; j++) {
-            chs[j].geometry.dispose();
-            chs[j].geometry = g ;
-        } 
-    } 
-
-    for (var i = 0, len = this.cachedAtoms.length; i < len; i++) {
-        
-        var chs = this.cachedAtoms[i].object3d.children;
-
-        for (var j = 0, k = chs.length; j < k; j++) {
-            chs[j].geometry.dispose();
-            chs[j].geometry = g ;
-        } 
-    }
-
-    $( "#vertices" ).html( g.vertices.length );
-    
-  };
   Lattice.prototype.renderingModeChange = function(arg) {
     
     this.renderingMode = arg.mode;
@@ -210,7 +184,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -233,8 +207,8 @@ define([
                 p.x,
                 p.y,
                 p.z,
-               centerOfMotif, 
-                ' .png',
+                centerOfMotif, 
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -261,7 +235,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -286,7 +260,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -314,7 +288,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -338,7 +312,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -366,7 +340,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -391,7 +365,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -418,7 +392,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -442,7 +416,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif,
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -466,7 +440,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -490,7 +464,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -529,7 +503,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -554,7 +528,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -581,7 +555,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -608,7 +582,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -648,7 +622,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -673,7 +647,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -700,7 +674,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -727,7 +701,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -755,7 +729,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -780,7 +754,7 @@ define([
                 p.y,
                 p.z,
                 centerOfMotif, 
-                ' .png',
+                this.LOD.level,
                 opacity,
                 renderingMode,
                 '-',
@@ -1092,8 +1066,16 @@ define([
     }
     else if(this.viewMode === 'crystalClassic'){
 
-      i =0;
-      
+      i = 0;
+      while(i < this.actualAtoms.length ){ 
+        if(this.actualAtoms[i] !== undefined){
+          this.actualAtoms[i].setVisibility(true);  
+        } 
+        i++;
+      }
+
+      i = 0;
+
       if(reset === undefined){ 
         while(i < this.actualAtoms.length ){ 
           this.actualAtoms[i].setVisibility(true)
@@ -1114,7 +1096,8 @@ define([
       }
       else{  
 
-        this.createAdditionalAtoms(); 
+        this.createAdditionalAtoms();
+
         i = 0;
         while(i < this.cachedAtoms.length ){ 
           this.cachedAtoms[i].setVisibility(false);    
@@ -1224,13 +1207,7 @@ define([
     _.each(this.points, function(point, reference) {
       point.destroy();
       delete _this.points[reference];
-    });
-    setTimeout( function(){ 
-    console.log(Explorer.getInstance().object3d.children.length);
-    console.log('grids : '+(_this.monitorScene('count', 'grid')));
-    console.log('points : '+(_this.monitorScene('count', 'point'))); 
-
-  }, 1000);
+    }); 
   }; 
   Lattice.prototype.destroyGrids = function() {
     var _this = this; 
@@ -1312,7 +1289,7 @@ define([
             a.y,
             a.z,
             p,
-            '/Images/'+atom.texture+'.png',
+            _this.LOD.level,
             opacity,
             _this.renderingMode,
             kk,
@@ -1326,8 +1303,7 @@ define([
      
     this.updateLatticeTypeRL();
     
-    this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes
-  
+    this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
 
@@ -1683,14 +1659,12 @@ define([
         var color, texture, opacity, wireframe;
   
         if(!_.isUndefined(atom.object3d) && !atom.object3d.children) { 
-          color = atom.color; 
-          texture = undefined;
+          color = atom.color;  
           opacity = atom.opacity;
           wireframe = atom.wireframe; 
         }
         else{ 
-          atom.object3d.children[0].material.color ; 
-          texture = undefined;
+          atom.object3d.children[0].material.color ;  
           opacity = atom.opacity;
           wireframe = atom.object3d.children[1].material.wireframe ;
           color = atom.color ;
@@ -1706,7 +1680,7 @@ define([
             a.y,
             a.z,
             p,
-            texture,
+            _this.LOD.level,
             opacity ,
             _this.renderingMode,
             kk,

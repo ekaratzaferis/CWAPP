@@ -6,6 +6,9 @@ Educational Game Development Ideas
 - Test, Iterate, Test 
 
 
+Emergency TODOs
+1.cache materials and reduce materials from 3 to 2
+
 ALEX UI BUGS 
 1. uc viewport (resize and restore)
 2. atomRadius slider (restore) - fix on storeProject.js line : 109

@@ -15,18 +15,20 @@ define([
   AtomMaterialManager 
 ) { 
   //var globGeometry = new THREE.SphereGeometry(1,32, 32);
-  var globGeometry = new THREE.OctahedronGeometry(1,3);
+  var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
   
-  function UnitCellAtom(position, radius, color, tangency, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
-    
+  function UnitCellAtom(lod, position, radius, color, visible, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
+
     var _this = this; 
     this.radius = radius;  
     this.material;
     this.latticeIndex = latticeIndex; 
     this.ionicIndex = ionicIndex; 
     this.materials;
+    this.lod = lod;  
     this.tangency = tangency;  
     this.color = color; 
+    this.visibility = (visible === undefined) ? true : visible ;
     this.opacity = opacity ; 
     this.myID = id; 
     this.elementName = elementName; 
@@ -86,12 +88,10 @@ define([
       this.materialLetter
     ];
     
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials); 
-
-    if(this.tangency === undefined){
-      sphere.visible = false;
-    }
-
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], this.materials); 
+ 
+    sphere.visible = this.visibility;
+     
     sphere.scale.set(this.radius, this.radius, this.radius);
     sphere.children[0].receiveShadow = true; 
     sphere.children[0].castShadow = true;  
@@ -188,6 +188,25 @@ define([
       
       return material;
 
+  };
+  UnitCellAtom.prototype.setVisibility = function(bool) {
+    this.visibility = bool;  
+    this.object3d.visible = bool; 
+
+  };
+  UnitCellAtom.prototype.removesubtractedForCache = function() {
+    if(this.subtractedForCache.object3d !== undefined){
+      UnitCellExplorer.remove({'object3d' : this.subtractedForCache.object3d});  
+      this.subtractedForCache.object3d = undefined;
+    } 
+  };
+  UnitCellAtom.prototype.setNewLodGeometry = function() {
+
+    var chs = this.object3d.children; 
+    for (var j = 0, k = chs.length; j < k; j++) {
+      chs[j].geometry.dispose();
+      chs[j].geometry = globGeometries[this.lod] ;
+    }
   };
   UnitCellAtom.prototype.setColorMaterial = function(color, temp) {
     
@@ -352,7 +371,7 @@ define([
     var toDestroy = this.object3d;
     var pos = new THREE.Vector3(this.object3d.position.x, this.object3d.position.y, this.object3d.position.z  ); 
   
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, [ this.colorMaterial ]);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], [ this.colorMaterial ]);
     sphere.scale.set(this.radius, this.radius, this.radius);
 
     sphere.children[0].receiveShadow = true; 
@@ -420,15 +439,7 @@ define([
       _this.object3d.children[0].material = _this.colorMaterial;
       _this.object3d.children[0].material.needsUpdate = true; 
     }, 250);
-  };
-  UnitCellAtom.prototype.getTangency = function() {
-    var _this = this; 
-    return _this.tangency;
-  };
-  UnitCellAtom.prototype.setTangency = function(tangency) {
-    var _this = this; 
-    this.tangency = tangency ;
-  };
+  }; 
   UnitCellAtom.prototype.destroy = function() {
     UnitCellExplorer.remove(this);
   };

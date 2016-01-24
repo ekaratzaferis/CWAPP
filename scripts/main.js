@@ -128,7 +128,8 @@ require([
   'CopyShader',
   'html2canvas',
   'jszip',
-  'menu_html'
+  'menu_html',
+  'LOD'
 
 ], function(
   PubSub, 
@@ -181,7 +182,8 @@ require([
   CopyShader,
   html2canvas,
   jszip,
-  menu_html
+  menu_html,
+  LOD
 
 ) {
 
@@ -366,6 +368,8 @@ require([
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
+
+  var lod = new LOD(lattice, motifEditor);
 
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
@@ -856,24 +860,17 @@ require([
   });
   menu.onOpenJSON(function(message, arg) { 
     restoreMechanism.configureState(arg);
-  });
-
-  // secret menu - to be deleted
-
-  menu.setOctahedronDetail(function(message, arg) { 
-    lattice.setOctahedronDetail(arg);
-    motifEditor.setOctahedronDetail(arg);
+  }); 
+  menu.setLOD(function(message, arg) { 
+    lod.setLOD(arg);
+    //lattice.setOctahedronDetail(arg);
+    //motifEditor.setOctahedronDetail(arg);
   }); 
   menu.setSphereSegments(function(message, arg) { 
     
     //motifEditor.setSphereSegments(arg);
   });
-
-  //
-
-  ///////////////////////
-  ///////////////////////
-  ///////////////////////
+ 
 
   // to read the json file
   

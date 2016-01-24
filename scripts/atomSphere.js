@@ -12,9 +12,11 @@ define([
   _,
   AtomMaterialManager
 ) {
-  var globGeometry = new THREE.SphereGeometry(1,32, 16);
+  //var globGeometry = new THREE.SphereGeometry(1,32, 32);
+  var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
+  
   // tangency is not used anymore!
-  function AtomSphere(visible, position, radius, color, tangency, elementName, id, opacity, wireframe, ionicIndex, labeling) {
+  function AtomSphere(visible, position, radius, color, lod, elementName, id, opacity, wireframe, ionicIndex, labeling) {
        
     var _this = this; 
     this.radius = radius;  
@@ -22,7 +24,7 @@ define([
     this.fresh = true;  
     this.material; 
     this.materials;
-    this.tangency = tangency; 
+    this.lod = lod; 
     this.color = color; 
     this.myID = id; 
     this.blinking;
@@ -72,7 +74,7 @@ define([
     }
  
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometry, this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], this.materials);
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
 
@@ -81,6 +83,14 @@ define([
     MotifExplorer.add(this); 
 
   }; 
+  AtomSphere.prototype.setNewLodGeometry = function(){
+
+    var chs = this.object3d.children; 
+    for (var j = 0, k = chs.length; j < k; j++) {
+      chs[j].geometry.dispose();
+      chs[j].geometry = globGeometries[this.lod] ;
+    }
+  };
   AtomSphere.prototype.setLabeling = function(bool){
  
     this.labeling = bool;
@@ -146,15 +156,7 @@ define([
     setTimeout(function() { 
       _this.object3d.children[0].material.color = new THREE.Color( _this.color );
     }, 250);
-  };
-  AtomSphere.prototype.getTangency = function() {
-    var _this = this; 
-    return _this.tangency;
-  };
-  AtomSphere.prototype.setTangency = function(tangency) {
-    var _this = this; 
-    _this.tangency = tangency ;
-  };
+  }; 
   AtomSphere.prototype.destroy = function() {
     MotifExplorer.remove(this);
   };

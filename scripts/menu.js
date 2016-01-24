@@ -173,7 +173,7 @@ define([
         DIALOG_RESULT: 'menu.dialog_result',
         LABEL_TOGGLE: 'menu.label_toggle',
         HIGHLIGHT_TANGENCY: 'menu.highlight_tangency',
-        SET_OCTAHEDRON_DETAIL: 'menu.SET_OCTAHEDRON_DETAIL',
+        SET_LOD: 'menu.SET_LOD',
         SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS'
     };
             
@@ -1122,20 +1122,13 @@ define([
     };
     Menu.prototype.onOpenJSON = function(callback){
         PubSub.subscribe(events.OPEN_JSON, callback);
-    };
-
-
-
-
-    // secret menu - to be deleted
-
-    Menu.prototype.setOctahedronDetail = function(callback){
-        PubSub.subscribe(events.SET_OCTAHEDRON_DETAIL, callback);
+    }; 
+    Menu.prototype.setLOD = function(callback){
+        PubSub.subscribe(events.SET_LOD, callback);
     };
     Menu.prototype.setSphereSegments = function(callback){
         PubSub.subscribe(events.SET_SPHERE_SEGMENTS, callback);
-    };
-
+    }; 
      
     $( "#sliderDetail" ).slider({
         value:3,
@@ -1144,7 +1137,7 @@ define([
         step: 1,
         slide: function( event, ui ) {
             $( "#Detailvalue" ).html( ui.value );
-            PubSub.publish(events.SET_OCTAHEDRON_DETAIL, ui.value);
+            PubSub.publish(events.SET_LOD, ui.value);
         }
     });
 
