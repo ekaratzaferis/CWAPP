@@ -31,16 +31,7 @@ define([
         this.gearTour = gearTour;
         menu = menuIn;
     };
-    
-    // Randomizer //
-    function createRandomName() {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for( var i=0; i < 5; i++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        return text;
-    };
-    
+     
     // Send JSON to Database //
     function sendToDatabase(text){
         
@@ -52,7 +43,7 @@ define([
         // Send Request //
         var service = 'https://cwgl.herokuapp.com';
         var hash ='';
-
+        
         var data = {
             url: document.location.origin,
             data: str

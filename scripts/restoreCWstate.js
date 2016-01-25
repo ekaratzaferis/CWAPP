@@ -114,7 +114,7 @@ define([
     /////
 
     this.lattice.currentMotif = this.motifEditor.getMotif();
-    this.lattice.offsetMotifsForViews();
+    this.lattice.createAdditionalAtoms();
 
     var i = 0;
 
