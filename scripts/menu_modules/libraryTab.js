@@ -392,7 +392,7 @@ define([
                 html.modals.qr.link.val('cw.gl/'+projectSlug);
                 
                 // Update Project Link //
-                html.library.search.openPreview.attr('href','https://cw.gl/'+projectSlug)
+                html.library.search.openPreview.attr('href','http://cw.gl/'+projectSlug)
                 
                 html.library.search.preview.show();
                 html.library.search.previewResultImg.prop('src', thumbnail);

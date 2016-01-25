@@ -1074,8 +1074,8 @@ define([
         i++;
       }
 
+      
       i = 0;
-
       if(reset === undefined){ 
         while(i < this.actualAtoms.length ){ 
           this.actualAtoms[i].setVisibility(true)
@@ -1084,6 +1084,7 @@ define([
           } 
           i++;
         }
+
         i = 0;
         while(i < this.cachedAtoms.length ){ 
           this.cachedAtoms[i].setVisibility(false); 
@@ -1097,12 +1098,11 @@ define([
       else{  
 
         this.createAdditionalAtoms();
-
-        i = 0;
+ 
         while(i < this.cachedAtoms.length ){ 
           this.cachedAtoms[i].setVisibility(false);    
           i++;
-        }   //ftiaksimo sto classic de epanaferontia ola komple
+        }   
         this.editObjectsInScene('crystalSolidVoid', 'remove', true); 
       }  
     } 
