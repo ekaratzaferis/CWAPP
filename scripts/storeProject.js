@@ -213,7 +213,9 @@ define([
     StoreProject.prototype.downLoadfile = function(argument){
         // json = application/json
         // text = application/text    
-    
+
+        var _this = this;
+
         if (argument.extention === 'json'){
             var blob = new Blob([JSON.stringify(JSON.parse(argument.data),null,2)], {type: argument.type});
             saveAs(blob, argument.name + '.' + argument.extention);
@@ -221,13 +223,37 @@ define([
         }
         else if (argument.extention === 'png'){
             // Caprture Snapshot //
-            
-            var whatToPrint = $('#app-container'); 
 
+            this.crystalRenderer.enabledRenders.doll = false;
+            this.crystalRenderer.enabledRenders.compass = false;
+            this.crystalRenderer.enabledRenders.navCube = false;
+            this.crystalRenderer.renderer.clear();
+            this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0], undefined, true);     
+
+            var whatToPrint = $('#crystalRenderer') ; 
+            var logo = $('#appLogo') ; 
+            var qr_url = $('#QRImage').find( "img" ).clone(); 
+            qr_url.removeClass();
+
+            var imgLogwidth = $('#appLogo').find( "img" ).width();
+
+            qr_url.css('margin-right',(imgLogwidth/2 + 10));
+            var h = $('#appLogo').height()/3;
+            qr_url.height(h); 
+            qr_url.appendTo(logo);
+             
+            
+            var urlTxt = $('#saveOnlineLink').val();
+            var elm = '<div id=tempURL; style="position : fixed; left : '+(whatToPrint.width()/2 + imgLogwidth/3 )+'px; bottom : '+h+'px; color : #3f4247; ">'+urlTxt+'</div>';
+            var tempURL = $(elm);
+            tempURL.appendTo(logo);
+            //; transform: rotate(-90deg); transform-origin: right/. transform: rotate(-90deg); transform-origin: right;
+
+            logo.appendTo(whatToPrint);
+ 
             html2canvas(whatToPrint, {
               onrendered: function (canvas) { 
-                var imgSrc = canvas.toDataURL();
-                //var popup = window.open(imgSrc);
+                var imgSrc = canvas.toDataURL(); 
 
                 // Create Download Link //
                 var dlLink = document.createElement('a');
@@ -240,6 +266,11 @@ define([
                 dlLink.click();
                 document.body.removeChild(dlLink);
 
+                _this.crystalRenderer.enabledRenders.doll = true;
+                _this.crystalRenderer.enabledRenders.compass = true;
+                _this.crystalRenderer.enabledRenders.navCube = true;
+                tempURL.remove();
+                qr_url.remove();
               }
             });
             

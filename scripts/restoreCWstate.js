@@ -403,8 +403,26 @@ define([
     this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
     this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph); 
- 
+    
+    var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
+    this.gearTour.crystalHasChanged = true;
+    this.gearTour.state = this.cwObj.system.latticeParams.gearTourState ;
+    this.dollEditor.gearBarSlider.position.y = yPosGearSlider[this.gearTour.state - 1] ;
 
+    if(this.gearTour.state > 2){
+      for (var i = 0; i <= 5; i++) {
+        this.dollEditor.levelLabels[i].allowed = true;
+      };
+    }
+    else if(this.gearTour.state === 2){
+      for (var i = 0; i <= 1; i++) {
+        this.dollEditor.levelLabels[i].allowed = true;
+      };
+    }
+    else{
+      this.dollEditor.levelLabels[0].allowed = true;
+    }
+  
   };
   RestoreCWstate.prototype.configureMotifEditorSettings = function() {
 

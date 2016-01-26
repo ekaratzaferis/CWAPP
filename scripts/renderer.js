@@ -56,7 +56,7 @@ define([
     this.renderer.shadowMapHeight = 1024; 
     this.renderer.autoClear = false; // 2 scenes render 
     this.animationIsActive = false;
-
+    this.enabledRenders = { 'navCube' : true, 'compass' : true, 'doll' : true};
     this.depthTarget;  
     this.depthMaterial;
     this.ssao = false;
@@ -287,7 +287,7 @@ define([
             this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
           }
 
-          if(this.doll !== undefined){  
+          if(this.doll !== undefined && this.enabledRenders['doll'] === true){  
             this.renderer.clearDepth(); // celar depth buffer to have gear bar and doll on top
             this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
             this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
@@ -314,7 +314,7 @@ define([
       } 
 
       // hud arrows
-      if(this.hudCamera !== undefined ){  
+      if(this.hudCamera !== undefined && this.enabledRenders['compass'] === true ){  
         this.renderer.clearDepth(); 
          
         var tempW8 = 1.3 * this.containerWidth/this.displayFactor ;
@@ -343,7 +343,7 @@ define([
         this.renderer.render( this.hudScene, this.hudCamera); 
       }
       // hud cube
-      if(this.hudCameraCube !== undefined ){  
+      if(this.hudCameraCube !== undefined && this.enabledRenders['navCube'] === true ){  
          
         this.hudCameraCube.aspect = (this.containerWidth) / (this.containerHeight  ); 
         this.renderer.setViewport(

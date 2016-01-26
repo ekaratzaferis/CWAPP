@@ -48,7 +48,7 @@ define([
     this.light.shadowCameraNear = 1;
     this.light.shadowCameraFar = 10; 
     this.light.shadowBias = -0.0009;
-    this.light.shadowDarkness = 0.3;
+    this.light.shadowDarkness = 0.2;
     this.light.shadowMapWidth = 1024;
     this.light.shadowMapHeight = 1024;
     this.light.shadowCameraLeft = -10;

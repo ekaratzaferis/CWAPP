@@ -193,7 +193,7 @@ define([
       } 
       else if(intersects[i].object.name === 0 || intersects[i].object.name === 1 || intersects[i].object.name === 2 || intersects[i].object.name === 3 || intersects[i].object.name === 4 || intersects[i].object.name === 5 ){ 
         clickedOnMe = true;
-
+        
         if(this.dollEditor.levelLabels[intersects[i].object.name].allowed === true){ 
           this.walkTourSet(intersects[i].object.name);
           this.dollEditor.gearBarSlider.position.y = yPosGearSlider[intersects[i].object.name];
