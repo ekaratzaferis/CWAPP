@@ -29,6 +29,7 @@ define([
         this.crystalRenderer = crystalRenderer;
         this.stlExporter = stlExporter;
         this.gearTour = gearTour;
+        this.LOD;
         menu = menuIn;
     };
      
@@ -223,6 +224,8 @@ define([
         }
         else if (argument.extention === 'png'){
             // Caprture Snapshot //
+            var lod = this.LOD.lodLevel;
+            this.LOD.setLOD(5);
 
             this.crystalRenderer.enabledRenders.doll = false;
             this.crystalRenderer.enabledRenders.compass = false;
@@ -271,6 +274,7 @@ define([
                 _this.crystalRenderer.enabledRenders.navCube = true;
                 tempURL.remove();
                 qr_url.remove();
+                _this.LOD.setLOD(lod);
               }
             });
             

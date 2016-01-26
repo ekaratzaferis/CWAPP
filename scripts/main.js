@@ -370,7 +370,8 @@ require([
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
 
   var lod = new LOD(lattice, motifEditor, menu);
-
+  storeMechanism.LOD = lod;
+  
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
   // lattice events binding
