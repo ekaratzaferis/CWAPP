@@ -60,15 +60,13 @@ define([
 
     if(this.wireframe == true){
       this.materials =  [  
-        this.colorMaterial, 
-        new THREE.MeshBasicMaterial({color : "#ffffff", wireframe: true, opacity:0}),
+        this.colorMaterial,  
         this.materialLetter
       ];
     }
     else{
       this.materials =  [  
-        this.colorMaterial, 
-         new THREE.MeshPhongMaterial({transparent:true, opacity:0}),
+        this.colorMaterial,  
          this.materialLetter
       ]; 
     }
@@ -96,12 +94,12 @@ define([
     this.labeling = bool;
 
     if(this.labeling === true){
-      this.object3d.children[2].material.opacity = this.opacity ;  
-      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[1].material.opacity = this.opacity ;  
+      this.object3d.children[1].material.needsUpdate = true; 
     }
     else if(this.labeling === false){
-      this.object3d.children[2].material.opacity = 0 ;  
-      this.object3d.children[2].material.needsUpdate = true; 
+      this.object3d.children[1].material.opacity = 0 ;  
+      this.object3d.children[1].material.needsUpdate = true; 
     }
   };
   AtomSphere.prototype.setOpacity = function( opacity) {
@@ -110,17 +108,7 @@ define([
     this.opacity = opacity/10 ;
     this.object3d.children[0].material.opacity = 0.7 ;
     this.object3d.children[0].material.needsUpdate = true;
-  }; 
-  AtomSphere.prototype.wireframeMat = function(bool){
-    this.wireframe = bool ;
-    if(bool){ 
-      this.object3d.children[1].material  = new THREE.MeshBasicMaterial({color : "#000000", wireframe: bool, opacity:0}) ;
-    }
-    else{
-      this.object3d.children[1].material  = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-    }
-    this.object3d.children[1].material.needsUpdate = true;  
-  };
+  };  
   AtomSphere.prototype.getID = function() {
     var _this = this ;
     return _this.myID ;

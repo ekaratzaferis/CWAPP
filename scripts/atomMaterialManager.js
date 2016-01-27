@@ -51,7 +51,7 @@ define([
     }
   }
   function createLabel(element, ionic, x, y, z, size, color, backGroundColor, backgroundMargin) {
- 
+     
     var canvas = document.createElement("canvas");
     var context = canvas.getContext("2d");
     context.font = size + "pt Arial";
@@ -86,6 +86,8 @@ define([
     texture.needsUpdate = true; 
     //texture.mapping = THREE.SphericalReflectionMapping; 
     texture.minFilter = THREE.NearestFilter ;
+    texture.offset.x = -0.5;
+
     return texture;
   }
   return {
@@ -94,7 +96,7 @@ define([
     }, 
     getTexture : function(elementName, ionic){
  
-      var texture = createLabel(elementName, ionic, 1,1, 0, 32, "black", undefined, 256); 
+      var texture = createLabel(elementName, ionic, 0, 0, 0, 32, "black", undefined, 256); 
 
       storedTextures[elementName] = texture; // to be used
 

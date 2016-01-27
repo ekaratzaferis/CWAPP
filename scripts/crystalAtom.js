@@ -13,8 +13,8 @@ define([
 ) {
   
   //var globGeometry = new THREE.SphereGeometry(1,32, 32);
-  var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
-  
+  var globalGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
+  var globalMaterials = {} ;
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, lod, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
@@ -62,39 +62,37 @@ define([
   CrystalAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, identity, image) {
     var _this = this ;
 
-    var wireMat;  
+    var material;  
 
     if(renderingMode === 'wireframe') {
-      wireMat = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : color, wireframe: true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
+      material =  new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color : color, wireframe: true, opacity:0}) ;
+      //this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, transparent:true, opacity:0 }) ; 
     }
-    else if(renderingMode === 'realistic'){  
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+    else if(renderingMode === 'realistic'){   
       this.colorMaterial = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100, color: color, transparent:true, opacity:opacity }) ; 
+      material = this.colorMaterial;
     }
-    else if(renderingMode === 'flat'){
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ; 
+    else if(renderingMode === 'flat'){ 
+      this.colorMaterial = new THREE.MeshLambertMaterial({ color: color, transparent:true, opacity:opacity }) ;
+      material = this.colorMaterial;
     }
     else if(renderingMode === 'toon'){ 
       var phongMaterial = createShaderMaterial("phongDiffuse");
-      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color)); 
-
-      wireMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      phongMaterial.uniforms.uMaterialColor.value.copy(new THREE.Color(color));  
       this.colorMaterial = phongMaterial;
+      material = this.colorMaterial;
     }
     
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
     
-    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp  }) ;
+    this.materialLetter = new THREE.MeshBasicMaterial({  map : image, transparent:true, opacity : labelOp }) ;
 
     this.materials =  [  
-      this.colorMaterial, 
-      wireMat,
+      material,
       this.materialLetter
     ];
 
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod] , this.materials);
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globalGeometries[this.lod] , this.materials);
  
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);
@@ -120,7 +118,7 @@ define([
     var chs = this.object3d.children; 
     for (var j = 0, k = chs.length; j < k; j++) {
       chs[j].geometry.dispose();
-      chs[j].geometry = globGeometries[this.lod] ;
+      chs[j].geometry = globalGeometries[this.lod] ;
     }
   };
   CrystalAtom.prototype.setVisibility = function( bool) {
@@ -137,10 +135,8 @@ define([
     
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity;
-    this.object3d.children[0].material.opacity = opacity ;
-    this.object3d.children[0].material.needsUpdate = true;
-    this.object3d.children[2].material.opacity = opacity ;
-    this.object3d.children[2].material.needsUpdate = true;
+    this.object3d.children[0].material.opacity = opacity ; 
+    this.object3d.children[1].material.opacity = opacity ; 
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
     
@@ -172,16 +168,15 @@ define([
     this.wireframe = bool ;
 
     if(bool === true){ 
-      this.object3d.children[0].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
-      this.object3d.children[1].material = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.color, wireframe: true, opacity:0}) ;
+      //this.object3d.children[0].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      this.object3d.children[0].material = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color : this.color, wireframe: true, opacity:0}) ;
     }
     else{
       this.object3d.children[0].material = new THREE.MeshPhongMaterial({ specular: 0x050505, shininess : 100,color: this.color, transparent:true, opacity:this.opacity }) ;
-      this.object3d.children[1].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
+      //this.object3d.children[1].material = new THREE.MeshBasicMaterial({transparent:true, opacity:0}) ;
     }
  
-    this.object3d.children[0].material.needsUpdate = true;  
-    this.object3d.children[1].material.needsUpdate = true;  
+    this.object3d.children[0].material.needsUpdate = true;   
   };
   CrystalAtom.prototype.flatMode = function(bool){
     
@@ -190,23 +185,18 @@ define([
 
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
 
-    this.object3d.children[2].material = new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
-    this.object3d.children[2].material.needsUpdate = true; 
-    this.object3d.children[2].material.needsUpdate = true;     
+    this.object3d.children[1].material = new THREE.MeshLambertMaterial( { color : this.color, transparent:true, opacity:labelOp} );  
+    this.object3d.children[1].material.needsUpdate = true;     
   };
   CrystalAtom.prototype.setLabeling = function(bool){
  
     this.labeling = bool;
-
+    
     if(this.labeling === true){
-      this.object3d.children[2].material.opacity = this.opacity ;  
-      this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.needsUpdate = true;
+      this.object3d.children[1].material.opacity = this.opacity ;   
     }
     else if(this.labeling === false){
-      this.object3d.children[2].material.opacity = 0 ;  
-      this.object3d.children[2].material.needsUpdate = true; 
-      this.object3d.children[2].material.needsUpdate = true;
+      this.object3d.children[1].material.opacity = 0 ;   
     }
   };
 
@@ -217,9 +207,8 @@ define([
 
     var labelOp = (this.labeling === true) ? this.opacity : 0 ;
 
-    this.object3d.children[2].material.opacity = labelOp;  
-    this.object3d.children[2].material.needsUpdate = true; 
-    this.object3d.children[2].material.needsUpdate = true;   
+    this.object3d.children[1].material.opacity = labelOp;  
+    this.object3d.children[1].material.needsUpdate = true;    
   }; 
   CrystalAtom.prototype.GradeLimited = function() {
     this.viewMode = 'crystalGradeLimited' ; 
@@ -299,7 +288,7 @@ define([
     var toDestroy = this.object3d;
     var pos = new THREE.Vector3(_this.object3d.position.x ,_this.object3d.position.y , _this.object3d.position.z  ); 
    
-    var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], [/*_this.materialLetter,*/ this.colorMaterial ]); 
+    var sphere = THREE.SceneUtils.createMultiMaterialObject( globalGeometries[this.lod], [/*_this.materialLetter,*/ this.colorMaterial ]); 
     sphere.scale.set(this.radius, this.radius, this.radius);
 
     sphere.children[0].receiveShadow = true; 
