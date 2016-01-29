@@ -2019,13 +2019,14 @@ define([
         takeAction('unitCellViewport',appUI.menuRibbon.toggleButtons.unitCellViewport);
         takeActionWithoutPublish('planes',appUI.menuRibbon.toggleButtons.planes);
         takeActionWithoutPublish('directions',appUI.menuRibbon.toggleButtons.directions);
+       
         takeAction('atomRadius',appUI.menuRibbon.toggleButtons.atomRadius);
         takeAction('atomToggle',appUI.menuRibbon.toggleButtons.atomToggle);
         takeAction('labelToggle',appUI.menuRibbon.toggleButtons.labelToggle);
         takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',appUI.menuRibbon.atomRadiusSlider);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider);
         
         // Lattice Tab //
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);

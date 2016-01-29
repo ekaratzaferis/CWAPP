@@ -66,6 +66,8 @@ define([
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
     mesh.visible = visible; 
+    mesh.receiveShadow = true; 
+    mesh.castShadow = true; 
     this.object3d = mesh;
     Explorer.add(this);
 

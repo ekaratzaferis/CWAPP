@@ -49,6 +49,8 @@ define([
     mesh.visible = visibility ;
     mesh.name = 'face' ;
     mesh.renderOrder = 2;  
+    mesh.receiveShadow = true; 
+    mesh.castShadow = true; 
     this.object3d = mesh;
      
     Explorer.add(this);

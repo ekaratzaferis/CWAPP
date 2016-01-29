@@ -22,6 +22,8 @@ define([
     var arrow = new THREE.ArrowHelper( direction , start, length , color, length/8, length/20);
     arrow.name = 'direction' ;
     arrow.visible = (visible === undefined) ? true : visible ;
+    arrow.receiveShadow = true; 
+    arrow.castShadow = true; 
     this.object3d = arrow;
     Explorer.add(this);
 
@@ -99,6 +101,8 @@ define([
     mesh.scale.x = this.radius*2.5;
     mesh.scale.z = this.radius*2.5;
     mesh.name = 'dirLine';
+    mesh.receiveShadow = true; 
+    mesh.castShadow = true; 
     this.tubeMesh.object3d = mesh ;
     
     Explorer.add(this.tubeMesh);

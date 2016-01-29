@@ -74,6 +74,9 @@ require.config({
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
     'OculusRiftEffect': { deps: [ 'three' ] },
+    'menu': { deps: [ 'jquery' ] },
+    'menu': { deps: [ 'jquery-ui' ] },
+    'menu': { deps: [ 'jquery.matchHeight' ] },
     'menu': { deps: [ 'jquery.mCustomScrollbar.concat.min' ] }
   }
 });

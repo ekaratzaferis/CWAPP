@@ -141,8 +141,8 @@ define([
     if(arg.finish !== undefined){
       this.closeAtomMenu(arg);
       return;
-    }
-     
+    } 
+
     var arr = [];
 
     if(this.editMode === 'single'){ 
