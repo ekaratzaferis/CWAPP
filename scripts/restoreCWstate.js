@@ -19,7 +19,7 @@ define([
   AtomSphere
 ) {
   
-  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor )  {  
+  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod )  {  
     this.menu = menu ;
     this.lattice = lattice ;
     this.motifEditor = motifEditor ;
@@ -40,6 +40,7 @@ define([
     this.atomMaterialManager = atomMaterialManager;
     this.gearTour = gearTour;
     this.dollEditor = dollEditor; 
+    this.lod = lod; 
     this.cwObj; 
   }; 
   RestoreCWstate.prototype.configureState = function(cwObj) { 
@@ -470,13 +471,13 @@ define([
     var helperMotif = [];
 
     for (var i = 0; i < atoms.length; i++) { 
-       
+        
       var atom = new AtomSphere( 
         atoms[i].visible, 
         new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z), 
         atoms[i].radius , 
         atoms[i].color, 
-        undefined, 
+        this.lod.lodLevel, 
         atoms[i].elementName, 
         atoms[i].id, 
         atoms[i].opacity*10, 
@@ -515,8 +516,7 @@ define([
       this.motifEditor.addAtomInCell(  
         new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z) , 
         atoms[i].radius , 
-        atoms[i].color, 
-        true, 
+        atoms[i].color,  
         atoms[i].elementName, 
         atoms[i].id,  
         atoms[i].opacity*10,
@@ -534,7 +534,7 @@ define([
     
     this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};
 
-    this.lattice.currentMotif = helperMotif ; 
+    this.lattice.currentMotif = helperMotif ;
   };
   RestoreCWstate.prototype.configureMillerObjectsSettings = function() {
     var dirs = this.cwObj.system.millerObjects.directions;

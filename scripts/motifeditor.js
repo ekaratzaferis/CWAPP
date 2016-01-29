@@ -153,8 +153,7 @@ define([
       this.removeFromUnitCell(this.newSphere.getID());
       this.menu.breakChain({id : this.newSphere.getID(), remove : true});
       this.deleteTangentChild(this.newSphere.getID());
-      this.newSphere.destroy();
-      this.newSphere.removesubtractedForCache();
+      this.newSphere.destroy(); 
       if(!_.isUndefined( this.motifsAtoms[0])) {   
         this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
         this.newSphere =  undefined; 
@@ -1738,8 +1737,7 @@ define([
           this.removeFromUnitCell(this.newSphere.getID());
           this.menu.breakChain({id : this.newSphere.getID(), remove : true});
           this.deleteTangentChild(this.newSphere.getID());
-          this.newSphere.destroy();
-          this.newSphere.removesubtractedForCache(); 
+          this.newSphere.destroy(); 
           if(!_.isUndefined( this.motifsAtoms[0])) {   
             this.lastSphereAdded = this.motifsAtoms[this.motifsAtoms.length-1];
             this.newSphere =  undefined; 
@@ -1785,8 +1783,7 @@ define([
         case "deleteAtom":
           this.removeFromUnitCell(this.newSphere.getID());
           this.menu.breakChain({id : this.newSphere.getID(), remove : true});
-          this.newSphere.destroy();
-          this.newSphere.removesubtractedForCache();
+          this.newSphere.destroy(); 
           this.updateAtomList(
             undefined, 
             this.newSphere.getID(), 
@@ -2475,8 +2472,7 @@ define([
       var name,color, opacity;
       
       if(!_.isUndefined(this.newSphere) && doNotDestroy === false) { 
-        this.newSphere.destroy() ; 
-        this.newSphere.removesubtractedForCache() ; 
+        this.newSphere.destroy() ;  
         this.removeFromUnitCell(this.newSphere.getID());
         this.initVolumeState();
       }
@@ -3187,7 +3183,8 @@ define([
                 identity = "_"+_x+_y+_z;
                  
                 _this.unitCellAtoms.push(
-                  new UnitCellAtom( _this.LOD.level, 
+                  new UnitCellAtom( 
+                    _this.LOD.level, 
                     new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 
@@ -3221,7 +3218,8 @@ define([
               _.times(2 , function(_z) {
                 identity = "_"+_x+_y+_z;
                 _this.unitCellAtoms.push(
-                  new UnitCellAtom( _this.LOD.level, 
+                  new UnitCellAtom( 
+                    _this.LOD.level, 
                     new THREE.Vector3(
                       pos.x + _this.unitCellPositions[identity].position.x, 
                       pos.y + _this.unitCellPositions[identity].position.y, 

@@ -17,8 +17,9 @@ define([
   
   // tangency is not used anymore!
   function AtomSphere(visible, position, radius, color, lod, elementName, id, opacity, wireframe, ionicIndex, labeling) {
-       
+
     var _this = this; 
+    
     this.radius = radius;  
     this.ionicIndex = ionicIndex;  
     this.fresh = true;  

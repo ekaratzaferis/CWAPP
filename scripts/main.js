@@ -73,7 +73,8 @@ require.config({
     'RenderPass': { deps: [ 'three' ] },
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
-    'OculusRiftEffect': { deps: [ 'three' ] }
+    'OculusRiftEffect': { deps: [ 'three' ] },
+    'menu': { deps: [ 'jquery.mCustomScrollbar.concat.min' ] }
   }
 });
 
@@ -363,15 +364,16 @@ require([
   motifEditor.atomRelationshipManager = atomRelationshipManager;
   lattice.atomRelationshipManager = atomRelationshipManager;
   
+  // lod
+  var lod = new LOD(lattice, motifEditor, menu);
+  storeMechanism.LOD = lod;
+
   // restoring
-  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor);
+  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod);
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
-
-  var lod = new LOD(lattice, motifEditor, menu);
-  storeMechanism.LOD = lod;
-  
+ 
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
   // lattice events binding

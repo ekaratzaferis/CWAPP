@@ -233,27 +233,26 @@ define([
             this.crystalRenderer.renderer.clear();
             this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0], undefined, true);     
 
-            var whatToPrint = $('#crystalRenderer') ; 
-            var logo = $('#appLogo') ; 
-            var qr_url = $('#QRImage').find( "img" ).clone(); 
-            qr_url.removeClass();
-
-            var imgLogwidth = $('#appLogo').find( "img" ).width();
-
-            qr_url.css('margin-right',(imgLogwidth/2 + 10));
+            var whatToPrint = $('#crystalRenderer') ;  
+            var logo = $('#appLogo') ;  
+  
             var h = $('#appLogo').height()/3;
-            qr_url.height(h); 
-            qr_url.appendTo(logo);
-             
-            
-            var urlTxt = $('#saveOnlineLink').val();
-            var elm = '<div id=tempURL; style="position : fixed; left : '+(whatToPrint.width()/2 + imgLogwidth/3 )+'px; bottom : '+h+'px; color : #3f4247; ">'+urlTxt+'</div>';
-            var tempURL = $(elm);
-            tempURL.appendTo(logo);
-            //; transform: rotate(-90deg); transform-origin: right/. transform: rotate(-90deg); transform-origin: right;
 
-            logo.appendTo(whatToPrint);
- 
+            var qr_Temp = $('#QRImage').find( "img" ).clone();  
+            qr_Temp.removeClass();
+            qr_Temp.width(h);  
+            qr_Temp.height(h);  
+            qr_Temp.css('position', 'absolute');
+            qr_Temp.css('bottom', h);
+            qr_Temp.appendTo(logo);
+            
+            var urlWPos = whatToPrint.width()/2 + h + $('#appLogo').find('img:first').width()/2 + 1 ; 
+             
+            var url = '<div style="  transform-origin:0% 0%; width : '+(h)+'px; transform: rotate(270deg); position : fixed; left : '+urlWPos+'px; bottom : '+h/1.5+'px;  color : #3f4247; font-weight: bold;">'+($('#saveOnlineLink').val())+'</div>'; 
+          
+            var url_temp = $(url);
+            url_temp.appendTo(logo);
+   
             html2canvas(whatToPrint, {
               onrendered: function (canvas) { 
                 var imgSrc = canvas.toDataURL(); 
@@ -272,8 +271,8 @@ define([
                 _this.crystalRenderer.enabledRenders.doll = true;
                 _this.crystalRenderer.enabledRenders.compass = true;
                 _this.crystalRenderer.enabledRenders.navCube = true;
-                tempURL.remove();
-                qr_url.remove();
+                url_temp.remove();
+                qr_Temp.remove();
                 _this.LOD.setLOD(lod);
               }
             });

@@ -18,7 +18,7 @@ define([
   var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
   
   function UnitCellAtom(lod, position, radius, color, visible, elementName, id, latticeIndex, opacity, renderingMode, ionicIndex, labeling) { 
-
+    
     var _this = this; 
     this.radius = radius;  
     this.material;
