@@ -116,16 +116,10 @@ define([
     this.configureCellPoints();
       
   };  
-  Motifeditor.prototype.setLatticeParameters = function(data) {
-    if(data.restore === undefined){ 
-      this.cellParameters.alpha = data.defaults.alpha ;
-      this.cellParameters.beta  = data.defaults.beta ;
-      this.cellParameters.gamma = data.defaults.gamma ; 
+  Motifeditor.prototype.setLatticeParameters = function(data) { 
 
-      this.cellParameters.scaleX = data.defaults.scaleX ;
-      this.cellParameters.scaleY  = data.defaults.scaleY ;
-      this.cellParameters.scaleZ = data.defaults.scaleZ ;
-    }
+    this.latticeType = data.latticeType;  
+    this.latticeSystem = data.latticeSystem; 
 
     this.initialLatticeParams.alpha = data.defaults.alpha ;
     this.initialLatticeParams.beta  = data.defaults.beta ;
@@ -134,10 +128,19 @@ define([
     this.initialLatticeParams.scaleX = data.defaults.scaleX ;
     this.initialLatticeParams.scaleY  = data.defaults.scaleY ;
     this.initialLatticeParams.scaleZ = data.defaults.scaleZ ; 
+     
+    if(data.restore === undefined ){ 
+   
+      this.cellParameters.alpha = data.defaults.alpha ;
+      this.cellParameters.beta  = data.defaults.beta ;
+      this.cellParameters.gamma = data.defaults.gamma ; 
 
-    this.latticeType = data.latticeType; 
+      this.cellParameters.scaleX = data.defaults.scaleX ;
+      this.cellParameters.scaleY  = data.defaults.scaleY ;
+      this.cellParameters.scaleZ = data.defaults.scaleZ ;
        
-    this.latticeSystem = data.latticeSystem; 
+    }   
+
   }; 
   Motifeditor.prototype.onEditorStateChange = function(callback) {
     PubSub.subscribe(events.EDITOR_STATE, callback);
@@ -5827,7 +5830,7 @@ define([
     if(restore !== undefined){
       return;
     }
-
+    
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');
@@ -6420,7 +6423,8 @@ define([
   }; 
       
   Motifeditor.prototype.cellPointsWithAngles = function() {  
-    //this.transform(reverseShearing, function(value) {  return -value; });  
+    //this.transform(reverseShearing, function(value) {  return -value; }); 
+
     this.transform( shearing, function(value) {  return value; }  ); 
     //this.transform( reverseScaling,             function(value) { return (value === 0 ? 0 : 1 / value); } );       
     //this.transform( _.union(scaling, shearing), function(value) { return value; }                         );  
@@ -6437,7 +6441,7 @@ define([
     _.each(parameterKeys, function(k) {   
       if (_.isUndefined(parameters[k]) === false) { 
         argument = {};
-        argument[k] = operation(parseFloat(parameters[k]));
+        argument[k] = operation(parseFloat(parameters[k])); 
         matrix = transformationMatrix(argument); 
         _.each(_this.unitCellPositions, function(pos, reference) {
           if(pos.position.applyMatrix4 === undefined){

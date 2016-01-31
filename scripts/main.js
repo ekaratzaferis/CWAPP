@@ -74,6 +74,7 @@ require.config({
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
     'OculusRiftEffect': { deps: [ 'three' ] },
+    'tooltipGenerator': { deps: [ 'jquery' ] },
     'menu': { deps: [ 'jquery' ] },
     'menu': { deps: [ 'jquery-ui' ] },
     'menu': { deps: [ 'jquery.matchHeight' ] },
@@ -133,6 +134,7 @@ require([
   'html2canvas',
   'jszip',
   'menu_html',
+  'fitToCrystal',
   'LOD'
 
 ], function(
@@ -187,6 +189,7 @@ require([
   html2canvas,
   jszip,
   menu_html,
+  FitToCrystal,
   LOD
 
 ) {
@@ -379,8 +382,12 @@ require([
  
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
+  // fit camera to crystal 
+  var fitToCrystal = new FitToCrystal(orbitCrystal, lattice);
+
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
+    restoreMechanism.globalReset();
     lattice.load(latticeName);
     motifEditor.latticeName = latticeName;
     dollGearBarME.setWalkStep(2);
@@ -407,6 +414,7 @@ require([
   });
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) { 
+    fitToCrystal.fit();
     lattice.setGrade(gradeParameters);
     noteManager.setLineRadius(gradeParameters);
   });
@@ -813,8 +821,8 @@ require([
     motifEditor.setManuallyCellAngles(param);
   });
   lattice.onLoad(function(message, lattice) {
-    if (_.isObject(lattice)) {
-      menu.setLatticeParameters(lattice.defaults);  
+    if (_.isObject(lattice)) {  
+      menu.setLatticeParameters(lattice.defaults);   
       motifEditor.setLatticeParameters(lattice);  
       menu.setLatticeRestrictions(lattice.restrictions);
       dollEditor.levelLabels[1].allowed = true;
@@ -899,6 +907,6 @@ require([
       } 
     }); 
   } 
-  
+   
 });
  

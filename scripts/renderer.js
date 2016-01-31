@@ -86,9 +86,9 @@ define([
   Renderer.prototype.setAnaglyph = function(arg){  
     this.anaglyph = arg.anaglyph ;
   };
-  Renderer.prototype.createPerspectiveCamera = function(lookat,xPos, yPos, zPos, fov){  
+  Renderer.prototype.createPerspectiveCamera = function(lookAt,xPos, yPos, zPos, fov){  
     var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 5000);
-    camera.lookAt(lookat);
+    camera.lookAt(lookAt);
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);
     
@@ -460,6 +460,15 @@ define([
 
     this.displayFactor = displayFactor;
   }; 
+  Renderer.prototype.setMainCamerasProperties = function(arg) {
+
+    var currentLookAt = this.cameras[0].getWorldDirection();
+    var currentPosition = this.cameras[0].position.clone();
+
+    console.log(currentLookAt);
+    console.log(currentPosition);
+
+  };
   Renderer.prototype.getHudCameraCube = function() {
      
     return this.hudCameraCube;
