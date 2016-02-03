@@ -383,7 +383,7 @@ require([
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
   // fit camera to crystal 
-  var fitToCrystal = new FitToCrystal(orbitCrystal, lattice);
+  var fitToCrystal = new FitToCrystal(orbitCrystal, lattice, crystalRenderer, crystalScene.object3d);
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -413,8 +413,7 @@ require([
     crystalScene.updateAbcAxes(latticeParameters, crystalRenderer.getMainCamera());
   });
   // grade
-  menu.onGradeParameterChange(function(message, gradeParameters) { 
-    fitToCrystal.fit();
+  menu.onGradeParameterChange(function(message, gradeParameters) {  
     lattice.setGrade(gradeParameters);
     noteManager.setLineRadius(gradeParameters);
   });
@@ -870,6 +869,7 @@ require([
     crystalRenderer.initOculusEffect(arg);
   });
   menu.onExportPNG(function(message, arg) { 
+    fitToCrystal.fit();
     storeMechanism.exportPNG(arg);
   });
   menu.onOpenJSON(function(message, arg) { 

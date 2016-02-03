@@ -14,7 +14,8 @@ ALEX UI BUGS
 2. atomRadius slider (restore) - fix on storeProject.js line : 109
 3. Locker (restore)  - fix on storeProject.js line : 132
 4. when go to ME and add atom repeatX,Y,Z are locked (!) - fix on disableUIElement - fix on line 64
-
+5. html.interface.screen.scrollBars.mCustomScrollbar is not a function - interfaceResizer.js:68 
+6. jquery.js:250 Uncaught Error: no such method 'show' for tooltip widget instance
   
 TODO list 
     

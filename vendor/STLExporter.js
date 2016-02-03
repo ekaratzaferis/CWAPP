@@ -5,7 +5,7 @@
  * @author kjlubick / https://github.com/kjlubick
  * @author kovacsv / http://kovacsv.hu/
  * @author mrdoob / http://mrdoob.com/
- * and edited by Thanos Saringelos
+ * edited by Thanos Saringelos
  */
 
 define([
@@ -300,3 +300,4 @@ var BinaryStlWriter = (function() {
   that.save = save;
   return that;
 }());
+

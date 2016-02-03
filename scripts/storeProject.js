@@ -230,6 +230,11 @@ define([
             this.crystalRenderer.enabledRenders.doll = false;
             this.crystalRenderer.enabledRenders.compass = false;
             this.crystalRenderer.enabledRenders.navCube = false;
+            /*
+            var width = jQuery('#app-container').width() ;
+            var height = jQuery(window).height() ; 
+            this.crystalRenderer.changeContainerDimensions(width*3, height*3);*/
+            
             this.crystalRenderer.renderer.clear();
             this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0], undefined, true);     
 
@@ -255,7 +260,7 @@ define([
    
             html2canvas(whatToPrint, {
               onrendered: function (canvas) { 
-                var imgSrc = canvas.toDataURL(); 
+                var imgSrc = canvas.toDataURL(undefined, 1); 
 
                 // Create Download Link //
                 var dlLink = document.createElement('a');
