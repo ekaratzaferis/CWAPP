@@ -16,7 +16,8 @@ ALEX UI BUGS
 4. when go to ME and add atom repeatX,Y,Z are locked (!) - fix on disableUIElement - fix on line 64
 5. html.interface.screen.scrollBars.mCustomScrollbar is not a function - interfaceResizer.js:68 
 6. jquery.js:250 Uncaught Error: no such method 'show' for tooltip widget instance
-  
+7. default fog colorpicker 0x000000
+
 TODO list 
     
     6.  hex faces optimization 

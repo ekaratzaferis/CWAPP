@@ -542,6 +542,7 @@ require([
      
     unitCellScene.updateShadowCameraProperties( p.length()*2);
 
+    fitToCrystal.fit();
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -599,8 +600,7 @@ require([
     crystalScene.updateShadowCameraProperties( params);
  
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
-    unitCellScene.updateShadowCameraProperties( p.length()/2);
-
+    unitCellScene.updateShadowCameraProperties( p.length()/2); 
   });
   menu.savedAtomSelection(function(message, which) { 
     motifEditor.selectAtom(which);
@@ -735,7 +735,8 @@ require([
       orbitUnitCell.control.target = orbitCrystal.control.target.clone();
       orbitCrystal.syncCams(true);
       orbitUnitCell.syncCams(true); 
-       
+      
+      fitToCrystal.fit();
     }
     else{ 
       sceneResizer.ucViewPortActive = false;
