@@ -62,10 +62,7 @@ define([
     this.ssao = false;
     this.composer;
     this.ssaoPass;
-
-    this.stereoscopicEffect = new THREE.AnaglyphEffect( this.renderer  ); 
-    this.anaglyph = false;
-
+ 
     this.container = container;
     this.externalFunctions = [];
 
@@ -76,15 +73,21 @@ define([
     this.glS;
     this.rS;
 
-    // oculus
+    // VR
+    this.stereoscopicEffect = new THREE.AnaglyphEffect( this.renderer  );  
+    this.anaglyphEffectActive = false;
     this.oculusEffect;
+    this.stereoEffectActive = false;
+    this.stereoEffect = new THREE.StereoEffect( this.renderer );
     this.oculusEffectActive = false;
 
     jQuery('#'+container).append(this.renderer.domElement);
  
   }; 
-  Renderer.prototype.setAnaglyph = function(arg){  
-    this.anaglyph = arg.anaglyph ;
+  Renderer.prototype.initAnaglyph = function(arg){  
+    this.oculusEffectActive = false; 
+    this.stereoEffectActive = false; 
+    this.anaglyphEffectActive = arg.anaglyph ;
   };
   Renderer.prototype.createPerspectiveCamera = function(lookAt,xPos, yPos, zPos, fov){  
     var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 5000);
@@ -162,7 +165,10 @@ define([
       this.oculusEffect.setSize(this.containerWidth, this.containerHeight);
       return;
     }
-     
+    if(this.stereoEffect !== undefined){
+      this.stereoEffect.setSize( this.containerWidth, this.containerHeight ); 
+    }
+    
     this.renderer.setSize(this.containerWidth, this.containerHeight); 
 
     if(this.depthTarget !== undefined){  
@@ -202,7 +208,15 @@ define([
       this.animate(); 
     } 
   }; 
+  Renderer.prototype.initStereoEffect = function(arg) { 
+    this.anaglyphEffectActive = false ;  
+    this.oculusEffectActive = false ;  
+    this.stereoEffectActive = arg.sideBySide ; 
+  };
   Renderer.prototype.initOculusEffect = function(arg) { 
+    this.stereoEffectActive =  false ;
+    this.anaglyphEffectActive = false ;
+
     this.oculusEffectActive = arg.oculus ;
 
     if(this.oculusEffectActive === true){ 
@@ -214,11 +228,8 @@ define([
       // Right Oculus Parameters are yet to be determined
       this.oculusEffect.separation = 20;
       this.oculusEffect.distortion = 0.1;
-      this.oculusEffect.fov = 110;
-    }
-    else if(this.oculusEffectActive === false){
-
-    }
+      this.oculusEffect.fov = 60;
+    } 
   };
   Renderer.prototype.stopAnimation = function() {
     this.animationIsActive = false;
@@ -235,6 +246,7 @@ define([
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
+    //////////
     if(this.rS !== undefined && this.rstatsON === true){  
       this.rS( 'frame' ).start();
       this.glS.start();
@@ -252,6 +264,7 @@ define([
     
       this.rS( 'render' ).start();
     }
+    ////////////////
 
     if(this.cameras.length === 1){ 
       if(this.container === 'unitCellRenderer') {
@@ -264,8 +277,11 @@ define([
       this.renderer.enableScissorTest ( true );   
       this.cameras[0].updateProjectionMatrix();  
        
-      if(this.anaglyph){  
+      if(this.anaglyphEffectActive){  
         this.stereoscopicEffect.render( this.explorer.object3d, this.cameras[0] );
+      }
+      else if(this.stereoEffectActive){  
+        this.stereoEffect.render( this.explorer.object3d, this.cameras[0] );
       }
       else{  
         if(this.container === 'crystalRenderer') { 
@@ -306,6 +322,10 @@ define([
             this.explorer.object3d.overrideMaterial = null;
             
             this.composer.render();
+          }
+          else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){  
+            
+            this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
           }
           else{
             this.renderer.render( this.explorer.object3d, this.cameras[0] );
@@ -379,8 +399,11 @@ define([
         var camera = this.cameras[i]; 
         camera.aspect =this.containerWidth/(3*this.containerHeight); 
 
-        if(this.anaglyph){     
+        if(this.anaglyphEffectActive){  
           this.stereoscopicEffect.render( this.explorer.object3d, camera, i , this.containerWidth , this.containerHeight, this.viewportColors[i]);
+        }
+        else if(this.stereoEffectActive){  
+          this.stereoEffect.render( this.explorer.object3d, this.cameras[0] );
         }
         else{ 
           this.renderer.setViewport( 1/3 *i * this.containerWidth, 0,  this.containerWidth/3, this.containerHeight );

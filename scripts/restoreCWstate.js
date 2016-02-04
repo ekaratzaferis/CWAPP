@@ -323,7 +323,14 @@ define([
 
       // RENDERERS
 
-      this.crystalRenderer.setAnaglyph(false);
+      this.crystalRenderer.initAnaglyph(false);
+      this.crystalRenderer.initStereoEffect(false);
+      this.crystalRenderer.initOculusEffect(false);
+
+      this.unitCellRenderer.initAnaglyph(false);
+      this.unitCellRenderer.initStereoEffect(false);
+      this.unitCellRenderer.initOculusEffect(false); 
+
       this.crystalRenderer.setUCviewport(false);
 
       this.crystalRenderer.backgroundColor = 0x000000;  

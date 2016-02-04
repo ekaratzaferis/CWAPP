@@ -17,6 +17,8 @@ ALEX UI BUGS
 5. html.interface.screen.scrollBars.mCustomScrollbar is not a function - interfaceResizer.js:68 
 6. jquery.js:250 Uncaught Error: no such method 'show' for tooltip widget instance
 7. default fog colorpicker 0x000000
+8. Oculus and 3D monitor UI adjustments (full screen etc)
+9. create a function for hiding logo, x,y,z and appearing them when needed (oculus, stereoscopic etc)
 
 TODO list 
     

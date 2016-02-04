@@ -455,9 +455,11 @@ require([
     lattice.directionState(state);
   });  
   menu.setAnaglyphCrystal(function(message, arg) {
-    crystalRenderer.setAnaglyph(arg);
-    motifRenderer.setAnaglyph(arg);
-    unitCellRenderer.setAnaglyph(arg);
+    crystalRenderer.initAnaglyph(arg); 
+  }); 
+  menu.setAnaglyphUnitCell(function(message, arg) {  
+    //motifRenderer.setAnaglyph({ anaglyph : arg.anaglyphCell});
+    unitCellRenderer.initAnaglyph({ anaglyph : arg.anaglyphCell});
   }); 
   menu.onSoundsSet(function(message, arg) { 
     soundMachine.switcher(arg.sounds); 
@@ -730,13 +732,15 @@ require([
 
       var cellCamera = unitCellRenderer.getMainCamera();
       var crystalCamera = crystalRenderer.getMainCamera();
-     
+      
+      fitToCrystal.fit();
+
       cellCamera.position.set( crystalCamera.position.x, crystalCamera.position.y, crystalCamera.position.z );   
       orbitUnitCell.control.target = orbitCrystal.control.target.clone();
       orbitCrystal.syncCams(true);
       orbitUnitCell.syncCams(true); 
       
-      fitToCrystal.fit();
+
     }
     else{ 
       sceneResizer.ucViewPortActive = false;
@@ -867,7 +871,24 @@ require([
     storeMechanism.exportJSON(arg);
   });
   menu.setOculusCrystal(function(message, arg) { 
-    crystalRenderer.initOculusEffect(arg);
+    dollEditor.setVisibility(!arg.oculus); 
+    hudCube.setVisibility(!arg.oculus);
+    hudArrows.setVisibility(!arg.oculus);
+    CubeEvent.enableCubeEvents = !arg.oculus ;
+    crystalRenderer.initOculusEffect(arg); 
+  });
+  menu.onSideBySide3DCrystal(function(message, arg) { 
+    dollEditor.setVisibility(!arg.stereo); 
+    hudCube.setVisibility(!arg.stereo);
+    hudArrows.setVisibility(!arg.stereo);
+    CubeEvent.enableCubeEvents = !arg.stereo ; 
+    crystalRenderer.initStereoEffect(arg);
+  });
+  menu.setOculusUnitCell(function(message, arg) {  
+    unitCellRenderer.initOculusEffect({oculus : arg.oculusCell});
+  });
+  menu.onSideBySide3DUnitCell(function(message, arg) {  
+    unitCellRenderer.initStereoEffect({sideBySide : arg.sideBySideCell});
   });
   menu.onExportPNG(function(message, arg) { 
     fitToCrystal.fit();

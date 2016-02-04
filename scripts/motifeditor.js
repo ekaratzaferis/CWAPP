@@ -5362,7 +5362,10 @@ define([
   };
   Motifeditor.prototype.setCSGmode = function(arg, reset, reconstruct){ 
     var _this = this, i = 0;
-     
+    
+    if(this.unitCellAtoms.length === 0){
+      return;
+    }
     this.viewMode = arg.mode;
  
     var g = this.customBox(this.unitCellPositions, this.latticeName);
