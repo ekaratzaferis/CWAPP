@@ -63,7 +63,7 @@ define([
         else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
-        
+       
         // Create scrollbars //
         html.interface.screen.scrollBars.mCustomScrollbar();
         

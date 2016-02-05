@@ -18,15 +18,14 @@ define([
     this.motifRenderer = motifRenderer ;   
     this.hudDisplayFactor = hudDisplayFactor ;  
     this.dollEditor = dollEditor ;  
-    this.hudCube = hudCube ;  
-
+    this.hudCube = hudCube ;   
     this.ucViewPortActive = false;
        
   };
     
-  SceneResizer.prototype.resize = function(state){
-    var width = jQuery('#app-container').width() ;
-    var height = $(window).height() ;
+  SceneResizer.prototype.resize = function(state, dimensions){
+    var width = (dimensions) ? dimensions.width : jQuery('#app-container').width() ;
+    var height = (dimensions) ? dimensions.height : $(window).height() ;
     var _this = this;
 
     $("#leapIcon").css({ 

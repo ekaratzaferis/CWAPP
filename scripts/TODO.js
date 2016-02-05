@@ -19,6 +19,7 @@ ALEX UI BUGS
 7. default fog colorpicker 0x000000
 8. Oculus and 3D monitor UI adjustments (full screen etc)
 9. create a function for hiding logo, x,y,z and appearing them when needed (oculus, stereoscopic etc)
+10. modal gia browser doesn;t support and disalbe everything (loading div)
 
 TODO list 
     

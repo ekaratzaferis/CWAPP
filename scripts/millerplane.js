@@ -61,8 +61,8 @@ define([
     geom.faces = faces;
 
     geom.mergeVertices();
-
-    var mesh = new THREE.Mesh( geom,new THREE.MeshBasicMaterial( {  /*depthWrite: false, depthTest: false ,*/ side:  THREE.DoubleSide, color: this.color,opacity:opacity/10, transparent: true } ) );
+    
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( {  depthWrite: false,/* depthTest: false ,*/ side:  THREE.DoubleSide, color: this.color,opacity:opacity/10, transparent: true } ) );
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
     mesh.visible = visible; 
@@ -100,8 +100,7 @@ define([
   };
   MillerPlane.prototype.setColor = function(color) {  
     if(_.isUndefined(color)){  
-      this.object3d.material.needsUpdate = true;
-      
+      this.object3d.material.needsUpdate = true; 
       this.object3d.material.color.set( this.color );
        
     }

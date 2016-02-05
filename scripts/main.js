@@ -195,7 +195,19 @@ require([
 ) {
 
   var menu = new Menu();
- 
+   
+  var bSupport = (function () { 
+      try { 
+        var canvas = document.createElement( 'canvas' ); return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) ); 
+      } catch ( e ) {
+        return false;
+      }
+  } )(); 
+  if(!bSupport){ 
+    menu.showWarningDialog({message : 'Oops, seems your browser does not support WebGL. Check out http://get.webgl.org/, or try installing the latest version of Chrome ( https://www.google.com/chrome ), or Firefox ( https://www.mozilla.org/en-US/firefox )'});
+    return; 
+  }
+  
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;
@@ -892,6 +904,7 @@ require([
   });
   menu.onExportPNG(function(message, arg) { 
     fitToCrystal.fit();
+    //sceneResizer.resize( 'crystal', {width : 2000, height : 2000});
     storeMechanism.exportPNG(arg);
   });
   menu.onOpenJSON(function(message, arg) { 

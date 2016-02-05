@@ -42,10 +42,8 @@ define([
     geom.faces = faces;
 
     geom.mergeVertices(); 
-     
-    color = validateColor(color);
-      
-    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( {  /* depthWrite: false, depthTest: false, */ side: THREE.DoubleSide, color:  color , opacity:opacity/10,  transparent: true } ) );
+       
+    var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { side : THREE.DoubleSide, /* depthWrite: false, depthTest: false, */ color:  color , opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     mesh.name = 'face' ;
     mesh.renderOrder = 2;  
@@ -68,38 +66,25 @@ define([
   Face.prototype.setColor = function(color) {
     
     if(_.isUndefined(color)) return;
-
-    color = validateColor(color);
-  
+ 
     this.color = color;
-    this.object3d.material.color.setHex( this.color );
+    
+    if(this.color[0] === '#'){
+      this.object3d.material.color.set( this.color );
+    }
+    else if(this.color[0] === '0' && this.color[0] === 'x'){
+      this.object3d.material.color.setHex( this.color );
+    }
+    else{
+      this.color = '#'+this.color ;
+      this.object3d.material.color.set( this.color );
+    }
+
     this.object3d.material.needsUpdate = true;
     
   }; 
   Face.prototype.destroy = function() {
     Explorer.remove(this);
-  };
-  function validateColor(color){
-
-    var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
-  
-    if(isOk === true){
-      if(color.charAt(0) === '#'){
-        color = color.slice(1,7);
-        color = '0x' + color;
-      }
-    
-      return color; 
-    }
-    else{
-      if(color.charAt(0) !== '#' && (color.charAt(0) !== '0' || color.charAt(1) !== 'x' )){
-        return ('0x'+color); 
-      } 
-      else { 
-        return 0xffffff;
-      } 
-    }
-     
-  }
+  }; 
   return Face;
 });
