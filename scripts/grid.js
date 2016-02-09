@@ -44,7 +44,7 @@ define([
     if(_.isUndefined(color)) return;
   
     this.color = color;
-console.log(color);
+ 
     if(this.color[0] === '#'){
       this.object3d.material.color.set( this.color );
     }

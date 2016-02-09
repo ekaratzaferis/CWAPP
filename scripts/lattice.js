@@ -1872,7 +1872,7 @@ define([
     });
     _this.faces.splice(0);
     _this.viewBox.splice(0);
-    
+    console.log(this.hexagonalShapes);
     if(this.latticeName !== 'hexagonal'){
       for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
            
@@ -1935,9 +1935,9 @@ define([
       }; 
     } 
     else{
-      for (var i = 0; i < _this.hexagonalShapes.length ; i++) { 
-        var oneHex = _this.hexagonalShapes[i]; 
-        _this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
+      for (var i = 0; i < this.hexagonalShapes.length ; i++) { 
+        var oneHex = this.hexagonalShapes[i]; 
+        this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
       }; 
     }   
   };
