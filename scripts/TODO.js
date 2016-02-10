@@ -20,6 +20,9 @@ ALEX UI BUGS
 8. Oculus and 3D monitor UI adjustments (full screen etc)
 9. create a function for hiding logo, x,y,z and appearing them when needed (oculus, stereoscopic etc)
 10. modal gia browser doesn;t support and disalbe everything (loading div)
+11. after adding motif lattice parameters are disabled 
+12. lattice selection locks forever at some point
+13. store in json stereoscopic effects seperately
 
 TODO list 
     
@@ -42,7 +45,6 @@ List with Ideas
     2. Public library of CW Projects - search by keywords, most popular etc
     3. Miller object use sliders for indexes
     4. all screens resizable 
-    5. give user a point to move light
-    6. When applying new motif to crystal auto position camera far from crystal.
+    5. give user a point to move light 
         
  

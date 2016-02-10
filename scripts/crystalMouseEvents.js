@@ -100,8 +100,8 @@ define([
       mouse.y = - ( event.clientY / $('#'+_this.container).height() ) * 2 + 1; 
     }
      
-    raycaster.setFromCamera( mouse, _this.camera ); 
-    
+    raycaster.setFromCamera( mouse, this.camera ); 
+   
     var crystalPlanesIntersects = raycaster.intersectObjects( this.getCrystalPlanes() );
  
     if ( crystalPlanesIntersects.length > 0 ) {   
@@ -176,6 +176,21 @@ define([
     }
   }
   
+  CrystalMouseEvents.prototype.getCrystalPlanesTODELETE = function() {  
+    var _this = this;
+    var crystalPlanes = [] ;
+
+    Explorer.getInstance().object3d.traverse (function (object) {
+ 
+       if (object.name === 'face' && object.visible === true){ 
+        crystalPlanes.push(object); 
+      }
+      
+    });
+
+    return crystalPlanes;
+  };
+
   CrystalMouseEvents.prototype.getCrystalPlanes = function() {  
     var _this = this;
     var crystalPlanes = [] ;

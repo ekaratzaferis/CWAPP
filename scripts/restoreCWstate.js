@@ -46,24 +46,17 @@ define([
   RestoreCWstate.prototype.configureState = function(cwObj) { 
       
     var _this = this; 
-    
+    var latticeName = cwObj.system.latticeParams.lattice.latticeName;
+
+    this.lattice.latticeName = latticeName;
+
     if(cwObj.system.latticeParams.lattice){ 
-      require(['lattice/' + cwObj.system.latticeParams.lattice.latticeName], function(lattice) {
+      require(['lattice/' + latticeName], function(lattice) {
         _this.lattice.lattice = lattice; 
         _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
-        _this.lattice.latticeType = _this.lattice.lattice.latticeType ; 
-        if(_this.lattice.latticeType === 'hexagonal' && _this.lattice.latticeSystem === 'hexagonal'){ 
-          _this.menu.toggleExtraParameter('i', 'block');
-          _this.menu.toggleExtraParameter('t', 'block');
-        }
-        else{
-          _this.menu.toggleExtraParameter('i', 'none');
-          _this.menu.toggleExtraParameter('t', 'none');
-        }  
-
+        _this.lattice.latticeType = _this.lattice.lattice.latticeType ;  
         _this.menu.restore(cwObj); 
-        _this.menu.setLatticeRestrictions(lattice.restrictions);
-
+        _this.menu.setLatticeRestrictions(lattice.restrictions); 
         _this.beginRestoring(cwObj);
       }); 
     }
@@ -115,6 +108,11 @@ define([
     /////
 
     this.lattice.currentMotif = this.motifEditor.getMotif();
+
+    if(this.lattice.latticeName === 'hexagonal'){
+      this.lattice.recreateMotif();
+    }
+
     this.lattice.createAdditionalAtoms();
 
     var i = 0;
@@ -243,7 +241,7 @@ define([
         this.motifEditor.cachedAtoms[i].destroy();  
       } 
 
-      if( this.motifEditor.newSphere !== undefined){
+      if( this.motifEditor.newSphere && this.motifEditor.newSphere.removesubtractedForCache){
         this.motifEditor.newSphere.removesubtractedForCache();
       }
        
@@ -408,9 +406,8 @@ define([
     var params = this.lattice.getParameters(); 
     this.crystalScene.updateShadowCameraProperties( params);
 
-    this.crystalRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
-    this.motifRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph);
-    this.unitCellRenderer.setAnaglyph(visualTab.visualParameters.stereoscopicEffect.anaglyph); 
+    this.crystalRenderer.initAnaglyph({anaglyph : false} /*visualTab.visualParameters.stereoscopicEffect.crystalAnaglyph*/ ); 
+    this.unitCellRenderer.initAnaglyph({anaglyph : false} /*visualTab.visualParameters.stereoscopicEffect.cellAnaglyph*/ ); 
     
     var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
     this.gearTour.crystalHasChanged = true;
@@ -461,7 +458,7 @@ define([
     this.motifEditor.setLatticeParameters({ 
         defaults : anglesScales,  
         latticeType : this.cwObj.system.latticeParams.lattice.latticeType, 
-        latticeName : this.cwObj.system.latticeParams.bravaisLattice, 
+        latticeName : this.cwObj.system.latticeParams.lattice.latticeName, 
         latticeSystem : this.cwObj.system.latticeParams.lattice.latticeSystem,
         restore : true  
       }

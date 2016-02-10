@@ -680,13 +680,15 @@ require([
       crystalRenderer.cameras[0].position.set(cPos.x * factor, cPos.y * factor, cPos.z * factor);
     } 
   });
-  menu.cellDimensionChange(function(message, param){
+  menu.cellDimensionChange(function(message, param){ 
     motifEditor.updateCellDimens(param) ;
   });
   menu.motifToLattice(function(message, param){
-     
-    lattice.setMotif(motifEditor.getMotif(), motifEditor.getDimensions()) ; 
+    
     var parameters = motifEditor.getDimensions() ;
+    
+    lattice.setMotif(motifEditor.getMotif(), parameters) ; 
+    
     var params = {
       alpha : parameters.alpha,
       beta : parameters.beta,

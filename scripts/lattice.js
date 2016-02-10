@@ -1243,22 +1243,35 @@ define([
 
     this.currentMotif = motif ;
 
-    _.each(this.actualAtoms, function(atom,k) {
-      atom.removesubtractedForCache();
-      atom.destroy();   
-    }); 
-    this.actualAtoms.splice(0); 
+    if(this.latticeName === 'hexagonal' ){
+      this.parameters.scaleX = params.x ;
+      this.parameters.scaleY = params.y ;
+      this.parameters.scaleZ = params.z ;
+      this.parameters.alpha = params.alpha ;
+      this.parameters.beta = params.beta ;
+      this.parameters.gamma = params.gamma ;
 
-    this.backwardTransformations();
-     
-    this.parameters.scaleX = params.x ;
-    this.parameters.scaleY = params.y ;
-    this.parameters.scaleZ = params.z ;
-    this.parameters.alpha = params.alpha ;
-    this.parameters.beta = params.beta ;
-    this.parameters.gamma = params.gamma ;
+      this.setParameters(['scaleX', 'scaleY', 'scaleZ', 'alpha', 'beta', 'gamma']);
+ 
+    }
+    else{ 
+      _.each(this.actualAtoms, function(atom,k) {
+        atom.removesubtractedForCache();
+        atom.destroy();   
+      }); 
+      this.actualAtoms.splice(0); 
 
-    this.forwardTransformations();  
+      this.backwardTransformations();
+       
+      this.parameters.scaleX = params.x ;
+      this.parameters.scaleY = params.y ;
+      this.parameters.scaleZ = params.z ;
+      this.parameters.alpha = params.alpha ;
+      this.parameters.beta = params.beta ;
+      this.parameters.gamma = params.gamma ;
+
+      this.forwardTransformations();  
+    }
  
     _.each(this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
@@ -1525,16 +1538,14 @@ define([
           });  
       }); 
     }
-    else{  
-
-      _.each(_this.hexGrids, function(g, reference) {
+    else{   
+      _.each(this.hexGrids, function(g, reference) {
         _this.hexGrids[reference] = false;
       });  
 
       var a = parameters.scaleZ ;
       var c = parameters.scaleY ;
-      var co = 0 , previousPoint, currentPoint;
-
+      var co = 0 , previousPoint, currentPoint; 
       var vertDist = a*Math.sqrt(3);
       _this.hexagonalShapes.splice(0);
       _.times(parseInt(parameters.repeatY) + 1, function(_y) {
@@ -1578,6 +1589,8 @@ define([
           });
         });
       }); 
+      this.createFaces(); 
+      this.reCreateMillers();
     }; 
 
     this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
@@ -1650,8 +1663,11 @@ define([
 
     var _this = this;
 
-    if( this.currentMotif.length === 0 ) return ;
-    _.each(_this.points, function(point,kk) { 
+    if( this.currentMotif.length === 0 ){
+      return;
+    }
+ 
+    _.each(this.points, function(point,kk) { 
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) {  
         var a = atom.object3d.position; 
@@ -1694,19 +1710,7 @@ define([
   
   }; 
   Lattice.prototype.load = function(latticeName) {   
-    if (_.isEmpty(latticeName)) {
-      this.lattice = null;
-      this.destroyPoints();
-      this.destroyGrids();
-      _.each(this.faces, function(face, reference) {
-        face.destroy();
-      });
-      this.faces.splice(0);
-      this.viewBox.splice(0);
-      PubSub.publish(events.LOAD, null);
-      return;
-    }
-
+     
     var _this = this;
  
     this.latticeName = latticeName;
@@ -1714,14 +1718,14 @@ define([
       _this.lattice = lattice; 
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ; 
-      if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){ 
+      /*if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){ 
         _this.menu.toggleExtraParameter('i', 'block');
         _this.menu.toggleExtraParameter('t', 'block');
       }
       else{
         _this.menu.toggleExtraParameter('i', 'none');
         _this.menu.toggleExtraParameter('t', 'none');
-      }
+      }*/
       _this.update();
        
       PubSub.publish(events.LOAD, lattice); 
@@ -1777,7 +1781,7 @@ define([
     var actualAtoms = this.actualAtoms;
     var parameters = this.parameters;
     var _this = this;
-      
+    
     _.each(parameterKeys, function(k) { 
 
       ///////////////////////////////////
@@ -1870,9 +1874,9 @@ define([
     _.each(this.faces, function(face, reference) {
       face.destroy();
     });
-    _this.faces.splice(0);
-    _this.viewBox.splice(0);
-    console.log(this.hexagonalShapes);
+    this.faces.splice(0);
+    this.viewBox.splice(0);
+   
     if(this.latticeName !== 'hexagonal'){
       for (var _z = 0; _z <= parameters.repeatZ; _z++) {   
            
@@ -1935,6 +1939,7 @@ define([
       }; 
     } 
     else{
+        
       for (var i = 0; i < this.hexagonalShapes.length ; i++) { 
         var oneHex = this.hexagonalShapes[i]; 
         this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
@@ -1945,7 +1950,7 @@ define([
 
     var _this = this ;
     var parameters = this.parameters;
-    _this.faces.push(
+    this.faces.push(
       new Face(
         hexagon[0] , 
         hexagon[1] , 
@@ -1961,7 +1966,7 @@ define([
     if(hexagon[0].y>0){  
       for (var i = 0; i<6; i++) {
         var next = (i==5) ? hexagon[0] : hexagon[i+1] ;
-        _this.faces.push(
+        this.faces.push(
           new Face(
             hexagon[i] , 
             next , 
@@ -2272,16 +2277,16 @@ define([
     }
   }; 
   Lattice.prototype.setParameters = function(latticeParameters) { 
-    
+  
     var lparams = this.menu.getLatticeParameters();
-
+ 
     if((lparams.repeatX >= 3 || lparams.repeatY >= 3 || lparams.repeatZ >= 3) && (latticeParameters.repeatX !== undefined || latticeParameters.repeatY !== undefined || latticeParameters.repeatZ !== undefined)) { 
       this.menu.resetProgressBar('Constructing lattice...');
     }
  
     if(this.latticeName !== 'hexagonal'){  
       var delta = calculateDelta(this.parameters, latticeParameters);
-      var _this = this;
+      
       var deltaKeys = _.keys(delta); // keys : retrieve all names of object properties
        
       this.backwardTransformations(); 
@@ -2290,7 +2295,7 @@ define([
 
       if (_.indexOf(deltaKeys, 'repeatX') !== -1 || _.indexOf(deltaKeys, 'repeatY') !== -1 || _.indexOf(deltaKeys, 'repeatZ') !== -1) {  
          
-        _.each(_this.actualAtoms, function(atom,k) {  
+        _.each(this.actualAtoms, function(atom,k) {  
           atom.removesubtractedForCache(); 
           atom.destroy(); 
         });
@@ -2313,22 +2318,24 @@ define([
         this.forwardTransformations();   
       }  
     }
-    else{ 
+    else{  
+
       var delta = calculateDelta(this.parameters, latticeParameters);
-      var _this = this;
+      
       var deltaKeys = _.keys(delta);  
       _.extend(this.parameters, delta); 
       _.each(this.actualAtoms, function(atom,k) { 
         atom.removesubtractedForCache(); 
         atom.destroy();
       });
+
       this.actualAtoms.splice(0); 
       this.updatePoints();   
       this.createFaces();
       this.setGradeParameters(); 
-      this.recreateMotif();
-
+      this.recreateMotif(); 
     }   
+
     this.updateLatticeTypeRL(); 
     
     this.menu.progressBarFinish();
@@ -4104,17 +4111,17 @@ define([
     var hexagonal = (this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal') ? true : false ;
     var parameters = this.parameters ;
     var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
-    var id, checkVals = parseFloat(u + v) * -1 ; 
+    var id  ; 
     var visible = this.toggleStates.directions;
 
-    if(hexagonal){
-      if(t != checkVals ) {   
-        return null ;
-      }
-      var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
-      var aLength = parseFloat(this.parameters.scaleZ) ;
-      var cLength = parseFloat(this.parameters.scaleY) ;
+    if(hexagonal){ 
 
+      t = -(u+v);
+      var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
+      var aLength = parseFloat(this.parameters.scaleZ) ; 
+      var cLength = parseFloat(this.parameters.scaleY) ;
+      var bLength = 2 * Math.sqrt((aLength*aLength) - ((aLength*aLength)/4)) ;
+      
       var axis = new THREE.Vector3(0, 1, 0);
 
       var a3 = new THREE.Vector3( aLength, 0, 0 ); 
@@ -4128,17 +4135,113 @@ define([
       var a1 = new THREE.Vector3( aLength, 0, 0 ); 
       var rotA1 = (u>0) ? ((Math.PI*4) / 3) : ( Math.PI/3 ) ;
       a1.applyAxisAngle( axis, rotA1) ;
-
+  
       var c = new THREE.Vector3(0,cLength,0);  
+
       a1.setLength(Math.abs(u/devider));
       a2.setLength(Math.abs(v/devider));
       a3.setLength(Math.abs(t/devider));
       c.setLength(Math.abs(w/devider)); 
-      
-      a1.add(a2.add(a3.add(c)));
-
-      //new MillerVector(visible, new THREE.Vector3(0,0,0) , a1, millerParameters.directionColor, millerParameters.dirRadius) ;  
        
+      a1.add(a2.add(a3.add(c)));
+      
+    
+      _.times(parameters.repeatX , function(_x) {
+        _.times(parameters.repeatY , function(_y) {
+          _.times(parameters.repeatZ , function(_z) {
+
+            var id = _this.generateDirectionKey();
+            var startPoint = new THREE.Vector3(0,0,0  ) ; 
+            var endpointPoint = a1; 
+
+            startPoint.x += (_x*aLength*1.5) ; 
+            startPoint.y += (_y*cLength) ; 
+            startPoint.z += (_z*bLength); 
+
+            endpointPoint.x += (_x*aLength) ;
+            endpointPoint.y += (_y*cLength) ; 
+            endpointPoint.z += (_z*bLength);
+
+            if(!temp){ 
+              _this.millerDirections[id] = {
+                visible: true,
+                direction : undefined,
+                startPoint : startPoint , 
+                endpointPoint : endpointPoint,
+                id : pid, 
+                u : parseFloat(millerParameters.millerU),
+                v : parseFloat(millerParameters.millerV),
+                w : parseFloat(millerParameters.millerW),
+                directionColor : millerParameters.directionColor,
+                name : millerParameters.directionName,
+                dirRadius : millerParameters.dirRadius,
+                lastSaved : { 
+                  visible: true, 
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : pid,
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName,
+                  dirRadius : millerParameters.dirRadius
+                }
+              };
+               
+              //_this.forwardTransformationsMiller(_this.millerDirections[id]); 
+              _this.millerDirections[id].direction  = new MillerVector(visible, startPoint , a1, millerParameters.directionColor, millerParameters.dirRadius) ; 
+            
+            }
+            else{  
+              if(_lastSaved !== undefined){
+                _this.tempDirs.push({
+                  visible: true,
+                  direction : undefined,
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : pid,
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName,
+                  dirRadius : millerParameters.dirRadius,
+                  lastSaved : { 
+                    visible: true, 
+                    startPoint : startPoint , 
+                    endpointPoint : endpointPoint,
+                    id : pid,
+                    u : parseFloat(millerParameters.millerU),
+                    v : parseFloat(millerParameters.millerV),
+                    w : parseFloat(millerParameters.millerW),
+                    directionColor : millerParameters.directionColor,
+                    name : millerParameters.directionName,
+                    dirRadius : millerParameters.dirRadius
+                  }
+                });
+              }
+              else{
+                _this.tempDirs.push({
+                  visible: true,
+                  direction : undefined,
+                  startPoint : startPoint , 
+                  endpointPoint : endpointPoint,
+                  id : pid,
+                  dirRadius : millerParameters.dirRadius,
+                  u : parseFloat(millerParameters.millerU),
+                  v : parseFloat(millerParameters.millerV),
+                  w : parseFloat(millerParameters.millerW),
+                  directionColor : millerParameters.directionColor,
+                  name : millerParameters.directionName
+                });
+              }
+              //_this.forwardTransformationsMiller(_this.tempDirs[_this.tempDirs.length-1]); 
+              _this.tempDirs[_this.tempDirs.length-1].direction = new MillerVector(visible, startPoint , a1, millerParameters.directionColor, millerParameters.dirRadius) ; 
+            } 
+          });
+        });
+      });
     }
     else{
       var pid = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"").split('.').join(''); 

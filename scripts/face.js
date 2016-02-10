@@ -42,11 +42,11 @@ define([
     geom.faces = faces;
 
     geom.mergeVertices(); 
-       
+        
     var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { side : THREE.DoubleSide, /* depthWrite: false, depthTest: false, */ color:  color , opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     mesh.name = 'face' ;
-    mesh.renderOrder = 2;  
+    mesh.renderOrder = 2 ;  
     mesh.receiveShadow = true; 
     mesh.castShadow = true; 
     this.object3d = mesh;

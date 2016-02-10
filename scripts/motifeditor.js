@@ -120,6 +120,7 @@ define([
 
     this.latticeType = data.latticeType;  
     this.latticeSystem = data.latticeSystem; 
+    this.latticeName = (data.latticeName) ? data.latticeName : this.latticeName; 
 
     this.initialLatticeParams.alpha = data.defaults.alpha ;
     this.initialLatticeParams.beta  = data.defaults.beta ;
@@ -1700,7 +1701,7 @@ define([
 
     if(!_.isUndefined(latticeParams.scaleX) ) { 
       if(this.latticeName !== 'hexagonal'){ 
-        this.cellParameters.scaleX = parseFloat(latticeParams.scaleX) ; 
+        this.cellParameters.scaleZ = parseFloat(latticeParams.scaleZ) ; 
       }
     } 
     if(!_.isUndefined(latticeParams.scaleY) ) { 
@@ -2907,7 +2908,7 @@ define([
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, name, id, opacity, wireframe, restore, ionicIndex){  
     var _this = this;  
     var dimensions, identity ;
-
+   
     this.menu.setLatticeCollision({
       scaleX: false,
       scaleY: false, 
@@ -2928,7 +2929,7 @@ define([
     if(_.isUndefined(restore)) {
       this.cellPointsWithAngles();
     } 
-
+    console.log(this.latticeName);
     this.box3.pos = pos;
 
     function createHelperObj(pos, radius, latticeIndex, x, y, z){
@@ -2949,7 +2950,7 @@ define([
       return o; 
     } 
     
-    if(_this.latticeName !== 'hexagonal'){ 
+    if(this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
           _.times(2 , function(_x) {
