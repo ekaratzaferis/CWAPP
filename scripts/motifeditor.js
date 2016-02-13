@@ -2542,18 +2542,18 @@ define([
 
     this.revertShearing();
       
-    if(_this.latticeName !== 'hexagonal') {
+    if(this.latticeName !== 'hexagonal') {
       this.cellPointsWithScaling({xDim : 1, yDim : 1, zDim : 1}, false, manual); 
     } 
  
     this.cellPointsWithScaling(dimensions, true, manual); // todo fix that true  
      
-    if(_this.latticeName !== 'hexagonal'){
+    if(this.latticeName !== 'hexagonal'){
 
       this.cellPointsWithAngles();
      
       // reposition cell atoms after changing unitCellPositions
-      switch(_this.latticeType) {
+      switch(this.latticeType) {
         case "primitive":  // primitive  
           _.times(2 , function(_x) {
             _.times(2 , function(_y) {
@@ -2897,12 +2897,74 @@ define([
                       positionC.z + offset.z 
                     );
                   } 
-                }
+                }  
               }    
             });
           });
         });
       });
+      
+      _.times(2, function(_y) {
+        _.times(1 , function(_x) {
+          _.times(1 , function(_z) { 
+            _.times(6 , function(_r) {
+              for (var i = _this.cachedAtoms.length - 1; i >= 0; i--) {  
+                var v = new THREE.Vector3( a* Math.sqrt(3), 0, 0 );
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                var angle = (Math.PI / 3) * _r + Math.PI/6; 
+                v.applyAxisAngle( axis, angle );
+
+                var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+                var y =  v.y + _y*c ;
+                var x = v.x + _x*a*1.5 ;
+                var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
+                var yC =  _y*c ;
+                var xC =  _x*a*1.5 ;
+                var pos = new THREE.Vector3( x, y, z);   
+
+                var reference = 'h_'+_x+_y+_z+_r;  
+               
+                if(_this.cachedAtoms[i].latticeIndex === (reference)  ){   
+                  var offset = _this.cachedAtoms[i].getUserOffset();
+                  if(!_.isUndefined(_this.cachedAtoms[i].object3d)){ 
+                    _this.cachedAtoms[i].object3d.position.set( 
+                      pos.x + offset.x, 
+                      pos.y + offset.y, 
+                      pos.z + offset.z  
+                    );
+                  } 
+                }
+              }
+            });
+          });
+        });
+      });
+      
+      for (var i = _this.cachedAtoms.length - 1; i >= 0; i--) {
+  
+        if(_this.cachedAtoms[i].latticeIndex === ('h_c_up')  ){   
+          var offset = _this.cachedAtoms[i].getUserOffset();
+          if(!_.isUndefined(_this.cachedAtoms[i].object3d)){ 
+            _this.cachedAtoms[i].object3d.position.set( 
+              offset.x , 
+              offset.y + _this.cellParameters.scaleY*2 , 
+              offset.z
+            );
+          } 
+        }
+
+        if(_this.cachedAtoms[i].latticeIndex === ('h_c_down')  ){   
+          var offset = _this.cachedAtoms[i].getUserOffset();
+          if(!_.isUndefined(_this.cachedAtoms[i].object3d)){ 
+            _this.cachedAtoms[i].object3d.position.set( 
+              offset.x , 
+              offset.y + _this.cellParameters.scaleY*-1 , 
+              offset.z
+            );
+          } 
+        }
+      }
     }   
   };
   Motifeditor.prototype.addAtomInCell = function(pos, radius, color, name, id, opacity, wireframe, restore, ionicIndex){  
@@ -2929,7 +2991,7 @@ define([
     if(_.isUndefined(restore)) {
       this.cellPointsWithAngles();
     } 
-    console.log(this.latticeName);
+  
     this.box3.pos = pos;
 
     function createHelperObj(pos, radius, latticeIndex, x, y, z){
@@ -3178,7 +3240,7 @@ define([
       this.cellVolume.zInitVal = this.cellParameters.scaleZ;
     }
     
-    if(_this.latticeName !== 'hexagonal'){ 
+    if(this.latticeName !== 'hexagonal'){ 
       switch(_this.latticeType) {
         case "primitive":  // primitive  
           _.times(2 , function(_x) {
@@ -3476,7 +3538,8 @@ define([
         _.times(1 , function(_x) {
           _.times(1 , function(_z) {  
             var y =  _y*c ;  
-            _this.unitCellAtoms.push(new UnitCellAtom( 
+            _this.unitCellAtoms.push(
+              new UnitCellAtom( 
                 _this.LOD.level, 
                 new THREE.Vector3(
                   pos.x , 
@@ -4973,6 +5036,13 @@ define([
     var atoms = this.cachedAtoms;
     var objName = 'cellGradeLimited';
     var _this = this;
+    var k = 0;
+
+    while(k < this.cachedAtoms.length ){  
+      this.cachedAtoms[k].destroy();    
+      k++; 
+    }  
+    this.cachedAtoms.splice(0);
 
     for (var d = atoms.length - 1; d >= 0; d--) { 
       atoms[d].removesubtractedForCache();
@@ -5317,9 +5387,123 @@ define([
       ); 
       this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("x",p.x );
       this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("y",p.y );
-      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z );
-  
+      this.cachedAtoms[this.cachedAtoms.length-1].setUserOffset("z",p.z ); 
     } 
+    else if(this.latticeName === 'hexagonal'){
+      while(j <this.motifsAtoms.length) {
+        var p = {x : this.motifsAtoms[j].position.x, y : this.motifsAtoms[j].position.y, z : this.motifsAtoms[j].position.z};
+
+        var radius = this.motifsAtoms[j].radius; 
+        var color = this.motifsAtoms[j].color; 
+        var id = this.motifsAtoms[j].myID; 
+        var elementName = this.motifsAtoms[j].elementName;  
+        var ionicIndex = this.motifsAtoms[j].ionicIndex;  
+        var identity ; 
+        var opacity = this.motifsAtoms[j].opacity; 
+        
+        var a = this.cellParameters.scaleZ * Math.sqrt(3) ;
+        var c = this.cellParameters.scaleY  ; 
+
+        var vertDist = a * Math.sqrt(3);
+
+        _.times(2, function(_y) {
+          _.times(1 , function(_x) {
+            _.times(1 , function(_z) { 
+              _.times(6 , function(_r) {
+               
+                var v = new THREE.Vector3( a, 0, 0 );
+
+                var axis = new THREE.Vector3( 0, 1, 0 );
+                var angle = (Math.PI / 3) * _r + Math.PI/6; 
+                v.applyAxisAngle( axis, angle );
+
+                var z = (_x % 2==0) ? (v.z + _z*vertDist) : ((v.z + _z*vertDist + vertDist/2));
+                var y =  v.y + _y*c ;
+                var x = v.x + _x*a*1.5 ;
+                var zC = (_x % 2==0) ? (_z*vertDist) : (( _z*vertDist + vertDist/2));
+                var yC =  _y*c ;
+                var xC =  _x*a*1.5 ;
+                var pos = new THREE.Vector3( x, y, z);   
+                var reference = 'h_'+_x+_y+_z+_r;
+
+                _this.cachedAtoms.push(
+                  new UnitCellAtom( 
+                    _this.LOD.level, 
+                    new THREE.Vector3(
+                      pos.x + p.x, 
+                      pos.y + p.y,  
+                      pos.z + p.z ), 
+                    radius, 
+                    color,
+                    true, 
+                    name, 
+                    id, 
+                    reference, 
+                    opacity,
+                    _this.renderingMode,
+                    ionicIndex,
+                    _this.labeling
+                  ) 
+                );  
+                _this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("x",p.x );
+                _this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("y",p.y );
+                _this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("z",p.z ); 
+                
+              });
+            });
+          });
+        });  
+
+        this.cachedAtoms.push(
+          new UnitCellAtom( 
+            this.LOD.level, 
+            new THREE.Vector3(
+              p.x,
+              p.y + this.cellParameters.scaleY*2 ,  
+              p.z), 
+            radius, 
+            color,
+            true, 
+            name, 
+            id, 
+            'h_c_up', 
+            opacity,
+            this.renderingMode,
+            ionicIndex,
+            this.labeling
+          ) 
+        );  
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("x",p.x );
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("y",p.y );
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("z",p.z );
+
+        this.cachedAtoms.push(
+          new UnitCellAtom( 
+            this.LOD.level, 
+            new THREE.Vector3(
+              p.x,
+              p.y + this.cellParameters.scaleY*-1 ,  
+              p.z), 
+            radius, 
+            color,
+            true, 
+            name, 
+            id,  
+            'h_c_down', 
+            opacity,
+            this.renderingMode,
+            ionicIndex,
+            this.labeling
+          ) 
+        );  
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("x",p.x );
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("y",p.y );
+        this.cachedAtoms[_this.cachedAtoms.length-1].setUserOffset("z",p.z );
+
+      j++;
+      }
+    }
+
     if(this.newSphere !== undefined){
       this.motifsAtoms.pop();
     }
@@ -5649,14 +5833,7 @@ define([
          
         this.editObjectsInScene('cellSolidVoid', 'visibility', false);
       }
-      else{
-
-        i = 0;
-        while(i < this.cachedAtoms.length ){  
-          this.cachedAtoms[i].destroy();    
-          i++;
-        } 
-
+      else{ 
         this.createAdditionalAtoms();
         this.editObjectsInScene('cellSolidVoid', 'remove', true);
       }
@@ -5838,16 +6015,7 @@ define([
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');
-
-      /*
-      this.cellParameters.alpha = this.initialLatticeParams.alpha ;
-      this.cellParameters.beta = this.initialLatticeParams.beta ;
-      this.cellParameters.gamma = this.initialLatticeParams.gamma ;
-      
-      this.menu.setSliderValue("alpha", this.initialLatticeParams.alpha );
-      this.menu.setSliderValue("beta", this.initialLatticeParams.beta );
-      this.menu.setSliderValue("gamma", this.initialLatticeParams.gamma );*/
- 
+  
       this.configureCellPoints();
  
       this.menu.setSliderValue("scaleX", this.cellParameters.scaleX );

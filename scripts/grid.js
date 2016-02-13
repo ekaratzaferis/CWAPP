@@ -8,7 +8,8 @@ define([
   Explorer,
   _
 ) {
-  var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 8, 1 ); 
+  var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 ); 
+
   function Grid(pointA, pointB, visibility) {
  
     var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( { color: 0xA19EA1 } ) ); 

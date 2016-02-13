@@ -22,7 +22,8 @@ ALEX UI BUGS
 10. modal gia browser doesn;t support and disalbe everything (loading div)
 11. after adding motif lattice parameters are disabled 
 12. lattice selection locks forever at some point
-13. store in json stereoscopic effects seperately
+13. store in json stereoscopic effects seperatelyD
+13. using 2 instances of jquery, jquery-ui in html file
 
 TODO list 
     

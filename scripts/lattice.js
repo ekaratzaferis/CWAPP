@@ -1597,6 +1597,13 @@ define([
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
 
+    /*
+    console.log(' points : '+Object.keys(this.points).length);
+    console.log(' actualAtoms : '+Object.keys(this.actualAtoms).length);
+    console.log(' hexGrids : '+Object.keys(this.grids).length);
+    console.log(' faces : '+Object.keys(this.faces).length);
+    */
+
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
