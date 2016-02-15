@@ -4706,6 +4706,7 @@ define([
         vertices[i] = bottomFacePoints[i];
         vertices[i+6] = upperFacePoints[i];
       };
+      
       for (var i = 0; i<4; i++) {
         faces.push(new THREE.Face3(0,i+1,i+2));
         faces.push(new THREE.Face3(i+8,i+7,6)); 
@@ -5435,7 +5436,7 @@ define([
                       pos.z + p.z ), 
                     radius, 
                     color,
-                    true, 
+                    false, 
                     name, 
                     id, 
                     reference, 
@@ -5463,7 +5464,7 @@ define([
               p.z), 
             radius, 
             color,
-            true, 
+            false, 
             name, 
             id, 
             'h_c_up', 
@@ -5486,7 +5487,7 @@ define([
               p.z), 
             radius, 
             color,
-            true, 
+            false, 
             name, 
             id,  
             'h_c_down', 

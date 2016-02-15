@@ -797,7 +797,7 @@ define([
   Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
     
     var found = false;
-
+    console.log(name, action, visible) ;
     var scene = Explorer.getInstance().object3d;
 
     scene.traverse (function (object)
@@ -822,14 +822,16 @@ define([
     var _this = this, i = 0;
     this.viewMode = arg.mode ; 
       
-    if(this.actualAtoms.length === 0 && reset === undefined){
+    if(this.actualAtoms.length === 0 && reset === undefined){ 
       return;  
     }
-    var scene = Explorer.getInstance().object3d;
 
-    var g = this.customBox(this.viewBox);
+    var scene = Explorer.getInstance().object3d; 
+    var g = this.customBox(this.viewBox), box;
 
-    var box;
+    if(!g) { 
+      return;
+    }
 
     if(newBox !== undefined){
       box = newBox;
@@ -837,7 +839,7 @@ define([
     else{
       box = new THREE.Mesh(g, new THREE.MeshLambertMaterial({side: THREE.DoubleSide, opacity : 0.5, transparent : true, color:"#FF0000" }) );
     }
-  
+     
     if(this.viewMode === 'crystalSubstracted'){
        
       this.editObjectsInScene('crystalSolidVoid', 'visibility', false); 
@@ -1073,8 +1075,7 @@ define([
         } 
         i++;
       }
-
-      
+ 
       i = 0;
       if(reset === undefined){ 
         while(i < this.actualAtoms.length ){ 
@@ -1593,6 +1594,7 @@ define([
       this.reCreateMillers();
     }; 
 
+    console.log('fdfd');
     this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
@@ -1945,8 +1947,7 @@ define([
          
       }; 
     } 
-    else{
-        
+    else{ 
       for (var i = 0; i < this.hexagonalShapes.length ; i++) { 
         var oneHex = this.hexagonalShapes[i]; 
         this.createHexFace(oneHex, gradeParameters.faceOpacity, gradeParameters.faceColor, visible);  
@@ -4896,69 +4897,18 @@ define([
     geometry.uvsNeedUpdate = true;
 
     return geometry;
-  }
-  Lattice.prototype.customBoxForHexCell = function() { 
-    var vertices = [];
-    var faces = [];
-    var _this = this ;
-
-    var bottomFacePoints=[];
-    var upperFacePoints=[]; 
-
-    _.times(2, function(_y) {  
-      _.times(6 , function(_r) { 
-
-        var v = new THREE.Vector3( _this.parameters.scaleZ, 0, 0 ); 
-        var axis = new THREE.Vector3( 0, 1, 0 );
-        var angle = (Math.PI / 3) * _r ; 
-        v.applyAxisAngle( axis, angle );
-
-        var z = v.z ;
-        var y = v.y + _y*_this.parameters.scaleY ;
-        var x = v.x ; 
-        var position = new THREE.Vector3( x, y, z);
-        
-        if(_y > 0){
-          upperFacePoints.push(position);
-        }
-        else{
-          bottomFacePoints.push(position);
-        }
-      }); 
-    }); 
-
-    for (var i = 0; i<6; i++) {
-      vertices[i] = bottomFacePoints[i];
-      vertices[i+6] = upperFacePoints[i];
-    };
-    for (var i = 0; i<4; i++) {
-      faces.push(new THREE.Face3(0,i+1,i+2));
-      faces.push(new THREE.Face3(i+8,i+7,6)); 
-    } 
-    for (var i = 0; i<5; i++) { 
-      faces.push(new THREE.Face3(i+7,i+1,i));
-      faces.push(new THREE.Face3(i+6,i+7,i));
-    } 
-    faces.push(new THREE.Face3(6,0,5));
-    faces.push(new THREE.Face3(11,6,5));
-     
-    var geom = new THREE.Geometry();
-    geom.vertices = vertices;
-    geom.faces = faces;
-
-    geom.mergeVertices();
-
-    return geom;
-  };
+  } 
   Lattice.prototype.customBox = function(points) { 
  
     var vertices = [];
     var faces = [];
     var _this = this ;
-
-    if(points['_000'] === undefined) return undefined;
-
+    var scene = Explorer.getInstance().object3d;
+ 
     if(this.latticeName !== 'hexagonal'){
+
+      if(points['_000'] === undefined) return ;
+
       vertices.push(points['_000'].position); // 0
       vertices.push(points['_010'].position); // 1
       vertices.push(points['_011'].position); // 2
@@ -4988,52 +4938,350 @@ define([
       faces.push(new THREE.Face3(2,6,5)); 
     }
     else{
-      var bottomFacePoints=[];
-      var upperFacePoints=[]; 
-      _.times(2, function(_y) {  
-        _.times(6 , function(_r) { 
 
-          var v = new THREE.Vector3( _this.parameters.scaleZ, 0, 0 ); 
-          var axis = new THREE.Vector3( 0, 1, 0 );
-          var angle = (Math.PI / 3) * _r ; 
-          v.applyAxisAngle( axis, angle );
+      if(this.viewMode ==='crystalClassic') return new THREE.Geometry();
 
-          var z = v.z ;
-          var y = v.y + _y*_this.parameters.scaleY ;
-          var x = v.x ; 
-          var position = new THREE.Vector3( x, y, z);
+      var scaleX = this.parameters.scaleX;
+      var scaleY = this.parameters.scaleY;
+      var scaleZ = this.parameters.scaleZ;
+
+      var repeatX = this.parameters.repeatX;
+      var repeatY = this.parameters.repeatY;
+      var repeatZ = this.parameters.repeatZ;
+
+      var verticalScaleOfHex = this.parameters.scaleZ * Math.sqrt(3) ; // * 2
+      var fullHeight = scaleY * repeatY;
+
+      var zOffset = (repeatX % 2 !== 0  ) ? 0 : verticalScaleOfHex/2 ;
+      var xOffset = 1.5 * (repeatX-1) * scaleZ;
+      var zDist = verticalScaleOfHex * repeatZ;
+      
+      
+      // back and forth sides
+      for (var i = 0; i < this.parameters.repeatX; i++) { 
+  
+        var verticesLength = vertices.length;
+        var xOffset = i * scaleZ * 1.5;
+
+        // back
+
+        if(i % 2 === 0 ){
           
-          if(_y > 0){
-            upperFacePoints.push(position);
-          }
-          else{
-            bottomFacePoints.push(position);
-          }
-        }); 
-      }); 
+          // 0 
+          var vLeftestDown = new THREE.Vector3(xOffset - scaleZ, 0, 0);
+          vertices.push(vLeftestDown);
 
-      for (var i = 0; i<6; i++) {
-        vertices[i] = bottomFacePoints[i];
-        vertices[i+6] = upperFacePoints[i];
-      };
-      for (var i = 0; i<4; i++) {
-        faces.push(new THREE.Face3(0,i+1,i+2));
-        faces.push(new THREE.Face3(i+8,i+7,6)); 
-      } 
-      for (var i = 0; i<5; i++) { 
-        faces.push(new THREE.Face3(i+7,i+1,i));
-        faces.push(new THREE.Face3(i+6,i+7,i));
-      } 
-      faces.push(new THREE.Face3(6,0,5));
-      faces.push(new THREE.Face3(11,6,5));
+          // 1
+          var vLeftestUp = new THREE.Vector3(xOffset - scaleZ, fullHeight, 0);
+          vertices.push(vLeftestUp);
+
+          // 2
+          var vLeftDown = new THREE.Vector3(xOffset - scaleZ/2, 0, -1*verticalScaleOfHex/2);
+          vertices.push(vLeftDown);
+
+          // 3
+          var vLeftUp = new THREE.Vector3(xOffset - scaleZ/2, fullHeight, -1*verticalScaleOfHex/2);
+          vertices.push(vLeftUp);
+
+          // 4
+          var vRightDown = new THREE.Vector3(xOffset + scaleZ/2, 0, -1*verticalScaleOfHex/2);
+          vertices.push(vRightDown);
+
+          // 5
+          var vRightUp = new THREE.Vector3(xOffset + scaleZ/2, fullHeight, -1*verticalScaleOfHex/2);
+          vertices.push(vRightUp);
+
+          // 6
+          var vRighterDown = new THREE.Vector3(xOffset + scaleZ, 0, 0);
+          vertices.push(vRighterDown);
+
+          // 7
+          var vRighterUp = new THREE.Vector3(xOffset + scaleZ, fullHeight, 0);
+          vertices.push(vRighterUp);
+
+          if(i !== 0){  
+            //back
+            faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 0, verticesLength + 2));
+            faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 2, verticesLength + 3)); 
+          }
+
+          faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 2, verticesLength + 4));
+          faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 4, verticesLength + 5));
+
+          if(i !== this.parameters.repeatX - 1){ 
+            faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 4, verticesLength + 6));
+            faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 6, verticesLength + 7));
+          }
+
+        }
+        else{
+
+          // 0
+          var vLeftDown = new THREE.Vector3(xOffset - scaleZ/2, 0, 0);
+          vertices.push(vLeftDown);
+
+          // 1
+          var vLeftUp = new THREE.Vector3(xOffset - scaleZ/2, fullHeight, 0);
+          vertices.push(vLeftUp);
+
+          // 2
+          var vRightDown = new THREE.Vector3(xOffset + scaleZ/2, 0, 0);
+          vertices.push(vRightDown);
+
+          // 3
+          var vRightUp = new THREE.Vector3(xOffset + scaleZ/2, fullHeight, 0);
+          vertices.push(vRightUp);
+
+          faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 0, verticesLength + 2));
+          faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 2, verticesLength + 3));
+ 
+        }
+
+        // forth
+
+        var verticesLength = vertices.length;
+
+        if(i % 2 === 0 ){
+          
+          // 0 
+          var vLeftestDown = new THREE.Vector3(xOffset - scaleZ, 0, zDist);
+          vertices.push(vLeftestDown);
+
+          // 1
+          var vLeftestUp = new THREE.Vector3(xOffset - scaleZ, fullHeight, zDist);
+          vertices.push(vLeftestUp);
+
+          // 2
+          var vLeftDown = new THREE.Vector3(xOffset - scaleZ/2, 0, -1*verticalScaleOfHex/2 + zDist);
+          vertices.push(vLeftDown);
+
+          // 3
+          var vLeftUp = new THREE.Vector3(xOffset - scaleZ/2, fullHeight, -1*verticalScaleOfHex/2 + zDist);
+          vertices.push(vLeftUp);
+
+          // 4
+          var vRightDown = new THREE.Vector3(xOffset + scaleZ/2, 0, -1*verticalScaleOfHex/2 + zDist);
+          vertices.push(vRightDown);
+
+          // 5
+          var vRightUp = new THREE.Vector3(xOffset + scaleZ/2, fullHeight, -1*verticalScaleOfHex/2 + zDist);
+          vertices.push(vRightUp);
+
+          // 6
+          var vRighterDown = new THREE.Vector3(xOffset + scaleZ, 0, zDist);
+          vertices.push(vRighterDown);
+
+          // 7
+          var vRighterUp = new THREE.Vector3(xOffset + scaleZ, fullHeight, zDist);
+          vertices.push(vRighterUp);
+
+          if(i !== 0){  
+            //back
+            faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 2, verticesLength + 0));
+            faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 3, verticesLength + 2)); 
+          }
+
+          faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 4, verticesLength + 2));
+          faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 5, verticesLength + 4));
+
+          if(i !== this.parameters.repeatX - 1){ 
+            faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 6, verticesLength + 4));
+            faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 7, verticesLength + 6));
+          }
+
+        }
+        else{
+
+          // 0
+          var vLeftDown = new THREE.Vector3(xOffset - scaleZ/2, 0, zDist);
+          vertices.push(vLeftDown);
+
+          // 1
+          var vLeftUp = new THREE.Vector3(xOffset - scaleZ/2, fullHeight, zDist);
+          vertices.push(vLeftUp);
+
+          // 2
+          var vRightDown = new THREE.Vector3(xOffset + scaleZ/2, 0, zDist);
+          vertices.push(vRightDown);
+
+          // 3
+          var vRightUp = new THREE.Vector3(xOffset + scaleZ/2, fullHeight, zDist);
+          vertices.push(vRightUp);
+
+          faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 2, verticesLength + 0));
+          faces.push(new THREE.Face3(verticesLength + 1, verticesLength + 3, verticesLength + 2));
+ 
+        } 
+      }
+       
+      // left and right sides
+      for (var i = 0; i < this.parameters.repeatZ; i++) { 
+        
+        // left side
+        
+        var zDistance = i * verticalScaleOfHex;
+        var verticesLength = vertices.length;
+        
+        // 0
+        var vDownBack = new THREE.Vector3( -1*scaleZ/2, 0, zDistance - verticalScaleOfHex/2);
+        vertices.push(vDownBack);
+
+        // 1
+        var vUpBack = new THREE.Vector3( -1*scaleZ/2, fullHeight, zDistance - verticalScaleOfHex/2);
+        vertices.push(vUpBack);
+
+        // 2
+        var vDownMiddle = new THREE.Vector3( -1*scaleZ, 0, zDistance);
+        vertices.push(vDownMiddle);
+
+        // 3
+        var vUpMiddle = new THREE.Vector3( -1*scaleZ, fullHeight, zDistance);
+        vertices.push(vUpMiddle);
+
+        // 4
+        var vDownForth = new THREE.Vector3( -1*scaleZ/2, 0, zDistance + verticalScaleOfHex/2);
+        vertices.push(vDownForth);
+
+        // 5
+        var vUpForth = new THREE.Vector3( -1*scaleZ/2, fullHeight, zDistance + verticalScaleOfHex/2);
+        vertices.push(vUpForth);
+
+        faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 0, verticesLength + 1));
+        faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 2, verticesLength + 0));
+
+        faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 2, verticesLength + 3));
+        faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 4, verticesLength + 2));
+
+
+        // Right side
+         
+        var verticesLength = vertices.length;
+         
+        // 0
+        var vDownBack = new THREE.Vector3( xOffset + scaleZ/2, 0, zDistance - verticalScaleOfHex/2 + zOffset);
+        vertices.push(vDownBack);
+
+        // 1
+        var vUpBack = new THREE.Vector3(  xOffset + scaleZ/2, fullHeight, zDistance - verticalScaleOfHex/2 + zOffset);
+        vertices.push(vUpBack);
+
+        // 2
+        var vDownMiddle = new THREE.Vector3(  xOffset + scaleZ, 0, zDistance + zOffset);
+        vertices.push(vDownMiddle);
+
+        // 3
+        var vUpMiddle = new THREE.Vector3(  xOffset + scaleZ, fullHeight, zDistance + zOffset);
+        vertices.push(vUpMiddle);
+
+        // 4
+        var vDownForth = new THREE.Vector3(  xOffset + scaleZ/2, 0, zDistance + verticalScaleOfHex/2 + zOffset);
+        vertices.push(vDownForth);
+
+        // 5
+        var vUpForth = new THREE.Vector3(  xOffset + scaleZ/2, fullHeight, zDistance + verticalScaleOfHex/2 + zOffset);
+        vertices.push(vUpForth);
+
+        faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 1, verticesLength + 0));
+        faces.push(new THREE.Face3(verticesLength + 3, verticesLength + 0, verticesLength + 2));
+
+        faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 3, verticesLength + 2));
+        faces.push(new THREE.Face3(verticesLength + 5, verticesLength + 2, verticesLength + 4));
+ 
+      }; 
+
+      // up and down faces
+
+      for (var i = 0; i < this.parameters.repeatX; i++) {
+        
+        var zSpecialOffset = (i % 2 === 0  ) ? 0 : verticalScaleOfHex/2 ;
+        var xOffseting = scaleZ * 1.5 * i ;
+
+        for (var j = 0; j < this.parameters.repeatZ; j++) {
+          var zOffseting = verticalScaleOfHex * j ;
+
+          // up
+
+          var verticesLength = vertices.length;
+
+          // 0 
+          var zeroDegrees = new THREE.Vector3(xOffseting + scaleZ, 0, zSpecialOffset + zOffseting );
+          vertices.push(zeroDegrees);
+
+          // 1
+          var sixtyDegrees = new THREE.Vector3(xOffseting + scaleZ/2, 0, -1*verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(sixtyDegrees);
+
+          // 2
+          var hundredTwentyDegrees = new THREE.Vector3(xOffseting -1*scaleZ/2, 0, -1*verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(hundredTwentyDegrees);
+
+          // 3
+          var hundredEightyDegrees = new THREE.Vector3(xOffseting -1*scaleZ, 0, + zSpecialOffset + zOffseting );
+          vertices.push(hundredEightyDegrees);
+
+          // 4
+          var twoHundFourtyDegrees = new THREE.Vector3(xOffseting - 1*scaleZ/2, 0,verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(twoHundFourtyDegrees);
+
+          // 5
+          var threeHundDegrees = new THREE.Vector3(xOffseting + scaleZ/2, 0, verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(threeHundDegrees);
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 1, verticesLength + 2)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 2, verticesLength + 3)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 3, verticesLength + 4)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 4, verticesLength + 5)); 
+
+
+          //down
+
+          var verticesLength = vertices.length;
+
+          // 0 
+          var zeroDegrees = new THREE.Vector3(xOffseting + scaleZ, fullHeight, zSpecialOffset + zOffseting );
+          vertices.push(zeroDegrees);
+
+          // 1
+          var sixtyDegrees = new THREE.Vector3(xOffseting + scaleZ/2, fullHeight, -1*verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(sixtyDegrees);
+
+          // 2
+          var hundredTwentyDegrees = new THREE.Vector3(xOffseting -1*scaleZ/2, fullHeight, -1*verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(hundredTwentyDegrees);
+
+          // 3
+          var hundredEightyDegrees = new THREE.Vector3(xOffseting -1*scaleZ, fullHeight, + zSpecialOffset + zOffseting );
+          vertices.push(hundredEightyDegrees);
+
+          // 4
+          var twoHundFourtyDegrees = new THREE.Vector3(xOffseting - 1*scaleZ/2, fullHeight,verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(twoHundFourtyDegrees);
+
+          // 5
+          var threeHundDegrees = new THREE.Vector3(xOffseting + scaleZ/2, fullHeight, verticalScaleOfHex/2 + zSpecialOffset + zOffseting );
+          vertices.push(threeHundDegrees);
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 2, verticesLength + 1)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 3, verticesLength + 2)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 4, verticesLength + 3)); 
+
+          faces.push(new THREE.Face3(verticesLength + 0, verticesLength + 5, verticesLength + 4)); 
+
+        };
+      }; 
     }
-
+ 
     var geom = new THREE.Geometry();
     geom.vertices = vertices;
     geom.faces = faces;
 
     geom.mergeVertices();
-
+  
     return geom;
   }
 
