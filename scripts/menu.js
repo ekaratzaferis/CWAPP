@@ -174,7 +174,11 @@ define([
         LABEL_TOGGLE: 'menu.label_toggle',
         HIGHLIGHT_TANGENCY: 'menu.highlight_tangency',
         SET_LOD: 'menu.SET_LOD',
-        SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS'
+        SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS',
+        LOW_REND_QUALITY: 'menu.low_rend_quality',
+        MEDIUM_REND_QUALITY: 'menu.medium_rend_quality',
+        HIGH_REND_QUALITY: 'menu.high_rend_quality',
+        LOD: 'menu.lod'
     };
             
     function Menu() {
@@ -1128,7 +1132,19 @@ define([
     };
     Menu.prototype.setSphereSegments = function(callback){
         PubSub.subscribe(events.SET_SPHERE_SEGMENTS, callback);
-    }; 
+    };
+    Menu.prototype.onLowRenderizationQuality = function(callback){
+        PubSub.subscribe(events.LOW_REND_QUALITY, callback);
+    };
+    Menu.prototype.onMediumRenderizationQuality = function(callback){
+        PubSub.subscribe(events.MEDIUM_REND_QUALITY, callback);
+    };
+    Menu.prototype.onHighRenderizationQuality = function(callback){
+        PubSub.subscribe(events.HIGH_REND_QUALITY, callback);
+    };
+    Menu.prototype.onLOD = function(callback){
+        PubSub.subscribe(events.LOD, callback);
+    };
      
     $( "#sliderDetail" ).slider({
         value:3,

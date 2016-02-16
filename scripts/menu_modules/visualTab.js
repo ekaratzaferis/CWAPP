@@ -49,6 +49,77 @@ define([
         else return false;
         
         // Visual Parameters //
+        html.visual.lod.lod.val(2.5);
+        html.visual.lod.lod.prop('disabled', true);
+        html.visual.lod.lodSlider.slider({
+            value: 2.5,
+            min: 0,
+            max: 5,
+            step: 0.1,
+            animate: true,
+            slide: function(event, ui){
+                // Publish //
+                $setUI.setValue({
+                    lod:{
+                        publish:{lod: ui.value}
+                    }
+                });
+                // Set Quality //
+                $setUI.setValue({
+                    lodQuality:{
+                        value: ui.value
+                    }
+                });
+                // Input //
+                html.visual.lod.lod.val(ui.value);
+            },
+            stop: function(event,ui){
+                if (ui.value > 3.4) $userDialog.showWarningDialog({ messageID: 3, caller: html.visual.lod.lodSlider });
+            }
+        });
+        html.visual.lod.lodSlider.on('actionFail', function() {
+            // Publish //
+            $setUI.setValue({
+                lod:{
+                    publish:{lod: 2.5}
+                }
+            });
+            // Set Quality //
+            $setUI.setValue({
+                lodQuality:{
+                    value: 2.5
+                }
+            });
+            // Input //
+            html.visual.lod.lod.val(2.5);
+            html.visual.lod.lodSlider.slider('value',2.5);
+        });
+        _.each(html.visual.parameters.renderizationQuality, function($parameter, k) {
+            $parameter.on('click', function() {
+                if (!($parameter.hasClass('disabled'))) {
+                    if (k === 'highQuality') {
+                        $userDialog.showWarningDialog({ messageID: 3, caller: $parameter });
+                    }
+                    else $parameter.trigger('action');
+                }
+            });
+            // Triggered by the Warning dialog!!!! //
+            $parameter.on('action', function() {
+                if (!($parameter.hasClass('disabled'))) {
+                    ($parameter.hasClass('active')) ? value = false : value = true;
+                    if (value === true){
+                        publish = {};
+                        publish.renderizationQuality = k;
+                        argument = {};
+                        argument[k] = {
+                            publish: publish,
+                            value: value
+                        };
+                        $setUI.setValue(argument);
+                    }
+                }
+            });
+        });
         _.each(html.visual.parameters.renderizationMode, function($parameter, k) {
             $parameter.on('click', function() {
                 if (!($parameter.hasClass('disabled'))) {

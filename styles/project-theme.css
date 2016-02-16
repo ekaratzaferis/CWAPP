@@ -3886,8 +3886,9 @@ input.disabled[type="text"]{ background-color: black; }
 #radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
 #radiusLabelValue{ color: white; font-size: 12.6px; }
 .purpleHeader{ background:#6f6299!important; ; }
-.zoomOption label { color: white; }
-.zoomOption label.active { background: #6f6299; }
+.zoomOption label { color: #6a6a6e; font-weight: bold; }
+.zoomOption label:hover { color: white!important; }
+.zoomOption label.active { color: white; background: #6f6299; }
 #canvasTooltip{ 
     z-index: 10000;
     position: absolute;
@@ -4060,3 +4061,40 @@ margin-left: 200px;
     font-weight: 900;
     line-height: 17.6px;
     color: #fff; }
+
+.btn-label {
+  text-transform: uppercase;
+    text-decoration: none!important;
+    background: #6f6299;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 17.6px;
+    color: #6a6a6e;  
+}
+.btn-label.active { color: white!important; }
+.btn-label:hover {
+    color: white!important;
+}
+
+.lodLabel label {
+    padding-top: 20px;
+  text-transform: uppercase;
+    text-decoration: none!important;
+    background: transparent;
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 17.6px;
+    color: #6a6a6e;  
+}
+.lodLabel .slider-input {
+        float: none;
+        clear: both;
+        background-color: #3c4147;
+        width: 50px; }
+.lodLabel .slider-input .form-control {
+          height: 28px;
+          padding: 5px;
+          text-align: center; }
+.pad15 { padding-top: 15px;}
