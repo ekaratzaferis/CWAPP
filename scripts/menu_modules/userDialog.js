@@ -44,12 +44,16 @@ define([
             argument = {};
             argument.result = false;
             PubSub.publish(pubEvent, argument);
+            // Trigger Cancel Action //
+            if (html.modals.dialog.warning.modal.caller !== 'none') html.modals.dialog.warning.modal.caller.trigger('actionFail');
             html.modals.dialog.warning.modal.caller = 'userDenied';
         });
         html.modals.dialog.warning.cancel.on('click',function(){
             argument = {};
             argument.result = false;
             PubSub.publish(pubEvent, argument);
+            // Trigger Cancel Action //
+            if (html.modals.dialog.warning.modal.caller !== 'none') html.modals.dialog.warning.modal.caller.trigger('actionFail');
             html.modals.dialog.warning.modal.caller = 'userDenied';
         });
         html.modals.dialog.warning.continue.on('click',function(){
@@ -67,6 +71,11 @@ define([
             // If modal is hidden by system event, only reset callback
             if (html.modals.dialog.warning.modal.caller !== undefined){
                 if ( (html.modals.dialog.warning.modal.caller === 'userConfirmed') || (html.modals.dialog.warning.modal.caller === 'userDenied') ){
+                    html.modals.dialog.warning.modal.caller = 'none';
+                    return true;
+                }
+                else {
+                    html.modals.dialog.warning.modal.caller.trigger('actionFail');
                     html.modals.dialog.warning.modal.caller = 'none';
                     return true;
                 }

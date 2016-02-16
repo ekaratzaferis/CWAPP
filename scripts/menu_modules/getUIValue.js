@@ -278,6 +278,21 @@ define([
             }
             
             // Visual Tab
+            case 'lod':{
+                return $stringEditor.inputIsNumber(html.visual.lod.lod.val());
+            }
+            case 'lowQuality':{
+                if (html.visual.parameters.renderizationQuality.lowQuality.hasClass('active')) return true;
+                else return false;
+            }
+            case 'mediumQuality':{
+                if (html.visual.parameters.renderizationQuality.mediumQuality.hasClass('active')) return true;
+                else return false;
+            }
+            case 'highQuality':{
+                if (html.visual.parameters.renderizationQuality.highQuality.hasClass('active')) return true;
+                else return false;
+            }
             case 'wireframe':{
                 if (html.visual.parameters.renderizationMode.wireframe.hasClass('active')) return true;
                 else return false;
@@ -496,6 +511,10 @@ define([
         app.lockCameras = retrieveValueFromID('lockCameras');
         
         // Retrieve Visual Tab Values //
+        app.lod = retrieveValueFromID('lod');
+        app.lowQuality = retrieveValueFromID('lowQuality');
+        app.mediumQuality = retrieveValueFromID('mediumQuality');
+        app.highQuality = retrieveValueFromID('highQuality');
         app.wireframe = retrieveValueFromID('wireframe');
         app.toon = retrieveValueFromID('toon');
         app.flat = retrieveValueFromID('flat');

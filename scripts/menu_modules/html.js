@@ -173,6 +173,10 @@ define([
             color : jQuery('#fogColor'),
             densitySlider: jQuery('#fogDensitySlider')
         };
+        this.visual.lod = {
+            lod: jQuery('#lod'),
+            lodSlider: jQuery('#lodSlider')
+        };
         this.visual.parameters = {
             lights: jQuery('#lights'),
             ssao: jQuery('#ssao'),
@@ -203,6 +207,11 @@ define([
             oculusCell: jQuery('#oculusCell'),
             sideBySide3DCell: jQuery('#3DsideBySideCell'),
             onTop3DCell: jQuery('#3DonTopCell')
+        };
+        this.visual.parameters.renderizationQuality = {
+            lowQuality: jQuery('#lowRenderizationQuality'),  
+            mediumQuality: jQuery('#mediumRenderizationQuality'),  
+            highQuality: jQuery('#highRenderizationQuality')  
         };
         this.visual.parameters.renderizationMode = {
             realistic: jQuery('#realistic'),

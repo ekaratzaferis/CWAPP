@@ -911,6 +911,30 @@ define([
             }
                 
             // Visual Tab
+            case 'lowQuality':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationQuality.lowQuality.addClass('active');
+                }
+                else html.visual.parameters.renderizationQuality.lowQuality.removeClass('active');
+                break;
+            }
+            case 'mediumQuality':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationQuality.mediumQuality.addClass('active');
+                }
+                else html.visual.parameters.renderizationQuality.mediumQuality.removeClass('active');
+                break;
+            }
+            case 'highQuality':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationQuality.highQuality.addClass('active');
+                }
+                else html.visual.parameters.renderizationQuality.highQuality.removeClass('active');
+                break;
+            }
             case 'wireframe':{
                 if (value === true){
                     _.each(html.visual.parameters.renderizationMode, function($param, a) { $param.removeClass('active');});
@@ -1228,6 +1252,21 @@ define([
                 html.visual.sound.soundSlider.slider('value',value);
                 break;
             }
+            case 'lodQuality':{
+                if (value < 1.5) takeAction('lowQuality', true);
+                else if (value < 3.5) takeAction('mediumQuality', true);
+                else takeAction('highQuality', true);
+                break;
+            }
+            case 'lod':{
+                html.visual.lod.lod.val(value);
+                takeAction('lodSlider',value);
+                break;
+            }
+            case 'lodSlider':{
+                html.visual.lod.lodSlider.slider('value',value);
+                break;
+            }
             case 'crystalScreenColor':{
                 html.visual.tools.colorPickers.crystalScreen.spectrum('set',value);
                 html.visual.tools.colorPickers.crystalScreen.children().css('background',value);
@@ -1380,6 +1419,8 @@ define([
                 $menu.reset('motifCollisions');
                 
                 // Visual //
+                takeAction('lod',2.5);
+                takeAction('mediumQuality',true);
                 takeAction('realistic',true);
                 takeAction('lights',true);
                 takeAction('ssao',false);
@@ -1766,6 +1807,22 @@ define([
             }
                 
             // Visual Tab
+            case 'lod': {
+                PubSub.publish(events.LOD, value);
+                break;
+            }
+            case 'lowQuality': {
+                PubSub.publish(events.LOW_REND_QUALITY, value);
+                break;
+            }
+            case 'mediumQuality': {
+                PubSub.publish(events.MEDIUM_REND_QUALITY, value);
+                break;
+            }
+            case 'highQuality': {
+                PubSub.publish(events.HIGH_REND_QUALITY, value);
+                break;
+            }
             case 'wireframe': {
                 PubSub.publish(events.CHANGE_REND_MODE, value);
                 break;
@@ -2056,6 +2113,10 @@ define([
         $menu.reset('motifCollisions');
 
         // Visual //
+        takeAction('lod', appUI.visualTab.lod.lod);
+        takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
+        takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
+        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);
         takeAction('wireframe',appUI.visualTab.visualParameters.renderizationMode.wireframe);
         takeAction('toon',appUI.visualTab.visualParameters.renderizationMode.toon);
         takeAction('flat',appUI.visualTab.visualParameters.renderizationMode.flat);
