@@ -26,8 +26,8 @@ define([
      
   } 
   LOD.prototype.setLOD = function(arg){ 
-
-    this.lodLevel = arg;
+     
+    this.lodLevel = arg.lod;
     this.lattice.LOD.level = this.lodLevel;
     this.motifEditor.LOD.level = this.lodLevel;
 
@@ -68,9 +68,7 @@ define([
       this.motifEditor.setCSGmode({mode : 'cellClassic'} , 'reset' );
       this.menu.chooseActiveUnitCellMode('cellClassic');
     }
-
-    $( "#vertices" ).html( g.vertices.length );
- 
+  
   } 
   return LOD;
 });  

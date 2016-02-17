@@ -189,7 +189,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -213,7 +214,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -240,7 +242,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
 
@@ -265,7 +268,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -293,7 +297,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             ); 
           };
@@ -317,7 +322,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -345,7 +351,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -370,7 +377,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -397,7 +405,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             ); 
           };
@@ -421,7 +430,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             ); 
           };
@@ -445,7 +455,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -469,7 +480,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -508,7 +520,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -533,7 +546,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -560,7 +574,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -587,7 +602,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -627,7 +643,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -652,7 +669,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -679,7 +697,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -706,7 +725,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -734,7 +754,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -759,7 +780,8 @@ define([
                 renderingMode,
                 '-',
                 ionicIndex,
-                this.labeling
+                this.labeling,
+                false
               ) 
             );
           };
@@ -768,7 +790,208 @@ define([
         j++;
       }
     } 
-      
+    else if(this.latticeName === 'hexagonal'){
+ 
+      var verticalScale = this.parameters.scaleZ * Math.sqrt(3)/2 ;
+      var doubleVertlScale = this.parameters.scaleZ * Math.sqrt(3) ;
+      var oneAndHalfScale = this.parameters.scaleZ * 1.5 ;
+      var maxZ = doubleVertlScale * (this.parameters.repeatZ-1) ;
+      var maxX = oneAndHalfScale * (this.parameters.repeatX-1) ;
+      var maxY = this.parameters.scaleY * this.parameters.repeatY ;
+
+      while(j <this.currentMotif.length) { 
+        var p = this.currentMotif[j].object3d.position.clone(); 
+        var radius = this.currentMotif[j].radius;
+        var color = this.currentMotif[j].color ;
+        var opacity = this.currentMotif[j].opacity ;
+         
+        var elementName = this.currentMotif[j].elementName;
+        var id = this.currentMotif[j].myID; 
+        var ionicIndex = this.currentMotif[j].ionicIndex;
+           
+        // back and forth sides
+        for (var i = 0; i < this.parameters.repeatX; i++) { 
+          for (var h = 0; h <= this.parameters.repeatY; h++) { 
+
+            var x = oneAndHalfScale * i;
+            var y = this.parameters.scaleY * h;
+            var zB, zF;
+
+            if(i % 2 === 0 ){ 
+              zB = doubleVertlScale;
+              zF = doubleVertlScale;
+
+            }
+            else{
+              zB = verticalScale;
+              zF = verticalScale + doubleVertlScale;
+            }
+
+            var pB = new THREE.Vector3(x,y,-1*zB);
+           
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pB.x + p.x, pB.y + p.y, pB.z + p.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );
+
+            var pF = new THREE.Vector3(x,y, maxZ + zF);
+             
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pF.x + p.x, pF.y + p.y, pF.z + p.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );   
+          } 
+        } 
+        
+        // left and right sides
+        var xRepeatFactor = (this.parameters.repeatX % 2 !== 0 ) ? 0 : verticalScale ;
+
+        for (var i = 0; i <= this.parameters.repeatZ; i++) { 
+          for (var k = 0; k <= this.parameters.repeatY; k++) {
+
+            var x = oneAndHalfScale;
+            var y = this.parameters.scaleY * k;
+            var zL = doubleVertlScale * i - verticalScale; 
+
+            var pL = new THREE.Vector3(x*-1, y, zL);
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pL.x + p.x, pL.y + p.y, pL.z + p.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );
+
+            var pR = new THREE.Vector3(maxX+x, y, zL + xRepeatFactor);
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pR.x + p.x, pR.y + p.y, pR.z + p.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );
+          };
+        }; 
+
+        // up and down faces
+ 
+        for (var i = 0; i < this.parameters.repeatX; i++) {
+          for (var l = 0; l < this.parameters.repeatZ; l++) {
+            
+            var x = i * oneAndHalfScale;
+            var y = this.parameters.scaleY;
+            var z = (i % 2 === 0) ? (doubleVertlScale * l) : (verticalScale + doubleVertlScale * l);
+
+            var pUp = new THREE.Vector3(x,y+ maxY,z);
+ 
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pUp.x + p.x, pUp.y + p.y, pUp.z + p.z),  
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );
+
+            var pDown = new THREE.Vector3(x,y*-1,z);
+
+            atoms.push(
+              new CrystalAtom(
+                new THREE.Vector3(pDown.x + p.x, pDown.y + p.y, pDown.z + p.z), 
+                radius, 
+                color,
+                elementName, 
+                id,
+                p.x,
+                p.y,
+                p.z,
+                new THREE.Vector3(), 
+                this.LOD.level,
+                opacity,
+                renderingMode,
+                '-',
+                ionicIndex,
+                this.labeling,
+                false
+              )  
+            );
+          };
+        };  
+  
+        j++;
+      }
+    }
+
     /////////////////////////////////// 
    
     i = 0;
@@ -776,6 +999,7 @@ define([
       Explorer.add({'object3d' : atoms[i].object3d});  
       i++;
     }   
+ 
   }; 
   Lattice.prototype.monitorScene = function(action, name){ 
     
@@ -797,7 +1021,7 @@ define([
   Lattice.prototype.editObjectsInScene = function(name, action, visible){ 
     
     var found = false;
-    console.log(name, action, visible) ;
+ 
     var scene = Explorer.getInstance().object3d;
 
     scene.traverse (function (object)
@@ -1099,11 +1323,7 @@ define([
       else{  
 
         this.createAdditionalAtoms();
- 
-        while(i < this.cachedAtoms.length ){ 
-          this.cachedAtoms[i].setVisibility(false);    
-          i++;
-        }   
+   
         this.editObjectsInScene('crystalSolidVoid', 'remove', true); 
       }  
     } 
@@ -1320,7 +1540,8 @@ define([
     this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
-
+    this.createAdditionalAtoms();
+    
     if(this.atomRelationshipManager.highlightOverlapState === true){
       this.atomRelationshipManager.highlightOverlapState = false; 
       this.atomRelationshipManager.checkCrystalforOverlap(); 
@@ -1593,8 +1814,7 @@ define([
       this.createFaces(); 
       this.reCreateMillers();
     }; 
-
-    console.log('fdfd');
+ 
     this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
@@ -4939,7 +5159,9 @@ define([
     }
     else{
 
-      if(this.viewMode ==='crystalClassic') return new THREE.Geometry();
+      if(this.viewMode ==='crystalClassic') {
+        return new THREE.Geometry();
+      }
 
       var scaleX = this.parameters.scaleX;
       var scaleY = this.parameters.scaleY;

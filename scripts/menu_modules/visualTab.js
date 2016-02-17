@@ -49,13 +49,13 @@ define([
         else return false;
         
         // Visual Parameters //
-        html.visual.lod.lod.val(2.5);
+        html.visual.lod.lod.val(4);
         html.visual.lod.lod.prop('disabled', true);
         html.visual.lod.lodSlider.slider({
-            value: 2.5,
+            value: 4,
             min: 0,
             max: 5,
-            step: 0.1,
+            step: 1,
             animate: true,
             slide: function(event, ui){
                 // Publish //

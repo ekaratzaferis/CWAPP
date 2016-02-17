@@ -172,8 +172,7 @@ define([
         SWAP_SCREEN: 'menu.swap_screen',
         DIALOG_RESULT: 'menu.dialog_result',
         LABEL_TOGGLE: 'menu.label_toggle',
-        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency',
-        SET_LOD: 'menu.SET_LOD',
+        HIGHLIGHT_TANGENCY: 'menu.highlight_tangency', 
         SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS',
         LOW_REND_QUALITY: 'menu.low_rend_quality',
         MEDIUM_REND_QUALITY: 'menu.medium_rend_quality',
@@ -1126,13 +1125,7 @@ define([
     };
     Menu.prototype.onOpenJSON = function(callback){
         PubSub.subscribe(events.OPEN_JSON, callback);
-    }; 
-    Menu.prototype.setLOD = function(callback){
-        PubSub.subscribe(events.SET_LOD, callback);
-    };
-    Menu.prototype.setSphereSegments = function(callback){
-        PubSub.subscribe(events.SET_SPHERE_SEGMENTS, callback);
-    };
+    };  
     Menu.prototype.onLowRenderizationQuality = function(callback){
         PubSub.subscribe(events.LOW_REND_QUALITY, callback);
     };
@@ -1144,19 +1137,9 @@ define([
     };
     Menu.prototype.onLOD = function(callback){
         PubSub.subscribe(events.LOD, callback);
-    };
-     
-    $( "#sliderDetail" ).slider({
-        value:3,
-        min: 0,
-        max: 5,
-        step: 1,
-        slide: function( event, ui ) {
-            $( "#Detailvalue" ).html( ui.value );
-            PubSub.publish(events.SET_LOD, ui.value);
-        }
-    });
+    }; 
 
+    /* TO BE DELETED SOON
     $( "#sliderWS" ).slider({
         value:32,
         min: 3,
@@ -1181,7 +1164,7 @@ define([
         }
     });
 
-
+    */
     /////////
 
     return Menu;

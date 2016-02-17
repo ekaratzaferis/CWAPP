@@ -24,6 +24,7 @@ ALEX UI BUGS
 12. lattice selection locks forever at some point
 13. store in json stereoscopic effects seperatelyD
 13. using 2 instances of jquery, jquery-ui in html file
+14. restore (or reset) does not erase atom list
 
 TODO list 
     

@@ -909,22 +909,38 @@ require([
     //sceneResizer.resize( 'crystal', {width : 2000, height : 2000});
     storeMechanism.exportPNG(arg);
   });
+  menu.onLowRenderizationQuality(function(message, arg) { 
+    lod.setLOD({lod:2});
+    crystalRenderer.shadowing({shadows:false});
+    unitCellRenderer.shadowing({shadows:false}); 
+    crystalRenderer.ssaoEffect({ssao : false});
+    unitCellRenderer.ssaoEffect({ssao : false}); 
+  });
+  menu.onMediumRenderizationQuality(function(message, arg) { 
+    lod.setLOD({lod:3});
+    crystalRenderer.shadowing({shadows:false});
+    unitCellRenderer.shadowing({shadows:false}); 
+    crystalRenderer.ssaoEffect({ssao : true});
+    unitCellRenderer.ssaoEffect({ssao : true}); 
+  });
+  menu.onHighRenderizationQuality(function(message, arg) { 
+    lod.setLOD({lod:4});
+    crystalRenderer.shadowing({shadows:true});
+    unitCellRenderer.shadowing({shadows:true}); 
+    crystalRenderer.ssaoEffect({ssao : true});
+    unitCellRenderer.ssaoEffect({ssao : true}); 
+  });
   menu.onOpenJSON(function(message, arg) { 
     restoreMechanism.configureState(arg);
   }); 
-  menu.setLOD(function(message, arg) { 
+  menu.onLOD(function(message, arg) { 
     lod.setLOD(arg);
     //lattice.setOctahedronDetail(arg);
     //motifEditor.setOctahedronDetail(arg);
   }); 
-  menu.setSphereSegments(function(message, arg) {  
-    //motifEditor.setSphereSegments(arg);
-  });
- 
-
-  // to read the json file
   
-
+  // to read the json file
+   
   var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ; 
   
