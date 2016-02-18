@@ -223,9 +223,11 @@ define([
 
         }
         else if (argument.extention === 'png'){
+            
             // Caprture Snapshot //
+            
             var lod = this.LOD.lodLevel;
-            this.LOD.setLOD(5);
+            this.LOD.setLOD({lod:5});
 
             this.crystalRenderer.enabledRenders.doll = false;
             this.crystalRenderer.enabledRenders.compass = false;
@@ -297,7 +299,7 @@ define([
                 _this.crystalRenderer.enabledRenders.compass = true;
                 _this.crystalRenderer.enabledRenders.navCube = true;
                 divToPrint.remove(); 
-                _this.LOD.setLOD(lod);
+                _this.LOD.setLOD({lod :lod});
               }
             });
             

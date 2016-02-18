@@ -22,7 +22,7 @@ define([
     this.lattice = lattice;
     this.motifEditor = motifEditor;
     this.menu = menu;
-    this.lodLevel = 3;
+    this.lodLevel = 4;
      
   } 
   LOD.prototype.setLOD = function(arg){ 
