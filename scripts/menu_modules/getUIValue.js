@@ -281,6 +281,10 @@ define([
             case 'lod':{
                 return $stringEditor.inputIsNumber(html.visual.lod.lod.val());
             }
+            case 'autoQuality':{
+                if (html.visual.parameters.renderizationQuality.autoQuality.hasClass('active')) return true;
+                else return false;
+            }
             case 'lowQuality':{
                 if (html.visual.parameters.renderizationQuality.lowQuality.hasClass('active')) return true;
                 else return false;
@@ -445,7 +449,20 @@ define([
             case 'motifZScreenColor':{
                 return '#'+html.visual.tools.colorPickers.motifZScreen.spectrum('get').toHex();
             }
-                
+            
+            // Library //
+            case 'frameIT':{
+                if (html.library.png.frameIT.hasClass('active')) return true;
+                else return false;
+            }
+            case 'qrCode':{
+                if (html.library.png.qrCode.hasClass('active')) return true;
+                else return false;
+            }
+            case 'printMode':{
+                if (html.library.png.printMode.hasClass('active')) return true;
+                else return false;
+            }
         };
     };
     
@@ -512,6 +529,7 @@ define([
         
         // Retrieve Visual Tab Values //
         app.lod = retrieveValueFromID('lod');
+        app.autoQuality = retrieveValueFromID('autoQuality');
         app.lowQuality = retrieveValueFromID('lowQuality');
         app.mediumQuality = retrieveValueFromID('mediumQuality');
         app.highQuality = retrieveValueFromID('highQuality');
@@ -555,6 +573,11 @@ define([
         app.motifXScreenColor = retrieveValueFromID('motifXScreenColor');
         app.motifYScreenColor = retrieveValueFromID('motifYScreenColor');
         app.motifZScreenColor = retrieveValueFromID('motifZScreenColor');
+        
+        // Retrieve PNG options //
+        app.frameIT = retrieveValueFromID('frameIT');
+        app.qrCode = retrieveValueFromID('qrCode');
+        app.printMode = retrieveValueFromID('printMode');
         
         return app;
     };

@@ -911,10 +911,19 @@ define([
             }
                 
             // Visual Tab
+            case 'autoQuality':{
+                if (value === true){
+                    _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
+                    html.visual.parameters.renderizationQuality.autoQuality.addClass('active');
+                }
+                else html.visual.parameters.renderizationQuality.autoQuality.removeClass('active');
+                break;
+            }
             case 'lowQuality':{
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.lowQuality.addClass('active');
+                    takeAction('lod',1.5);
                 }
                 else html.visual.parameters.renderizationQuality.lowQuality.removeClass('active');
                 break;
@@ -923,6 +932,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.mediumQuality.addClass('active');
+                    takeAction('lod',2.5);
                 }
                 else html.visual.parameters.renderizationQuality.mediumQuality.removeClass('active');
                 break;
@@ -931,6 +941,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.highQuality.addClass('active');
+                    takeAction('lod',3.5);
                 }
                 else html.visual.parameters.renderizationQuality.highQuality.removeClass('active');
                 break;
@@ -1337,6 +1348,21 @@ define([
                     html.library.project.tags.tagit("createTag", $parameter); 
                 });
             }
+            case 'frameIT':{
+                if (value === true) html.library.png.frameIT.attr('class','active btn btn-purple-dark');
+                else html.library.png.frameIT.attr('class','btn btn-light');
+                break;
+            }
+            case 'qrCode':{
+                if (value === true) html.library.png.qrCode.attr('class','active btn btn-purple-dark');
+                else html.library.png.qrCode.attr('class','btn btn-light');
+                break;
+            }
+            case 'printMode':{
+                if (value === true) html.library.png.printMode.attr('class','active btn btn-purple-dark');
+                else html.library.png.printMode.attr('class','btn btn-light');
+                break;
+            }
                 
             //IAC Box
             case 'iacVisibility':{
@@ -1469,6 +1495,11 @@ define([
                 takeAction('noteBody','');
                 takeAction('noteColor','transparent');
                 $menu.reset('notesTable');
+                
+                // Library //
+                takeAction('frameIT',true);
+                takeAction('qrCode',true);
+                takeAction('printMode',true);
                 break;
             }
                 
@@ -1811,6 +1842,10 @@ define([
                 PubSub.publish(events.LOD, value);
                 break;
             }
+            case 'autoQuality': {
+                PubSub.publish(events.AUTO_REND_QUALITY, value);
+                break;
+            }
             case 'lowQuality': {
                 PubSub.publish(events.LOW_REND_QUALITY, value);
                 break;
@@ -2111,9 +2146,15 @@ define([
         $menu.reset('atomTable');
         html.motif.other.nameContainer.hide();
         $menu.reset('motifCollisions');
+        
+        // Library
+        takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
+        takeAction('qrCode',appUI.libraryTab.pngOptions.qrCode);
+        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
 
         // Visual //
         takeAction('lod', appUI.visualTab.lod.lod);
+        takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
         takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
         takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
         takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);

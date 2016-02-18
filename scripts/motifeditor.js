@@ -653,7 +653,9 @@ define([
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
     var val = (par.step === undefined) ? parseFloat(par.cellVolume) : parseFloat(par.step);
-
+    if(val <= 0 ) {
+      return;
+    }
     var newVals = {x : 1, y : 1, z : 1};
    
     val /= 100;
