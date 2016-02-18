@@ -175,6 +175,7 @@ define([
         HIGHLIGHT_TANGENCY: 'menu.highlight_tangency',
         SET_LOD: 'menu.SET_LOD',
         SET_SPHERE_SEGMENTS: 'menu.SET_SPHERE_SEGMENTS',
+        AUTO_REND_QUALITY: 'menu.auto_rend_quality',
         LOW_REND_QUALITY: 'menu.low_rend_quality',
         MEDIUM_REND_QUALITY: 'menu.medium_rend_quality',
         HIGH_REND_QUALITY: 'menu.high_rend_quality',
@@ -1132,6 +1133,9 @@ define([
     };
     Menu.prototype.setSphereSegments = function(callback){
         PubSub.subscribe(events.SET_SPHERE_SEGMENTS, callback);
+    };
+    Menu.prototype.onAutoRenderizationQuality = function(callback){
+        PubSub.subscribe(events.AUTO_REND_QUALITY, callback);
     };
     Menu.prototype.onLowRenderizationQuality = function(callback){
         PubSub.subscribe(events.LOW_REND_QUALITY, callback);

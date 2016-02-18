@@ -64,35 +64,9 @@ define([
                         publish:{lod: ui.value}
                     }
                 });
-                // Set Quality //
-                $setUI.setValue({
-                    lodQuality:{
-                        value: ui.value
-                    }
-                });
                 // Input //
                 html.visual.lod.lod.val(ui.value);
-            },
-            stop: function(event,ui){
-                if (ui.value > 3.4) $userDialog.showWarningDialog({ messageID: 3, caller: html.visual.lod.lodSlider });
             }
-        });
-        html.visual.lod.lodSlider.on('actionFail', function() {
-            // Publish //
-            $setUI.setValue({
-                lod:{
-                    publish:{lod: 2.5}
-                }
-            });
-            // Set Quality //
-            $setUI.setValue({
-                lodQuality:{
-                    value: 2.5
-                }
-            });
-            // Input //
-            html.visual.lod.lod.val(2.5);
-            html.visual.lod.lodSlider.slider('value',2.5);
         });
         _.each(html.visual.parameters.renderizationQuality, function($parameter, k) {
             $parameter.on('click', function() {

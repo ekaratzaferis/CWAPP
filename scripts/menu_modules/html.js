@@ -209,6 +209,7 @@ define([
             onTop3DCell: jQuery('#3DonTopCell')
         };
         this.visual.parameters.renderizationQuality = {
+            autoQuality: jQuery('#autoRenderizationQuality'),  
             lowQuality: jQuery('#lowRenderizationQuality'),  
             mediumQuality: jQuery('#mediumRenderizationQuality'),  
             highQuality: jQuery('#highRenderizationQuality')  
@@ -304,7 +305,14 @@ define([
             toggler: jQuery('.btn_alternate_stl_toggler')
         };
         this.library.png = {
+            lowRes: jQuery('#lowPNG'),
+            mediumRes: jQuery('#mediumPNG'),
+            highRes: jQuery('#highPNG'),
+            frameIT: jQuery('#frameIT_png'),
+            qrCode: jQuery('#qr_png'),
+            printMode: jQuery('#print_png'),
             target: jQuery('#png_alternate_actions'),
+            options: jQuery('#png_alternate_options'),
             toggler: jQuery('.btn_alternate_png_toggler')
         };
         this.library.saveOnline = {

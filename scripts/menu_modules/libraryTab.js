@@ -152,7 +152,101 @@ define([
         
         // SnapShot //
         html.library.png.toggler.on('click', function(){
-            PubSub.publish('menu.export_png', 'png'); 
+            if (html.library.png.target.is(':visible'))
+            {
+                html.library.png.target.slideUp('fast');
+                html.library.png.options.slideUp('fast');
+                jQuery(this).removeClass('active');
+            }
+            else
+            {
+                html.library.png.target.slideDown('fast');
+                html.library.png.options.slideDown('fast');
+                jQuery(this).addClass('active');
+            }
+            return false;
+        });
+        html.library.png.lowRes.on('click',function(){
+            var arg = {
+                type: 'png',
+                resolution: 'low',
+                pngOptions: getPNGOptions()
+            };
+            PubSub.publish('menu.export_png', arg);
+        });
+        html.library.png.mediumRes.on('click',function(){
+            var arg = {
+                type: 'png',
+                resolution: 'medium',
+                pngOptions: getPNGOptions()
+            };
+            PubSub.publish('menu.export_png', arg);
+        });
+        html.library.png.highRes.on('click',function(){
+            var arg = {
+                type: 'png',
+                resolution: 'high',
+                pngOptions: getPNGOptions()
+            };
+            PubSub.publish('menu.export_png', arg);
+        });
+        html.library.png.frameIT.on('click',function(){
+            var value = undefined;
+            (html.library.png.frameIT.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                frameIT:{
+                    value:value
+                }
+            });
+        });
+        html.library.png.qrCode.on('click',function(){
+            var value = undefined;
+            (html.library.png.qrCode.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                qrCode:{
+                    value:value
+                }
+            });
+        });
+        html.library.png.printMode.on('click',function(){
+            var value = undefined;
+            (html.library.png.printMode.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                printMode:{
+                    value:value
+                }
+            });
+        });
+        // Tooltips //
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'lowPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(25)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'mediumPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(26)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'highPNG',
+            'placement': 'top',
+            'message': $messages.getMessage(27)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'frameIT_png',
+            'placement': 'top',
+            'message': $messages.getMessage(33)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'qr_png',
+            'placement': 'top',
+            'message': $messages.getMessage(34)
+        });
+        $tooltipGenerator.addOnHoverTooltip({
+            'target': 'print_png',
+            'placement': 'top',
+            'message': $messages.getMessage(35)
         });
         
         // STL //
@@ -332,6 +426,15 @@ define([
             html.library.project.name.focus();
             return false;
         }
+    };
+    
+    // Read Enabled PNG Options //
+    function getPNGOptions(){
+        var result = {};
+        (html.library.png.frameIT.hasClass('active')) ? result.frameIT = true : result.frameIT = false;
+        (html.library.png.qrCode.hasClass('active')) ? result.qrCode = true : result.qrCode = false;
+        (html.library.png.printMode.hasClass('active')) ? result.printMode = true : result.printMode = false;
+        return result;
     };
     
     // Module Interface / category = 'Name' OR 'Desc' OR 'Tags' //

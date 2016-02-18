@@ -99,6 +99,15 @@ define([
                 value: true    
             }
         });
+        html.notes.other.table.find('tbody').sortable({
+            appendTo: document.body,
+            axis: 'y',
+            containment: "parent",
+            cursor: "move",
+            items: "> tr",
+            tolerance: "pointer",
+            cancel: 'td.visibility'
+        });
         html.notes.other.table.hide('slow');
         
         // Buttons //
