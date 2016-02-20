@@ -1,5 +1,4 @@
-'use strict';
-
+  
 define([
   'three',
   'explorer',
