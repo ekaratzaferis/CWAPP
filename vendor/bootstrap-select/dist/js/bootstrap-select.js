@@ -1,10 +1,12 @@
  
 define([
     'jquery',
-    'jquery-ui' 
+    'jquery-ui', 
+    'bootstrap' 
 ], function(
     jQuery,
-    jQuery_ui 
+    jQuery_ui,
+    bootstrap 
 ) 
 { 
   'use strict';
