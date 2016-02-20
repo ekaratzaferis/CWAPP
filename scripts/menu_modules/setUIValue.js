@@ -917,7 +917,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.lowQuality.addClass('active');
-                    takeAction('lod',1.5);
+                    takeAction('lod',2);
                 }
                 else html.visual.parameters.renderizationQuality.lowQuality.removeClass('active');
                 break;
@@ -926,7 +926,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.mediumQuality.addClass('active');
-                    takeAction('lod',2.5);
+                    takeAction('lod',3);
                 }
                 else html.visual.parameters.renderizationQuality.mediumQuality.removeClass('active');
                 break;
@@ -935,7 +935,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.highQuality.addClass('active');
-                    takeAction('lod',3.5);
+                    takeAction('lod',4);
                 }
                 else html.visual.parameters.renderizationQuality.highQuality.removeClass('active');
                 break;
