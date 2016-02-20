@@ -3,10 +3,10 @@
 
 define([
   'pubsub', 'three', 'underscore', 
-  'atomSphere','jquery-ui', 'jquery', 'unitCellAtom' 
+  'atomSphere','jquery-ui', 'unitCellAtom' 
 ], function(
   PubSub, THREE, _,
-  AtomSphere, jQuery_ui, jQuery, UnitCellAtom 
+  AtomSphere, jQuery_ui,  UnitCellAtom 
 ) {
   var events = {
     LOAD: 'motifeditor.load',

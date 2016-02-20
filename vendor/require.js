@@ -1839,7 +1839,7 @@ var requirejs, require, define;
      * @param {String} moduleName the name of the module.
      * @param {Object} url the URL to the module.
      */
-    req.load = function (context, moduleName, url) {
+    req.load = function (context, moduleName, url) {console.log(context, moduleName, url);
         var config = (context && context.config) || {},
             node;
         if (isBrowser) {

@@ -1,11 +1,27 @@
 
 'use strict';
 define([
-  'pubsub', 'three', 'underscore',
-  'point', 'grid','face','millervector','millerplane', 'crystalAtom', 'explorer'
+  'pubsub', 
+  'three', 
+  'underscore',
+  'point', 
+  'grid',
+  'face',
+  'millervector',
+  'millerplane', 
+  'crystalAtom', 
+  'explorer'
 ], function(
-  PubSub, THREE, _,
-  Point, Grid, Face, MillerVector, MillerPlane, CrystalAtom, Explorer
+  PubSub, 
+  THREE, 
+  _,
+  Point, 
+  Grid, 
+  Face, 
+  MillerVector, 
+  MillerPlane, 
+  CrystalAtom, 
+  Explorer
 ) {
   var events = {
     LOAD: 'lattice.load',
