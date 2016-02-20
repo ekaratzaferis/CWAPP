@@ -5,14 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'icheck',
-    'jColor'
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    icheck,
-    jColor
+    _
 ) 
 { 
     /* This module is used in order to enable/disable certain HTML elements, like inputs,buttons etc. */

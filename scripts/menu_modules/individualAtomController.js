@@ -5,18 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'jquery.matchHeight',
-    'bootstrap',
-    'bootstrap-select',
-    'jColor'
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    matchHeight,
-    bootstrap,
-    bootstrapSelect,
-    jColor
+    _
 ) 
 {
     /* The module implements the Individual Atom Controller, which is a small panel for the atom customization. */ 

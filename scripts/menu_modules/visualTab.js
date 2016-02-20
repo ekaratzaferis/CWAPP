@@ -5,14 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'icheck',
-    'jColor'
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    icheck,
-    jColor
+    _
 ) 
 {
     /* This module handles the Visualization Tab, which is a simple collection of buttons and inputs! */
