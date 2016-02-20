@@ -4,8 +4,11 @@
 // Dependecies
 
 define([
+    'jquery',
+    'jquery-ui',
     'pubsub',
     'underscore',
+    'bootstrap',
     'icheck',
     'jquery.matchHeight',
     'jquery.mCustomScrollbar.concat.min',
@@ -32,8 +35,11 @@ define([
     'jquery.qrcode-0.12.0.min',
     'menu_html'
 ], function(
+    jQuery,
+    jQuery_ui,
     PubSub, 
     _,
+    bootstrap,
     iCheck,
     matchHeight,
     customScrollbar,
