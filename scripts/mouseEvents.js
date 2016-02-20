@@ -3,15 +3,13 @@
 'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'pubsub',
   'underscore',
   'motifExplorer',
   'navCubeHud'
 ], function(
-  THREE,
-  jQuery,
+  THREE, 
   PubSub,
   _,
   MotifExplorer,

@@ -3,14 +3,12 @@
 //'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'pubsub',
   'underscore', 
   'dollExplorer'
 ], function(
-  THREE,
-  jQuery,
+  THREE, 
   PubSub,
   _, 
   DollExplorer 

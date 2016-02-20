@@ -1,17 +1,13 @@
 /*global define*/
 'use strict';
 
-define([
-  'jquery',
-  'jquery-ui',
+define([ 
   'pubsub',
   'underscore',  
   'millervector',
   'millerplane',
   'atomSphere' 
-], function(
-  jQuery,
-  jQuery_ui,
+], function( 
   PubSub,
   _,
   MillerVector,

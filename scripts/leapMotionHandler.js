@@ -2,13 +2,12 @@
 
 define([
   "three", 
-  "underscore",
-  "jquery",
+  "underscore", 
   "leapMotion"
 ], function(
   THREE, 
   _,
-  jQuery
+  Leap
 ) {
   
   var zoomSpeed = 0.5 ;
@@ -74,7 +73,7 @@ define([
 
           var leftHand, rightHand; 
           var numOfHands = frame.hands.length ;
-          console.log(numOfHands);
+          
           if(_this.dollEditor.dollOn === true){  
             if(_this.trackingSystem === 'palm'){ 
               if(numOfHands === 2){

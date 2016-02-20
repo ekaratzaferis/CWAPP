@@ -2,12 +2,10 @@
 
 define([
   "three", 
-  "underscore",
-  "jquery"
+  "underscore" 
 ], function(
   THREE, 
-  _,
-  jQuery
+  _ 
 ) {
  
   function TabActions(lattice, motifEditor, crystalRenderer, unitCellRenderer,crystalScreenEvents, motifRenderer, dollEditor, hudCube, hudArrows, CubeEvent, sceneResizer, gearTour) { 

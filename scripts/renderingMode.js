@@ -2,12 +2,10 @@
 
 define([
   "three", 
-  "underscore",
-  "jquery"
+  "underscore" 
 ], function(
   THREE, 
-  _,
-  jQuery
+  _ 
 ) {
  
   function RenderingMode(crystalScene, unitCellScene, motifScene) { 
