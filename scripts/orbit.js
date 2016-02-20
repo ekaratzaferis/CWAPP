@@ -2,13 +2,11 @@
 'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'threejs-controls/OrbitControls', // no AMD module
   'threejs-controls/OrbitAndPanControls' // no AMD module
 ], function(
-  THREE,
-  jQuery
+  THREE 
 ) {
   var mutualCamPosParam = new THREE.Vector3();
 

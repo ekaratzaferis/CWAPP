@@ -5,9 +5,7 @@ define([
   'pubsub', 
   'three', 
   'underscore', 
-  'atomSphere',
-  'jquery-ui', 
-  'jquery', 
+  'atomSphere',  
   'unitCellAtom',
   'unitCellExplorer' ,
   'csg',
@@ -15,9 +13,7 @@ define([
   'motifExplorer'
 ], function(
   PubSub, THREE, _,
-  AtomSphere, 
-  jQuery_ui, 
-  jQuery, 
+  AtomSphere,  
   UnitCellAtom, 
   UnitCellExplorer,
   csg,

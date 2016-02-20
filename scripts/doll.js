@@ -3,8 +3,7 @@
 'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'pubsub',
   'underscore', 
   'dollExplorer'

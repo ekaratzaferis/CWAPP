@@ -2,13 +2,11 @@
 
 define([
   "three", 
-  "underscore",
-  "jquery",
+  "underscore", 
   "jszip"
 ], function(
   THREE, 
-  _,
-  jQuery,
+  _, 
   jszip
 ) {
     // Zipper //

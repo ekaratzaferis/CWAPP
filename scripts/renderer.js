@@ -3,14 +3,12 @@
 'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'pubsub',
   'underscore',
   'OculusRiftEffect'
 ], function(
-  THREE,
-  jQuery,
+  THREE, 
   PubSub,
   _,
   OculusRiftEffect

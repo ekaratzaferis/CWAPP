@@ -8,9 +8,7 @@ require.config({
     'three': '../vendor/three',
     'threejs-controls/OrbitControls': '../vendor/threejs-controls/OrbitControls',
     'threejs-controls/OrbitAndPanControls': '../vendor/threejs-controls/OrbitAndPanControls',
-    'underscore': '../vendor/underscore',
-    'jquery': '../vendor/jquery',
-    'jquery-ui': '../vendor/jquery-ui/jquery-ui',
+    'underscore': '../vendor/underscore', 
     'csg': '../vendor/csg',
     'threeCSG': '../vendor/ThreeCSG',
     'keyboardState': '../vendor/keyboardState',
@@ -20,8 +18,7 @@ require.config({
     'icheck': '../vendor/icheck/icheck',
     'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select.min',
-    'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
-    'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
+    'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min', 
     'jColor': '../vendor/colorpicker/spectrum',
     'STLExporter': '../vendor/STLExporter',
     'FileSaver': '../vendor/FileSaver',
@@ -73,12 +70,7 @@ require.config({
     'RenderPass': { deps: [ 'three' ] },
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
-    'OculusRiftEffect': { deps: [ 'three' ] },
-    'tooltipGenerator': { deps: [ 'jquery' ] },
-    'menu': { deps: [ 'jquery' ] },
-    'menu': { deps: [ 'jquery-ui' ] },
-    'menu': { deps: [ 'jquery.matchHeight' ] },
-    'menu': { deps: [ 'jquery.mCustomScrollbar.concat.min' ] }
+    'OculusRiftEffect': { deps: [ 'three' ] } 
   }
 });
 
@@ -207,7 +199,7 @@ require([
     menu.showWarningDialog({message : 'Oops, seems your browser does not support WebGL. Check out http://get.webgl.org/, or try installing the latest version of Chrome ( https://www.google.com/chrome ), or Firefox ( https://www.mozilla.org/en-US/firefox )'});
     return; 
   }
-  
+  console.log(999999);
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;

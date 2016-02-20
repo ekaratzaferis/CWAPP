@@ -4,14 +4,12 @@
 
 define([
   'three',
-  'underscore',
-  'jquery',
+  'underscore', 
   'navArrowsHud',
   'renderer'
 ], function(
   THREE,
-  _,
-  jQuery,
+  _, 
   NavArrowsHud,
   Renderer
 ) {

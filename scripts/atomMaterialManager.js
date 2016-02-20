@@ -3,13 +3,11 @@
 'use strict';
 
 define([
-  'three',
-  'jquery',
+  'three', 
   'pubsub',
   'underscore' 
 ], function(
-  THREE,
-  jQuery,
+  THREE, 
   PubSub,
   _  
 ) { 

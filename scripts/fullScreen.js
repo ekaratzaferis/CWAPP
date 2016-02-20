@@ -1,11 +1,9 @@
 
 'use strict';
 
-define([ 
-  'jquery', 
+define([  
   'underscore'
 ], function( 
-  jQuery, 
   _
 ) { 
 
