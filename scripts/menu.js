@@ -4,14 +4,11 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
     'underscore',
     'icheck',
     'jquery.matchHeight',
     'jquery.mCustomScrollbar.concat.min',
-    'bootstrap',
     'bootstrap-select',
     'jColor',
     'individualAtomController',
@@ -35,14 +32,11 @@ define([
     'jquery.qrcode-0.12.0.min',
     'menu_html'
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
     _,
     iCheck,
     matchHeight,
     customScrollbar,
-    bootstrap,
     bootstrapSelect,
     jColor,
     individualAtomController,

@@ -4,19 +4,13 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
     'underscore',
-    'bootstrap',
     'icheck',
     'jColor'
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
     _,
-    bootstrap,
     icheck,
     jColor
 ) 

@@ -4,14 +4,10 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
     'underscore',
     'jquery.mCustomScrollbar.concat.min',
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
     _,
     customScrollbar

@@ -4,17 +4,11 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
-    'underscore',
-    'bootstrap'
+    'underscore'
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
-    _,
-    bootstrap
+    _
 ) 
 {   /* This module handles the motif tab. It assign listeners for the user input, and maintains a list of all atoms that the user has added.
         - Motif Inputs Panel
