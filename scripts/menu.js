@@ -293,7 +293,6 @@ define([
             stringEditor: stringEditorModule
         });
         
-        
     /* --------------
        Hover Tooltips
        -------------- */

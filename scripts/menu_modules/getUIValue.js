@@ -5,14 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'icheck',
-    'jColor'
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    icheck,
-    jColor
+    _
 ) 
 {    
     /* This module is used in order to get the current value/state of an HTML element. */

@@ -5,14 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'icheck',
-    'jColor'
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    icheck,
-    jColor
+    _
 ) 
 {    
     /* This modules changes every UI input/button/element.
