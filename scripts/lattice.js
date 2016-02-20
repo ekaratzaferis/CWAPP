@@ -3609,7 +3609,7 @@ define([
        m++; 
     };
      
-    if(this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal'){
+    if(this.latticeName === 'hexagonal'){
       if( h!=0 && k!=0 && l!=0) { 
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
@@ -3878,8 +3878,7 @@ define([
         });
       }
     }  
-
-
+ 
   };  
   Lattice.prototype._planeState = function (state){ 
     var _this = this ;

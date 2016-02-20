@@ -905,8 +905,10 @@ require([
     unitCellRenderer.initStereoEffect({sideBySide : arg.sideBySideCell});
   });
   menu.onExportPNG(function(message, arg) { 
-    fitToCrystal.fit();
-    //sceneResizer.resize( 'crystal', {width : 2000, height : 2000});
+    if(arg.pngOptions.frameIT){
+      fitToCrystal.fit(); 
+    }
+     
     storeMechanism.exportPNG(arg);
   });
   menu.onLowRenderizationQuality(function(message, arg) { 

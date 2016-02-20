@@ -229,6 +229,7 @@ define([
     var x = lastAtom.object3d.position.x + lastAtom.getRadius() + newAtomRadius;
     var y = lastAtom.object3d.position.y ;
     var z = lastAtom.object3d.position.z ;
+    
     if(!flag) { 
       this.newSphere = {
         "object3d" : {"position" : { "x": x, "y": y, "z": z, 
@@ -653,9 +654,11 @@ define([
   Motifeditor.prototype.setManuallyCellVolume = function(par){ 
       
     var val = (par.step === undefined) ? parseFloat(par.cellVolume) : parseFloat(par.step);
+    
     if(val <= 0 ) {
       return;
     }
+
     var newVals = {x : 1, y : 1, z : 1};
    
     val /= 100;
@@ -6249,7 +6252,7 @@ define([
 
       case "hexagonal": 
         if( this.latticeType === 'primitive'){
-          if(_this.motifsAtoms.length === 0){ 
+          if(this.motifsAtoms.length === 0){ 
             dims.xDim = dims.yDim = dims.zDim = LL ; 
           }
           else if(_this.motifsAtoms.length >= 1){
@@ -6257,7 +6260,7 @@ define([
           } 
         }
         else if( this.latticeType === 'hexagonal'){  
-          if(_this.motifsAtoms.length >= 1){ 
+          if(this.motifsAtoms.length >= 1){ 
            
             dims.xDim = dims.zDim = this.findHexTangentLengths(dims);  
           }
