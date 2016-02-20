@@ -24,6 +24,7 @@ define([
     // Variables
     var target = undefined;
     var notes = {};
+    var cameraPosition = {};
     var idCounter = 0;
     
     // Module References
@@ -84,6 +85,13 @@ define([
                 html.interface.screen.wrapper.find('#'+notes.activeEntry).css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
                 html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
             }
+        });
+        html.notes.other.saveCameraCheckbox.iCheck('check');
+        html.notes.other.saveCameraCheckbox.on('ifChecked',function(){
+            html.notes.other.saveCameraCheckbox.addClass('active');
+        });
+        html.notes.other.saveCameraCheckbox.on('ifUnchecked',function(){
+            html.notes.other.saveCameraCheckbox.removeClass('active');
         });
         $disableUIElement.disableElement({
             noteTitle:{
@@ -247,6 +255,10 @@ define([
         };
         // Create on Canvas //
         createCanvasNote(id);
+        // Store Camera Position //
+        if (html.notes.other.saveCameraCheckbox.hasClass('active')) {
+            cameraPosition[id] = 'asd'; 
+        }
         
         // Handlers //
         html.notes.other.table.find('#'+id).find('.selectable').on('click',function(){
