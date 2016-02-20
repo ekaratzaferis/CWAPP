@@ -50,9 +50,9 @@ define([
       require(['lattice/' + latticeName], function(lattice) {
         _this.lattice.lattice = lattice; 
         _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
-        _this.lattice.latticeType = _this.lattice.lattice.latticeType ;  
-        _this.menu.restore(cwObj); 
+        _this.lattice.latticeType = _this.lattice.lattice.latticeType ;   
         _this.menu.setLatticeRestrictions(lattice.restrictions); 
+        _this.menu.restore(cwObj); 
         _this.beginRestoring(cwObj);
       }); 
     }

@@ -97,6 +97,8 @@ require.config({
     'libraryTab': { deps: [ 'jquery' ] }, 
     'notesTab': { deps: [ 'jquery' ] }, 
     'icheck': { deps: [ 'jquery' ] }, 
+    'motifEditor': { deps: [ 'jquery' ] }, 
+    'lattice': { deps: [ 'jquery' ] }, 
     'bootstrap': { deps: [ 'jquery-ui' ] }
   }
 });
