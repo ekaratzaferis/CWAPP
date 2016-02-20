@@ -82,8 +82,7 @@ require([
   'renderer', 
   'orbit', 
   'menu', 
-  'lattice', 
-  'snapshot',
+  'lattice',  
   'navArrowsHud',
   'navCubeHud',
   'motifeditor',
@@ -137,8 +136,7 @@ require([
   Renderer, 
   Orbit, 
   Menu, 
-  Lattice, 
-  Snapshot, 
+  Lattice,  
   NavArrowsHud, 
   NavCubeHud, 
   Motifeditor, 
@@ -185,7 +183,7 @@ require([
   LOD
 
 ) {
-
+ 
   var menu = new Menu();
    
   var bSupport = (function () { 
@@ -199,7 +197,7 @@ require([
     menu.showWarningDialog({message : 'Oops, seems your browser does not support WebGL. Check out http://get.webgl.org/, or try installing the latest version of Chrome ( https://www.google.com/chrome ), or Firefox ( https://www.mozilla.org/en-US/firefox )'});
     return; 
   }
-  console.log(999999);
+  
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;
@@ -272,9 +270,7 @@ require([
   motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 0,50,0, 15);
 
   crystalRenderer.startAnimation();  
-  
-  var canvasSnapshot = new Snapshot(crystalRenderer);
-
+   
   var orbitCrystal = new Orbit(
     crystalRenderer.getMainCamera(), 
     '#crystalRendererMouse',   
