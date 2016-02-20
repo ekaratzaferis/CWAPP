@@ -242,6 +242,7 @@ define([
     else{
       this.newSphere.object3d.position.set(x,y,z);
     }
+
     if(this.latticeSystem === 'cubic' && this.motifsAtoms.length === 1 && this.latticeType === 'primitive'){
       
       if(this.latticeType === 'primitive'){   
@@ -3536,7 +3537,7 @@ define([
       var c = _this.cellParameters.scaleY ; 
 
       var vertDist = a*Math.sqrt(3);
-      console.log(UnitCellAtom);
+      
       _.times(2, function(_y) {
         _.times(1 , function(_x) {
           _.times(1 , function(_z) {  
@@ -6166,7 +6167,7 @@ define([
     if(_.isUndefined(dimensions)) {
       return ;
     }
-
+ 
     var _this = this, dims = { xDim : dimensions.xDim, yDim : dimensions.yDim, zDim : dimensions.zDim } ;
        
     //    c = y,    b = x,    a = z

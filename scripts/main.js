@@ -18,7 +18,7 @@ require.config({
     'rStatsExtras': '../vendor/rStatsExtras',
     'leapMotion': '../vendor/leap-0.6.4',
     'icheck': '../vendor/icheck/icheck',
-    'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight',
+    'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select',
     'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
     'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
