@@ -3536,7 +3536,7 @@ define([
       var c = _this.cellParameters.scaleY ; 
 
       var vertDist = a*Math.sqrt(3);
-
+      console.log(UnitCellAtom);
       _.times(2, function(_y) {
         _.times(1 , function(_x) {
           _.times(1 , function(_z) {  
