@@ -97,6 +97,7 @@ require.config({
     'libraryTab': { deps: [ 'jquery' ] }, 
     'notesTab': { deps: [ 'jquery' ] }, 
     'icheck': { deps: [ 'jquery' ] },  
+    'jquery.matchHeight': { deps: [ 'jquery' ] },  
     'bootstrap': { deps: [ 'jquery-ui' ] }
   }
 });
