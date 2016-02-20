@@ -1,10 +1,11 @@
-"use strict";
-
+'use strict';
 define([
+  'jquery', 
   "three", 
   "underscore", 
   "jszip"
 ], function(
+  jQuery, 
   THREE, 
   _, 
   jszip

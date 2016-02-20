@@ -1,13 +1,12 @@
-
-/*global define*/
 'use strict';
-
 define([
+  'jquery', 
   'three', 
   'pubsub',
   'underscore', 
   'explorer'
 ], function(
+  jQuery, 
   THREE, 
   PubSub,
   _, 

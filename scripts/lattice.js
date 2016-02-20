@@ -1,6 +1,7 @@
 
 'use strict';
 define([
+  'jquery', 
   'pubsub', 
   'three', 
   'underscore',
@@ -12,6 +13,7 @@ define([
   'crystalAtom', 
   'explorer'
 ], function(
+  jQuery, 
   PubSub, 
   THREE, 
   _,

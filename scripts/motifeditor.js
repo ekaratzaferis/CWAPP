@@ -1,7 +1,6 @@
-/*global define*/
- 
-
+'use strict';
 define([
+  'jquery', 
   'pubsub', 
   'three', 
   'underscore', 
@@ -12,7 +11,10 @@ define([
   'threeCSG',
   'motifExplorer'
 ], function(
-  PubSub, THREE, _,
+  jQuery, 
+  PubSub, 
+  THREE, 
+  _,
   AtomSphere,  
   UnitCellAtom, 
   UnitCellExplorer,

@@ -1,13 +1,12 @@
-/*jslint browser: true*/
-/*global define*/
 'use strict';
-
 define([
+  'jquery', 
   'three', 
   'pubsub',
   'underscore',
   'OculusRiftEffect'
 ], function(
+  jQuery, 
   THREE, 
   PubSub,
   _,

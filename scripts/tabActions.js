@@ -1,9 +1,10 @@
-"use strict";
-
+'use strict';
 define([
+  'jquery', 
   "three", 
   "underscore" 
 ], function(
+  jQuery, 
   THREE, 
   _ 
 ) {

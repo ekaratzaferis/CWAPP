@@ -1,15 +1,13 @@
-
-/*global define*/
 'use strict';
-
 define([
+  'jquery', 
   'three', 
   'pubsub',
   'underscore', 
   'dollExplorer'
 ], function(
-  THREE,
   jQuery,
+  THREE, 
   PubSub,
   _, 
   DollExplorer 

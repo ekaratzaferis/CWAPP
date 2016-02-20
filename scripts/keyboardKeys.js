@@ -1,10 +1,11 @@
 'use strict';
-
 define([
+  'jquery', 
   'three',
   'explorer',
   'underscore' 
 ], function(
+  jQuery,
   THREE,
   Explorer,
   _ 
@@ -129,7 +130,7 @@ define([
 
       if(this.mutex === false){ 
         this.mutex = true;
-        if( $( "#secretMenu" ).is(":visible")){ console.log(0);
+        if( $( "#secretMenu" ).is(":visible")){  
           $( "#secretMenu" ).hide();
         }
         else{

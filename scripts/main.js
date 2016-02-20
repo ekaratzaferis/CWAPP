@@ -8,7 +8,9 @@ require.config({
     'three': '../vendor/three',
     'threejs-controls/OrbitControls': '../vendor/threejs-controls/OrbitControls',
     'threejs-controls/OrbitAndPanControls': '../vendor/threejs-controls/OrbitAndPanControls',
-    'underscore': '../vendor/underscore', 
+    'underscore': '../vendor/underscore',
+    'jquery': '../vendor/jquery',
+    'jquery-ui': '../vendor/jquery-ui/jquery-ui',
     'csg': '../vendor/csg',
     'threeCSG': '../vendor/ThreeCSG',
     'keyboardState': '../vendor/keyboardState',
@@ -18,7 +20,8 @@ require.config({
     'icheck': '../vendor/icheck/icheck',
     'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select.min',
-    'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min', 
+    'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
+    'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
     'jColor': '../vendor/colorpicker/spectrum',
     'STLExporter': '../vendor/STLExporter',
     'FileSaver': '../vendor/FileSaver',
@@ -70,7 +73,10 @@ require.config({
     'RenderPass': { deps: [ 'three' ] },
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
-    'OculusRiftEffect': { deps: [ 'three' ] } 
+    'OculusRiftEffect': { deps: [ 'three' ] },
+    'tooltipGenerator': { deps: [ 'jquery' ] },
+    'jquery-ui': { deps: [ 'jquery' ] }, 
+    'bootstrap': { deps: [ 'jquery-ui' ] }
   }
 });
 
@@ -183,7 +189,7 @@ require([
   LOD
 
 ) {
- 
+  
   var menu = new Menu();
    
   var bSupport = (function () { 
