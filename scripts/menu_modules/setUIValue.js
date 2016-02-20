@@ -2114,7 +2114,7 @@ define([
         takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider.toString());
         
         // Lattice Tab //
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);

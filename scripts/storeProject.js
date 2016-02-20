@@ -99,20 +99,7 @@ define([
         jsonText = jsonText.slice(0, -1);
         jsonText = jsonText + '}, "toggleButtons":{';
         _.each(argument.app.toggleButtons, function($parameter,k){ 
-
-            // fix_ by Thanos - to be removed
- 
-            // my temp fix
-            if( $parameter === true ||  $parameter === false){
-                jsonText = jsonText + '"' + k + '":' + $parameter + ','; 
-            } 
-            else{
-                jsonText = jsonText + '"' + k + '":' + 10.2 + ','; 
-            }
-            //
-
-            // old code : jsonText = jsonText + '"' + k + '":' + $parameter + ','; 
-
+            jsonText = jsonText + '"' + k + '":' + $parameter + ','; 
         });
         jsonText = jsonText.slice(0, -1);
         jsonText = jsonText + '}},'; // Close Toggle Buttons and Menu Ribbon //
@@ -122,21 +109,7 @@ define([
         jsonText = jsonText + '"latticeRepetition": { "repeatX":' + parseFloat(argument.app.repeatX) + ', "repeatY":' + parseFloat(argument.app.repeatY) + ', "repeatZ":' + parseFloat(argument.app.repeatZ) + '},';
         jsonText = jsonText + '"latticeLength": { "scaleX":' + parseFloat(argument.app.scaleX) + ', "scaleY":' + parseFloat(argument.app.scaleY) + ', "scaleZ":' + parseFloat(argument.app.scaleZ) + '},';
         jsonText = jsonText + '"latticeAngle": { "alpha":' + parseFloat(argument.app.alpha) + ', "beta":' + parseFloat(argument.app.beta) + ', "gamma":' + parseFloat(argument.app.gamma) + '},';
-
-        // fix_ by Thanos - to be removed
- 
-        // my temp fix
-
-        jsonText = jsonText + '"padlocks": { "lattice": { "state":' + !argument.app.latticePadlock + ', "disabled":' + !argument.app.latticePadlockDisable + '}, "motif": { "state":' + !argument.app.motifPadlock + ', "disabled":' + !argument.app.motifPadlockDisable + '}},';
-        
-        //
-
-        // old code
-        
-        //jsonText = jsonText + '"padlocks": { "lattice": { "state":' + argument.app.latticePadlock + ', "disabled":' + argument.app.latticePadlockDisable + '}, "motif": { "state":' + argument.app.motifPadlock + ', "disabled":' + argument.app.motifPadlockDisable + '}},';
-
-        //
-
+        jsonText = jsonText + '"padlocks": { "lattice": { "state":' + argument.app.latticePadlock + ', "disabled":' + argument.app.latticePadlockDisable + '}, "motif": { "state":' + argument.app.motifPadlock + ', "disabled":' + argument.app.motifPadlockDisable + '}},';
         jsonText = jsonText + '"cellVisualization": { "cellEdge": { "color":"' + argument.app.borderColor + '", "radius":' + parseFloat(argument.app.radius) + '}, "cellFace": { "color":"' + argument.app.filledColor + '", "opacity":' + parseFloat(argument.app.opacity) + '}}},';
         
         // Motif Tab //

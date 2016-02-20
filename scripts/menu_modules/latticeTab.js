@@ -1006,6 +1006,7 @@ define([
     
     // Module Interface //
     latticeTab.prototype.setLatticeRestrictions = function(argument){
+        console.log('sdfsdfsdf');
         setLatticeRestrictions(argument);  
     };
     // Update Auto-Refresh + Atom Addition State
@@ -1138,7 +1139,21 @@ define([
         else if ((motif === true) && (motifUnlocked === false)) {
             html.lattice.padlocks.motif.find('a').button('toggle');
             html.lattice.padlocks.motif.children().addClass('active');
-        }; 
+        };
+        
+        // LATTICE PARAMETERS //
+        if (lattice === true) {
+            $disableUIElement.disableElement({
+                latticeParameters:{ value: false } 
+            });   
+        }
+        else if (motif === false) {
+            $disableUIElement.disableElement({
+                latticeParameters:{ value: true } 
+            });   
+        }
+        console.log('mem');
+        console.log(lattice);
     };
     
     return latticeTab;
