@@ -4,8 +4,12 @@
 // Dependecies
 
 define([
+    'jquery',
+    'jquery-ui',
     'underscore'
 ], function(
+    jQuery,
+    jQuery_ui,
     _
 ) 
 {
