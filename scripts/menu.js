@@ -31,7 +31,7 @@ define([
     'motifTab',
     'libraryTab',
     'notesTab',
-    'tag-it.min',
+    'tag-it',
     'jquery.qrcode-0.12.0.min',
     'menu_html'
 ], function(

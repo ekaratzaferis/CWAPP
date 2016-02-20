@@ -44,7 +44,7 @@ require.config({
     'modals': 'menu_modules/modals',
     'menu_html': 'menu_modules/html',
     'dynamictexture': '../vendor/dynamictexture',
-    'tag-it.min': '../vendor/tag-it.min',
+    'tag-it': '../vendor/tag-it',
     'jquery.qrcode-0.12.0.min': '../vendor/jquery.qrcode-0.12.0.min',
     'SSAOShader': '../vendor/ssao/SSAOShader',
     'CopyShader': '../vendor/ssao/CopyShader',
