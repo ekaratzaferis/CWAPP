@@ -223,12 +223,12 @@ define([
 
         }
         else if (argument.extention === 'png'){
-            
+             
             // Caprture Snapshot //
             
             var lod = this.LOD.lodLevel;
             this.LOD.setLOD({lod:5});
-
+           
             this.crystalRenderer.enabledRenders.doll = false;
             this.crystalRenderer.enabledRenders.compass = false;
             this.crystalRenderer.enabledRenders.navCube = false;
@@ -236,25 +236,60 @@ define([
             var width = $('#crystalRenderer').find('canvas:first').width();
             var height = $('#crystalRenderer').find('canvas:first').height();
  
-            var newWidth = 4000;
-            var ratio = (4000/width); 
+            var newWidth, adjustedHeight, urlFontSize, urlOffset;
+            if(argument.metaData.resolution === 'low'){
+                newWidth = 1200;
+                adjustedHeight = 800;
+                urlFontSize = 10;
+                urlOffset = -4;
+            }
+            else if(argument.metaData.resolution === 'medium'){
+                newWidth = 1600;
+                adjustedHeight = 1200;
+                urlFontSize = 15;
+                urlOffset = -1;
+            }   
+            else{
+                newWidth = 3200;
+                adjustedHeight = 2400;
+                urlFontSize = 30;
+                urlOffset = 10;
+            }
+            var ratio = (newWidth/width); 
             var newHeight = ratio*height;
             
-            var tempRenderer = new THREE.WebGLRenderer({color : 0x000000,  antialias: true, preserveDrawingBuffer: true});
+            var bgRenderColor = (!argument.metaData.pngOptions.printMode) ? ('#'+(this.crystalRenderer.renderer.getClearColor()).getHexString()) : '#ffffff';
+ 
+            var tempRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true});
             
             tempRenderer.setSize( newWidth, newHeight );
-            tempRenderer.autoClear = false;
-            tempRenderer.setClearColor( '#000000');
-
+            tempRenderer.setClearColor(bgRenderColor);
+         
             var logoImageDims = { width : $('#appLogo').find( "img" ).width()*ratio, height : $('#appLogo').find( "img" ).height()*ratio};
             var QRImageDims = { width : logoImageDims.height, height : logoImageDims.height};
             var h = $('#appLogo').height()/3;
             var urlWPos = newWidth/2 + h + $('#appLogo').find('img:first').width()/2 + 1 ; 
             var leftQR = (newWidth/2 + (logoImageDims.width)/2 + 5);
             var bottomQR = (newHeight/15 + ((logoImageDims.height) - (QRImageDims.height/4) )/2  );
- 
+   
+            var urlDiv = (argument.metaData.pngOptions.qrCode) ? '<div style="position : absolute; transform-origin:0% 0%; width : '+(logoImageDims.height/2)+'px; transform: rotate(270deg);font-size:'+urlFontSize+'px; left : '+(leftQR+QRImageDims.height/4 + urlOffset)+'px; bottom : '+(bottomQR-20)+'px; color : #3f4247; font-weight: bold;">'+($('#saveOnlineLink').val())+' </div>' : ' <div> </div>';
+
+            var qrDiv = (argument.metaData.pngOptions.qrCode) ?  $('#QRImage').find( "img" ).clone().removeClass().css({
+                position : 'absolute', 
+                bottom : bottomQR+'px', 
+                left : leftQR+'px', 
+                width : (QRImageDims.width /4)+'px', 
+                height : (QRImageDims.height /4)+'px'
+            }) : ' <div> </div>';
 
             var divToPrint = $('#toPNGExport').clone();
+
+            var divToPrintWrapper = $('#toPNGExport').clone();
+
+            $(divToPrintWrapper) 
+                .css({position : 'absolute', top: '0px', left : '0px', 'z-index' : 1, height : adjustedHeight+'px', width : newWidth+'px' })
+                .appendTo(document.body); 
+
             $(divToPrint) 
                 .css( {position : 'absolute', top: '0px', left : '0px', 'z-index' : 1,width : newWidth+'px' })
                 .append(tempRenderer.domElement)
@@ -265,22 +300,16 @@ define([
                     width : (logoImageDims.width)+'px', 
                     height : (logoImageDims.height)+'px'
                 }))
-                .append($('#QRImage').find( "img" ).clone().removeClass().css({
-                    position : 'absolute', 
-                    bottom : bottomQR+'px', 
-                    left : leftQR+'px', 
-                    width : (QRImageDims.width /4)+'px', 
-                    height : (QRImageDims.height /4)+'px'
-                }))
-                .append('<div style="position : absolute; transform-origin:0% 0%; width : '+(logoImageDims.height)+'px; transform: rotate(270deg);font-size:40px; left : '+(leftQR+QRImageDims.height/4 +15 )+'px; bottom : '+(bottomQR-20)+'px; color : #3f4247; font-weight: bold;">'+($('#saveOnlineLink').val())+' </div>')
-                .appendTo(document.body);
+                .append(qrDiv)
+                .append(urlDiv)
+                .appendTo(divToPrintWrapper);
  
             tempRenderer.render(
                 this.crystalRenderer.explorer.object3d, 
                 this.crystalRenderer.cameras[0] 
             );  
    
-            html2canvas($(divToPrint), {
+            html2canvas($(divToPrintWrapper), {
               onrendered: function (canvas) { 
                 var imgSrc = canvas.toDataURL(undefined, 1); 
 
@@ -299,13 +328,11 @@ define([
                 _this.crystalRenderer.enabledRenders.compass = true;
                 _this.crystalRenderer.enabledRenders.navCube = true;
                 divToPrint.remove(); 
+                divToPrintWrapper.remove(); 
                 _this.LOD.setLOD({lod :lod});
               }
             });
-            
-           //this.crystalRenderer.renderer.clear();
-           // this.crystalRenderer.renderer.render( this.crystalRenderer.explorer.object3d, this.crystalRenderer.cameras[0] );
-            
+             
         }
         else if (argument.extention === 'zip'){
             
@@ -348,8 +375,7 @@ define([
         this.downLoadfile({
             extention: 'zip',
             name: 'cw_bandle',
-            details: argument,
-            crystalRenderer: this.crystalRenderer
+            details: argument 
         });
     };
     StoreProject.prototype.saveOnline = function(argument){
@@ -395,7 +421,7 @@ define([
             type: 'image/png',
             extention: 'png',
             name: 'cwSnapshot',
-            crystalRenderer: this.crystalRenderer
+            metaData : argument
         });
     };  
     StoreProject.prototype.getLatticeState = function() {

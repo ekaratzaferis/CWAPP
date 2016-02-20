@@ -10,21 +10,20 @@ Emergency TODOs
 1.cache materials and reduce materials from 3 to 2
 
 ALEX UI BUGS 
-1. uc viewport (resize and restore)
-2. atomRadius slider (restore) - fix on storeProject.js line : 109
+1. uc viewport (resize and restore) 
 3. Locker (restore)  - fix on storeProject.js line : 132
-4. when go to ME and add atom repeatX,Y,Z are locked (!) - fix on disableUIElement - fix on line 64
+4. when go to ME and add atom repeatX,Y,Z are locked (!) - fix on disableUIElement - fix on line 64 __
 5. html.interface.screen.scrollBars.mCustomScrollbar is not a function - interfaceResizer.js:68 
 6. jquery.js:250 Uncaught Error: no such method 'show' for tooltip widget instance
-7. default fog colorpicker 0x000000
+7. default fog colorpicker 0x000000 _
 8. Oculus and 3D monitor UI adjustments (full screen etc)
 9. create a function for hiding logo, x,y,z and appearing them when needed (oculus, stereoscopic etc)
 10. modal gia browser doesn;t support and disalbe everything (loading div)
-11. after adding motif lattice parameters are disabled 
+11. after adding motif lattice parameters are disabled _
 12. lattice selection locks forever at some point
-13. store in json stereoscopic effects seperatelyD
-13. using 2 instances of jquery, jquery-ui in html file
-14. restore (or reset) does not erase atom list
+13. store in json stereoscopic effects seperatelyD _
+13. using 2 instances of jquery, jquery-ui in html file _
+14. restore (or reset) does not erase atom list _
 
 TODO list 
     

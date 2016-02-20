@@ -35,14 +35,14 @@ define([
     this.motifView = false;
     this.ucViewport = false;
     this.hudCamera;
-    this.hudCameraCube;
-
+    this.hudCameraCube;  
     this.animateAtom = false;
     this.atom;
+
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: true }); 
-    this.backgroundColor =  '#000000' ;
-    this.renderer.setClearColor( '#000000');
+    this.backgroundColor =  '#000000' ; 
     this.renderer.setSize( width, height);
+
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // options are THREE.BasicShadowMap | THREE.PCFShadowMap | THREE.PCFSoftShadowMap
     this.renderer.physicallyBasedShading = true; 
