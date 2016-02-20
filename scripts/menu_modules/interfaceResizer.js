@@ -5,12 +5,10 @@
 
 define([
     'pubsub',
-    'underscore',
-    'jquery.mCustomScrollbar.concat.min',
+    'underscore'
 ], function(
     PubSub, 
-    _,
-    customScrollbar
+    _
 ) 
 {
     
