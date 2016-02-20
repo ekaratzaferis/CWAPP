@@ -4,8 +4,6 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
     'underscore',
     'jquery.matchHeight',
@@ -13,8 +11,6 @@ define([
     'bootstrap-select',
     'jColor'
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
     _,
     matchHeight,

@@ -4,17 +4,11 @@
 // Dependecies
 
 define([
-    'jquery',
-    'jquery-ui',
     'pubsub',
-    'underscore',
-    'bootstrap'
+    'underscore'
 ], function(
-    jQuery,
-    jQuery_ui,
     PubSub, 
-    _,
-    bootstrap
+    _
 ) 
 { 
     /* This module handles any store/open/search process related to the project.
