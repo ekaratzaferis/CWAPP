@@ -2108,7 +2108,9 @@ define([
         takeAction('faces',appUI.menuRibbon.toggleButtons.faces);
         takeAction('xyzAxes',appUI.menuRibbon.toggleButtons.xyzAxes);
         takeAction('abcAxes',appUI.menuRibbon.toggleButtons.abcAxes);
-        takeAction('unitCellViewport',appUI.menuRibbon.toggleButtons.unitCellViewport);
+        // Ignore Viewport //
+        takeAction('unitCellViewport',false);
+        //takeAction('unitCellViewport',appUI.menuRibbon.toggleButtons.unitCellViewport);
         takeActionWithoutPublish('planes',appUI.menuRibbon.toggleButtons.planes);
         takeActionWithoutPublish('directions',appUI.menuRibbon.toggleButtons.directions);
        
@@ -2148,16 +2150,16 @@ define([
         $menu.reset('motifCollisions');
         
         // Library
-        takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
+        /*takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
         takeAction('qrCode',appUI.libraryTab.pngOptions.qrCode);
-        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
+        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);*/
 
         // Visual //
-        takeAction('lod', appUI.visualTab.lod.lod);
+        /*takeAction('lod', appUI.visualTab.lod.lod);
         takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
         takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
         takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
-        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);
+        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);*/
         takeAction('wireframe',appUI.visualTab.visualParameters.renderizationMode.wireframe);
         takeAction('toon',appUI.visualTab.visualParameters.renderizationMode.toon);
         takeAction('flat',appUI.visualTab.visualParameters.renderizationMode.flat);

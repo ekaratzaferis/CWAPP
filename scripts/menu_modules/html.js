@@ -417,7 +417,8 @@ define([
         };
         this.notes.other = {
             body: jQuery('#noteBody'),
-            table: jQuery('#notesTable')  
+            table: jQuery('#notesTable'),
+            saveCameraCheckbox: jQuery('[name=saveCameraButton]')
         };
         
         // Interface //
