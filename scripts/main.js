@@ -19,7 +19,7 @@ require.config({
     'leapMotion': '../vendor/leap-0.6.4',
     'icheck': '../vendor/icheck/icheck',
     'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight',
-    'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select.min',
+    'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select',
     'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
     'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
     'jColor': '../vendor/colorpicker/spectrum',
