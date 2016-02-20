@@ -6,8 +6,16 @@
  * (c) 2013 Damir Sultanov, http://fronteed.com
  * MIT Licensed
  */
-
-(function($) {
+ 
+define([
+    'jquery',
+    'jquery-ui' 
+], function(
+    jQuery,
+    jQuery_ui 
+) 
+{ 
+ 
 
   // Cached vars
   var _iCheck = 'iCheck',
@@ -506,4 +514,4 @@
       input[_callback]('ifChanged')[_callback]('if' + capitalize(callback));
     }
   }
-})(window.jQuery || window.Zepto);
+}) ;
