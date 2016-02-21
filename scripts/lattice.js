@@ -4352,7 +4352,7 @@ define([
   // directions 
   Lattice.prototype.createMillerDirection = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
-    var hexagonal = (this.latticeName === 'hexagonal' && this.latticeType === 'hexagonal') ? true : false ;
+    var hexagonal = (this.latticeName === 'hexagonal') ? true : false ;
     var parameters = this.parameters ;
     var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
     var id  ; 
