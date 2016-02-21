@@ -18,7 +18,7 @@ require.config({
     'rStatsExtras': '../vendor/rStatsExtras',
     'leapMotion': '../vendor/leap-0.6.4',
     'icheck': '../vendor/icheck/icheck',
-    'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight',
+    'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select',
     'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
     'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
@@ -96,9 +96,8 @@ require.config({
     'latticeTab': { deps: [ 'jquery' ] }, 
     'libraryTab': { deps: [ 'jquery' ] }, 
     'notesTab': { deps: [ 'jquery' ] }, 
-    'icheck': { deps: [ 'jquery' ] }, 
-    'motifEditor': { deps: [ 'jquery' ] }, 
-    'lattice': { deps: [ 'jquery' ] }, 
+    'icheck': { deps: [ 'jquery' ] },  
+    'jquery.matchHeight': { deps: [ 'jquery' ] },  
     'bootstrap': { deps: [ 'jquery-ui' ] }
   }
 });

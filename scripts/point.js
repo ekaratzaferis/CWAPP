@@ -1,12 +1,11 @@
-  
+'use strict';
+
 define([
   'three',
-  'explorer',
-  'underscore'
+  'explorer' 
 ], function(
   THREE,
-  Explorer,
-  _
+  Explorer 
 ) {
   //var globGeometry = new THREE.SphereGeometry(0.04, 16, 16);
   var globGeometry = new THREE.OctahedronGeometry(0.04,2);
