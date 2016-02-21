@@ -345,6 +345,22 @@ define([
                 if (html.visual.parameters.onTop3D.hasClass('active')) return true;
                 else return false;
             }
+            case 'anaglyphCell':{
+                if (html.visual.stereoscopicCell.anaglyphCell.hasClass('active')) return true;
+                else return false;
+            }
+            case 'oculusCell':{
+                if (html.visual.stereoscopicCell.oculusCell.hasClass('active')) return true;
+                else return false;
+            }
+            case 'sideBySide3DCell':{
+                if (html.visual.stereoscopicCell.sideBySide3DCell.hasClass('active')) return true;
+                else return false;
+            }
+            case 'onTop3DCell':{
+                if (html.visual.stereoscopicCell.onTop3DCell.hasClass('active')) return true;
+                else return false;
+            }
             case 'crystalCamTargetOn':{
                 if (html.visual.parameters.crystalCamTargetOn.hasClass('active')) return true;
                 else return false;
@@ -542,6 +558,10 @@ define([
         app.oculus = retrieveValueFromID('oculus');
         app.sideBySide3D = retrieveValueFromID('sideBySide3D');
         app.onTop3D = retrieveValueFromID('onTop3D');
+        app.anaglyphCell = retrieveValueFromID('anaglyphCell');
+        app.oculusCell = retrieveValueFromID('oculusCell');
+        app.sideBySide3DCell = retrieveValueFromID('sideBySide3DCell');
+        app.onTop3DCell = retrieveValueFromID('onTop3DCell');
         app.crystalCamTargetOn = retrieveValueFromID('crystalCamTargetOn');
         app.crystalCamTargetOff = retrieveValueFromID('crystalCamTargetOff');
         app.fullScreen = retrieveValueFromID('fullScreen');

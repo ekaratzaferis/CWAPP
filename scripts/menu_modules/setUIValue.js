@@ -917,7 +917,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.lowQuality.addClass('active');
-                    takeAction('lod',1.5);
+                    takeAction('lod',2);
                 }
                 else html.visual.parameters.renderizationQuality.lowQuality.removeClass('active');
                 break;
@@ -926,7 +926,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.mediumQuality.addClass('active');
-                    takeAction('lod',2.5);
+                    takeAction('lod',3);
                 }
                 else html.visual.parameters.renderizationQuality.mediumQuality.removeClass('active');
                 break;
@@ -935,7 +935,7 @@ define([
                 if (value === true){
                     _.each(html.visual.parameters.renderizationQuality, function($param, a) { $param.removeClass('active');});
                     html.visual.parameters.renderizationQuality.highQuality.addClass('active');
-                    takeAction('lod',3.5);
+                    takeAction('lod',4);
                 }
                 else html.visual.parameters.renderizationQuality.highQuality.removeClass('active');
                 break;
@@ -1450,6 +1450,10 @@ define([
                 takeAction('oculus',false);
                 takeAction('sideBySide',false);
                 takeAction('onTop',false);
+                takeAction('anaglyphCell',false);
+                takeAction('oculusCell',false);
+                takeAction('sideBySideCell',false);
+                takeAction('onTopCell',false);
                 takeAction('crystalCamTargetOn',true);
                 takeAction('leapMotion',false);
                 takeAction('crystalClassic',true);
@@ -2114,9 +2118,10 @@ define([
         takeAction('highlightTangency',appUI.menuRibbon.toggleButtons.highlightTangency);
         
         // Atom Radius Slider //
-        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider);
+        takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider.toString());
         
         // Lattice Tab //
+        $menu.reset('collisions');
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);
         takeAction('repeatX',appUI.latticeTab.latticeRepetition.repeatX);
         takeAction('repeatY',appUI.latticeTab.latticeRepetition.repeatY);
@@ -2132,8 +2137,7 @@ define([
         takeAction('cellFaceColor',appUI.latticeTab.cellVisualization.cellFace.color);
         takeAction('radius',appUI.latticeTab.cellVisualization.cellEdge.radius.toString());
         takeAction('faceOpacity',appUI.latticeTab.cellVisualization.cellFace.opacity.toString());
-        $menu.reset('restrictions');
-        $menu.reset('collisions');
+        
         
         // Motif //
         takeAction('tangency',appUI.motifTab.tangency);
@@ -2144,16 +2148,16 @@ define([
         $menu.reset('motifCollisions');
         
         // Library
-        /*takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
+        takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
         takeAction('qrCode',appUI.libraryTab.pngOptions.qrCode);
-        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);*/
+        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
 
         // Visual //
-        /*takeAction('lod', appUI.visualTab.lod.lod);
+        takeAction('lod', appUI.visualTab.visualParameters.lod.lod.toString());
         takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
         takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
         takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
-        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);*/
+        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);
         takeAction('wireframe',appUI.visualTab.visualParameters.renderizationMode.wireframe);
         takeAction('toon',appUI.visualTab.visualParameters.renderizationMode.toon);
         takeAction('flat',appUI.visualTab.visualParameters.renderizationMode.flat);
@@ -2167,6 +2171,10 @@ define([
         takeAction('oculus',appUI.visualTab.visualParameters.stereoscopicEffect.oculus);
         takeAction('sideBySide',appUI.visualTab.visualParameters.stereoscopicEffect.sideBySide3D);
         takeAction('onTop',appUI.visualTab.visualParameters.stereoscopicEffect.OnTop3D);
+        takeAction('anaglyphCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.anaglyphCell);
+        takeAction('oculusCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.oculusCell);
+        takeAction('sideBySideCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.sideBySide3DCell);
+        takeAction('onTopCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.OnTop3DCell);
         takeAction('crystalCamTargetOn',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn);
         takeAction('crystalCamTargetOff',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOff);
         takeAction('leapMotion',appUI.visualTab.visualParameters.leapMotion);

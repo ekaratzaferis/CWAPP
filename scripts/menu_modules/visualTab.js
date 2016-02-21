@@ -361,6 +361,7 @@ define([
                 html.visual.fog.density.val(ui.value);
             }
         });
+        html.visual.fog.color.children().css('background','#000');
         html.visual.fog.color.spectrum({
             color: "#000000",
             allowEmpty:true,
