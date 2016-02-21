@@ -2117,6 +2117,7 @@ define([
         takeAction('atomRadiusSlider',appUI.menuRibbon.toggleButtons.atomRadiusSlider.toString());
         
         // Lattice Tab //
+        $menu.reset('collisions');
         takeAction('selectedLattice',appUI.latticeTab.latticeSelecion.selectedLattice);
         takeAction('repeatX',appUI.latticeTab.latticeRepetition.repeatX);
         takeAction('repeatY',appUI.latticeTab.latticeRepetition.repeatY);
@@ -2132,8 +2133,7 @@ define([
         takeAction('cellFaceColor',appUI.latticeTab.cellVisualization.cellFace.color);
         takeAction('radius',appUI.latticeTab.cellVisualization.cellEdge.radius.toString());
         takeAction('faceOpacity',appUI.latticeTab.cellVisualization.cellFace.opacity.toString());
-        $menu.reset('restrictions');
-        $menu.reset('collisions');
+        
         
         // Motif //
         takeAction('tangency',appUI.motifTab.tangency);

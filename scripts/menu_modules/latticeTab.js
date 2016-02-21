@@ -1006,7 +1006,6 @@ define([
     
     // Module Interface //
     latticeTab.prototype.setLatticeRestrictions = function(argument){
-        console.log('sdfsdfsdf');
         setLatticeRestrictions(argument);  
     };
     // Update Auto-Refresh + Atom Addition State
@@ -1143,6 +1142,7 @@ define([
         
         // LATTICE PARAMETERS //
         if (lattice === true) {
+            removeLatticeRestrictions();
             $disableUIElement.disableElement({
                 latticeParameters:{ value: false } 
             });   
@@ -1152,8 +1152,6 @@ define([
                 latticeParameters:{ value: true } 
             });   
         }
-        console.log('mem');
-        console.log(lattice);
     };
     
     return latticeTab;
