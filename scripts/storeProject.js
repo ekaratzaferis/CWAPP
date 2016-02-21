@@ -118,9 +118,12 @@ define([
         
         // Visual Tab //
         jsonText = jsonText + '"visualTab": { "visualParameters": { "renderizationMode": { "wireframe":' + argument.app.wireframe + ', "toon":' + argument.app.toon + ', "flat":' + argument.app.flat + ', "realistic":' + argument.app.realistic + '},';
+        jsonText = jsonText + '"renderizationQuality" : { "autoQuality":' + argument.app.autoQuality + ', "lowQuality":' + argument.app.lowQuality + ', "mediumQuality":' + argument.app.mediumQuality + ', "highQuality":' + argument.app.highQuality + '},';
+        jsonText = jsonText + '"lod" : { "lod":' + argument.app.lod + '},';
         jsonText = jsonText + '"lights" : { "lights":' + argument.app.lights + ', "ssao":' + argument.app.ssao + ', "shadows":' + argument.app.shadows + '},';
         jsonText = jsonText + '"visualizationMode" : { "distortionOn":' + argument.app.distortionOn + ', "distortionOff":' + argument.app.distortionOff + '},';
         jsonText = jsonText + '"stereoscopicEffect" : { "anaglyph":' + argument.app.anaglyph + ', "oculus":' + argument.app.oculus + ', "sideBySide3D":' + argument.app.sideBySide3D + ', "OnTop3D":' + argument.app.onTop3D + '},';
+        jsonText = jsonText + '"stereoscopicCellEffect" : { "anaglyphCell":' + argument.app.anaglyphCell + ', "oculusCell":' + argument.app.oculusCell + ', "sideBySide3DCell":' + argument.app.sideBySide3DCell + ', "OnTop3DCell":' + argument.app.onTop3DCell + '},';
         jsonText = jsonText + '"focalPoint" : { "crystalCamTargetOn":' + argument.app.crystalCamTargetOn + ', "crystalCamTargetOff":' + argument.app.crystalCamTargetOff + '},';
         jsonText = jsonText + '"fullScreen":' + argument.app.fullScreen + ', "leapMotion":' + argument.app.leapMotion + ',';
         jsonText = jsonText + '"crystalModelRepresentation":{ "crystalClassic":' + argument.app.crystalClassic + ', "crystalSubstracted":' + argument.app.crystalSubstracted + ', "crystalSolidVoid":' + argument.app.crystalSolidVoid + ', "crystalGradeLimited":' + argument.app.crystalGradeLimited + '},';
@@ -128,9 +131,13 @@ define([
         jsonText = jsonText + '"visualTools": { "menuZoom": { "autoZoom":' + argument.app.autoZoom + ', "zoom70":' + argument.app.zoom70 + ', "zoom80":' + argument.app.zoom80 + ', "zoom90":' + argument.app.zoom90 + ', "zoom100":' + argument.app.zoom100 + '},';
         jsonText = jsonText + '"fog": { "state":' + argument.app.fog + ', "color":"' + argument.app.fogColor + '", "density":' + parseFloat(argument.app.fogDensity) + '},';
         jsonText = jsonText + '"sound": { "state":' + argument.app.sounds + ', "volume":' + parseFloat(argument.app.soundVolume) + '},';
-        jsonText = jsonText + '"colorization": { "crystalScreenColor":"' + argument.app.crystalScreenColor + '", "cellScreenColor":"' + argument.app.cellScreenColor + '", "motifXScreenColor":"' + argument.app.motifXScreenColor + '", "motifYScreenColor":"' + argument.app.motifYScreenColor + '", "motifZScreenColor":"' + argument.app.motifZScreenColor + '"}}}';
+        jsonText = jsonText + '"colorization": { "crystalScreenColor":"' + argument.app.crystalScreenColor + '", "cellScreenColor":"' + argument.app.cellScreenColor + '", "motifXScreenColor":"' + argument.app.motifXScreenColor + '", "motifYScreenColor":"' + argument.app.motifYScreenColor + '", "motifZScreenColor":"' + argument.app.motifZScreenColor + '"}}},';
         
+        // Library Tab //
+        jsonText = jsonText + '"libraryTab": { "pngOptions": { "frameIT" :' + argument.app.frameIT + ', "qrCode":' + argument.app.qrCode + ', "printMode":' + argument.app.printMode + '}}';
+
         jsonText = jsonText + '},'; // Close App UI //
+        
         
         // Notes //
         jsonText = jsonText + '"notes":{';

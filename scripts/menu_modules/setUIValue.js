@@ -2153,7 +2153,7 @@ define([
         takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
 
         // Visual //
-        takeAction('lod', appUI.visualTab.lod.lod);
+        takeAction('lod', appUI.visualTab.visualParameters.lod.lod.toString());
         takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
         takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
         takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
