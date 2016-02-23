@@ -53,11 +53,12 @@ define([
         $setUIValue = argument.setUIValue;
         
         // Hide extra miller parameters and tables
+        
         html.pnd.other.hexICoord.hide('slow');
         html.pnd.other.hexICoord.hide('slow');
         html.pnd.tables.planes.hide('slow');
         html.pnd.tables.directions.hide('slow');
-        
+         
         // Inputs //
         _.each(html.pnd.planeParameters, function($parameter, k) {
             // Construct Color Picker //
@@ -281,6 +282,7 @@ define([
     // Module Interface //
     // Show Hide Extra Miller Parameters //
     pndTab.prototype.toggleExtraParameter = function(choice,action){
+        return;
         if ( (choice === 'i') && (action === 'block') ) html.pnd.other.hexICoord.show('fast');
         else if ( (choice === 'i')) html.pnd.other.hexICoord.hide('fast');
         else if ( (choice === 't') && (action === 'block') ) html.pnd.other.hexTCoord.show('fast');

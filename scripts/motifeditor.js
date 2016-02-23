@@ -258,9 +258,11 @@ define([
       } 
       
     }
-    else if(this.latticeSystem === 'hexagonal' && this.motifsAtoms.length === 1  ){
+    else if(this.latticeSystem === 'hexagonal' && this.motifsAtoms.length >= 1  ){
       this.tangentToThis = this.motifsAtoms[0] ;
-      this.setTangentAngle(0.0000, 35.2644 , parseFloat(  newAtomRadius + this.motifsAtoms[0].getRadius() ), this.motifsAtoms[0] );
+      var sign = (this.motifsAtoms.length % 2 == 0) ? -1 : 1;
+
+      this.setTangentAngle(0.0000, sign*35.2644 , parseFloat(  newAtomRadius + this.motifsAtoms[this.motifsAtoms.length-1].getRadius() ), this.motifsAtoms[this.motifsAtoms.length-1] );
    
       this.menu.editMEInputs(
         { 
@@ -2525,6 +2527,7 @@ define([
     }
     
     this.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true};
+
     if(this.viewMode !== 'cellClassic' ){ 
       this.setCSGmode({mode : 'cellClassic'} , 'reset', 'reconstruct');
       this.menu.chooseActiveUnitCellMode('cellClassic');
@@ -2989,13 +2992,10 @@ define([
     }
       
     if(_.isUndefined(restore)) {
-      this.cellPointsWithScaling(dimensions, true); // todo fix that true 
-    }
-    
-    if(_.isUndefined(restore)) {
+      this.cellPointsWithScaling(dimensions, true); // todo fix that true  
       this.cellPointsWithAngles();
-    } 
-  
+    }
+      
     this.box3.pos = pos;
 
     function createHelperObj(pos, radius, latticeIndex, x, y, z){
@@ -3660,7 +3660,7 @@ define([
     }
   };
   Motifeditor.prototype.leastVolume = function(restore){ 
-    
+
     if(restore !== undefined){
       return;
     }
@@ -6248,7 +6248,7 @@ define([
           dims.yDim = 2 * 1.3 * LL;  
         }  
       break;
-
+  
       case "hexagonal": 
         if( this.latticeType === 'primitive'){
           if(this.motifsAtoms.length === 0){ 
@@ -6259,9 +6259,27 @@ define([
           } 
         }
         else if( this.latticeType === 'hexagonal'){  
-          if(this.motifsAtoms.length >= 1){ 
+          if(this.motifsAtoms.length === 1){ 
            
-            dims.xDim = dims.zDim = this.findHexTangentLengths(dims);  
+            //dims.xDim = dims.zDim = this.findHexTangentLengths(dims); 
+
+            var r0 = this.motifsAtoms[0].getRadius();
+            var r1 = (this.motifsAtoms[1]) ? this.motifsAtoms[1].getRadius() : this.newSphere.getRadius();
+            
+            dims.xDim =  dims.zDim = r0 + r1; 
+            dims.yDim = (r0 + r1) * Math.sqrt(8/3)
+              
+          }
+          else if(this.motifsAtoms.length === 2){ 
+            
+            var r0 = this.motifsAtoms[0].getRadius();
+            var r1 = this.motifsAtoms[1].getRadius();
+            var r2 = (this.motifsAtoms[2]) ? this.motifsAtoms[2].getRadius() : this.newSphere.getRadius();
+            var lastAtomY = (this.motifsAtoms[2]) ? this.motifsAtoms[2].object3d.position.y : this.newSphere.object3d.position.y;
+            var r = _.max([ r0, r1, r2 ]);
+            dims.xDim =  dims.zDim = r*2; 
+            dims.yDim = lastAtomY + r*2;
+              
           }
         }
       break;
@@ -6299,8 +6317,7 @@ define([
             dims.xDim = 2 * LL;
             dims.yDim = LL;
           } 
-        }
-         
+        } 
       break;
 
       case "triclinic": 

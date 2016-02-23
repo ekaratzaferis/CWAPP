@@ -19,6 +19,8 @@ ALEX UI BUGS
 13. store in json stereoscopic effects seperatelyD _ 
 14. restore (or reset) does not erase atom list _
 
+15. angles theta and phi and r in ME do not update
+
 TODO list 
     
     6.  hex faces optimization 
