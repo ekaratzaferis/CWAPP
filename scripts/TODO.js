@@ -20,6 +20,7 @@ ALEX UI BUGS
 14. restore (or reset) does not erase atom list _
 
 15. angles theta and phi and r in ME do not update
+16. when reseting everything arrows to appear ME are visible in alttice screen
 
 TODO list 
     

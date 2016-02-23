@@ -216,6 +216,8 @@ define([
    
     // MOTIF EDITOR
 
+      this.motifEditor.produceUuid(true);
+      
       // remove 3d objects
 
       if(this.motifEditor.newSphere !== undefined){
@@ -528,8 +530,7 @@ define([
       if(atoms[i].id == cell.lastSphereAdded) {
         this.motifEditor.lastSphereAdded = atom ;
       }
-
-      this.motifEditor.produceUuid();
+ 
     } 
     
     this.motifEditor.cellVolume = {col : false, xInitVal : cell.cellVolume.xInitVal, yInitVal : cell.cellVolume.yInitVal, zInitVal : cell.cellVolume.zInitVal, aCol : false, bCol : false, cCol : false};

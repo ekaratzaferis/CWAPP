@@ -6679,15 +6679,16 @@ define([
     return m;
   };
 
-  var uuid = -1;
+  var uuid = 0;
 
   Motifeditor.prototype.produceUuid = function(reset) {
     if(reset !== undefined){
-      uuid = -1;
+      uuid = 0;
       return;
     }
     return uuid++;
   }
+
   THREE.ShaderTypes = { 
     'phongDiffuse' : {
 

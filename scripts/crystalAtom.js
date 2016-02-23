@@ -61,7 +61,7 @@ define([
   };
   CrystalAtom.prototype.addMaterial = function(color, position, opacity, renderingMode, identity, image) {
     var _this = this ;
-
+ 
     var material;  
 
     if(renderingMode === 'wireframe') {
@@ -143,7 +143,7 @@ define([
     if(this.object3d === undefined){
       return;
     }
- 
+    
     var _this = this;
     if(color === undefined){
       this.object3d.children[0].material.color = new THREE.Color( this.color );

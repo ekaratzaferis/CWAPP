@@ -139,9 +139,11 @@ define([
       this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
        
       var obj = crystalobjsIntersects[0].object ; 
-      var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});  
+      var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});
+         
+
       if(filteredAtom === undefined){
-        filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
+        filteredAtom = _.findWhere(this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
         if(filteredAtom === undefined){
           return;
         }
@@ -150,6 +152,7 @@ define([
       if(filteredAtom.object3d.visible === false){
         filteredAtom.object3d.visible = true ;
       }
+
       filteredAtom.setColorMaterial(0xCC2EFA, true);
       this.coloredAtomsExist = true; 
       document.getElementById(this.container).style.cursor = 'pointer';
@@ -221,6 +224,7 @@ define([
         };  
       }
     });
+
     return crystalObjs;
   };
 

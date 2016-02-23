@@ -748,8 +748,7 @@ define([
             );
           };
         };
-        
-
+         
         var farY = halfY + this.parameters.scaleY*this.parameters.repeatY ;
 
         for (var x = 0; x < this.parameters.repeatX; x++) {
@@ -4359,7 +4358,7 @@ define([
     var visible = this.toggleStates.directions;
 
     if(hexagonal){ 
-      console.log(millerParameters, temp, transform, _lastSaved);
+      
       t = -(u+v);
       var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
       var aLength = parseFloat(this.parameters.scaleZ) ; 
