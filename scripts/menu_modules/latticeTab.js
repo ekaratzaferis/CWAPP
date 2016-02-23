@@ -1138,7 +1138,20 @@ define([
         else if ((motif === true) && (motifUnlocked === false)) {
             html.lattice.padlocks.motif.find('a').button('toggle');
             html.lattice.padlocks.motif.children().addClass('active');
-        }; 
+        };
+        
+        // LATTICE PARAMETERS //
+        if (lattice === true) {
+            removeLatticeRestrictions();
+            $disableUIElement.disableElement({
+                latticeParameters:{ value: false } 
+            });   
+        }
+        else if (motif === false) {
+            $disableUIElement.disableElement({
+                latticeParameters:{ value: true } 
+            });   
+        }
     };
     
     return latticeTab;
