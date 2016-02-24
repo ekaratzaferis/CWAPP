@@ -2276,19 +2276,83 @@ define([
        
       var u = (_.isUndefined(arg.millerU)) ? _this.tempDirs[0].u : parseFloat(arg.millerU); 
       var v = (_.isUndefined(arg.millerV)) ? _this.tempDirs[0].v : parseFloat(arg.millerV); 
-      var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseFloat(arg.millerW); 
-      var t = (_.isUndefined(arg.millerT)) ? _this.tempDirs[0].t : parseFloat(arg.millerT); 
-       
+      var w = (_.isUndefined(arg.millerW)) ? _this.tempDirs[0].w : parseFloat(arg.millerW);  
+      
+      var counter = 0;
+      
+      var pid = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"").split('.').join('');  
+      
+      var newU = parseFloat($('#millerU').val()) ; 
+      var newV = parseFloat($('#millerV').val()) ; 
+      var newW = parseFloat($('#millerW').val()) ; 
+      var newT = parseFloat($('#millerT').val()) ; 
+
       if((this.latticeName === 'hexagonal')){
+        var t = -(u+v);
+        var parameters = this.parameters ;
+        var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
+        var aLength = parseFloat(this.parameters.scaleZ) ; 
+        var cLength = parseFloat(this.parameters.scaleY) ;
+        var bLength = 2 * Math.sqrt((aLength*aLength) - ((aLength*aLength)/4)) ;
+        
+        var axis = new THREE.Vector3(0, 1, 0);
+        var verticalScale = this.parameters.scaleZ * Math.sqrt(3)/2 ;
+
+         var a3 = (t<=0) ? new THREE.Vector3( -aLength/2, 0, -verticalScale ) : new THREE.Vector3( aLength/2, 0, verticalScale ); // up and left
          
+        var a2 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
+           
+        var a1 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
+    
+        var c = new THREE.Vector3(0,cLength,0);  
+   
+        a1.setLength(Math.abs((u/devider)*aLength));
+        a2.setLength(Math.abs((v/devider)*aLength));
+        a3.setLength(Math.abs((t/devider)*aLength));
+        c.setLength(Math.abs((w/devider)*cLength));
+         
+        a1.add(a2.add(a3.add(c)));
+         
+        _.times(parameters.repeatX , function(_x) {
+          _.times(parameters.repeatY , function(_y) {
+            _.times(parameters.repeatZ , function(_z) {
+
+              var directional = _this.tempDirs[counter]; 
+              var startPoint = new THREE.Vector3(0,0,0) ; 
+              var endpointPoint = a1.clone(); 
+
+              var zOffset = (_x % 2 === 0 ) ? 0 : verticalScale ;
+
+              startPoint.x += (_x*aLength*1.5) ; 
+              startPoint.y += (_y*cLength) ; 
+              startPoint.z += (_z*bLength + zOffset); 
+
+              endpointPoint.x += (_x*aLength*1.5) ; 
+              endpointPoint.y += (_y*cLength) ; 
+              endpointPoint.z += (_z*bLength + zOffset); 
+ 
+              directional.u = newU ; 
+              directional.v = newV ; 
+              directional.w = newW ; 
+              directional.t = newT ; 
+
+              directional.startPoint = startPoint; 
+              directional.endpointPoint = endpointPoint; 
+              directional.id = pid ;
+               
+              directional.direction.updateDirectionPos(startPoint, endpointPoint); 
+            
+              counter++;
+            });
+          });
+        });
       }
       else{ 
-        var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w)), counter = 0;
+        var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w));
         u/=devider;
         v/=devider;
         w/=devider;  
 
-        var pid = ("_"+($('#millerU').val())+""+($('#millerV').val())+""+($('#millerW').val())+"").split('.').join('');  
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
             _.times(parameters.repeatZ , function(_z) { 
@@ -2303,10 +2367,11 @@ define([
               endpointPoint.y += _y ; 
               endpointPoint.z += _z ;  
                
-              directional.u = parseFloat($('#millerU').val()) ; 
-              directional.v = parseFloat($('#millerV').val()) ; 
-              directional.w = parseFloat($('#millerW').val()) ; 
-              directional.t = parseFloat($('#millerT').val()) ; 
+              directional.u = newU ; 
+              directional.v = newV ; 
+              directional.w = newW ; 
+              directional.t = newT ; 
+
               directional.startPoint = startPoint; 
               directional.endpointPoint = endpointPoint; 
               directional.id = pid ;
@@ -4366,45 +4431,56 @@ define([
       var bLength = 2 * Math.sqrt((aLength*aLength) - ((aLength*aLength)/4)) ;
       
       var axis = new THREE.Vector3(0, 1, 0);
+      var verticalScale = this.parameters.scaleZ * Math.sqrt(3)/2 ;
 
-      var a3 = new THREE.Vector3( aLength, 0, 0 ); 
-      var rotA3 = (t>0) ? ((Math.PI*2) / 3) : ((Math.PI*5) / 3) ;
-      a3.applyAxisAngle( axis, rotA3) ;
-
-      var a2 = new THREE.Vector3( aLength, 0, 0 );  
-      var rotA2 = (v>0) ? (0) : ( Math.PI ) ;
-      a2.applyAxisAngle( axis, rotA2) ;
-
-      var a1 = new THREE.Vector3( aLength, 0, 0 ); 
-      var rotA1 = (u>0) ? ((Math.PI*4) / 3) : ( Math.PI/3 ) ;
-      a1.applyAxisAngle( axis, rotA1) ;
+      var a3 = (t<=0) ? new THREE.Vector3( -aLength/2, 0, -verticalScale ) : new THREE.Vector3( aLength/2, 0, verticalScale ); // up and left
+         
+      var a2 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
+         
+      var a1 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
   
-      var c = new THREE.Vector3(0,cLength,0);  
+      console.log(a1);
+      console.log(a2);
+      console.log(a3);
 
-      a1.setLength(Math.abs(u/devider));
-      a2.setLength(Math.abs(v/devider));
-      a3.setLength(Math.abs(t/devider));
-      c.setLength(Math.abs(w/devider)); 
-       
-      a1.add(a2.add(a3.add(c)));
+      var c = new THREE.Vector3(0,cLength,0);  
       
-    
+      
+      a1.setLength(Math.abs( aLength/u));
+      a2.setLength(Math.abs( aLength/v));
+      a3.setLength(Math.abs( aLength/t));
+      c.setLength(Math.abs( cLength/w)); 
+ 
+      console.log('--')
+
+      console.log(a1);
+      console.log(a2);
+      console.log(a3);
+
+      new Point(true, a1);  
+      new Point(true, a2);  
+      new Point(true, a3); 
+
+       a2.add(a1.add(c)) ;
+       
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
           _.times(parameters.repeatZ , function(_z) {
 
             var id = _this.generateDirectionKey();
-            var startPoint = new THREE.Vector3(0,0,0  ) ; 
-            var endpointPoint = a1; 
+            var startPoint = new THREE.Vector3(0,0,0) ; 
+            var endpointPoint = a2.clone(); 
+
+            var zOffset = (_x % 2 === 0 ) ? 0 : verticalScale ;
 
             startPoint.x += (_x*aLength*1.5) ; 
             startPoint.y += (_y*cLength) ; 
-            startPoint.z += (_z*bLength); 
-
-            endpointPoint.x += (_x*aLength) ;
+            startPoint.z += (_z*bLength + zOffset); 
+ 
+            endpointPoint.x += (_x*aLength*1.5) ; 
             endpointPoint.y += (_y*cLength) ; 
-            endpointPoint.z += (_z*bLength);
-
+            endpointPoint.z += (_z*bLength + zOffset); 
+  
             if(!temp){ 
               _this.millerDirections[id] = {
                 visible: true,
@@ -4433,7 +4509,7 @@ define([
               };
                
               //_this.forwardTransformationsMiller(_this.millerDirections[id]); 
-              _this.millerDirections[id].direction  = new MillerVector(visible, startPoint , a1, millerParameters.directionColor, millerParameters.dirRadius) ; 
+              _this.millerDirections[id].direction  = new MillerVector(visible, startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ; 
             
             }
             else{  
@@ -4480,7 +4556,7 @@ define([
                 });
               }
               //_this.forwardTransformationsMiller(_this.tempDirs[_this.tempDirs.length-1]); 
-              _this.tempDirs[_this.tempDirs.length-1].direction = new MillerVector(visible, startPoint , a1, millerParameters.directionColor, millerParameters.dirRadius) ; 
+              _this.tempDirs[_this.tempDirs.length-1].direction = new MillerVector(visible, startPoint , endpointPoint, millerParameters.directionColor, millerParameters.dirRadius) ; 
             } 
           });
         });
