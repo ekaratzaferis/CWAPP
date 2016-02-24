@@ -4457,9 +4457,10 @@ define([
       console.log(a2);
       console.log(a3);
 
+      /*
       new Point(true, a1);  
       new Point(true, a2);  
-      new Point(true, a3); 
+      new Point(true, a3); */
 
        a2.add(a1.add(c)) ;
        
