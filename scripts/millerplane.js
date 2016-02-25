@@ -12,7 +12,7 @@ define([
 ) {
 
   function MillerPlane( b, a, c, d, e, opacity, color, visible) {
- 
+  console.log(color);
     if(color.charAt(0) === '#'){
       this.color = color; 
     }
