@@ -2298,20 +2298,20 @@ define([
         var axis = new THREE.Vector3(0, 1, 0);
         var verticalScale = this.parameters.scaleZ * Math.sqrt(3)/2 ;
 
-         var a3 = (t<=0) ? new THREE.Vector3( -aLength/2, 0, -verticalScale ) : new THREE.Vector3( aLength/2, 0, verticalScale ); // up and left
+        var a3 = (t<=0) ? new THREE.Vector3( -aLength/2, 0, -verticalScale ) : new THREE.Vector3( aLength/2, 0, verticalScale ); // up and left
          
-        var a2 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
+        var a1 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
            
-        var a1 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
-    
+        var a2 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
+     
+
         var c = new THREE.Vector3(0,cLength,0);  
-   
-        a1.setLength(Math.abs((u/devider)*aLength));
-        a2.setLength(Math.abs((v/devider)*aLength));
-        a3.setLength(Math.abs((t/devider)*aLength));
-        c.setLength(Math.abs((w/devider)*cLength));
-         
-        a1.add(a2.add(a3.add(c)));
+        
+        a1 = (v === 0) ? new THREE.Vector3() : a1.setLength(Math.abs( aLength/v));
+        a2 = (u === 0) ? new THREE.Vector3() : a2.setLength(Math.abs( aLength/u));
+        c = (w === 0) ? new THREE.Vector3() : c.setLength(Math.abs( cLength/w));
+            
+        a2.add(a1.add(c)) ;
          
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
@@ -2319,7 +2319,7 @@ define([
 
               var directional = _this.tempDirs[counter]; 
               var startPoint = new THREE.Vector3(0,0,0) ; 
-              var endpointPoint = a1.clone(); 
+              var endpointPoint = a2.clone(); 
 
               var zOffset = (_x % 2 === 0 ) ? 0 : verticalScale ;
 
@@ -4421,6 +4421,7 @@ define([
     var u = parseFloat(millerParameters.millerU), v = parseFloat(millerParameters.millerV), w = parseFloat(millerParameters.millerW), t = parseFloat(millerParameters.millerT) ; 
     var id  ; 
     var visible = this.toggleStates.directions;
+    var pid = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"").split('.').join(''); 
 
     if(hexagonal){ 
       
@@ -4435,34 +4436,17 @@ define([
 
       var a3 = (t<=0) ? new THREE.Vector3( -aLength/2, 0, -verticalScale ) : new THREE.Vector3( aLength/2, 0, verticalScale ); // up and left
          
-      var a2 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
+      var a1 = (v<=0) ? new THREE.Vector3( -aLength, 0, 0) : new THREE.Vector3( aLength, 0,0); // right
          
-      var a1 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
-  
-      console.log(a1);
-      console.log(a2);
-      console.log(a3);
-
+      var a2 = (u>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
+    
       var c = new THREE.Vector3(0,cLength,0);  
       
-      
-      a1.setLength(Math.abs( aLength/u));
-      a2.setLength(Math.abs( aLength/v));
-      a3.setLength(Math.abs( aLength/t));
-      c.setLength(Math.abs( cLength/w)); 
- 
-      console.log('--')
-
-      console.log(a1);
-      console.log(a2);
-      console.log(a3);
-
-      /*
-      new Point(true, a1);  
-      new Point(true, a2);  
-      new Point(true, a3); */
-
-       a2.add(a1.add(c)) ;
+      a1 = (v === 0) ? new THREE.Vector3() : a1.setLength(Math.abs( aLength/v));
+      a2 = (u === 0) ? new THREE.Vector3() : a2.setLength(Math.abs( aLength/u));
+      c = (w === 0) ? new THREE.Vector3() : c.setLength(Math.abs( cLength/w));
+          
+      a2.add(a1.add(c)) ;
        
       _.times(parameters.repeatX , function(_x) {
         _.times(parameters.repeatY , function(_y) {
@@ -4564,7 +4548,7 @@ define([
       });
     }
     else{
-      var pid = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"").split('.').join(''); 
+      
       var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w));
       u/=devider;
       v/=devider;
@@ -4825,7 +4809,7 @@ define([
     }
   
     this.menu.highlightDirectionEntry({id : which, color : 'bg-light-purple'});
- 
+    
     for (var i = 0; i < this.tempDirs.length; i++) {
       this.tempDirs[i].direction.destroy();  
     };  
@@ -4839,7 +4823,7 @@ define([
     PubSub.publish(events.DIRECTION_STATE,"editing"); 
    
     var index,cnt=0 ; 
- 
+    
     for (var j = 0; j < this.millerDirections.length; j++) {  
       if(this.millerDirections[j].id === which) { 
         if(color === undefined){  

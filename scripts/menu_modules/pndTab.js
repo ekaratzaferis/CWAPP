@@ -139,8 +139,8 @@ define([
             else{
                 if (k === 'dirRadius'){
                     $parameter.html('<option>10</option><option>20</option><option>40</option><option>60</option><option>80</option><option>100</option>');
-                    $parameter.selectpicker();
-                    $parameter.selectpicker('val','10');
+                    $parameter.selectpicker(); 
+                    $parameter.selectpicker('val',10);
                 }
                 // Change Handlers //
                 $parameter.on('change', function() {
@@ -281,8 +281,7 @@ define([
     
     // Module Interface //
     // Show Hide Extra Miller Parameters //
-    pndTab.prototype.toggleExtraParameter = function(choice,action){
-        return;
+    pndTab.prototype.toggleExtraParameter = function(choice,action){ 
         if ( (choice === 'i') && (action === 'block') ) html.pnd.other.hexICoord.show('fast');
         else if ( (choice === 'i')) html.pnd.other.hexICoord.hide('fast');
         else if ( (choice === 't') && (action === 'block') ) html.pnd.other.hexTCoord.show('fast');

@@ -10,7 +10,11 @@ Emergency TODOs
 1.cache materials and reduce materials from 3 to 2
 
 ALEX UI BUGS   
- 
+
+// menu - to be removed! main.js 416 .
+
+reset miller UI buttons in global reset.
+
 8. Oculus and 3D monitor UI adjustments (full screen etc)
 9. create a function for hiding logo, x,y,z and appearing them when needed (oculus, stereoscopic etc)
 10. modal gia browser doesn;t support and disalbe everything (loading div)

@@ -14,12 +14,12 @@ define([
   function MillerVector(visible, start , end, color, radius) {
   
     this.radius = radius ;
-    this.color = color ;
+    this.color = ( color.charAt(0) !== '#' ) ? '#'+color : color ;
     this.tubeMesh = { 'object3d' : undefined } ; 
-
+    
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
-    var arrow = new THREE.ArrowHelper( direction , start, length , color, length/8, length/20);
+    var arrow = new THREE.ArrowHelper( direction , start, length , this.color, length/8, length/20);
     arrow.name = 'direction' ;
     arrow.visible = (visible === undefined) ? true : visible ;
     arrow.receiveShadow = true; 

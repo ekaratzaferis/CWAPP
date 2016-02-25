@@ -413,6 +413,13 @@ require([
   // fit camera to crystal 
   var fitToCrystal = new FitToCrystal(orbitCrystal, lattice, crystalRenderer, crystalScene.object3d);
 
+  // for menu - to be removed!
+  menu.toggleExtraParameter('i', 'none');
+  menu.toggleExtraParameter('t', 'none');
+  $('dirRadius').selectpicker('val',20);
+
+  //////////// for menu - to be removed!
+
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     restoreMechanism.globalReset();
