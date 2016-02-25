@@ -3717,7 +3717,19 @@ define([
         c  = (l === 0) ? new THREE.Vector3() : c.setLength(Math.abs( cLength/l));
 
         return;
-        
+
+        if(d !== undefined){
+          var d_ = new THREE.Vector3(d.x + _x, d.y + _y, d.z + _z);
+        }
+
+        if(e !== undefined){
+          var e_ = new THREE.Vector3(e.x + _x, e.y + _y, e.z + _z);
+        }
+
+        var x =  new MillerPlane(a_, b_, c_, d_, e_, parseInt(millerParameters.planeOpacity) , millerParameters.planeColor, visible );
+          
+        id = _this.generatePlaneKey();
+                  
         _.times(parameters.repeatX , function(_x) {
           _.times(parameters.repeatY , function(_y) {
             _.times(parameters.repeatZ , function(_z) {

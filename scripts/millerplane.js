@@ -11,8 +11,8 @@ define([
   _
 ) {
 
-  function MillerPlane( b, a, c, d, e, opacity, color, visible) {
-  console.log(color);
+  function MillerPlane( b, a, c, d, e, opacity, color, visible, f) {
+  
     if(color.charAt(0) === '#'){
       this.color = color; 
     }
@@ -45,6 +45,16 @@ define([
       faces.push(new THREE.Face3(0,2,1));
       faces.push(new THREE.Face3(2,3,1));
     } 
+    else if(_.isUndefined(f)){
+      vertices.push(new THREE.Vector3(a.x,a.y,a.z));
+      vertices.push(new THREE.Vector3(b.x,b.y,b.z));
+      vertices.push(new THREE.Vector3(c.x,c.y,c.z));
+      vertices.push(new THREE.Vector3(d.x,d.y,d.z));
+      vertices.push(new THREE.Vector3(e.x,e.y,e.z));
+      faces.push(new THREE.Face3(0,2,1));
+      faces.push(new THREE.Face3(2,3,1));
+      faces.push(new THREE.Face3(3,4,1));
+    }
     else{
       vertices.push(new THREE.Vector3(a.x,a.y,a.z));
       vertices.push(new THREE.Vector3(b.x,b.y,b.z));
