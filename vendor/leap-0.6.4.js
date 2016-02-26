@@ -229,12 +229,20 @@ var BaseConnection = module.exports = function(opts) {
 BaseConnection.defaultProtocolVersion = 6;
 
 BaseConnection.prototype.getUrl = function() {
+  var loc = window.location, new_uri;
+  if (loc.protocol === "https:") {
+      new_uri = "wss:";
+  } else {
+      new_uri = "ws:";
+  }
+  new_uri += "//" + loc.host;  
   return this.scheme + "//" + this.host + ":" + this.port + "/v" + this.opts.requestProtocolVersion + ".json";
+  
 }
 
 
 BaseConnection.prototype.getScheme = function(){
-  return 'wss:'
+  return 'ws:'
 }
 
 BaseConnection.prototype.getPort = function(){
@@ -389,6 +397,7 @@ BrowserConnection.prototype.getPort = function(){
 BrowserConnection.prototype.setupSocket = function() {
   var connection = this;
   var socket = new WebSocket(this.getUrl());
+ 
   socket.onopen = function() { connection.handleOpen(); };
   socket.onclose = function(data) { connection.handleClose(data['code'], data['reason']); };
   socket.onmessage = function(message) { connection.handleData(message.data) };
@@ -522,7 +531,7 @@ var Controller = module.exports = function(opts) {
     frameEventName: this.useAnimationLoop() ? 'animationFrame' : 'deviceFrame',
     suppressAnimationLoop: !this.useAnimationLoop(),
     loopWhileDisconnected: true,
-    useAllPlugins: false, 
+    useAllPlugins: false,
     checkVersion: true
   });
 
@@ -532,8 +541,10 @@ var Controller = module.exports = function(opts) {
       controller.emit('animationFrame', controller.lastConnectionFrame);
     }
     controller.emit('frameEnd', timestamp);
-    if ( controller.loopWhileDisconnected && ((controller.connection.focusedState !== false ) || controller.connection.opts.background) )
-    { 
+    if (
+      controller.loopWhileDisconnected &&
+      ( ( controller.connection.focusedState !== false )  // loop while undefined, pre-ready.
+        || controller.connection.opts.background) ){
       window.requestAnimationFrame(controller.onAnimationFrame);
     }else{
       controller.animationFrameRequested = false;
@@ -736,7 +747,7 @@ Controller.prototype.setupFrameEvents = function(opts){
   -deviceAttached/deviceRemoved - called when a device's physical connection to the computer changes
   -deviceStreaming/deviceStopped - called when a device is paused or resumed.
   -streamingStarted/streamingStopped - called when there is/is no longer at least 1 streaming device.
-									  Always comes after deviceStreaming.
+                    Always comes after deviceStreaming.
   
   The first of all of the above event pairs is triggered as appropriate upon connection.  All of
   these events receives an argument with the most recent info about the device that triggered it.
@@ -5047,22 +5058,22 @@ vec3.transformQuat = function(out, a, q) {
 */
 vec3.rotateX = function(out, a, b, c){
    var p = [], r=[];
-	  //Translate point to the origin
-	  p[0] = a[0] - b[0];
-	  p[1] = a[1] - b[1];
-  	p[2] = a[2] - b[2];
+    //Translate point to the origin
+    p[0] = a[0] - b[0];
+    p[1] = a[1] - b[1];
+    p[2] = a[2] - b[2];
 
-	  //perform rotation
-	  r[0] = p[0];
-	  r[1] = p[1]*Math.cos(c) - p[2]*Math.sin(c);
-	  r[2] = p[1]*Math.sin(c) + p[2]*Math.cos(c);
+    //perform rotation
+    r[0] = p[0];
+    r[1] = p[1]*Math.cos(c) - p[2]*Math.sin(c);
+    r[2] = p[1]*Math.sin(c) + p[2]*Math.cos(c);
 
-	  //translate to correct position
-	  out[0] = r[0] + b[0];
-	  out[1] = r[1] + b[1];
-	  out[2] = r[2] + b[2];
+    //translate to correct position
+    out[0] = r[0] + b[0];
+    out[1] = r[1] + b[1];
+    out[2] = r[2] + b[2];
 
-  	return out;
+    return out;
 };
 
 /*
@@ -5074,23 +5085,23 @@ vec3.rotateX = function(out, a, b, c){
 * @returns {vec3} out
 */
 vec3.rotateY = function(out, a, b, c){
-  	var p = [], r=[];
-  	//Translate point to the origin
-  	p[0] = a[0] - b[0];
-  	p[1] = a[1] - b[1];
-  	p[2] = a[2] - b[2];
+    var p = [], r=[];
+    //Translate point to the origin
+    p[0] = a[0] - b[0];
+    p[1] = a[1] - b[1];
+    p[2] = a[2] - b[2];
   
-  	//perform rotation
-  	r[0] = p[2]*Math.sin(c) + p[0]*Math.cos(c);
-  	r[1] = p[1];
-  	r[2] = p[2]*Math.cos(c) - p[0]*Math.sin(c);
+    //perform rotation
+    r[0] = p[2]*Math.sin(c) + p[0]*Math.cos(c);
+    r[1] = p[1];
+    r[2] = p[2]*Math.cos(c) - p[0]*Math.sin(c);
   
-  	//translate to correct position
-  	out[0] = r[0] + b[0];
-  	out[1] = r[1] + b[1];
-  	out[2] = r[2] + b[2];
+    //translate to correct position
+    out[0] = r[0] + b[0];
+    out[1] = r[1] + b[1];
+    out[2] = r[2] + b[2];
   
-  	return out;
+    return out;
 };
 
 /*
@@ -5102,23 +5113,23 @@ vec3.rotateY = function(out, a, b, c){
 * @returns {vec3} out
 */
 vec3.rotateZ = function(out, a, b, c){
-  	var p = [], r=[];
-  	//Translate point to the origin
-  	p[0] = a[0] - b[0];
-  	p[1] = a[1] - b[1];
-  	p[2] = a[2] - b[2];
+    var p = [], r=[];
+    //Translate point to the origin
+    p[0] = a[0] - b[0];
+    p[1] = a[1] - b[1];
+    p[2] = a[2] - b[2];
   
-  	//perform rotation
-  	r[0] = p[0]*Math.cos(c) - p[1]*Math.sin(c);
-  	r[1] = p[0]*Math.sin(c) + p[1]*Math.cos(c);
-  	r[2] = p[2];
+    //perform rotation
+    r[0] = p[0]*Math.cos(c) - p[1]*Math.sin(c);
+    r[1] = p[0]*Math.sin(c) + p[1]*Math.cos(c);
+    r[2] = p[2];
   
-  	//translate to correct position
-  	out[0] = r[0] + b[0];
-  	out[1] = r[1] + b[1];
-  	out[2] = r[2] + b[2];
+    //translate to correct position
+    out[0] = r[0] + b[0];
+    out[1] = r[1] + b[1];
+    out[2] = r[2] + b[2];
   
-  	return out;
+    return out;
 };
 
 /**

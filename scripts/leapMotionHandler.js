@@ -6,15 +6,14 @@ define([
   "leapMotion"
 ], function(
   THREE, 
-  _,
-  Leap
+  _ 
 ) {
   
   var zoomSpeed = 0.5 ;
   var stillHandFactor = 100 ; // increasing it results to more stability in hand
   var rotSpeed = 0.005 ; // increasing it results to quicker rotation
 
-  function LeapMotionHandler( lattice, motifeditor, crystalOrbit, soundMachine, dollEditor, keyboard ) { 
+  function LeapMotionHandler( lattice, motifeditor, crystalOrbit, soundMachine, dollEditor, keyboard ,explorer, camera) { 
     
     this.lattice = lattice;
     this.motifeditor = motifeditor; 
@@ -23,6 +22,8 @@ define([
     this.crystalOrbit = crystalOrbit;
     this.soundMachine = soundMachine;
     this.active = false;
+    this.explorer = explorer;
+    this.camera = camera;
     this.dollEditor = dollEditor;
     this.trackingSystem = 'grab';
     this.leapVars = {
@@ -44,19 +45,16 @@ define([
     var _this = this;
    
     this.active = bool ;
-
-    // leap motion icon animation - might not used
-    (function pulse(){  
-      if(_this.active){
-        $('#leapIcon').delay(200).fadeOut('slow').delay(50).fadeIn('slow',pulse);
-      } 
-      else{
-        $('#leapIcon').hide();
-      }
-    })();
-
+  
     if(bool === true){ 
       
+      // reposition movingCube
+
+      var MCpos = this.camera.position.clone(); // reconstruct : global init file
+      MCpos.setLength(MCpos.length()-1); 
+      this.explorer.movingCube.position.copy(MCpos);
+  
+
       if( this.controller === undefined){
         
         var frameString = "", handString = "", fingerString = "";
@@ -73,8 +71,8 @@ define([
 
           var leftHand, rightHand; 
           var numOfHands = frame.hands.length ;
-          
-          if(_this.dollEditor.dollOn === true){  
+           
+          /*if(_this.dollEditor.dollOn === true){  
             if(_this.trackingSystem === 'palm'){ 
               if(numOfHands === 2){
                 // rotate camera 
@@ -274,110 +272,192 @@ define([
               }
             } 
           }
-          else if(_this.dollEditor.dollOn === false){ 
-            if(numOfHands === 2){
-              // rotate camera
-              _this.leapVars.rightGrab = false; // deactivate zooming
-              if(frame.hands[0].type === 'right') {
-                rightHand = frame.hands[0] ;
-                leftHand = frame.hands[1] ;
-              }
-              else{
-                leftHand = frame.hands[0] ;
-                rightHand = frame.hands[1] ;
-              }
+          else if(_this.dollEditor.dollOn === false){ */
 
-              if(_this.leapVars.bothGrab === true){ 
-                if((rightHand.grabStrength < 0.90) || (leftHand.grabStrength < 0.90) ){
-                  _this.leapVars.bothGrab = false;
-                  _this.soundMachine.play('leapNoGrab');
-                }
-                else{  
-                  var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x) * rotSpeed ;  
-                  var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y) * rotSpeed ; 
-                  _this.crystalOrbit.setRotationManually(_this.leapVars.initCamTheta + xOffs, _this.leapVars.initCamPhi + yOffs ); 
-                }
+          // normal mode
+           
+          if(numOfHands === 2){
+            // rotate camera
+            _this.leapVars.rightGrab = false; // deactivate zooming
+            if(frame.hands[0].type === 'right') {
+              rightHand = frame.hands[0] ;
+              leftHand = frame.hands[1] ;
+            }
+            else{
+              leftHand = frame.hands[0] ;
+              rightHand = frame.hands[1] ;
+            }
+
+            if(_this.leapVars.bothGrab === true){ 
+              if((rightHand.grabStrength < 0.90) || (leftHand.grabStrength < 0.90) ){
+                _this.leapVars.bothGrab = false;
+                _this.soundMachine.play('leapNoGrab');
               }
-              else{
-                if((rightHand.grabStrength > 0.90) && (leftHand.grabStrength > 0.90)){ 
-                  _this.leapVars.bothGrab = true;
-                  _this.soundMachine.play('leapGrab');
-                  // code from orbitControls.js  
-                  var position = _this.crystalOrbit.getCamPosition();
-                  var quat = new THREE.Quaternion().setFromUnitVectors( _this.crystalOrbit.camera.up, new THREE.Vector3( 0, 1, 0 ) );
-                  var offset = new THREE.Vector3();
-                  offset.copy( position ).sub( _this.crystalOrbit.getTarget() );
-   
-                  offset.applyQuaternion( quat ); 
+              else{  
+                var xOffs = (-1*(rightHand.palmPosition[0] + leftHand.palmPosition[0])/2 - _this.leapVars.bothHandsInitPos.x) * rotSpeed ;  
+                var yOffs = ((rightHand.palmPosition[1] + leftHand.palmPosition[1])/2 - _this.leapVars.bothHandsInitPos.y) * rotSpeed ; 
+                _this.crystalOrbit.setRotationManually(_this.leapVars.initCamTheta + xOffs, _this.leapVars.initCamPhi + yOffs ); 
+              }
+            }
+            else{
+              if((rightHand.grabStrength > 0.90) && (leftHand.grabStrength > 0.90)){ 
+                _this.leapVars.bothGrab = true;
+                _this.soundMachine.play('leapGrab');
+                // code from orbitControls.js  
+                var position = _this.crystalOrbit.getCamPosition();
+                var quat = new THREE.Quaternion().setFromUnitVectors( _this.crystalOrbit.camera.up, new THREE.Vector3( 0, 1, 0 ) );
+                var offset = new THREE.Vector3();
+                offset.copy( position ).sub( _this.crystalOrbit.getTarget() );
+ 
+                offset.applyQuaternion( quat ); 
 
-                  var theta = Math.atan2( offset.x, offset.z ); 
-                  var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+                var theta = Math.atan2( offset.x, offset.z ); 
+                var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
 
-                  _this.leapVars.initCamTheta = theta;
-                  _this.leapVars.initCamPhi = phi; 
-                  _this.leapVars.bothHandsInitPos.x = (rightHand.palmPosition[0] + leftHand.palmPosition[0])/2; 
-                  _this.leapVars.bothHandsInitPos.y = (rightHand.palmPosition[1] + leftHand.palmPosition[1])/2; 
-                  _this.leapVars.bothHandsInitPos.z = (rightHand.palmPosition[2] + leftHand.palmPosition[2])/2; 
-                }
-              } 
-            }  
-            else if(numOfHands === 1){ 
-              // zomming in/out
-              _this.leapVars.bothGrab = false; // deactivate
-              rightHand = frame.hands[0];
-              if(rightHand.type === 'right'){ 
-                if(_this.leapVars.rightGrab === true){
-                  if(hand.grabStrength <= 0.90){
-                    _this.leapVars.rightGrab = false;
-                    _this.soundMachine.play('leapNoGrab');
-                  }
-                  else{  
-                    var handOffset = (rightHand.palmPosition[2] - _this.leapVars.initHandPos) * zoomSpeed ;
-                    var newDist = handOffset + _this.leapVars.initCameraDist ;
-                    _this.crystalOrbit.leap_zoom(newDist); 
-                  }
-                }
-                else{
-                  if(rightHand.grabStrength > 0.90){ 
-                    _this.leapVars.rightGrab = true;
-                    _this.soundMachine.play('leapGrab');
-                    _this.leapVars.initCameraDist = (_this.crystalOrbit.getCamPosition()).distanceTo(new THREE.Vector3(0,0,0));
-                    _this.leapVars.initHandPos = rightHand.palmPosition[2]; 
-                  }
-                }
-              } 
-              else{ 
-                _this.leapVars.rightGrab = false;
+                _this.leapVars.initCamTheta = theta;
+                _this.leapVars.initCamPhi = phi; 
+                _this.leapVars.bothHandsInitPos.x = (rightHand.palmPosition[0] + leftHand.palmPosition[0])/2; 
+                _this.leapVars.bothHandsInitPos.y = (rightHand.palmPosition[1] + leftHand.palmPosition[1])/2; 
+                _this.leapVars.bothHandsInitPos.z = (rightHand.palmPosition[2] + leftHand.palmPosition[2])/2; 
               }
             } 
-            else{
-              _this.leapVars.rightGrab = false;
-              _this.leapVars.bothGrab = false;
+          }  
+          else if(numOfHands === 1){ 
+
+            // WASD using open palm
+
+            _this.leapVars.bothGrab = false; // deactivate
+            var hand = frame.hands[0];
+            
+            // check if open palm is looking down - stops when user grabs 
+            
+            if(hand.grabStrength < 0.4 && Math.abs(hand.palmNormal[0]) < 0.3 && hand.palmNormal[1] < -0.7 && Math.abs(hand.palmNormal[2]) < 0.3 ){
+
+              // palm position workable limits : 
+              //    -250 < x < 250
+              //      40 < y < 350
+              //    -200 < z < 200
+
+              var pos = new THREE.Vector3(hand.palmPosition[0],hand.palmPosition[1],hand.palmPosition[2] );
+
+              
+
+              // forth and back
+              if(pos.z < -300){ 
+                _this.keyboard.handleKeys({forth : true}, 0.004, true);
+              }
+              else if(pos.z < -200){ 
+                _this.keyboard.handleKeys({forth : true}, 0.002, true);
+              }
+              else if(pos.z < -150){ 
+                _this.keyboard.handleKeys({forth : true}, 0.0015, true);
+              }
+              else if(pos.z < -100){ 
+                _this.keyboard.handleKeys({forth : true}, 0.001, true);
+              }
+              else if(pos.z < -50){ 
+                _this.keyboard.handleKeys({forth : true}, 0.0005, true);
+              }
+              else if(pos.z > 300){
+                _this.keyboard.handleKeys({back : true}, 0.004, true);
+              }
+              else if(pos.z > 200){
+                _this.keyboard.handleKeys({back : true}, 0.002, true);
+              }
+              else if(pos.z > 150){
+                _this.keyboard.handleKeys({back : true}, 0.0015, true);
+              }
+              else if(pos.z > 100){
+                _this.keyboard.handleKeys({back : true}, 0.001, true);
+              }
+              else if(pos.z > 50){
+                _this.keyboard.handleKeys({back : true}, 0.0005, true);
+              } 
+
+              // right left
+              var rlFactor = 1000;
+
+              if(pos.x < -350){ 
+                _this.keyboard.handleKeys({left : true}, 0.004/rlFactor, true);
+              }
+              else if(pos.x < -250){ 
+                _this.keyboard.handleKeys({left : true}, 0.002/rlFactor, true);
+              }
+              else if(pos.x < -200){ 
+                _this.keyboard.handleKeys({left : true}, 0.0015/rlFactor, true);
+              }
+              else if(pos.x < -150){ 
+                _this.keyboard.handleKeys({left : true}, 0.001/rlFactor, true);
+              }
+              else if(pos.x < -100){ 
+                _this.keyboard.handleKeys({left : true}, 0.0005/rlFactor, true);
+              }
+              else if(pos.x < -50){ 
+                _this.keyboard.handleKeys({left : true}, 0.00025/rlFactor, true);
+              }
+              else if(pos.x < -35){ 
+                _this.keyboard.handleKeys({left : true}, 0.00001/rlFactor, true);
+              }
+              else if(pos.x > 350){
+                _this.keyboard.handleKeys({right : true}, 0.004/rlFactor, true);
+              }
+              else if(pos.x > 250){
+                _this.keyboard.handleKeys({right : true}, 0.002/rlFactor, true);
+              }
+              else if(pos.x > 200){
+                _this.keyboard.handleKeys({right : true}, 0.0015/rlFactor, true);
+              }
+              else if(pos.x > 150){
+                _this.keyboard.handleKeys({right : true}, 0.001/rlFactor, true);
+              }
+              else if(pos.x > 100){
+                _this.keyboard.handleKeys({right : true}, 0.0005/rlFactor, true);
+              } 
+              else if(pos.x > 50){
+                _this.keyboard.handleKeys({right : true}, 0.00025/rlFactor, true);
+              } 
+              else if(pos.x > 35){
+                _this.keyboard.handleKeys({right : true}, 0.00001/rlFactor, true);
+              } 
+
+
+              // up down
+              var rlFactor = 1/195;
+              
+              if(pos.y > 450){
+                _this.keyboard.handleKeys({up : true}, 0.008/rlFactor, true);
+              } 
+              else if(pos.y > 350){
+                _this.keyboard.handleKeys({up : true}, 0.004/rlFactor, true);
+              }
+              else if(pos.y > 300){ 
+                _this.keyboard.handleKeys({up : true}, 0.003/rlFactor, true);
+              }
+              else if(pos.y > 250){
+                _this.keyboard.handleKeys({up : true}, 0.002/rlFactor, true);
+              } 
+              else if(pos.y < 200){
+                _this.keyboard.handleKeys({down : true}, 0.0005/rlFactor, true);
+              } 
+              else if(pos.y < 150){
+                _this.keyboard.handleKeys({down : true}, 0.001/rlFactor, true);
+              } 
+              else if(pos.y < 100){
+                _this.keyboard.handleKeys({down : true}, 0.002/rlFactor, true);
+              } 
+              else if(pos.y < 50){
+                _this.keyboard.handleKeys({down : true}, 0.004/rlFactor, true);
+              } 
+              
             }
+            
+          } 
+          else{
+            _this.leapVars.rightGrab = false;
+            _this.leapVars.bothGrab = false;
           }
-  
-
-          //////////////
-          frameString = concatData("Leap Motion info", "");
-          frameString += concatData("num_hands", frame.hands.length);
-          frameString += concatData("num_fingers", frame.fingers.length);
-          frameString += "<br>"; 
-          // Showcase some new V2 features
-          for (var i = 0, len = numOfHands; i < len; i++) {
-            hand = frame.hands[i]; 
-
-            handString = concatData("hand_type", hand.type);
-            handString += concatData("confidence", hand.confidence);
-            //handString += concatData("pinch_strength", hand.pinchStrength);
-            handString += concatData("grab_strength", hand.grabStrength);
-            handString += concatData("palm normalh", hand.palmNormal);
-        
-            handString += '<br>';
           
-            frameString += handString; 
-          }
-        
-          //$('#leap_id').html( frameString); 
+ 
         }); 
         this.controller.loopWhileDisconnected = false;
       }

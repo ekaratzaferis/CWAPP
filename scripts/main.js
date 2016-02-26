@@ -383,7 +383,7 @@ require([
   }, false);
 
   // leap motion
-  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal, soundMachine, dollEditor, keyboard);
+  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera());
 
   // rendering modes
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);

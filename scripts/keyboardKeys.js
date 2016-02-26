@@ -25,10 +25,10 @@ define([
     this.crystalRendererTemporal = crystalRendererTemporal; 
   };
 
-  KeyboardKeys.prototype.handleKeys = function(leapArg, speed){  
+  KeyboardKeys.prototype.handleKeys = function(leapArg, speed, passport){  
     var _this = this;
      
-    if(this.dollmode === true){ 
+    if(this.dollmode === true || passport !== undefined){ 
  
       speed = (speed === undefined) ? 1 : speed ;
 
@@ -37,6 +37,7 @@ define([
 
       var camPos = this.orbitCrystal.camera.position ;
       var cubePos = this.crystalScene.movingCube.position;
+       
       var rotationDistance = 0.2 * delta * speed ;
 
       // algorithm to smoothly move camera
@@ -124,22 +125,7 @@ define([
       this.orbitCrystal.control.rotateSpeed =  0.2;  
     } 
 
-    /////
-
-    if ( this.keyboard.pressed("s") && this.keyboard.pressed("e")  ){
-
-      if(this.mutex === false){ 
-        this.mutex = true;
-        if( $( "#secretMenu" ).is(":visible")){  
-          $( "#secretMenu" ).hide();
-        }
-        else{
-          $( "#secretMenu" ).show();
-        } 
-      }
-
-      setTimeout(function(){ _this.mutex = false;}, 200 );
-    };
+    ///// 
     if ( this.keyboard.pressed("P") ){
          
       if(this.mutex === false){ 
