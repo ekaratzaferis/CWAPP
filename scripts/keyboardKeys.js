@@ -11,8 +11,9 @@ define([
   _ 
 ) {
   
+  var clocks = { up : new THREE.Clock(),  down : new THREE.Clock(),  forth : new THREE.Clock(),  back : new THREE.Clock(),  left : new THREE.Clock(),  right : new THREE.Clock() };
   var clock = new THREE.Clock();
-
+  
   function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal, crystalRendererTemporal) { 
 
     this.keyboard = keyboard;  
@@ -22,6 +23,7 @@ define([
     this.mutex = false;
     this.hidden = true;
     this.meTemporal = meTemporal;
+    this.lastCameraPosition = {cam : new THREE.Vector3(), cube : new THREE.Vector3()};
     this.crystalRendererTemporal = crystalRendererTemporal; 
   };
 
@@ -29,84 +31,96 @@ define([
     var _this = this;
      
     if(this.dollmode === true || passport !== undefined){ 
- 
-      speed = (speed === undefined) ? 1 : speed ;
+       
+      // set limits of world
+      var distToCenter = (this.orbitCrystal.camera.position).distanceTo(new THREE.Vector3(0,0,0)) ; 
+      if(distToCenter > 2500){ 
+        this.orbitCrystal.camera.position.copy(this.lastCameraPosition.cam);
+        this.crystalScene.movingCube.position.copy(this.lastCameraPosition.cube);
+        return;
+      }
+      this.lastCameraPosition.cam = this.orbitCrystal.camera.position.clone();
+      this.lastCameraPosition.cube = this.crystalScene.movingCube.position.clone();
 
-      var delta = clock.getDelta(), helperVec;  
-      var distToCenter = (this.orbitCrystal.camera.position).distanceTo(new THREE.Vector3(0,0,0)) ;
+      speed = (speed === undefined) ? 1 : speed ;
+ 
+      var delta = (leapArg === undefined) ? clock.getDelta() : clocks[Object.keys(leapArg)[0]].getDelta(), helperVec;  
+      if(delta > 0.15) {
+        delta = 0.15;
+      }
 
       var camPos = this.orbitCrystal.camera.position ;
       var cubePos = this.crystalScene.movingCube.position;
-       
       var rotationDistance = 0.2 * delta * speed ;
 
       // algorithm to smoothly move camera
-      var par = Math.exp(distToCenter/100);
+      var par = Math.exp(distToCenter/50);
       var distFactor = par ; 
-
-      if( (leapArg !== undefined) && (leapArg.forth === undefined) && (leapArg.back === undefined) && (distFactor > 5)){
-        distFactor = 5 ;
+ 
+      if(distFactor > 30 && distFactor < 50){
+        distFactor = 30 + (distFactor - 20)/2 ;
       }
-      else{
-        if(distFactor > 30 && distFactor < 50){
-          distFactor = 30 + (distFactor - 30)/2 ;
-        }
-        else if(distFactor > 50 && distFactor < 70){
-          distFactor = 40 + (distFactor - 50)/3 ;
-        }
-        else if(distFactor > 70 && distFactor < 80){
-          distFactor = 45 + (distFactor - 70)/5 ;
-        } 
+      else if(distFactor > 50 && distFactor < 70){
+        distFactor = 40 + (distFactor - 40)/3 ;
       }
-      
+      else if(distFactor > 70 && distFactor < 80){
+        distFactor = 45 + (distFactor - 60)/5 ;
+      }    
       if(distFactor > 80){
         distFactor = 50 ;
       }
       //
 
       leapArg = (leapArg === undefined) ? {} : leapArg ;
-  
-      var moveDistance = 10 * delta * speed * distFactor;
+         
+      var timeInputDistFactor = (leapArg === undefined) ? ( delta * speed * distFactor) : (5 * delta * speed * distFactor);
        
       var camToCubeVec = (cubePos.clone()).sub(camPos) ;
+       
+      camToCubeVec.setLength(timeInputDistFactor);
+        
 
-      camToCubeVec.setLength(camToCubeVec.length() + moveDistance);
-     
+      if ( this.keyboard.pressed("A") || (leapArg.left !== undefined)){
+        
+        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
+        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 2 ); 
+        
+        ///
+        helperVec.setLength(camToCubeVec.length()/2);
+        ///
 
+        camPos.add(helperVec);
+        cubePos.add(helperVec); 
+      }
+      if ( this.keyboard.pressed("D") || (leapArg.right !== undefined)){
+        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
+        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / -2 ); 
+        
+        ///
+        helperVec.setLength(camToCubeVec.length()/2);
+        ///
+
+        camPos.add(helperVec);
+        cubePos.add(helperVec); 
+      }
       if ( this.keyboard.pressed("W") || (leapArg.forth !== undefined) ){ 
         camPos.add(camToCubeVec);
         cubePos.add(camToCubeVec);    
-      } 
-      if ( this.keyboard.pressed("A") || (leapArg.left !== undefined)){
-        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
-        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / 2 ); 
-        helperVec.setLength(camToCubeVec.length()/2);
-         
-        camPos.add(helperVec);
-        cubePos.add(helperVec); 
       }
       if ( this.keyboard.pressed("S") || (leapArg.back !== undefined)){
         camToCubeVec.negate();
         camPos.add(camToCubeVec);
         cubePos.add(camToCubeVec);  
-      }
-      if ( this.keyboard.pressed("D") || (leapArg.right !== undefined)){
-        helperVec = (new THREE.Vector3(cubePos.x, camPos.y, cubePos.z)).sub(camPos);
-        helperVec.applyAxisAngle( new THREE.Vector3( 0, 1, 0 ), Math.PI / -2 ); 
-        helperVec.setLength(camToCubeVec.length()/2);
-         
-        camPos.add(helperVec);
-        cubePos.add(helperVec); 
-      }
+      } 
       if ( this.keyboard.pressed("shift") || (leapArg.down !== undefined)){
-        camPos.y -= moveDistance/2 ;
-        cubePos.y -= moveDistance/2 ;  
+        camPos.y -= timeInputDistFactor/2 ;
+        cubePos.y -= timeInputDistFactor/2 ;  
       }
       if ( this.keyboard.pressed("space") || (leapArg.up !== undefined)){
-        camPos.y += moveDistance/2 ;
-        cubePos.y += moveDistance/2 ;  
+        camPos.y += timeInputDistFactor/2 ;
+        cubePos.y += timeInputDistFactor/2 ;  
       }
-
+ 
       // rotations
       if ( this.keyboard.pressed("down") || (leapArg.rotUp !== undefined)){
         this.orbitCrystal.control.rotateUp(rotationDistance);   

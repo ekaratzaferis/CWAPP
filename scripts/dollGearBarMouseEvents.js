@@ -95,18 +95,21 @@ define([
     raycaster.setFromCamera( mouse, this.camera ); 
 
     var intersects = raycaster.intersectObjects( this.dollEditor.objsToIntersect, true );
- 
-    for (var i = intersects.length - 1; i >= 0; i--) { 
-      
-      if(intersects[i].object.name === 'dollHolder'){  
+
+    if(intersects[0] !== undefined){ 
+    
+      if(intersects[0].object.name === 'dollHolder'){  
+
         clickedOnMe = true;
+
         if(this.soundMachine.procced) {
           this.soundMachine.play('dollHolder');
         }
+
         if(this.dollEditor.dollOn){
-          intersects[i].object.parent.children[0].material.color.setHex(0xA19EA1);
-          intersects[i].object.parent.children[2].material.color.setHex(0xA19EA1);
-          intersects[i].object.parent.children[3].material.color.setHex(0xA19EA1); 
+          intersects[0].object.parent.children[0].material.color.setHex(0xA19EA1);
+          intersects[0].object.parent.children[2].material.color.setHex(0xA19EA1);
+          intersects[0].object.parent.children[3].material.color.setHex(0xA19EA1); 
           this.dollEditor.rePosition();
           this.dollEditor.dollOn = false;
           this.dollEditor.doll.visible = false; 
@@ -119,17 +122,17 @@ define([
           this.crystalOrbit.disableUpdate = false;
           this.crystalOrbit.control.enabled = true;
         } 
-        else if(intersects[i].object.name === 'dollHolder'){ 
-          intersects[i].object.parent.children[0].material.color.setHex(0x71469A);
-          intersects[i].object.parent.children[2].material.color.setHex(0x71469A);
-          intersects[i].object.parent.children[3].material.color.setHex(0x71469A); 
+        else if(intersects[0].object.name === 'dollHolder'){  
+          intersects[0].object.parent.children[0].material.color.setHex(0x71469A);
+          intersects[0].object.parent.children[2].material.color.setHex(0x71469A);
+          intersects[0].object.parent.children[3].material.color.setHex(0x71469A); 
 
           this.dollEditor.dollOn = true; 
           this.dollEditor.doll.visible = true;
       
         }
       }
-      else if(intersects[i].object.name === 'minus'){
+      else if(intersects[0].object.name === 'minus'){
         clickedOnMe = true;
         this.soundMachine.play('dollHolder'); // to change 
          
@@ -160,7 +163,7 @@ define([
           }
         } 
       }  
-      else if(intersects[i].object.name === 'plus'){ 
+      else if(intersects[0].object.name === 'plus'){ 
         clickedOnMe = true;
         this.soundMachine.play('dollHolder'); //to change 
 
@@ -188,13 +191,13 @@ define([
           } 
         } 
       } 
-      else if(intersects[i].object.name === 0 || intersects[i].object.name === 1 || intersects[i].object.name === 2 || intersects[i].object.name === 3 || intersects[i].object.name === 4 || intersects[i].object.name === 5 ){ 
+      else if(intersects[0].object.name === 0 || intersects[0].object.name === 1 || intersects[0].object.name === 2 || intersects[0].object.name === 3 || intersects[0].object.name === 4 || intersects[0].object.name === 5 ){ 
         clickedOnMe = true;
         
-        if(this.dollEditor.levelLabels[intersects[i].object.name].allowed === true){ 
-          this.walkTourSet(intersects[i].object.name);
-          this.dollEditor.gearBarSlider.position.y = yPosGearSlider[intersects[i].object.name];
-          this.dollEditor.gearState = intersects[i].object.name + 1 ;
+        if(this.dollEditor.levelLabels[intersects[0].object.name].allowed === true){ 
+          this.walkTourSet(intersects[0].object.name);
+          this.dollEditor.gearBarSlider.position.y = yPosGearSlider[intersects[0].object.name];
+          this.dollEditor.gearState = intersects[0].object.name + 1 ;
           this.gearTour.setState(this.dollEditor.gearState);
         }
         if(this.soundMachine.procced) {
@@ -202,15 +205,16 @@ define([
         }
         
       }  
-      else if(intersects[i].object.name === 'doll'){   
+      else if(intersects[0].object.name === 'doll'){   
         clickedOnMe = true; 
         this.crystalOrbit.control.enabled = false;
-        this.SELECTED = intersects[i].object; 
+        this.SELECTED = intersects[0].object; 
         var intersects_ = raycaster.intersectObject( this.plane.object3d ); 
         this.offset.copy( intersects_[0].point ).sub( this.plane.object3d.position ); 
         document.getElementById(this.container).style.cursor = 'none'; 
       }
-    }; 
+    }
+     
     return clickedOnMe; 
   }; 
   
@@ -378,8 +382,8 @@ define([
   DollGearBarMouseEvents.prototype.onDocumentMouseUp  = function(event){  
     var _this = this;
   
-    this.crystalOrbit.control.enabled = true ; 
-     
+    //this.crystalOrbit.control.enabled = true ; 
+    
     if ( this.INTERSECTED ) {
 
       this.plane.object3d.position.copy( this.INTERSECTED.position ); 

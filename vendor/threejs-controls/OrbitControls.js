@@ -26,7 +26,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 	this.object = object;
 	this.which = which;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
- 
+ 	this.lastPosition = new THREE.Vector3();
 	this.leapMotion = false ; // enable control of camera by leap motion device
 	// API
 	var dollOnDocumentMouseDown; 
@@ -226,19 +226,33 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 
 	};
 
+	this.checkIfInLimits = function () {
+
+		var isInlimits = true; 
+		if(this.object.position.distanceTo(new THREE.Vector3(0,0,0)) > 2500 ){
+			isInlimits = false; 
+			this.object.position.copy(this.lastPosition);
+		}
+
+		return isInlimits;
+	}
 	this.dollyIn = function ( dollyScale ) {
 
-		if ( dollyScale === undefined ) {
+		if(this.checkIfInLimits() === false) return;
 
+		if ( dollyScale === undefined ) {
+			 
 			dollyScale = getZoomScale();
 
 		}
 
 		scale /= dollyScale;
-
+		this.lastPosition = this.object.position.clone();
 	};
 
 	this.dollyOut = function ( dollyScale ) {
+ 		
+ 		if(this.checkIfInLimits() === false) return;
 
 		if ( dollyScale === undefined ) {
 
@@ -247,7 +261,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 		}
 
 		scale *= dollyScale;
-
+		this.lastPosition = this.object.position.clone();
 	}; 
 	this.update = function () {
 		 

@@ -45,16 +45,16 @@ define([
     var _this = this;
    
     this.active = bool ;
-  
+    this.crystalOrbit.control.enabled = !this.active;
+
     if(bool === true){ 
       
       // reposition movingCube
-
+  
       var MCpos = this.camera.position.clone(); // reconstruct : global init file
       MCpos.setLength(MCpos.length()-1); 
       this.explorer.movingCube.position.copy(MCpos);
-  
-
+    
       if( this.controller === undefined){
         
         var frameString = "", handString = "", fingerString = "";
@@ -335,120 +335,181 @@ define([
 
               // palm position workable limits : 
               //    -250 < x < 250
-              //      40 < y < 350
+              //      40 < y < 400
               //    -200 < z < 200
 
               var pos = new THREE.Vector3(hand.palmPosition[0],hand.palmPosition[1],hand.palmPosition[2] );
 
-              
+                $("#logg").html('received x : '+pos.x+' y : '+pos.y+' z : '+pos.z+'from leap');
 
               // forth and back
+              var fbFactor = 10;
               if(pos.z < -300){ 
-                _this.keyboard.handleKeys({forth : true}, 0.004, true);
+                _this.keyboard.handleKeys({forth : true}, 0.4*fbFactor, true);
               }
               else if(pos.z < -200){ 
-                _this.keyboard.handleKeys({forth : true}, 0.002, true);
+                _this.keyboard.handleKeys({forth : true}, 0.2*fbFactor, true);
               }
               else if(pos.z < -150){ 
-                _this.keyboard.handleKeys({forth : true}, 0.0015, true);
+                _this.keyboard.handleKeys({forth : true}, 0.15*fbFactor, true);
               }
               else if(pos.z < -100){ 
-                _this.keyboard.handleKeys({forth : true}, 0.001, true);
+                _this.keyboard.handleKeys({forth : true}, 0.1*fbFactor, true);
+              }
+              else if(pos.z < -75){ 
+                _this.keyboard.handleKeys({forth : true}, 0.075*fbFactor, true);
               }
               else if(pos.z < -50){ 
-                _this.keyboard.handleKeys({forth : true}, 0.0005, true);
+                _this.keyboard.handleKeys({forth : true}, 0.05*fbFactor, true);
+              }
+              else if(pos.z < -45){ 
+                _this.keyboard.handleKeys({forth : true}, 0.025*fbFactor, true);
+              }
+              else if(pos.z < -40){ 
+                _this.keyboard.handleKeys({forth : true}, 0.01*fbFactor, true);
               }
               else if(pos.z > 300){
-                _this.keyboard.handleKeys({back : true}, 0.004, true);
+                _this.keyboard.handleKeys({back : true}, 0.4*fbFactor, true);
               }
               else if(pos.z > 200){
-                _this.keyboard.handleKeys({back : true}, 0.002, true);
+                _this.keyboard.handleKeys({back : true}, 0.2*fbFactor, true);
               }
               else if(pos.z > 150){
-                _this.keyboard.handleKeys({back : true}, 0.0015, true);
+                _this.keyboard.handleKeys({back : true}, 0.15*fbFactor, true);
               }
               else if(pos.z > 100){
-                _this.keyboard.handleKeys({back : true}, 0.001, true);
+                _this.keyboard.handleKeys({back : true}, 0.1*fbFactor, true);
+              }
+              else if(pos.z > 75){
+                _this.keyboard.handleKeys({back : true}, 0.75*fbFactor, true);
               }
               else if(pos.z > 50){
-                _this.keyboard.handleKeys({back : true}, 0.0005, true);
+                _this.keyboard.handleKeys({back : true}, 0.05*fbFactor, true);
               } 
+              else if(pos.z > 45){ 
+                _this.keyboard.handleKeys({back : true}, 0.025*fbFactor, true);
+              }
+              else if(pos.z > 40){ 
+                _this.keyboard.handleKeys({back : true}, 0.01*fbFactor, true);
+              }
 
               // right left
-              var rlFactor = 1000;
+              var rlFactor = 1 ;
 
               if(pos.x < -350){ 
-                _this.keyboard.handleKeys({left : true}, 0.004/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 1.2*rlFactor, true);
               }
               else if(pos.x < -250){ 
-                _this.keyboard.handleKeys({left : true}, 0.002/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.9*rlFactor, true);
               }
               else if(pos.x < -200){ 
-                _this.keyboard.handleKeys({left : true}, 0.0015/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.7*rlFactor, true);
               }
               else if(pos.x < -150){ 
-                _this.keyboard.handleKeys({left : true}, 0.001/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.5*rlFactor, true);
               }
               else if(pos.x < -100){ 
-                _this.keyboard.handleKeys({left : true}, 0.0005/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.3*rlFactor, true);
               }
               else if(pos.x < -50){ 
-                _this.keyboard.handleKeys({left : true}, 0.00025/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.2*rlFactor, true);
+              }
+              else if(pos.x < -45){ 
+                _this.keyboard.handleKeys({left : true}, 0.1*rlFactor, true);
+              }
+              else if(pos.x < -40){ 
+                _this.keyboard.handleKeys({left : true}, 0.05*rlFactor, true);
               }
               else if(pos.x < -35){ 
-                _this.keyboard.handleKeys({left : true}, 0.00001/rlFactor, true);
+                _this.keyboard.handleKeys({left : true}, 0.025*rlFactor, true);
               }
               else if(pos.x > 350){
-                _this.keyboard.handleKeys({right : true}, 0.004/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 1.2*rlFactor, true);
               }
               else if(pos.x > 250){
-                _this.keyboard.handleKeys({right : true}, 0.002/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.9*rlFactor, true);
               }
               else if(pos.x > 200){
-                _this.keyboard.handleKeys({right : true}, 0.0015/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.7*rlFactor, true);
               }
               else if(pos.x > 150){
-                _this.keyboard.handleKeys({right : true}, 0.001/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.5*rlFactor, true);
               }
               else if(pos.x > 100){
-                _this.keyboard.handleKeys({right : true}, 0.0005/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.3*rlFactor, true);
               } 
               else if(pos.x > 50){
-                _this.keyboard.handleKeys({right : true}, 0.00025/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.2*rlFactor, true);
+              } 
+              else if(pos.x > 45){
+                _this.keyboard.handleKeys({right : true}, 0.1*rlFactor, true);
+              } 
+              else if(pos.x > 40){
+                _this.keyboard.handleKeys({right : true}, 0.05*rlFactor, true);
               } 
               else if(pos.x > 35){
-                _this.keyboard.handleKeys({right : true}, 0.00001/rlFactor, true);
+                _this.keyboard.handleKeys({right : true}, 0.025*rlFactor, true);
               } 
-
+             
 
               // up down
-              var rlFactor = 1/195;
+              var rlFactor = 1 ;
               
               if(pos.y > 450){
-                _this.keyboard.handleKeys({up : true}, 0.008/rlFactor, true);
+                _this.keyboard.handleKeys({up : true}, 0.9*rlFactor, true);
               } 
-              else if(pos.y > 350){
-                _this.keyboard.handleKeys({up : true}, 0.004/rlFactor, true);
+              else if(pos.y > 400){
+                _this.keyboard.handleKeys({up : true}, 0.6*rlFactor, true);
               }
+              else if(pos.y > 350){
+                _this.keyboard.handleKeys({up : true}, 0.4*rlFactor, true);
+              } 
               else if(pos.y > 300){ 
-                _this.keyboard.handleKeys({up : true}, 0.003/rlFactor, true);
+                _this.keyboard.handleKeys({up : true}, 0.3*rlFactor, true);
+              }
+              else if(pos.y > 270){
+                _this.keyboard.handleKeys({up : true}, 0.2*rlFactor, true);
               }
               else if(pos.y > 250){
-                _this.keyboard.handleKeys({up : true}, 0.002/rlFactor, true);
+                _this.keyboard.handleKeys({up : true}, 0.15*rlFactor, true);
               } 
-              else if(pos.y < 200){
-                _this.keyboard.handleKeys({down : true}, 0.0005/rlFactor, true);
-              } 
-              else if(pos.y < 150){
-                _this.keyboard.handleKeys({down : true}, 0.001/rlFactor, true);
-              } 
-              else if(pos.y < 100){
-                _this.keyboard.handleKeys({down : true}, 0.002/rlFactor, true);
-              } 
+              else if(pos.y > 240){
+                _this.keyboard.handleKeys({up : true}, 0.075*rlFactor, true);
+              }  
+              else if(pos.y > 235){
+                _this.keyboard.handleKeys({up : true}, 0.05*rlFactor, true);
+              }  
+              else if(pos.y > 230){
+                _this.keyboard.handleKeys({up : true}, 0.025*rlFactor, true);
+              }  
+              else if(pos.y < 30){
+                _this.keyboard.handleKeys({down : true}, 0.9*rlFactor, true);
+              }  
               else if(pos.y < 50){
-                _this.keyboard.handleKeys({down : true}, 0.004/rlFactor, true);
-              } 
-              
+                _this.keyboard.handleKeys({down : true}, 0.75*rlFactor, true);
+              }
+              else if(pos.y < 100){
+                _this.keyboard.handleKeys({down : true}, 0.5*rlFactor, true);
+              }
+              else if(pos.y < 150){
+                _this.keyboard.handleKeys({down : true}, 0.4*rlFactor, true);
+              }
+              else if(pos.y < 170){
+                _this.keyboard.handleKeys({down : true}, 0.3*rlFactor, true);
+              }
+              else if(pos.y < 175){
+                _this.keyboard.handleKeys({down : true}, 0.15*rlFactor, true);
+              }
+              else if(pos.y < 180){
+                _this.keyboard.handleKeys({down : true}, 0.075*rlFactor, true);
+              }
+              else if(pos.y < 185){
+                _this.keyboard.handleKeys({down : true}, 0.05*rlFactor, true);
+              }
+              else if(pos.y < 190){
+                _this.keyboard.handleKeys({down : true}, 0.025*rlFactor, true);
+              }
+                
             }
             
           } 
