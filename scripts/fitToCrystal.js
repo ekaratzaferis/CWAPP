@@ -46,8 +46,12 @@ define([
        
       var vec = camLookingAt.clone().sub(camera.position.clone());
       vec.setLength(vec.length() + sign);
-      
-      camera.position.set(-1*vec.x, -1*vec.y, -1*vec.z);
+       
+      var newPos = new THREE.Vector3(-1*vec.x, -1*vec.y, -1*vec.z);
+      var MCpos = newPos.clone();  
+      MCpos.setLength(MCpos.length()-1);  
+      this.scene.movingCube.position.copy(MCpos);
+      camera.position.copy(newPos);
 
       camera.updateMatrix(); // make sure camera's local matrix is updated
       camera.updateMatrixWorld(); // make sure camera's world matrix is updated

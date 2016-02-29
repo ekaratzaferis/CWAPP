@@ -411,7 +411,7 @@ require([
   crystalRenderer.externalFunctions.push(noteManager.updateNotesPositions.bind(noteManager)); 
 
   // fit camera to crystal 
-  var fitToCrystal = new FitToCrystal(orbitCrystal, lattice, crystalRenderer, crystalScene.object3d);
+  var fitToCrystal = new FitToCrystal(orbitCrystal, lattice, crystalRenderer, crystalScene);
 
   // for menu - to be removed!
   menu.toggleExtraParameter('i', 'none');
@@ -912,7 +912,10 @@ require([
     hudCube.setVisibility(!arg.oculus);
     hudArrows.setVisibility(!arg.oculus);
     CubeEvent.enableCubeEvents = !arg.oculus ;
+    sceneResizer.resize('oculusCrystal');
     crystalRenderer.initOculusEffect(arg); 
+    crystalScreenEvents.state = 'oculusCrystal';
+    fullScreen.fs();
   });
   menu.onSideBySide3DCrystal(function(message, arg) { 
     dollEditor.setVisibility(!arg.stereo); 

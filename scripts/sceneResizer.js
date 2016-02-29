@@ -24,17 +24,61 @@ define([
   SceneResizer.prototype.resize = function(state, dimensions){
     var width = (dimensions) ? dimensions.width : jQuery('#app-container').width() ;
     var height = (dimensions) ? dimensions.height : $(window).height() ;
+    var fullWidth =  $(window).width();
+    var fullHeight =  $(window).height();
+    
     var _this = this;
+  
+    if( state === 'oculusCrystal'){
 
-    $("#leapIcon").css({ 
-      "width": width/15,
-      "height": width/30,  
-      "right": 5,  
-      "top": 5,  
-     "background-size": (width/15)+"px "+(width/30)+"px"
-    });
+      this.crystalRenderer.changeContainerDimensions(fullWidth , fullHeight );
+      this.unitCellRenderer.changeContainerDimensions(0,0);
+      this.motifRenderer.changeContainerDimensions(0,0);
+      $('#appLogo').css('display','none');
+      $('#mCSB_1_scrollbar_vertical').css('display','none');
+      $('#main_controls_container').css('right',(-1*$('#main_controls_container').width()));
+      
+      $('.axesLabel').addClass('hiddenLabel');
 
-    if( state === 'motifScreen'){
+      $('#topRowTableCaption').css('display','none');
+        
+      $('#crystalRenderer').width(fullWidth);
+      $('#crystalRenderer').height(fullHeight);
+        
+      $('#crystalRendererMouse').width(fullWidth);
+      $('#crystalRendererMouse').height(fullHeight);
+        
+      $('#crystalRendererCaption').width(0);
+      $('#crystalRendererCaption').height(0);
+
+      $('#unitCellRendererCaption').width(0);
+      $('#unitCellRendererCaption').height(0);
+        
+
+      $('#motifRenderer').width(0); 
+      $('#motifRenderer').height(0);
+
+      $('#motifPosX').css( "width", 0 );
+      $('#motifPosX').css( "height", 0 );
+
+      $('#motifPosY').css( "width", 0 );
+      $('#motifPosY').css( "height", 0 );
+
+      $('#motifPosZ').css( "width", 0 );
+      $('#motifPosZ').css( "height", 0 );
+        
+      $('#motifScreenTableCaption').css('display','none');
+        
+      $('#motifPosXCaption').css( "width", 0 );
+      $('#motifPosXCaption').css( "height", 0 );
+
+      $('#motifPosYCaption').css( "width", 0 );
+      $('#motifPosYCaption').css( "height", 0 );
+
+      $('#motifPosZCaption').css( "width", 0 );
+      $('#motifPosZCaption').css( "height", 0 ); 
+    }
+    else if( state === 'motifScreen'){
       this.crystalRenderer.changeContainerDimensions(width/2, height/2);
       this.unitCellRenderer.changeContainerDimensions(width/2, height/2);
       this.motifRenderer.changeContainerDimensions(width, height/2);
@@ -103,7 +147,7 @@ define([
          
     }
     else{
-      
+      console.log(99);
       if(this.ucViewPortActive === false){
         this.unitCellRenderer.changeContainerDimensions(0,0);
       }

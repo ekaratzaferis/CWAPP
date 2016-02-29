@@ -45,7 +45,7 @@ define([
     var _this = this;
    
     this.active = bool ;
-    this.crystalOrbit.control.enabled = !this.active;
+    //this.crystalOrbit.control.enabled = !this.active;
 
     if(bool === true){ 
       
@@ -277,6 +277,7 @@ define([
           // normal mode
            
           if(numOfHands === 2){
+            return;
             // rotate camera
             _this.leapVars.rightGrab = false; // deactivate zooming
             if(frame.hands[0].type === 'right') {
@@ -328,188 +329,80 @@ define([
 
             _this.leapVars.bothGrab = false; // deactivate
             var hand = frame.hands[0];
-            
+            var palmNormal = new THREE.Vector3(hand.palmNormal[0], hand.palmNormal[1], hand.palmNormal[2]);
+            var pos = new THREE.Vector3(hand.palmPosition[0],hand.palmPosition[1],hand.palmPosition[2] );
+
             // check if open palm is looking down - stops when user grabs 
+             
+            // camera rotations
             
-            if(hand.grabStrength < 0.4 && Math.abs(hand.palmNormal[0]) < 0.3 && hand.palmNormal[1] < -0.7 && Math.abs(hand.palmNormal[2]) < 0.3 ){
+            if( hand.grabStrength < 0.7){  
+
+              var xFact = palmNormal.x*palmNormal.x*palmNormal.x/0.75;
+              var zFact = palmNormal.z*palmNormal.z*palmNormal.z/0.75;
+
+              if(palmNormal.x <-0.2){
+                _this.keyboard.handleKeys({rotLeft : true}, xFact*-1, true);
+              } 
+              else if(palmNormal.x >0.2){
+                _this.keyboard.handleKeys({rotRight : true}, xFact, true);
+              }
+              if(palmNormal.z <-0.2){
+                _this.keyboard.handleKeys({ rotDown : true}, zFact*-1, true);
+              } 
+              else if(palmNormal.z >0.2){
+                _this.keyboard.handleKeys({ rotUp : true}, zFact, true);
+              }
+            }
+
+            if( hand.grabStrength < 0.4 && Math.abs(palmNormal.x) < 0.4 && palmNormal.y < -0.6 && Math.abs(palmNormal.z) < 0.4 ){
+  
+              // camera translations
 
               // palm position workable limits : 
               //    -250 < x < 250
               //      40 < y < 400
               //    -200 < z < 200
-
-              var pos = new THREE.Vector3(hand.palmPosition[0],hand.palmPosition[1],hand.palmPosition[2] );
-
-                $("#logg").html('received x : '+pos.x+' y : '+pos.y+' z : '+pos.z+'from leap');
-
+    
               // forth and back
-              var fbFactor = 10;
-              if(pos.z < -300){ 
-                _this.keyboard.handleKeys({forth : true}, 0.4*fbFactor, true);
+              var fbSpeed =  Math.abs(pos.z*pos.z/3000);
+              if(fbSpeed > 4){
+                fbSpeed = 4;
               }
-              else if(pos.z < -200){ 
-                _this.keyboard.handleKeys({forth : true}, 0.2*fbFactor, true);
-              }
-              else if(pos.z < -150){ 
-                _this.keyboard.handleKeys({forth : true}, 0.15*fbFactor, true);
-              }
-              else if(pos.z < -100){ 
-                _this.keyboard.handleKeys({forth : true}, 0.1*fbFactor, true);
-              }
-              else if(pos.z < -75){ 
-                _this.keyboard.handleKeys({forth : true}, 0.075*fbFactor, true);
-              }
-              else if(pos.z < -50){ 
-                _this.keyboard.handleKeys({forth : true}, 0.05*fbFactor, true);
-              }
-              else if(pos.z < -45){ 
-                _this.keyboard.handleKeys({forth : true}, 0.025*fbFactor, true);
-              }
-              else if(pos.z < -40){ 
-                _this.keyboard.handleKeys({forth : true}, 0.01*fbFactor, true);
-              }
-              else if(pos.z > 300){
-                _this.keyboard.handleKeys({back : true}, 0.4*fbFactor, true);
-              }
-              else if(pos.z > 200){
-                _this.keyboard.handleKeys({back : true}, 0.2*fbFactor, true);
-              }
-              else if(pos.z > 150){
-                _this.keyboard.handleKeys({back : true}, 0.15*fbFactor, true);
-              }
-              else if(pos.z > 100){
-                _this.keyboard.handleKeys({back : true}, 0.1*fbFactor, true);
-              }
-              else if(pos.z > 75){
-                _this.keyboard.handleKeys({back : true}, 0.75*fbFactor, true);
-              }
-              else if(pos.z > 50){
-                _this.keyboard.handleKeys({back : true}, 0.05*fbFactor, true);
+             
+              if(pos.z < -40){
+                _this.keyboard.handleKeys({ forth: true}, fbSpeed, true);
               } 
-              else if(pos.z > 45){ 
-                _this.keyboard.handleKeys({back : true}, 0.025*fbFactor, true);
-              }
-              else if(pos.z > 40){ 
-                _this.keyboard.handleKeys({back : true}, 0.01*fbFactor, true);
-              }
+              else if(pos.z > 40){
+                _this.keyboard.handleKeys({ back : true}, fbSpeed, true);
+              } 
 
-              // right left
-              var rlFactor = 1 ;
-
-              if(pos.x < -350){ 
-                _this.keyboard.handleKeys({left : true}, 1.2*rlFactor, true);
-              }
-              else if(pos.x < -250){ 
-                _this.keyboard.handleKeys({left : true}, 0.9*rlFactor, true);
-              }
-              else if(pos.x < -200){ 
-                _this.keyboard.handleKeys({left : true}, 0.7*rlFactor, true);
-              }
-              else if(pos.x < -150){ 
-                _this.keyboard.handleKeys({left : true}, 0.5*rlFactor, true);
-              }
-              else if(pos.x < -100){ 
-                _this.keyboard.handleKeys({left : true}, 0.3*rlFactor, true);
-              }
-              else if(pos.x < -50){ 
-                _this.keyboard.handleKeys({left : true}, 0.2*rlFactor, true);
-              }
-              else if(pos.x < -45){ 
-                _this.keyboard.handleKeys({left : true}, 0.1*rlFactor, true);
-              }
-              else if(pos.x < -40){ 
-                _this.keyboard.handleKeys({left : true}, 0.05*rlFactor, true);
-              }
-              else if(pos.x < -35){ 
-                _this.keyboard.handleKeys({left : true}, 0.025*rlFactor, true);
-              }
-              else if(pos.x > 350){
-                _this.keyboard.handleKeys({right : true}, 1.2*rlFactor, true);
-              }
-              else if(pos.x > 250){
-                _this.keyboard.handleKeys({right : true}, 0.9*rlFactor, true);
-              }
-              else if(pos.x > 200){
-                _this.keyboard.handleKeys({right : true}, 0.7*rlFactor, true);
-              }
-              else if(pos.x > 150){
-                _this.keyboard.handleKeys({right : true}, 0.5*rlFactor, true);
-              }
-              else if(pos.x > 100){
-                _this.keyboard.handleKeys({right : true}, 0.3*rlFactor, true);
-              } 
-              else if(pos.x > 50){
-                _this.keyboard.handleKeys({right : true}, 0.2*rlFactor, true);
-              } 
-              else if(pos.x > 45){
-                _this.keyboard.handleKeys({right : true}, 0.1*rlFactor, true);
-              } 
-              else if(pos.x > 40){
-                _this.keyboard.handleKeys({right : true}, 0.05*rlFactor, true);
+              // right left 
+              var rlFactor =  Math.abs(pos.x*pos.x/10000);
+              if(pos.x < -35){
+                _this.keyboard.handleKeys({ left: true}, rlFactor, true);
               } 
               else if(pos.x > 35){
-                _this.keyboard.handleKeys({right : true}, 0.025*rlFactor, true);
-              } 
-             
-
-              // up down
-              var rlFactor = 1 ;
-              
-              if(pos.y > 450){
-                _this.keyboard.handleKeys({up : true}, 0.9*rlFactor, true);
-              } 
-              else if(pos.y > 400){
-                _this.keyboard.handleKeys({up : true}, 0.6*rlFactor, true);
+                _this.keyboard.handleKeys({ right : true}, rlFactor, true);
               }
-              else if(pos.y > 350){
-                _this.keyboard.handleKeys({up : true}, 0.4*rlFactor, true);
+ 
+              // up down 
+              var udFactor;
+              if(pos.y < 190){
+                udFactor = Math.abs((pos.y - 190)/100);
+                _this.keyboard.handleKeys({ down: true}, udFactor, true);
               } 
-              else if(pos.y > 300){ 
-                _this.keyboard.handleKeys({up : true}, 0.3*rlFactor, true);
-              }
-              else if(pos.y > 270){
-                _this.keyboard.handleKeys({up : true}, 0.2*rlFactor, true);
-              }
-              else if(pos.y > 250){
-                _this.keyboard.handleKeys({up : true}, 0.15*rlFactor, true);
-              } 
-              else if(pos.y > 240){
-                _this.keyboard.handleKeys({up : true}, 0.075*rlFactor, true);
-              }  
-              else if(pos.y > 235){
-                _this.keyboard.handleKeys({up : true}, 0.05*rlFactor, true);
-              }  
               else if(pos.y > 230){
-                _this.keyboard.handleKeys({up : true}, 0.025*rlFactor, true);
-              }  
-              else if(pos.y < 30){
-                _this.keyboard.handleKeys({down : true}, 0.9*rlFactor, true);
-              }  
-              else if(pos.y < 50){
-                _this.keyboard.handleKeys({down : true}, 0.75*rlFactor, true);
-              }
-              else if(pos.y < 100){
-                _this.keyboard.handleKeys({down : true}, 0.5*rlFactor, true);
-              }
-              else if(pos.y < 150){
-                _this.keyboard.handleKeys({down : true}, 0.4*rlFactor, true);
-              }
-              else if(pos.y < 170){
-                _this.keyboard.handleKeys({down : true}, 0.3*rlFactor, true);
-              }
-              else if(pos.y < 175){
-                _this.keyboard.handleKeys({down : true}, 0.15*rlFactor, true);
-              }
-              else if(pos.y < 180){
-                _this.keyboard.handleKeys({down : true}, 0.075*rlFactor, true);
-              }
-              else if(pos.y < 185){
-                _this.keyboard.handleKeys({down : true}, 0.05*rlFactor, true);
-              }
-              else if(pos.y < 190){
-                _this.keyboard.handleKeys({down : true}, 0.025*rlFactor, true);
-              }
-                
+                udFactor = (pos.y - 230)/100;
+                _this.keyboard.handleKeys({ up : true}, udFactor, true);
+              } 
+            }
+
+            if(hand.grabStrength > 0.7){
+              // stop smoothly!
+              var directionVec = _this.camera.position.clone().sub(_this.keyboard.lastCameraPosition.cam.clone());
+
+              //console.log(directionVec);
             }
             
           } 
@@ -525,10 +418,11 @@ define([
       this.controller.connect(); 
     }
     else{
-     // setTimeout(function (){document.getElementById("leap_id").innerHTML = ""}, 700);;
+  
       if(this.controller !== undefined){
         this.controller.disconnect();
       } 
+      this.crystalOrbit.control.target = new THREE.Vector3( 0, 0, 0 );
     }
      
   }; 

@@ -11,9 +11,20 @@ define([
   _ 
 ) {
   
-  var clocks = { up : new THREE.Clock(),  down : new THREE.Clock(),  forth : new THREE.Clock(),  back : new THREE.Clock(),  left : new THREE.Clock(),  right : new THREE.Clock() };
+  var clocks = { 
+    rotUp : new THREE.Clock(),  
+    rotDown : new THREE.Clock(), 
+    rotLeft : new THREE.Clock(),  
+    rotRight : new THREE.Clock(), 
+    up : new THREE.Clock(),  
+    down : new THREE.Clock(),  
+    forth : new THREE.Clock(),  
+    back : new THREE.Clock(),  
+    left : new THREE.Clock(),  
+    right : new THREE.Clock() 
+  };
   var clock = new THREE.Clock();
-  
+
   function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal, crystalRendererTemporal) { 
 
     this.keyboard = keyboard;  
@@ -45,8 +56,8 @@ define([
       speed = (speed === undefined) ? 1 : speed ;
  
       var delta = (leapArg === undefined) ? clock.getDelta() : clocks[Object.keys(leapArg)[0]].getDelta(), helperVec;  
-      if(delta > 0.15) {
-        delta = 0.15;
+      if(delta > 0.1) {
+        delta = 0.1;
       }
 
       var camPos = this.orbitCrystal.camera.position ;
@@ -55,19 +66,26 @@ define([
 
       // algorithm to smoothly move camera
       var par = Math.exp(distToCenter/50);
-      var distFactor = par ; 
- 
-      if(distFactor > 30 && distFactor < 50){
-        distFactor = 30 + (distFactor - 20)/2 ;
+      var distFactor = par  ; 
+      
+      if(leapArg === undefined){ 
+        if(distFactor > 30 && distFactor < 50){
+          distFactor = 30 + (distFactor - 20)/2 ;
+        }
+        else if(distFactor > 50 && distFactor < 70){
+          distFactor = 40 + (distFactor - 40)/3 ;
+        }
+        else if(distFactor > 70 && distFactor < 80){
+          distFactor = 45 + (distFactor - 60)/5 ;
+        }    
+        if(distFactor > 80){
+          distFactor = 50 ;
+        }
       }
-      else if(distFactor > 50 && distFactor < 70){
-        distFactor = 40 + (distFactor - 40)/3 ;
-      }
-      else if(distFactor > 70 && distFactor < 80){
-        distFactor = 45 + (distFactor - 60)/5 ;
-      }    
-      if(distFactor > 80){
-        distFactor = 50 ;
+      else{
+        if(distFactor > 10){
+          distFactor = 10;
+        }
       }
       //
 
@@ -120,18 +138,18 @@ define([
         camPos.y += timeInputDistFactor/2 ;
         cubePos.y += timeInputDistFactor/2 ;  
       }
- 
+    
       // rotations
       if ( this.keyboard.pressed("down") || (leapArg.rotUp !== undefined)){
         this.orbitCrystal.control.rotateUp(rotationDistance);   
       } 
-      if ( this.keyboard.pressed("left") || (leapArg.rotLeft !== undefined)){
-        this.orbitCrystal.control.rotateLeft(-1 * rotationDistance);  
-      }
       if ( this.keyboard.pressed("up") || (leapArg.rotDown !== undefined)){
         this.orbitCrystal.control.rotateUp(-1 *rotationDistance);  
       }
-      if ( this.keyboard.pressed("right") || (leapArg.rotRight !== undefined)){
+      if ( this.keyboard.pressed("left") || (leapArg.rotLeft !== undefined)){ 
+        this.orbitCrystal.control.rotateLeft(-1 * rotationDistance);  
+      } 
+      if ( this.keyboard.pressed("right") || (leapArg.rotRight !== undefined)){ 
         this.orbitCrystal.control.rotateLeft(  rotationDistance);  
       }
       
