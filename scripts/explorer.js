@@ -32,7 +32,7 @@ define([
 
     this.movingCube = new THREE.Mesh( new THREE.BoxGeometry( 0.001, 0.001, 0.001 ), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
     this.movingCube.name = 'movingCube'; 
-    this.movingCube.visible = true; 
+    this.movingCube.visible = false; 
     this.movingCube.position.set(29.9, 29.9, 59.9);
     this.object3d.add(this.movingCube);
 

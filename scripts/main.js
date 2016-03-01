@@ -907,15 +907,29 @@ require([
   menu.onExportJSON(function(message, arg) { 
     storeMechanism.exportJSON(arg);
   });
+  $(document).keyup(function(e) {
+    if (e.keyCode === 27 && crystalScreenEvents.state === 'oculusCrystal') { // escape key maps to keycode `27`
+      
+      dollEditor.setVisibility(true); 
+      hudCube.setVisibility(true);
+      hudArrows.setVisibility(true);
+      CubeEvent.enableCubeEvents = true ;
+      sceneResizer.resize('crystal');
+      crystalRenderer.initOculusEffect({oculus : false}); 
+      crystalScreenEvents.state = 'default';
+    }
+  });
   menu.setOculusCrystal(function(message, arg) { 
-    dollEditor.setVisibility(!arg.oculus); 
-    hudCube.setVisibility(!arg.oculus);
-    hudArrows.setVisibility(!arg.oculus);
-    CubeEvent.enableCubeEvents = !arg.oculus ;
-    sceneResizer.resize('oculusCrystal');
-    crystalRenderer.initOculusEffect(arg); 
-    crystalScreenEvents.state = 'oculusCrystal';
-    fullScreen.fs();
+    if(arg.oculus === true){  
+      dollEditor.setVisibility(!arg.oculus); 
+      hudCube.setVisibility(!arg.oculus);
+      hudArrows.setVisibility(!arg.oculus);
+      CubeEvent.enableCubeEvents = !arg.oculus ;
+      sceneResizer.resize('oculusCrystal');
+      crystalRenderer.initOculusEffect(arg); 
+      crystalScreenEvents.state = 'oculusCrystal';
+      fullScreen.fs(); 
+    }
   });
   menu.onSideBySide3DCrystal(function(message, arg) { 
     dollEditor.setVisibility(!arg.stereo); 

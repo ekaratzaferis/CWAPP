@@ -18,6 +18,7 @@ define([
     this.dollEditor = dollEditor ;  
     this.hudCube = hudCube ;   
     this.ucViewPortActive = false;
+    this.lastState = 'default';
        
   };
     
@@ -28,16 +29,16 @@ define([
     var fullHeight =  $(window).height();
     
     var _this = this;
-  
+    console.log(state);
     if( state === 'oculusCrystal'){
 
       this.crystalRenderer.changeContainerDimensions(fullWidth , fullHeight );
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0);
       $('#appLogo').css('display','none');
-      $('#mCSB_1_scrollbar_vertical').css('display','none');
+      $('#mCSB_1_scrollbar_vertical').css('right',-1000);
       $('#main_controls_container').css('right',(-1*$('#main_controls_container').width()));
-      
+
       $('.axesLabel').addClass('hiddenLabel');
 
       $('#topRowTableCaption').css('display','none');
@@ -85,10 +86,10 @@ define([
         
       $('.axesLabel').addClass('hiddenLabel');
       if ( !($('#atomRadiusSliderContainer').hasClass('disabled')) ) {
-          jQuery('#atomRadius').parent().toggleClass('lightThemeActive');
-          if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
-          else jQuery('#atomRadiusSliderContainer').hide('slow');
-          jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
+        jQuery('#atomRadius').parent().toggleClass('lightThemeActive');
+        if (jQuery('#atomRadiusSliderContainer').hasClass('disabled') ) jQuery('#atomRadiusSliderContainer').show('slow');
+        else jQuery('#atomRadiusSliderContainer').hide('slow');
+        jQuery('#atomRadiusSliderContainer').toggleClass('disabled');
       }
         
       $('#appLogo').css('display','none');
@@ -143,11 +144,10 @@ define([
       $('#motifPosZCaption').css( "height", height/2 );
  
       $('#hudRendererCube').width((0.5 * 1.5 * width) / this.hudDisplayFactor);
-      $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor);
-         
+      $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor); 
     }
     else{
-      console.log(99);
+      
       if(this.ucViewPortActive === false){
         this.unitCellRenderer.changeContainerDimensions(0,0);
       }
@@ -228,9 +228,16 @@ define([
       $('#hudRendererCube').width(width/this.hudDisplayFactor);
       $('#hudRendererCube').height(height/this.hudDisplayFactor);
 
+      // for oculus exit
+      if(this.lastState === 'oculusCrystal'){
+        $('#mCSB_1_scrollbar_vertical').css('right',0);
+        $('#main_controls_container').css('right',0);
+      }
+       
       this.crystalRenderer.changeContainerDimensions(width, height);
     }
-    
+    this.lastState = state;
+
     setTimeout(_this.dollEditor.rePosition.bind(_this.dollEditor),100);
   };
   SceneResizer.prototype.showViewport = function(arg){ 
