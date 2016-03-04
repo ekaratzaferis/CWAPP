@@ -332,11 +332,50 @@ define([
             var palmNormal = new THREE.Vector3(hand.palmNormal[0], hand.palmNormal[1], hand.palmNormal[2]);
             var pos = new THREE.Vector3(hand.palmPosition[0],hand.palmPosition[1],hand.palmPosition[2] );
 
-            // check if open palm is looking down - stops when user grabs 
+            // palm position workable limits : 
+            //    -250 < x < 250
+            //      40 < y < 400
+            //    -200 < z < 200
              
-            // camera rotations
-            
-            if( hand.grabStrength < 0.7){  
+            if( hand.grabStrength >= 0.7){
+
+              // ORBITAL mode
+
+              //var directionVec = _this.camera.position.clone().sub(_this.keyboard.lastCameraPosition.cam.clone());
+                
+              if(pos.y < 190){
+                var rFact = Math.abs((pos.y-240)*(pos.y-240)/200000);
+                 
+                _this.keyboard.handleKeys({orbitRreduce : rFact}, rFact, true);
+              }
+              else if(pos.y > 230){
+                var rFact = Math.abs((pos.y-190)*(pos.y-190)/200000);
+               
+                _this.keyboard.handleKeys({orbitRincrease : rFact}, rFact, true);
+              } 
+
+              var rotFact = Math.abs(pos.z/300); 
+              if(pos.z < -50){ 
+                _this.keyboard.handleKeys({rotUp : rotFact}, rotFact, true);
+              }
+              else if(pos.z > 50){ 
+                _this.keyboard.handleKeys({rotDown : rotFact}, rotFact, true);
+              } 
+
+              var rotFact = Math.abs(pos.x/300); 
+              if(pos.x < -60){ 
+                _this.keyboard.handleKeys({rotRight : rotFact}, rotFact, true);
+              }
+              else if(pos.x > 60){ 
+                _this.keyboard.handleKeys({rotLeft : rotFact}, rotFact, true);
+              }  
+
+            }
+            else if( hand.grabStrength < 0.7){  
+
+              // WASD mode
+
+              // camera rotations 
 
               var xFact = palmNormal.x*palmNormal.x*palmNormal.x/0.75;
               var zFact = palmNormal.z*palmNormal.z*palmNormal.z/0.75;
@@ -353,57 +392,44 @@ define([
               else if(palmNormal.z >0.2){
                 _this.keyboard.handleKeys({ rotUp : true}, zFact, true);
               }
-            }
 
-            if( hand.grabStrength < 0.4 && Math.abs(palmNormal.x) < 0.4 && palmNormal.y < -0.6 && Math.abs(palmNormal.z) < 0.4 ){
-  
-              // camera translations
+              // if palm is really open translate
+              if( hand.grabStrength < 0.4 && Math.abs(palmNormal.x) < 0.4 && palmNormal.y < -0.6 && Math.abs(palmNormal.z) < 0.4 ){
+      
+                // forth and back
+                var fbSpeed =  Math.abs(pos.z*pos.z/3000);
+                if(fbSpeed > 4){
+                  fbSpeed = 4;
+                }
+               
+                if(pos.z < -40){
+                  _this.keyboard.handleKeys({ forth: true}, fbSpeed, true);
+                } 
+                else if(pos.z > 40){
+                  _this.keyboard.handleKeys({ back : true}, fbSpeed, true);
+                } 
 
-              // palm position workable limits : 
-              //    -250 < x < 250
-              //      40 < y < 400
-              //    -200 < z < 200
-    
-              // forth and back
-              var fbSpeed =  Math.abs(pos.z*pos.z/3000);
-              if(fbSpeed > 4){
-                fbSpeed = 4;
+                // right left 
+                var rlFactor =  Math.abs(pos.x*pos.x/10000);
+                if(pos.x < -35){
+                  _this.keyboard.handleKeys({ left: true}, rlFactor, true);
+                } 
+                else if(pos.x > 35){
+                  _this.keyboard.handleKeys({ right : true}, rlFactor, true);
+                }
+   
+                // up down 
+                var udFactor;
+                if(pos.y < 190){
+                  udFactor = Math.abs((pos.y - 190)/100);
+                  _this.keyboard.handleKeys({ down: true}, udFactor, true);
+                } 
+                else if(pos.y > 230){
+                  udFactor = (pos.y - 230)/100;
+                  _this.keyboard.handleKeys({ up : true}, udFactor, true);
+                } 
               }
-             
-              if(pos.z < -40){
-                _this.keyboard.handleKeys({ forth: true}, fbSpeed, true);
-              } 
-              else if(pos.z > 40){
-                _this.keyboard.handleKeys({ back : true}, fbSpeed, true);
-              } 
-
-              // right left 
-              var rlFactor =  Math.abs(pos.x*pos.x/10000);
-              if(pos.x < -35){
-                _this.keyboard.handleKeys({ left: true}, rlFactor, true);
-              } 
-              else if(pos.x > 35){
-                _this.keyboard.handleKeys({ right : true}, rlFactor, true);
-              }
- 
-              // up down 
-              var udFactor;
-              if(pos.y < 190){
-                udFactor = Math.abs((pos.y - 190)/100);
-                _this.keyboard.handleKeys({ down: true}, udFactor, true);
-              } 
-              else if(pos.y > 230){
-                udFactor = (pos.y - 230)/100;
-                _this.keyboard.handleKeys({ up : true}, udFactor, true);
-              } 
-            }
-
-            if(hand.grabStrength > 0.7){
-              // stop smoothly!
-              var directionVec = _this.camera.position.clone().sub(_this.keyboard.lastCameraPosition.cam.clone());
-
-              //console.log(directionVec);
-            }
+            } 
             
           } 
           else{
