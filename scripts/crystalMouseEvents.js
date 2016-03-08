@@ -85,7 +85,7 @@ define([
   };
   CrystalMouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
-     
+      console.log(9);
     event.preventDefault();
     
     if(_this.state === 'default'){

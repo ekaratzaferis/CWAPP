@@ -6,8 +6,9 @@ Educational Game Development Ideas
 - Test, Iterate, Test 
 
 
-Emergency TODOs
+ TODOs
 1.cache materials and reduce materials from 3 to 2
+2. antialiasing for rend. quality - to be reviewed
 
 ALEX UI BUGS   
 

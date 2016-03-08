@@ -154,7 +154,8 @@ require([
   'jszip',
   'menu_html',
   'fitToCrystal',
-  'LOD'
+  'LOD',
+  'multitouch'
 
 ], function(
   PubSub, 
@@ -208,7 +209,8 @@ require([
   jszip,
   menu_html,
   FitToCrystal,
-  LOD
+  LOD,
+  Multitouch
 
 ) {
   
@@ -419,6 +421,10 @@ require([
   $('dirRadius').selectpicker('val',20);
 
   //////////// for menu - to be removed!
+
+  // multi touch events for tablets,mobiles etc.
+  var domElTOTouch = document;
+  var mtEvents = new Multitouch(domElTOTouch, keyboard);
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {

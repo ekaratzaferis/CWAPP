@@ -598,7 +598,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 	};
 
 	function touchstart( event ) {
-
+		 
 		if ( scope.enabled === false ) return;
 
 		switch ( event.touches.length ) {
@@ -608,7 +608,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 				if ( scope.noRotate === true ) return;
 
 				state = STATE.TOUCH_ROTATE;
-
+				
 				rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
 				break;
 
