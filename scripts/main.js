@@ -363,9 +363,9 @@ require([
   
 
   // doll and gear tour mouse events
-  var dollGearBarME = new DollGearBarMouseEvents(crystalRenderer.dollCamera, orbitCrystal, lattice, dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu);
+  var dollGearBarME = new DollGearBarMouseEvents(crystalRenderer.dollCamera, orbitCrystal, lattice, dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu, crystalScene);
   orbitCrystal.dollOnDocumentMouseDown(dollGearBarME.onDocumentMouseDown.bind(dollGearBarME)) ;
-
+  
   // atom customizer
   var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu);
 
@@ -385,7 +385,7 @@ require([
   }, false);
 
   // leap motion
-  var leapM = new LeapMotionHandler( motifEditor, lattice, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera());
+  var leapM = new LeapMotionHandler(lattice, motifEditor, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera());
 
   // rendering modes
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
@@ -425,6 +425,7 @@ require([
   // multi touch events for tablets,mobiles etc.
   var domElTOTouch = document;
   var mtEvents = new Multitouch(domElTOTouch, keyboard);
+  dollGearBarME.multitouch = mtEvents;
 
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {

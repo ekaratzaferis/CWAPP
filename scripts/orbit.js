@@ -40,7 +40,7 @@ define([
   };
   Orbit.prototype.dollOnDocumentMouseDown = function(onDocumentMouseDown){ 
     this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
-  };
+  }; 
   Orbit.prototype.setSyncedCamControl = function(control){ 
     this.control.syncedControl = control;
   };

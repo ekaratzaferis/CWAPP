@@ -29,7 +29,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
  	this.lastPosition = new THREE.Vector3();
 	this.leapMotion = false ; // enable control of camera by leap motion device
 	// API
-	var dollOnDocumentMouseDown; 
+	var dollOnDocumentMouseDown;  
 
 	// Set to false to disable this control
 	this.enabled = true;
@@ -134,9 +134,10 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 
 	this.dollOnDocumentMouseDown = function ( _dollOnDocumentMouseDown ) {
 		dollOnDocumentMouseDown = _dollOnDocumentMouseDown ;
-	};
-	this.rotateLeft = function ( angle ) {
+	}; 
 
+	this.rotateLeft = function ( angle ) {
+		 
 		if ( angle === undefined ) {
 
 			angle = getAutoRotationAngle();
@@ -361,7 +362,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 		if ( this.autoRotate === true && this.which === 'crystal' && this.syncCams === true) {
 			this.syncedControl.camera.position.set(this.object.position.x, this.object.position.y, this.object.position.z);
 			this.syncedControl.update(); 
-		}
+		} 
 	};
 
 	this.setRotationManually = function(theta, phi ){
@@ -417,11 +418,12 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 		var clickedOndollOrGear = false;
 		if( dollOnDocumentMouseDown !== undefined) { 
 			clickedOndollOrGear = dollOnDocumentMouseDown(event);
-		}
+		} 
 		 
 		if(clickedOndollOrGear === true){
 			return;
 		}
+
 		if ( scope.enabled === false ) return;
 		event.preventDefault();
  

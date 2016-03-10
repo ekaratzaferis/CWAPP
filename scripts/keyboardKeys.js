@@ -140,18 +140,19 @@ define([
         camPos.y += timeInputDistFactor/2 ;
         cubePos.y += timeInputDistFactor/2 ;  
       }
-    
+      
+      //console.log(this.keyboard.pressed("down"));
       // rotations
-      if ( this.keyboard.pressed("down") || (leapArg.rotUp !== undefined)){
+      if ( this.keyboard.pressed("numPad5") || (leapArg.rotUp !== undefined)){
         this.orbitCrystal.control.rotateUp(rotationDistance);   
       } 
-      if ( this.keyboard.pressed("up") || (leapArg.rotDown !== undefined)){
+      if ( this.keyboard.pressed("numPad8") || (leapArg.rotDown !== undefined)){
         this.orbitCrystal.control.rotateUp(-1 *rotationDistance);  
       }
-      if ( this.keyboard.pressed("left") || (leapArg.rotLeft !== undefined)){ 
+      if ( this.keyboard.pressed("numPad4") || (leapArg.rotLeft !== undefined)){  
         this.orbitCrystal.control.rotateLeft(-1 * rotationDistance);  
       } 
-      if ( this.keyboard.pressed("right") || (leapArg.rotRight !== undefined)){ 
+      if ( this.keyboard.pressed("numPad6") || (leapArg.rotRight !== undefined)){ 
         this.orbitCrystal.control.rotateLeft(  rotationDistance);  
       } 
 

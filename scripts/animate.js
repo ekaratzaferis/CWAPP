@@ -92,7 +92,7 @@ define([
                 this.doll_toAtomMovement.newTarget.y,
                 this.doll_toAtomMovement.newTarget.z
 
-                );
+              );
               this.scene.movingCube.position.set(this.doll_toAtomMovement.newTarget.x, this.doll_toAtomMovement.newTarget.y, this.doll_toAtomMovement.newTarget.z);
                
               this.soundMachine.stopStoredPlay('atomUnderDoll');

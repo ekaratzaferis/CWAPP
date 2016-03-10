@@ -19,7 +19,7 @@ define([
   var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
   var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
 
-  function DollGearBarMouseEvents(camera, crystalOrbit, lattice , dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu) {
+  function DollGearBarMouseEvents(camera, crystalOrbit, lattice , dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu, crystalScene) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
@@ -30,6 +30,7 @@ define([
     this.keyboard = keyboard;
     this.soundMachine = soundMachine;
     this.gearTour = gearTour;
+    this.crystalScene = crystalScene;
     
     this.camera = camera;
     this.lattice = lattice;  
@@ -55,10 +56,11 @@ define([
  
     var mMoove = this.onDocumentMouseMove.bind(this) ; 
     var mUp    = this.onDocumentMouseUp.bind(this) ;
+    var mDown  = this.onDocumentMouseDown.bind(this) ;
     
-    document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false); 
+    document.getElementById('crystalRendererMouse').addEventListener("mousemove", mMoove, false);  
     document.getElementById('crystalRendererMouse').addEventListener("mouseup"  ,    mUp, false);
-    
+   
     document.body.addEventListener('click', function myClick(event) 
       {  
         _this.firstTimeEnded = true;
@@ -75,6 +77,10 @@ define([
   } 
   DollGearBarMouseEvents.prototype.onDocumentMouseDown = function(event){  
     var _this = this, clickedOnMe = false; 
+    var eventClientX, eventClientY;
+        
+    eventClientX = event.clientX;
+    eventClientY = event.clientY;
      
     if(this.dollEditor.enablemouseEvents !== true){
       return;
@@ -84,18 +90,18 @@ define([
     var contWidth = $('#'+this.container).width() ;
 
     if(contWidth < 800 ){
-      mouse.x = (  -3 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) );  
+      mouse.x = (  -3 +  2 * ( eventClientX / ( $('#'+this.container).width() ) ) );
+      mouse.y = (   1 - 2 * ( eventClientY / ( $('#'+this.container).height() ) ) );  
     }
     else{  
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) ); 
+      mouse.x = (  -1 +  2 * ( eventClientX / ( $('#'+this.container).width() ) ) );
+      mouse.y = (   1 - 2 * ( eventClientY / ( $('#'+this.container).height() ) ) ); 
     }
 
     raycaster.setFromCamera( mouse, this.camera ); 
 
     var intersects = raycaster.intersectObjects( this.dollEditor.objsToIntersect, true );
-
+  
     if(intersects[0] !== undefined){ 
     
       if(intersects[0].object.name === 'dollHolder'){  
@@ -121,6 +127,7 @@ define([
           this.crystalOrbit.control.rotateSpeed = 1.0;
           this.crystalOrbit.disableUpdate = false;
           this.crystalOrbit.control.enabled = true;
+
         } 
         else if(intersects[0].object.name === 'dollHolder'){  
           intersects[0].object.parent.children[0].material.color.setHex(0x71469A);
@@ -129,6 +136,17 @@ define([
 
           this.dollEditor.dollOn = true; 
           this.dollEditor.doll.visible = true;
+
+          if(this.multitouch.touchDevice === true){  
+            var pos = this.crystalOrbit.camera.position.clone();
+            pos.setLength(pos.length() - 0.1);
+            this.keyboard.dollmode = true;
+            
+            this.crystalOrbit.control.enabled = false; 
+              
+            this.crystalScene.movingCube.position.set(pos.x, pos.y, pos.z); 
+            this.crystalOrbit.control.target = pos.clone();
+          }
       
         }
       }
@@ -262,16 +280,21 @@ define([
     if(this.dollEditor.enablemouseEvents !== true){
       return;
     } 
+      
+    var eventClientX, eventClientY;
  
+    eventClientX = event.clientX; 
+    eventClientY = event.clientY;
+     
     var contWidth = $('#'+this.container).width() ;
      
     if(contWidth < 800 ){
-      mouse.x = (  -3 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) );  
+      mouse.x = (  -3 +  2 * ( eventClientX / ( $('#'+this.container).width() ) ) );
+      mouse.y = (   1 - 2 * ( eventClientY / ( $('#'+this.container).height() ) ) );  
     }
     else{  
-      mouse.x = (  -1 +  2 * ( event.clientX / ( $('#'+this.container).width() ) ) );
-      mouse.y = (   1 - 2 * ( event.clientY / ( $('#'+this.container).height() ) ) ); 
+      mouse.x = (  -1 +  2 * ( eventClientX / ( $('#'+this.container).width() ) ) );
+      mouse.y = (   1 - 2 * ( eventClientY / ( $('#'+this.container).height() ) ) ); 
     }
      
     raycaster.setFromCamera( mouse, this.camera );

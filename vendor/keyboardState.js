@@ -62,6 +62,10 @@ THREEx.KeyboardState.prototype.destroy	= function()
 
 THREEx.KeyboardState.MODIFIERS	= ['shift', 'ctrl', 'alt', 'meta'];
 THREEx.KeyboardState.ALIAS	= {
+	'numPad8'   : 104,
+	'numPad5'   : 101,
+	'numPad6' 	: 102,
+	'numPad4'	: 100,
 	'left'		: 37,
 	'up'		: 38,
 	'right'		: 39,
@@ -79,8 +83,9 @@ THREEx.KeyboardState.prototype._onKeyChange	= function(event, pressed)
 {
 	// log to debug
 	//console.log("onKeyChange", event, pressed, event.keyCode, event.shiftKey, event.ctrlKey, event.altKey, event.metaKey)
-
+	 486
 	// update this.keyCodes
+	console.log(event.keyCode);
 	var keyCode		= event.keyCode;
 	this.keyCodes[keyCode]	= pressed;
 
@@ -98,10 +103,10 @@ THREEx.KeyboardState.prototype._onKeyChange	= function(event, pressed)
  * @returns {Boolean} true if the key is pressed, false otherwise
 */
 THREEx.KeyboardState.prototype.pressed	= function(keyDesc)
-{
+{	 
 	var keys	= keyDesc.split("+");
 	for(var i = 0; i < keys.length; i++){
-		var key		= keys[i];
+		var key	 = keys[i];
 		var pressed;
 		if( THREEx.KeyboardState.MODIFIERS.indexOf( key ) !== -1 ){
 			pressed	= this.modifiers[key];

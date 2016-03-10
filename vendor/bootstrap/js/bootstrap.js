@@ -719,7 +719,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
     return false
   }
 
-  Dropdown.prototype.keydown = function (e) {
+  Dropdown.prototype.keydown = function (e) { 
     if (!/(38|40|27)/.test(e.keyCode)) return
 
     var $this = $(this)

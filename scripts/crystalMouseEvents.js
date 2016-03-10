@@ -50,7 +50,7 @@ define([
     
     event.preventDefault();
     var _this = this;
-
+    
     if(this.state === 'default'){
       mouse.x = ( event.clientX / $('#'+this.container).width() ) * 2 - 1;
       mouse.y = - ( event.clientY / $('#'+this.container).height() ) * 2 + 1;
@@ -85,7 +85,7 @@ define([
   };
   CrystalMouseEvents.prototype.onDocumentMouseMove = function(event){ 
     var _this = this;
-      console.log(9);
+ 
     event.preventDefault();
     
     if(_this.state === 'default'){
