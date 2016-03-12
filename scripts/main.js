@@ -357,7 +357,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance();  
   crystalRenderer.setDoll(dollScene.object3d ); 
-  var dollEditor = new Doll(crystalRenderer.dollCamera, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
+  var dollEditor = new Doll(crystalRenderer.dollCamera, crystalScene, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   dollEditor.rePosition(); 
   
@@ -385,7 +385,7 @@ require([
   }, false);
 
   // leap motion
-  var leapM = new LeapMotionHandler(lattice, motifEditor, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera());
+  var leapM = new LeapMotionHandler(lattice, motifEditor, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera(), animationMachine);
 
   // rendering modes
   var renderingModes = new RenderingMode(crystalScene, unitCellScene, motifScene);
@@ -424,7 +424,7 @@ require([
 
   // multi touch events for tablets,mobiles etc.
   var domElTOTouch = document;
-  var mtEvents = new Multitouch(domElTOTouch, keyboard);
+  var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
 
   // lattice events binding

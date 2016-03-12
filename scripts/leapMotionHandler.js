@@ -13,7 +13,7 @@ define([
   var stillHandFactor = 100 ; // increasing it results to more stability in hand
   var rotSpeed = 0.005 ; // increasing it results to quicker rotation
 
-  function LeapMotionHandler( lattice, motifeditor, crystalOrbit, soundMachine, dollEditor, keyboard ,explorer, camera) { 
+  function LeapMotionHandler( lattice, motifeditor, crystalOrbit, soundMachine, dollEditor, keyboard ,crystalScene, camera, animationMachine) { 
     
     this.lattice = lattice;
     this.motifeditor = motifeditor; 
@@ -22,7 +22,7 @@ define([
     this.crystalOrbit = crystalOrbit;
     this.soundMachine = soundMachine;
     this.active = false;
-    this.explorer = explorer;
+    this.crystalScene = crystalScene;
     this.camera = camera;
     this.dollEditor = dollEditor;
     this.trackingSystem = 'grab';
@@ -35,6 +35,8 @@ define([
       initCamTheta : undefined, 
       initCamPhi : undefined};
     this.toggle(false);
+    this.freezeGestures = { openPalm : false, grab : false };
+    this.animationMachine = animationMachine;
   };
 
   LeapMotionHandler.prototype.selectTS = function(arg) {
@@ -50,11 +52,11 @@ define([
     if(bool === true){ 
       
       // reposition movingCube
-  
-      var MCpos = this.camera.position.clone(); // reconstruct : global init file
-      MCpos.setLength(MCpos.length()-1); 
-      this.explorer.movingCube.position.copy(MCpos);
-    
+   
+      var pos = this.crystalOrbit.camera.position.clone();
+      pos.setLength(pos.length() - 1);
+      this.crystalScene.movingCube.position.set(pos.x, pos.y, pos.z);
+      
       if( this.controller === undefined){
         
         var frameString = "", handString = "", fingerString = "";
@@ -68,10 +70,10 @@ define([
         
         // Main Leap Loop
         this.controller = Leap.loop(options, function(frame) { 
-
+         
           var leftHand, rightHand; 
           var numOfHands = frame.hands.length ;
-          
+           
           if(numOfHands === 1){ 
  
             _this.leapVars.bothGrab = false; // deactivate
@@ -87,67 +89,139 @@ define([
             
 
             // WASD using open palm
-            if( hand.grabStrength >= 0.7){
+            if( hand.grabStrength >= 0.7 && _this.freezeGestures.grab === false){
 
               // ORBITAL mode
 
               if(isAlreadyGrabing === false){
-                var focalPoint = _this.explorer.movingCube.position.clone();
-                
+
+                // change focal point
+
+                // 3-way strategy : select the atom the camera is looking at (green dot), 
+                // if camera is not looking at anyone, select the neares, 
+                // if camera is looking too much far away from crystal, select the center of crystal
+
+                var focalPoint = _this.crystalScene.movingCube.position.clone(); 
                 var ray = new THREE.Ray(_this.camera.position.clone(), focalPoint.sub((_this.camera.position.clone())).normalize());
                 var closestDist = 10000000000;
-                var closestAtomPos ;
-                for (var i = _this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
-                  var d = ray.distanceToPoint(_this.lattice.actualAtoms[i].object3d.position.clone());
+                var closestAtom = undefined;
+                var closestAtomPos =  getCentroidOfCrystal(_this.lattice);
+                var distanceLimitToGrab =  2 * closestAtomPos.length();
+                var intersectedAtoms =  [];
+                var raycaster = new THREE.Raycaster();  
+                raycaster.setFromCamera( { x : 0 , y : 0 }, _this.camera ); 
 
-                  if( d < closestDist){
-                    closestDist = d;
-                    closestAtomPos = _this.lattice.actualAtoms[i].object3d.position.clone();
-                  }
-                };
-                _this.explorer.movingCube.position.copy(closestAtomPos);
+                var crystalobjsIntersects = raycaster.intersectObjects( getCrystalAtoms(_this.crystalScene.object3d) );
+
+                if(crystalobjsIntersects.length > 0){ 
+               
+                  closestAtom = _.find(_this.lattice.actualAtoms, function(atom){ 
+                    if( atom.identity === crystalobjsIntersects[0].object.parent.identity && atom.latticeIndex === crystalobjsIntersects[0].object.parent.latticeIndex) {
+                      return atom;
+                    }
+                    else{
+                      return undefined;
+                    } 
+                  });
+
+                  if(closestAtom) closestAtomPos = closestAtom.object3d.position.clone();
+                }
+                else{
+                  for (var i = _this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
+                    var atom = _this.lattice.actualAtoms[i];
+                    var d = ray.distanceToPoint(atom.object3d.position.clone());
+                    if( d < closestDist && d < distanceLimitToGrab){
+                      closestDist = d;
+                      closestAtom = atom;
+                      closestAtomPos = atom.object3d.position.clone();
+                    }
+                  };
+
+                  if(_this.lattice.actualAtoms.length === 0){
+                    _.each(_this.lattice.points, function(point, reference) {
+                      var d = ray.distanceToPoint(point.object3d.position.clone()); 
+                      if( d < closestDist && d < distanceLimitToGrab){
+                        closestDist = d;
+                        closestAtomPos = point.object3d.position.clone();
+                      }
+                    });  
+                  }  
+                }
+                
  
+                // make it clored 
+                if(closestAtom) closestAtom.setColorMaterial(0xCC2EFA, true);
+
+                _this.freezeGestures.grab = true;
+
+                _this.animationMachine.cameraAnimation = { 
+                  positionTrigger : false, 
+                  targetTrigger : true, 
+                  orbitControl : _this.crystalOrbit, 
+                  oldTarget : _this.crystalScene.movingCube.position.clone(), 
+                  oldPos : _this.crystalOrbit.camera.position.clone(), 
+                  newTarget : closestAtomPos.clone(), 
+                  movingTargetFactor : 0,
+                  posFactor : 0,
+                  posFactor : 0,
+                  callback: function(){
+                    if(closestAtom) closestAtom.setColorMaterial(0xDF73FF, true);
+                    _this.freezeGestures.grab = false;
+                  },
+                  targConnectVector : (closestAtomPos.clone()).sub(_this.crystalScene.movingCube.position.clone()),
+                  posConnectVector : new THREE.Vector3( )
+                }; 
+
                 isAlreadyGrabing = true;
               }
               
 
-              if(pos.y < 170){
-                var rFact = Math.abs((pos.y-240)*(pos.y-240)/200000);
+              if(pos.y < 180){
+                var rFact = Math.abs((pos.y-210)*(pos.y-210)/30000);
                  
                 _this.keyboard.handleKeys({orbitRreduce : rFact}, rFact, true);
               }
-              else if(pos.y > 250){
-                var rFact = Math.abs((pos.y-170)*(pos.y-170)/200000);
+              else if(pos.y > 260){
+                var rFact = Math.abs((pos.y-250)*(pos.y-250)/50000);
                
                 _this.keyboard.handleKeys({orbitRincrease : rFact}, rFact, true);
               } 
 
               var rotFact = Math.abs(pos.z/100); 
-              if(pos.z < -50){ 
+              if(pos.z < -55){ 
                 _this.keyboard.handleKeys({rotUp : rotFact}, rotFact, true);
               }
-              else if(pos.z > 50){ 
+              else if(pos.z > 55){ 
                 _this.keyboard.handleKeys({rotDown : rotFact}, rotFact, true);
               } 
 
               var rotFact = Math.abs(pos.x/100); 
-              if(pos.x < -60){ 
+              if(pos.x < -65){ 
                 _this.keyboard.handleKeys({rotRight : rotFact}, rotFact, true);
               }
-              else if(pos.x > 60){ 
+              else if(pos.x > 65){ 
                 _this.keyboard.handleKeys({rotLeft : rotFact}, rotFact, true);
               }  
 
             }
-            else if( hand.grabStrength < 0.7){  
+            else if( hand.grabStrength < 0.7 && _this.freezeGestures.openPalm === false){  
                 
               if(isAlreadyGrabing === true){
 
-                var newPosOfFP = (_this.explorer.movingCube.position.clone()).sub(_this.camera.position.clone() );
-                newPosOfFP.setLength(0.1);
+                // end animation and unlock grab
+                _this.animationMachine.cameraAnimation = undefined;  
+                 _this.freezeGestures.grab = false;
 
-                _this.explorer.movingCube.position.copy(newPosOfFP.add(_this.camera.position.clone()));
+                // revert all atom colors
+                for (var i = _this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
+                  _this.lattice.actualAtoms[i].setColorMaterial(); 
+                }
 
+                // put movingCube back in front of camera
+                var newPosOfFP = (_this.crystalScene.movingCube.position.clone()).sub(_this.camera.position.clone() );
+                newPosOfFP.setLength(1); 
+                _this.crystalScene.movingCube.position.copy(newPosOfFP.add(_this.camera.position.clone()));
+           
                 isAlreadyGrabing = false;
               }
               
@@ -182,30 +256,30 @@ define([
                   fbSpeed = 4;
                 }
                
-                if(pos.z < -40){
+                if(pos.z < -45){
                   _this.keyboard.handleKeys({ forth: true}, fbSpeed, true);
                 } 
-                else if(pos.z > 40){
+                else if(pos.z > 45){
                   _this.keyboard.handleKeys({ back : true}, fbSpeed, true);
                 } 
 
                 // right left 
                 var rlFactor =  Math.abs(pos.x*pos.x/10000);
-                if(pos.x < -35){
+                if(pos.x < -40){
                   _this.keyboard.handleKeys({ left: true}, rlFactor, true);
                 } 
-                else if(pos.x > 35){
+                else if(pos.x > 40){
                   _this.keyboard.handleKeys({ right : true}, rlFactor, true);
                 }
    
                 // up down 
                 var udFactor;
-                if(pos.y < 190){
-                  udFactor = Math.abs((pos.y - 190)/100);
+                if(pos.y < 180){
+                  udFactor = Math.abs((pos.y - 180)/100);
                   _this.keyboard.handleKeys({ down: true}, udFactor, true);
                 } 
-                else if(pos.y > 230){
-                  udFactor = (pos.y - 230)/100;
+                else if(pos.y > 240){
+                  udFactor = (pos.y - 240)/100;
                   _this.keyboard.handleKeys({ up : true}, udFactor, true);
                 } 
               }
@@ -217,7 +291,6 @@ define([
             _this.leapVars.bothGrab = false;
           }
           
- 
         }); 
         this.controller.loopWhileDisconnected = false;
       }
@@ -233,10 +306,45 @@ define([
      
   }; 
 
+  function getCentroidOfCrystal(lattice) {
+
+    var g = lattice.customBox(lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+
+    return centroid;
+  }
   function concatData(id, data) {
     return id + ": " + data + "<br>";
   }
-  
+  function getCrystalAtoms(scene) {  
+    var _this = this;
+    var crystalObjs = [] ;
+
+    scene.traverse(function (object) {
+
+      if ( 
+        (object.name === 'point' ) || 
+        (object.name === 'atom' && object.latticeIndex !== '-') || 
+        ( object.name === 'atom' && 
+          object.latticeIndex === '-' && 
+          object.visible === true )  
+      ) {   
+        for (var i = 0; i < object.children.length; i++) {  
+          crystalObjs.push(object.children[i]);
+        };  
+      }
+    });
+
+    return crystalObjs;
+  };
   function getFingerName(fingerType) {
     switch(fingerType) {
       case 0:

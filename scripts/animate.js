@@ -18,7 +18,7 @@ define([
     this.waves = [] ;
     this.wavesTrigger = [] ;
     this.keyboard ;
-    this.doll_toAtomMovement = undefined;
+    this.cameraAnimation = undefined;
 
     for (var i = wavesNames.length - 1; i >= 0; i--) {
       this.wavesTrigger[wavesNames[i]] = false;
@@ -64,91 +64,108 @@ define([
       } 
 
       // camera doll movement
-      if( this.doll_toAtomMovement !== undefined && (this.doll_toAtomMovement.targetTrigger === true || this.doll_toAtomMovement.positionTrigger === true)){
+      if( this.cameraAnimation !== undefined && (this.cameraAnimation.targetTrigger === true || this.cameraAnimation.positionTrigger === true)){
            
-        var offset2, 
+        var offset2 = elapsed/30, 
             newTarget,
-            ltarg,
+            targConnectVector = this.cameraAnimation.targConnectVector.clone(),
+            distanceToMakeBetweenTargets = this.cameraAnimation.targConnectVector.length() ,
             distanceVec,
-            lpos,
-            targConnectVector = this.doll_toAtomMovement.targConnectVector.clone(),
-            posConnectVector = this.doll_toAtomMovement.posConnectVector.clone(),
-            simultanousFactor = targConnectVector.length()/posConnectVector.length(); 
+            lpos, 
+            posConnectVector = this.cameraAnimation.posConnectVector.clone();
 
         // calcs for target
-        if(this.doll_toAtomMovement.targetTrigger){ 
+        if(this.cameraAnimation.targetTrigger){ 
             
-          this.doll_toAtomMovement.targetFactor += offset/3 ;
+          this.cameraAnimation.movingTargetFactor += (0.1*this.cameraAnimation.movingTargetFactor  + offset2/10) ;
+  
+          if(this.cameraAnimation.movingTargetFactor > distanceToMakeBetweenTargets){ 
 
-          ltarg = targConnectVector.length() ;
+            // animation has finished
 
-          if(this.doll_toAtomMovement.targetFactor > ltarg){  
-            this.doll_toAtomMovement.targetFactor = ltarg ;
-            this.doll_toAtomMovement.targetTrigger = false; 
+            this.cameraAnimation.movingTargetFactor = distanceToMakeBetweenTargets ;
+            this.cameraAnimation.targetTrigger = false; 
 
-            if(this.doll_toAtomMovement.positionTrigger === false){
-              this.doll_toAtomMovement.orbitControl.control.target = new THREE.Vector3(
-                this.doll_toAtomMovement.newTarget.x,
-                this.doll_toAtomMovement.newTarget.y,
-                this.doll_toAtomMovement.newTarget.z
+            if(this.cameraAnimation.positionTrigger === false){
 
+              // check for other animations if have finished
+
+              this.cameraAnimation.orbitControl.control.target = new THREE.Vector3(
+                this.cameraAnimation.newTarget.x,
+                this.cameraAnimation.newTarget.y,
+                this.cameraAnimation.newTarget.z 
               );
-              this.scene.movingCube.position.set(this.doll_toAtomMovement.newTarget.x, this.doll_toAtomMovement.newTarget.y, this.doll_toAtomMovement.newTarget.z);
+
+              this.scene.movingCube.position.set(this.cameraAnimation.newTarget.x, this.cameraAnimation.newTarget.y, this.cameraAnimation.newTarget.z);
                
               this.soundMachine.stopStoredPlay('atomUnderDoll');
               this.keyboard.dollmode = true;
+
+              this.cameraAnimation.callback();
             }
           }
-          targConnectVector.setLength(this.doll_toAtomMovement.targetFactor);
 
-          this.doll_toAtomMovement.orbitControl.control.target.set(
-            this.doll_toAtomMovement.oldTarget.x + targConnectVector.x, 
-            this.doll_toAtomMovement.oldTarget.y + targConnectVector.y, 
-            this.doll_toAtomMovement.oldTarget.z + targConnectVector.z
-          );
-          
+          targConnectVector.setLength(this.cameraAnimation.movingTargetFactor);
+
+          this.cameraAnimation.orbitControl.control.target.set(
+            this.cameraAnimation.oldTarget.x + targConnectVector.x, 
+            this.cameraAnimation.oldTarget.y + targConnectVector.y, 
+            this.cameraAnimation.oldTarget.z + targConnectVector.z
+          ); 
         }
 
         // calcs for position
-        if(this.doll_toAtomMovement.positionTrigger){
+        if(this.cameraAnimation.positionTrigger){
           
           lpos = posConnectVector.length() ;
 
-          this.doll_toAtomMovement.posFactor += ((lpos * offset) / (100) ); 
+          this.cameraAnimation.posFactor += ((lpos * offset2) / (100) ); 
  
-          if(this.doll_toAtomMovement.posFactor > lpos){  
-            this.doll_toAtomMovement.posFactor = lpos ;
-            this.doll_toAtomMovement.positionTrigger = false; 
+          if(this.cameraAnimation.posFactor > lpos){  
 
-            this.doll_toAtomMovement.orbitControl.camera.position.set(
-              this.doll_toAtomMovement.oldPos.x + posConnectVector.x, 
-              this.doll_toAtomMovement.oldPos.y + posConnectVector.y, 
-              this.doll_toAtomMovement.oldPos.z + posConnectVector.z
+            // animation has finished
+
+            this.cameraAnimation.posFactor = lpos ;
+            this.cameraAnimation.positionTrigger = false; 
+
+            this.cameraAnimation.orbitControl.camera.position.set(
+              this.cameraAnimation.oldPos.x + posConnectVector.x, 
+              this.cameraAnimation.oldPos.y + posConnectVector.y, 
+              this.cameraAnimation.oldPos.z + posConnectVector.z
             );
 
-            if(this.doll_toAtomMovement.targetTrigger === false){
-              this.doll_toAtomMovement.orbitControl.control.target = new THREE.Vector3(
-                this.doll_toAtomMovement.newTarget.x,
-                this.doll_toAtomMovement.newTarget.y,
-                this.doll_toAtomMovement.newTarget.z 
+            if(this.cameraAnimation.targetTrigger === false){
+
+              // check for other animations if have finished
+
+              this.cameraAnimation.orbitControl.control.target = new THREE.Vector3(
+                this.cameraAnimation.newTarget.x,
+                this.cameraAnimation.newTarget.y,
+                this.cameraAnimation.newTarget.z 
               );
-              this.scene.movingCube.position.set(this.doll_toAtomMovement.newTarget.x, this.doll_toAtomMovement.newTarget.y, this.doll_toAtomMovement.newTarget.z);
+              this.scene.movingCube.position.set(this.cameraAnimation.newTarget.x, this.cameraAnimation.newTarget.y, this.cameraAnimation.newTarget.z);
                
               this.soundMachine.stopStoredPlay('atomUnderDoll');
               this.keyboard.dollmode = true;
+
+              this.cameraAnimation.callback();
             } 
           }
           else{  
-            posConnectVector.setLength(this.doll_toAtomMovement.posFactor);
+            posConnectVector.setLength(this.cameraAnimation.posFactor);
              
-            this.doll_toAtomMovement.orbitControl.camera.position.set(
-              this.doll_toAtomMovement.oldPos.x + posConnectVector.x, 
-              this.doll_toAtomMovement.oldPos.y + posConnectVector.y, 
-              this.doll_toAtomMovement.oldPos.z + posConnectVector.z
+            this.cameraAnimation.orbitControl.camera.position.set(
+              this.cameraAnimation.oldPos.x + posConnectVector.x, 
+              this.cameraAnimation.oldPos.y + posConnectVector.y, 
+              this.cameraAnimation.oldPos.z + posConnectVector.z
             );
           }
 
         }
+      }
+
+      if(this.focalReposition === true){
+
       }
     }
     lastTime = timeNow;

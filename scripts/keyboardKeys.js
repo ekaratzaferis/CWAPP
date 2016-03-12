@@ -44,14 +44,14 @@ define([
     var _this = this;
      
     if(this.dollmode === true || passport !== undefined){ 
-       
+      
       // set limits of world
       var distToCenter = (this.orbitCrystal.camera.position).distanceTo(new THREE.Vector3(0,0,0)) ; 
       if(distToCenter > 2500){ 
         this.orbitCrystal.camera.position.copy(this.lastCameraPosition.cam);
         this.crystalScene.movingCube.position.copy(this.lastCameraPosition.cube);
         return;
-      }
+      }  
       this.lastCameraPosition.cam = this.orbitCrystal.camera.position.clone();
       this.lastCameraPosition.cube = this.crystalScene.movingCube.position.clone();
 
@@ -95,7 +95,8 @@ define([
          
       var timeInputDistFactor = (leapArg === undefined) ? ( delta * speed * distFactor) : (5 * delta * speed * distFactor);
        
-      var camToCubeDistance = (cubePos.clone()).sub(camPos).length() ;
+      var camToCubeDistance = (cubePos.clone()).sub(camPos).length() * speed ;
+
       var camToCubeVec = (cubePos.clone()).sub(camPos) ;
        
       camToCubeVec.setLength(timeInputDistFactor);
@@ -141,9 +142,9 @@ define([
         cubePos.y += timeInputDistFactor/2 ;  
       }
       
-      //console.log(this.keyboard.pressed("down"));
+      //console.log(this.keyboard.pressed("numPad5"));
       // rotations
-      if ( this.keyboard.pressed("numPad5") || (leapArg.rotUp !== undefined)){
+      if ( this.keyboard.pressed("numPad5") || (leapArg.rotUp !== undefined)){ 
         this.orbitCrystal.control.rotateUp(rotationDistance);   
       } 
       if ( this.keyboard.pressed("numPad8") || (leapArg.rotDown !== undefined)){
@@ -158,7 +159,7 @@ define([
 
 
       if ( leapArg.orbitRreduce !== undefined && camToCubeDistance > 0.9){   
-        var camToCubeFact = delta*(1 + camToCubeDistance ) ;
+        var camToCubeFact = delta * (1 + camToCubeDistance ) ;
      
         camToCubeVec.setLength(camToCubeFact);
         camPos.add(camToCubeVec);  

@@ -112,7 +112,7 @@ define([
           this.soundMachine.play('dollHolder');
         }
 
-        if(this.dollEditor.dollOn){
+        if(this.dollEditor.dollOn === true){
           intersects[0].object.parent.children[0].material.color.setHex(0xA19EA1);
           intersects[0].object.parent.children[2].material.color.setHex(0xA19EA1);
           intersects[0].object.parent.children[3].material.color.setHex(0xA19EA1); 
@@ -120,7 +120,7 @@ define([
           this.dollEditor.dollOn = false;
           this.dollEditor.doll.visible = false; 
 
-          this.animationMachine.doll_toAtomMovement = undefined ;
+          this.animationMachine.cameraAnimation = undefined ;
           this.keyboard.dollmode = false;
           this.crystalOrbit.camera.position.set(30,30,60);
           this.crystalOrbit.control.target = new THREE.Vector3(0,0,0);
@@ -129,24 +129,18 @@ define([
           this.crystalOrbit.control.enabled = true;
 
         } 
-        else if(intersects[0].object.name === 'dollHolder'){  
+        else if(this.multitouch.touchDevice === false)
+        {  
+          var pos = this.crystalOrbit.camera.position.clone();
+          pos.setLength(pos.length() - 1);
+          this.crystalScene.movingCube.position.set(pos.x, pos.y, pos.z);
+          
           intersects[0].object.parent.children[0].material.color.setHex(0x71469A);
           intersects[0].object.parent.children[2].material.color.setHex(0x71469A);
           intersects[0].object.parent.children[3].material.color.setHex(0x71469A); 
 
           this.dollEditor.dollOn = true; 
-          this.dollEditor.doll.visible = true;
-
-          if(this.multitouch.touchDevice === true){  
-            var pos = this.crystalOrbit.camera.position.clone();
-            pos.setLength(pos.length() - 0.1);
-            this.keyboard.dollmode = true;
-            
-            this.crystalOrbit.control.enabled = false; 
-              
-            this.crystalScene.movingCube.position.set(pos.x, pos.y, pos.z); 
-            this.crystalOrbit.control.target = pos.clone();
-          }
+          this.dollEditor.doll.visible = true; 
       
         }
       }

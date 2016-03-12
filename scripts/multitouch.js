@@ -5,13 +5,11 @@ define([
   jQuery  
 ) { 
    
-  function Multitouch(domElement, keyboard) {
-
-    var _this = this;
+  function Multitouch(domElement, keyboard, crystalScene, crystalOrbit, camera) {
  
-    var touchstart = this.touchstart.bind(_this) ;  
-    var touchmove  = this.touchmove.bind(_this) ;  
-    var touchend   = this.touchend.bind(_this) ;  
+    var touchstart = this.touchstart.bind(this) ;  
+    var touchmove  = this.touchmove.bind(this) ;  
+    var touchend   = this.touchend.bind(this) ;  
 
     document.getElementById('crystalRendererMouse').addEventListener( 'touchstart', touchstart, true ); 
     document.getElementById('crystalRendererMouse').addEventListener( 'touchmove' , touchmove,  true ); 
@@ -20,33 +18,95 @@ define([
     this.keyboard = keyboard;
     this.lastFingersPosition = { x : 0, y : 0 };
     this.touchDevice = false;
-
+    this.crystalScene = crystalScene;
+    this.firstTapOnAtom = { identity : undefined, latticeIndex: undefined, time : undefined};
+    this.firstTapOutsideAtom = { tapped : false, time : undefined};
+    this.crystalOrbit = crystalOrbit;
+    this.camera = camera;
+    this.container = 'crystalRendererMouse';
   }; 
    
   Multitouch.prototype.touchend = function( event ) {
     this.fingersPosition = { x : 0, y : 0 };
-     
+
   }; 
+  function getCrystalAtoms(scene) {  
+ 
+    var crystalObjs = [] ;
+
+    scene.traverse(function (object) {
+
+      if ( 
+        (object.name === 'point' ) || 
+        (object.name === 'atom' && object.latticeIndex !== '-') || 
+        ( object.name === 'atom' && 
+          object.latticeIndex === '-' && 
+          object.visible === true )  
+      ) {   
+        for (var i = 0; i < object.children.length; i++) {  
+          crystalObjs.push(object.children[i]);
+        };  
+      }
+    });
+
+    return crystalObjs;
+  };
   Multitouch.prototype.touchstart = function( event ) {
     
+    var _this = this;
+
     this.touchDevice = true;
 
     switch ( event.touches.length ) {
 
-      case 1: // one-fingered touch: rotate
+      case 1:  
         this.lastFingersPosition = { x : event.touches[ 0 ].pageX, y : event.touches[ 0 ].pageY };
-        break;
+        
+        var raycaster = new THREE.Raycaster(); 
+        var mouse = new THREE.Vector2(); 
+        mouse.x = (event.touches[ 0 ].pageX/ $('#'+this.container).width()) * 2 - 1;
+        mouse.y = -(event.touches[ 0 ].pageY / $('#'+this.container).height()) * 2 + 1;
 
-      case 2: // two-fingered touch: dolly
+        raycaster.setFromCamera( mouse, this.camera );  
+        var crystalobjsIntersects = raycaster.intersectObjects( getCrystalAtoms(this.crystalScene.object3d) );
 
+        if(crystalobjsIntersects.length > 0){
+          var identity = crystalobjsIntersects[0].object.parent.identity;
+          var latticeIndex = crystalobjsIntersects[0].object.parent.latticeIndex;
          
-        break;
+          if(this.firstTapOnAtom.identity !== undefined && this.firstTapOnAtom.identity === identity && this.firstTapOnAtom.latticeIndex === latticeIndex){
+            this.crystalOrbit.control.target.copy(crystalobjsIntersects[0].object.parent.position.clone());
+            clearTimeout(this.firstTapOnAtom.time);
+          }
+          else{ 
+            this.firstTapOnAtom.identity = identity;
+            this.firstTapOnAtom.latticeIndex = latticeIndex;
 
-      case 3: // three-fingered touch: pan
+            this.firstTapOnAtom.time = setTimeout(function(){ 
+              _this.firstTapOnAtom.identity = undefined;
+              _this.firstTapOnAtom.latticeIndex = undefined;
+            },
+            500);
 
-        //event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+          }
+        }
+        else{
+          // user tapped outside
+
+          if(this.firstTapOutsideAtom.tapped === true){
+            this.crystalOrbit.control.target.copy(new THREE.Vector3());
+          }
+          else{
+            this.firstTapOutsideAtom.tapped = true;
+            this.firstTapOutsideAtom.time = setTimeout(function(){ 
+              _this.firstTapOutsideAtom.tapped = false; 
+            },
+            500);
+          }
+
+        }
+
         break;
- 
 
     }
   
@@ -58,48 +118,12 @@ define([
       case 1: // one-fingered touch 
    
         var x = event.touches[ 0 ].pageX - this.lastFingersPosition.x ;
-        var y = this.lastFingersPosition.y - event.touches[ 0 ].pageY ;
-        
-        if(Math.abs(x) > Math.abs(y)){
- 
-          if(x < 0){
-            
-            this.keyboard.handleKeys({rotLeft : true}, 0.75 );
-          }
-          else if(x > 0){ 
-            this.keyboard.handleKeys({rotRight : true}, 0.75 );
-          }
-        }
-        else{
-          if(y < 0){ 
-            this.keyboard.handleKeys({ rotUp: true}, 0.75 );
-          }
-          else if(y > 0){ 
-            this.keyboard.handleKeys({ rotDown: true}, 0.75 );
-          }
-        }
+        var y = this.lastFingersPosition.y - event.touches[ 0 ].pageY ; 
         break;
 
       case 2: // two-fingered touch: WASD
         var x = event.touches[ 0 ].pageX - this.lastFingersPosition.x ;
         var y = this.lastFingersPosition.y - event.touches[ 0 ].pageY ;
-        
-        if(Math.abs(x) > Math.abs(y)){
-          if(x<0){ 
-            this.keyboard.handleKeys({left : true}, 1 );
-          }
-          else if(x >0){ 
-            this.keyboard.handleKeys({right : true}, 1 );
-          }
-        }
-        else{
-          if(y<0){ 
-            this.keyboard.handleKeys({ back : true}, 4 );
-          }
-          else if(y >0){ 
-            this.keyboard.handleKeys({ forth: true}, 4 );
-          }
-        }
           
         break;
 
@@ -107,26 +131,7 @@ define([
 
         var x = event.touches[ 0 ].pageX - this.lastFingersPosition.x ;
         var y = this.lastFingersPosition.y - event.touches[ 0 ].pageY ;
-        
-        if(Math.abs(x) > Math.abs(y)){
-
-          return;
-          if(x<0){
-            
-            this.keyboard.handleKeys({left : true}, 1 );
-          }
-          else if(x >0){ 
-            this.keyboard.handleKeys({right : true}, 1 );
-          }
-        }
-        else{
-          if(y<0){ 
-            this.keyboard.handleKeys({ up : true}, 1 );
-          }
-          else if(y >0){ 
-            this.keyboard.handleKeys({ down: true}, 1 );
-          }
-        }
+         
         break;
    
     }

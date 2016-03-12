@@ -18,12 +18,13 @@ define([
   var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
   var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
   
-  function Doll(camera, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour, menu) {
+  function Doll(camera, crystalScene, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour, menu) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
      
     this.soundMachine = soundMachine; 
+    this.crystalScene = crystalScene; 
     this.keyboard = keyboard; 
     this.dollOn = false;
     this.camera = camera;
@@ -436,7 +437,12 @@ define([
   };
  
   Doll.prototype.dollMode  = function(atom){ 
-     
+    
+    var cameraPos = this.crystalOrbit.camera.position.clone();
+    var movCubePos = this.crystalScene.movingCube.position.clone();
+    var camToAtomDist = atom.position.clone().sub(cameraPos.clone()).length();
+    var oldTargetModified = ((((movCubePos.clone()).sub(cameraPos.clone())).setLength(camToAtomDist) ).add(cameraPos.clone()));
+
     var params = this.lattice.getParameters() ;
     var x = params.scaleX * params.repeatX/2 ;
     var y = params.scaleY * params.repeatY /2;
@@ -448,27 +454,31 @@ define([
     newCamPos.x += target.x ;
     newCamPos.y += target.y ;
     newCamPos.z += target.z ;
- 
-    this.animationMachine.doll_toAtomMovement = { 
+
+    var newCubePos = (this.crystalOrbit.control.target.clone()).sub(cameraPos.clone());
+    newCubePos.setLength(1);
+
+    this.crystalScene.movingCube.position.copy( oldTargetModified );
+
+    this.animationMachine.cameraAnimation = { 
       positionTrigger : true, 
       targetTrigger : true, 
       orbitControl : this.crystalOrbit, 
-      oldTarget : this.crystalOrbit.control.target.clone(), 
-      oldPos : this.crystalOrbit.camera.position.clone(), 
+      oldTarget : oldTargetModified.clone(),  
       newTarget : new THREE.Vector3(atom.position.x, atom.position.y, atom.position.z), 
-      targetFactor : 0,
-      posFactor : 0,
-      posFactor : 0,
-      atom: atom,
+      oldPos : cameraPos.clone(),  
+      movingTargetFactor : 0,
+      posFactor : 0, 
+      callback: function(){},
       targConnectVector : new THREE.Vector3(
         target.x - this.crystalOrbit.control.target.x, 
         target.y - this.crystalOrbit.control.target.y, 
         target.z - this.crystalOrbit.control.target.z 
       ),
       posConnectVector : new THREE.Vector3(
-        newCamPos.x - this.crystalOrbit.camera.position.x, 
-        newCamPos.y - this.crystalOrbit.camera.position.y, 
-        newCamPos.z - this.crystalOrbit.camera.position.z 
+        newCamPos.x - cameraPos.x, 
+        newCamPos.y - cameraPos.y, 
+        newCamPos.z - cameraPos.z 
       )
     }; 
     this.rePosition();
