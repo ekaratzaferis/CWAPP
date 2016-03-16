@@ -158,16 +158,18 @@ define([
             var title;
             switch(k){
                 case 'xyzAxes':
-                    $parameter.parent().toggleClass('lightThemeActive');
                     title = $messageList.getMessage(6);
                     break;
                  case 'abcAxes':
+                    $parameter.parent().toggleClass('lightThemeActive');
                     title = $messageList.getMessage(7);
                     break;
                 case 'edges':
+                    $parameter.parent().toggleClass('lightThemeActive');
                     title = $messageList.getMessage(8);
                     break;
                 case 'faces':
+                    $parameter.parent().toggleClass('lightThemeActive');
                     title = $messageList.getMessage(9);
                     break;
                 case 'latticePoints':
