@@ -370,13 +370,10 @@
 									
 									<div role="tabpanel" class="tab-pane lattice-tab-pane fade in active" id="scrn_lattice">
 										<div class="tab-title">
-											<h2>Lattice Parameters</h2>
+											<h2>Bravais Lattice Parameters</h2>
 										</div>
 										<div class="tab-content-container">
 											<div class="tab-content-section-container">
-												<div class="tab-section-title">
-													<h3>Lattice Parameters</h3>
-												</div>
 												<div class="tab-blocks-container">
 													<div class="tab-block bravais-block block-pad-sm theme-light">
 														<div class="block-title">
@@ -393,7 +390,7 @@
 													</div>
 													<div class="tab-block repetition-block block-pad-sm theme-dark">
 														<div class="block-title">
-															<h3>Lattice Repetition</h3>
+															<h3>Bravais Lattice Repetition</h3>
 														</div>
 														<div class="block-content">
 															<div class="spinners-container">
@@ -439,7 +436,7 @@
 															<div class="col col-sm-10">
                                                                 <div id="latticeContainer" class="mh_lattice_length_para_box" data-mh="mh_lattice_length_para_box">
                                                                     <div class="block-title">
-                                                                        <h3>Lattice Length</h3>
+                                                                        <h3>Bravais Lattice Length</h3>
                                                                     </div>
                                                                     <div class="block-content">
                                                                         <div class="sliders-container">
@@ -519,7 +516,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="block-title" id="angleTitle">
-                                                                        <h3>Lattice Angle</h3>
+                                                                        <h3>Bravais Lattice Angle</h3>
                                                                     </div>
                                                                     <div class="block-content">
                                                                         <div class="sliders-container">
@@ -610,12 +607,12 @@
                                                                 <div class="row row-1">
 
                                                                     <div class="col col-sm-6">
-                                                                        <div class="action action-toggle-visiblity previewAtomChanges">
+                                                                        <div id="latticePreview" class="action action-toggle-visiblity previewAtomChanges">
                                                                             <a><img src="Images/refresh.png" class="img-responsive" alt=""/></a>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col col-sm-6">
-                                                                        <div class="autoRefresh action action-save">
+                                                                        <div id="latticeAutoRefresh" class="autoRefresh action action-save">
                                                                             <a>aut<img src="Images/refresh.png" class="img-responsive" alt=""/></a>
                                                                         </div>
                                                                     </div>
@@ -626,7 +623,7 @@
 													</div>
 													<div class="tab-block visualization-block block-pad-sm theme-dark">
 														<div class="block-title">
-															<h3>Cell Visualization</h3>
+															<h3>CELL VISUALIZATION PARAMETERS</h3>
 														</div>
 														<div class="block-content">
 															<div class="visualization-blocks-container">
@@ -1134,10 +1131,10 @@
 										<div class="tab-title">
 											<h2>Planes &amp; Directions </h2>
 										</div>
-										<div class="tab-content-container">
+                                        <div class="tab-content-container">
 											<div class="tab-content-section-container">
 												<div class="tab-section-title">
-													<h3>Planes</h3>
+													<h3>CRYSTAL PLANES PARAMETERS</h3>
 												</div>
 												<div class="tab-blocks-container">
 													<div class="tab-block">
@@ -1147,7 +1144,7 @@
 																<div class="box-head">
 																	<div class="pnd-top-action-bar-container">
 																		<div id="newPlane" class="action action-add-new">
-																			<a><img src="Images/planes-add.png" class="img-responsive" alt=""/></a>
+																			<a id="newPlanett"><img src="Images/planes-add.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1158,7 +1155,7 @@
 																			<div id="planesTooltip" class="coordinates-pnd-blocks-container mh_pnd_para_box" data-mh="mh_pnd_para_box" data-toggle="tooltip" data-placement="top">
 																				<div class="coordinates-block">
 																					<div class="block-title">
-																						<h3>Coordinates</h3>
+																						<h3>MILLER INDICES - (hkl) COORIDNATES</h3>
 																					</div>
 																					<div class="block-content">
 																						<div class="coordinates-properties-container">
@@ -1294,7 +1291,7 @@
 																<div class="box-footer">
 																	<div class="item-table-action">
 																		<div id="deletePlane" class="disabled action action-delete">
-																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																			<a id="deletePlanett"><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1307,7 +1304,7 @@
 
 											<div class="tab-content-section-container">
 												<div class="tab-section-title">
-													<h3>Directions</h3>
+													<h3>CRYSTAL DIRECTIONS PARAMETERS</h3>
 												</div>
 												<div class="tab-blocks-container">
 													<div class="tab-block">
@@ -1317,7 +1314,7 @@
 																<div class="box-head">
 																	<div class="pnd-top-action-bar-container">
 																		<div class="action action-add-new" id="newDirection">
-																			<a><img src="Images/add-new-directions-icon.png" class="img-responsive" alt=""/></a>
+																			<a id="newDirectiontt"><img src="Images/add-new-directions-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1328,7 +1325,7 @@
 																			<div id="directionsTooltip" class="coordinates-pnd-blocks-container mh_pnd_para_box" data-mh="mh_pnd_para_box" data-toggle="tooltip" data-placement="top">
 																				<div class="coordinates-block">
 																					<div class="block-title">
-																						<h3>Coordinates</h3>
+																						<h3>MILLER INDICES - [uvw] COORIDNATES</h3>
 																					</div>
 																					<div class="block-content">
 																						<div class="coordinates-properties-container">
@@ -1465,7 +1462,7 @@
 																<div class="box-footer">
 																	<div class="item-table-action">
 																		<div id="deleteDirection" class="disabled action action-delete">
-																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																			<a id="deleteDirectiontt"><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>

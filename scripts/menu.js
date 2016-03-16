@@ -187,12 +187,14 @@ define([
         _this.events = events;
 
         // Independent Modules //
-        toolTipGeneratorModule = new tooltipGenerator();
         stringEditorModule = new stringEditor();
         messagesModule = new messages();
         html = new menu_html();
 
         // 1st level dependency //
+        toolTipGeneratorModule = new tooltipGenerator({
+            messages:messagesModule
+        });
         userDialogModule = new userDialog({
             messages:messagesModule,
             html:html
@@ -298,121 +300,6 @@ define([
             html: html,
             stringEditor: stringEditorModule
         });
-        
-    /* --------------
-       Hover Tooltips
-       -------------- */
-        var listLeft = {
-            'controls_toggler':'left',
-            'latticeTab':'left',
-            'millerPI':'left',
-            'motifLI':'left',
-            'visualTab':'left',
-            'publicTab':'left',
-            'selected_lattice':'top',
-            'latticePadlock':'top',
-            'repeatZ':'top',
-            'repeatX':'top',
-            'repeatY':'top',
-            'scaleZ':'top',
-            'scaleX':'top',
-            'scaleY':'top',
-            'beta':'top',
-            'betaSlider':'top',
-            'alpha':'top',
-            'alphaSlider':'top',
-            'gamma':'top',
-            'gammaSlider':'top',
-            'motifPadlock':'left',
-            'cube_color_border':'top',
-            'cube_color_filled':'top',
-            'radius':'top',
-            'radiusSlider':'top',
-            'faceOpacity':'top',
-            'faceOpacitySlider':'top',
-            'newPlane':'top',
-            'millerH':'top',
-            'millerK':'top',
-            'millerL':'top',
-            'millerI':'top',
-            'savePlane':'top',
-            'planeOpacity':'top',
-            'planeColor':'top',
-            'planeName':'top',
-            'deletePlane':'top',
-            'millerU':'top',
-            'millerV':'top',
-            'millerW':'top',
-            'millerT':'top',
-            'newDirection':'top',
-            'saveDirection':'top',
-            'dirRadius':'top',
-            'directionColor':'top',
-            'directionName':'top',
-            'deleteDirection':'top',
-            'atomPalette':'top',
-            'tangency':'top',
-            'atomPositioningXYZ':'top',
-            'atomPositioningABC':'top',
-            'atomPosZ':'top',
-            'atomPosZSlider':'top',
-            'atomPosX':'top',
-            'atomPosXSlider':'top',
-            'atomPosY':'top',
-            'atomPosYSlider':'top',
-            'atomColor':'top',
-            'atomOpacity':'top',
-            'atomOpacitySlider':'top',
-            'previewAtomChanges':'top',
-            'saveAtomChanges':'top',
-            'deleteAtom':'top',
-            'cellVolume':'top',
-            'cellVolumeSlider':'top',
-            'meLengthA':'top',
-            'meLengthB':'top',
-            'meLengthC':'top',
-            'meAngleA':'top',
-            'meAngleB':'top',
-            'meAngleG':'top',
-            'wireframe':'top',
-            'toon':'top',
-            'flat':'top',
-            'realistic':'top',
-            'distortionOn':'top',
-            'distortionOff':'top',
-            'anaglyph':'top',
-            'oculus':'top',
-            'crystalCamTargetOn':'top',
-            'crystalCamTargetOff':'top',
-            'fullScreen':'top',
-            'leapMotion':'top',
-            'crystalClassic':'top',
-            'crystalSubstracted':'top',
-            'crystalSolidVoid':'top',
-            'crystalGradeLimited':'top',
-            'cellClassic':'top',
-            'cellSubstracted':'top',
-            'cellSolidVoid':'top',
-            'cellGradeLimited':'top',
-            'fogColor':'top',
-            'fogDensity':'top',
-            'fogDensitySlider':'top',
-            'sounds':'top',
-            'lights':'top',
-            'crystalScreenColor':'top',
-            'cellScreenColor':'top',
-            'motifXScreenColor':'top',
-            'motifYScreenColor':'top',
-            'motifZScreenColor':'top',
-            'notesButton':'left',
-            'motifZScreenColor':'top'
-        };
-        var i = 0;
-        _.each(listLeft, function($element, k){
-            toolTipGeneratorModule.addOnHoverTooltip({ target: k.toString(), message: i, placement: $element.toString() });
-            i++;
-        }); 
-
     };
 
     // Interface //
