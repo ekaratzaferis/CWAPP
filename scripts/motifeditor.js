@@ -454,6 +454,7 @@ define([
       xFactor = this.cellParameters.scaleX;
       yFactor = this.cellParameters.scaleY;
       zFactor = this.cellParameters.scaleZ;
+ 
     }
  
     var sliderXVal, sliderYVal, sliderZVal ;
@@ -464,9 +465,11 @@ define([
     
 
     if(this.editorState.atomPosMode === 'relative'){ 
+      
       var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
        
       this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
+  
       this.translateCellAtoms("x", vecHelper.x ,this.newSphere.getID());
       this.translateCellAtoms("y", vecHelper.y ,this.newSphere.getID());
       this.translateCellAtoms("z", vecHelper.z ,this.newSphere.getID());
@@ -597,6 +600,7 @@ define([
         ); 
       }
     }
+
     this.configureCellPoints();
 
     this.menu.setLatticeCollision({
@@ -4068,15 +4072,30 @@ define([
   }; 
   Motifeditor.prototype.transformHelper = function(vector){
     var _this = this ;
-    _.each(shearing, function(k) {  
-      if (_.isUndefined(_this.cellParameters[k]) === false) { 
-        var argument = {};
-        argument[k] = parseFloat(_this.cellParameters[k]); 
-        var matrix = transformationMatrix(argument);   
-        vector.applyMatrix4(matrix);   
-      }
-    });
 
+    if(this.latticeName !== 'hexagonal'){
+      _.each(shearing, function(k) {  
+        if (_.isUndefined(_this.cellParameters[k]) === false) { 
+          var argument = {};
+          argument[k] = parseFloat(_this.cellParameters[k]); 
+          var matrix = transformationMatrix(argument);   
+          vector.applyMatrix4(matrix);   
+        }
+      });
+    }
+    else if(this.latticeName === 'hexagonal'){
+      var b = new THREE.Vector3( vector.x, vector.y, 0 ); 
+
+      var axis = new THREE.Vector3( 0, 1, 0 );
+
+      var a = new THREE.Vector3( vector.z, 0, 0 ); 
+      var angle = (Math.PI + Math.PI / 3)  ; 
+      a.applyAxisAngle( axis, angle );
+      a.add(b);
+      vector = a;
+      
+    }
+  
     return vector;
   };
 
@@ -6273,13 +6292,23 @@ define([
           else if(this.motifsAtoms.length === 2){ 
             
             var r0 = this.motifsAtoms[0].getRadius();
-            var r1 = this.motifsAtoms[1].getRadius();
-            var r2 = (this.motifsAtoms[2]) ? this.motifsAtoms[2].getRadius() : this.newSphere.getRadius();
-            var lastAtomY = (this.motifsAtoms[2]) ? this.motifsAtoms[2].object3d.position.y : this.newSphere.object3d.position.y;
+            var r1 = this.motifsAtoms[1].getRadius(); 
+            var r2 = 0;
+            var lastAtomY = 0;
+
+            if(this.motifsAtoms[2]) {
+              this.motifsAtoms[2].getRadius() ;
+              lastAtomY = this.motifsAtoms[2].object3d.position.y;
+            }
+            else if(this.newSphere !== undefined){  
+              this.newSphere.getRadius();
+              lastAtomY = this.newSphere.object3d.position.y;
+            }
+ 
             var r = _.max([ r0, r1, r2 ]);
             dims.xDim =  dims.zDim = r*2; 
             dims.yDim = lastAtomY + r*2;
-              
+          
           }
         }
       break;

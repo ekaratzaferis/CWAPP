@@ -43,6 +43,8 @@ define([
 
     geom.mergeVertices(); 
         
+    color = (( /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color))) ? color : 0xFFFFFF;
+    
     var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { side : THREE.DoubleSide, /* depthWrite: false, depthTest: false, */ color:  color , opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     mesh.name = 'face' ;

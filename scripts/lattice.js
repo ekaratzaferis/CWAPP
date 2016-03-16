@@ -3285,7 +3285,7 @@ define([
       maxIndexSymbol = 'l';
     }
     
-    var planeNum = ((maxIndex) *2 - 1);
+    var planeNum = (maxIndex) *2 - 1 ;
     var m = 1;
 
     while(finished === false){  
@@ -3713,7 +3713,7 @@ define([
         
         a1 = (h === 0) ? new THREE.Vector3() : a1.setLength(Math.abs( aLength/h));
         a2 = (k === 0) ? new THREE.Vector3() : a2.setLength(Math.abs( aLength/k));
-        a2 = (i === 0) ? new THREE.Vector3() : a3.setLength(Math.abs( aLength/i));
+        a3 = (i === 0) ? new THREE.Vector3() : a3.setLength(Math.abs( aLength/i));
         c  = (l === 0) ? new THREE.Vector3() : c.setLength(Math.abs( cLength/l));
 
         return;

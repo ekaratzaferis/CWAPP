@@ -7,8 +7,13 @@ Educational Game Development Ideas
 
 
  TODOs
-1.cache materials and reduce materials from 3 to 2
-2. antialiasing for rend. quality - to be reviewed
+1. Atom customizer doesnt eork for hex
+2. mouse over doesnt work well for hex
+3. antialiasing for rend. quality - to be reviewed
+
+option 1:   0 0 1/4    1/3 2/3 1/4    0 0 -1/4    2/3 1/3 -1/4
+option 2:   0 0 0    1/3 2/3 0    0 0 1/2    2/2 1/3 1/2
+
 
 ALEX UI BUGS   
 
