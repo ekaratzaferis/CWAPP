@@ -168,7 +168,6 @@ define([
             tooltipOnHover({ target: k.toString(), message: $messageList.getMessage(k.toString()), placement: $element.toString() });
         });
         
-        
         // Canvas Tooltip for system messages //
         $canvasTooltip.tooltip({
             container : 'body',
