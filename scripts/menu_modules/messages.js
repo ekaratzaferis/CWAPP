@@ -164,7 +164,29 @@ define([
         cellScreenColor: 'Click to Pick UNIT CELL SCREEN CANVAS COLOR',
         motifXScreenColor: 'Click to Pick MOTIFF EDITOR X SCREEN CANVAS COLOR',
         motifYScreenColor: 'Click to Pick MOTIFF EDITOR Y SCREEN CANVAS COLOR',
-        motifZScreenColor: 'Click to Pick MOTIFF EDITOR Z SCREEN CANVAS COLOR'
+        motifZScreenColor: 'Click to Pick MOTIFF EDITOR Z SCREEN CANVAS COLOR',
+        autoRenderizationQuality: 'Click to AUTOMATICALLY adjusts RENDERING PRESETS to based on available graphical and computing resources ',
+        lowRenderizationQuality: 'Click to Adjust RENDERING PRESETS to LOW graphical and computing resources. LOD:2 SSAO:OFF SHADOWS:OFF ANTIALISING:OFF',
+        mediumRenderizationQuality: 'Click to Adjust RENDERING PRESETS to MEDIGUM graphical and computing resources. LOD:3 SSAO:ON SHADOWS:OFF ANTIALISING:ON',
+        highRenderizationQuality: 'Click to Adjust RENDERING PRESETS to MEDIGUM graphical and computing resources. LOD:4 SSAO:ON SHADOWS:ON ANTIALISING:ON',
+        lodSlider: "Click to set 3D OBJECTS LEVEL OF DETAIL, increasing or decreasing VOXEL VOLUME by recursively subdividing OCTREE'S BASED 3D GEOMETRY to the N Level",
+        lights: 'Click to ENABLE/DISABLE DIRECTIONAL LIGHT',
+        ssao: 'Click to ENABLE/DISABLE SSAO',
+        shadows: 'Click to ENABLE/DISABLE AMBIENT LIGHT',
+        newNotett: 'Click to Add a NEW COMMENT OR NARRATIVE',
+        noteTitle: 'Enter COMMENT & NARRATIVE TITLE',
+        noteColor: 'Click to PICK COMMENT & NARRATIVE COLOR',
+        noteOpacity: 'Click to SET COMMENT & NARRATIVE OPACITY',
+        noteBody: 'Enter COMMENT & NARRATIVE',
+        saveNote: 'Click to SAVE COMMENT & NARRATIVE',
+        deleteNotett: 'Click to DELETE SELECTED COMMENT & NARRATIVE',
+        downloadProject: 'Click to DOWNLOAD a .ZIP file with a standalone version of your model',
+        exportJSON: 'Click to DOWNLOAD a .json data file with all the data of your project',
+        saveOnlinett: 'Click to SAVE your project settings ONLINE. You will be provided an URL after this action',
+        snapshotTT: 'Click to SAVE a snapshot of your project in the PNG format',
+        stlTT: 'Click to EXPORT your 3D GEOMETRY in the STL format',
+        searchQuery: 'Enter any keywords to search online database records',
+        openJSON: 'Click to UPLOAD and IMPORT saved CrystalWalk Project data'
     };
     
     // Contructor //

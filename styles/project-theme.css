@@ -2609,7 +2609,7 @@ width: 70px;}
     .visualization-tab-pane .tab-blocks-container .stereoscopic-block .block-title label h3 {
       float: left; }
   .visualization-tab-pane .tab-blocks-container .unit-block {
-    margin-bottom: 45px; }
+    margin-bottom: 0px; }
   .visualization-tab-pane .tab-blocks-container .color-properties-block .color-properties-container .color-picker-container .color-label label {
     display: block;
     text-align: left;
@@ -2689,7 +2689,7 @@ width: 70px;}
       -o-opacity: 1;
       opacity: 1; }
   .visualization-tab-pane .tab-blocks-container .screen-color-block {
-    padding: 15px 25px; }
+    padding: 15px 40px; }
     .visualization-tab-pane .tab-blocks-container .screen-color-block .block-content .screen-color-btns .btn-screen {
       margin-bottom: 7px; }
       .visualization-tab-pane .tab-blocks-container .screen-color-block .block-content .screen-color-btns .btn-screen .btn {
@@ -4100,3 +4100,4 @@ margin-left: 200px;
 .pad15 { padding-top: 15px;}
 .cameraCheckbox { padding-top: 7px;}
 .align-left { text-align: left!important; margin-top: -50px;}
+.padLeft9 { padding-left: 9px!important; }

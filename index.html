@@ -369,10 +369,10 @@
 								<div class="tab-content">
 									
 									<div role="tabpanel" class="tab-pane lattice-tab-pane fade in active" id="scrn_lattice">
-										<div class="tab-title">
-											<h2>Bravais Lattice Parameters</h2>
-										</div>
 										<div class="tab-content-container">
+                                            <div class="tab-section-title">
+                                                <h3>Bravais Lattice Parameters</h3>
+                                            </div>
 											<div class="tab-content-section-container">
 												<div class="tab-blocks-container">
 													<div class="tab-block bravais-block block-pad-sm theme-light">
@@ -621,10 +621,15 @@
                                                             </div>
                                                         </div>
 													</div>
-													<div class="tab-block visualization-block block-pad-sm theme-dark">
-														<div class="block-title">
-															<h3>CELL VISUALIZATION PARAMETERS</h3>
-														</div>
+                                                    
+												</div>
+											</div>
+                                            <div class="tab-section-title">
+                                                <h3>CELL VISUALIZATION PARAMETERS</h3>
+                                            </div>
+                                            <div class="tab-content-section-container">
+												<div class="tab-blocks-container">
+                                                    <div class="tab-block visualization-block block-pad-sm theme-dark">
 														<div class="block-content">
 															<div class="visualization-blocks-container">
 																<div class="row row-5">
@@ -708,13 +713,10 @@
 									</div>
 
 									<div role="tabpanel" class="tab-pane motif-tab-pane fade" id="scrn_motif">
-										<div class="tab-title">
-											<h2>Motif Parameters</h2>
-										</div>
 										<div class="tab-content-container">
 											<div class="tab-content-section-container">
 												<div class="tab-section-title">
-													<h3>Motif Parameters</h3>
+													<h3>MOTIF'S ATOM COORDINATES</h3>
 												</div>
 												<div class="tab-blocks-container">
 													<div class="tab-block">
@@ -738,10 +740,10 @@
 																		</div>
 																		<div class="section-head-action-btns-container">
 																			<div class="btn-action">
-																				<a id="atomPositioningXYZ" class="btn btn-purple-light">xyz</a>
+																				<a id="atomPositioningXYZ" class="btn btn-purple-light">Absolut</a>
 																			</div>
 																			<div class="btn-action">
-																				<a id="atomPositioningABC" class="btn btn-light">abc</a>
+																				<a id="atomPositioningABC" class="btn btn-light">VECTORIAL</a>
 																			</div>
 																		</div>
 																	</div>
@@ -1128,9 +1130,6 @@
 									</div>
 
 									<div role="tabpanel" class="tab-pane pnd-tab-pane fade" id="scrn_pnd">
-										<div class="tab-title">
-											<h2>Planes &amp; Directions </h2>
-										</div>
                                         <div class="tab-content-container">
 											<div class="tab-content-section-container">
 												<div class="tab-section-title">
@@ -1492,7 +1491,7 @@
 																<div class="box-head">
 																	<div class="pnd-top-action-bar-container">
 																		<div id="newNote" class="action action-add-new">
-																			<a><img src="Images/addNote.png" class="img-responsive" alt=""/></a>
+																			<a id="newNotett"><img src="Images/addNote.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1598,7 +1597,7 @@
 																<div class="box-footer">
 																	<div class="item-table-action">
 																		<div id="deleteNote" class="disabled action action-delete">
-																			<a><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
+																			<a id="deleteNotett"><img src="Images/delete-icon.png" class="img-responsive" alt=""/></a>
 																		</div>
 																	</div>
 																</div>
@@ -1661,7 +1660,7 @@
 																			</a>
 																		</div>
                                                                         <div class="btn-action">
-																			<a class="btn btn-dark btn_alternate_action_toggler">
+																			<a id="saveOnlinett" class="btn btn-dark btn_alternate_action_toggler">
 																				<span class="btn-image"><img src="Images/save-icon.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Save Online</span>
 																			</a>
@@ -1682,7 +1681,7 @@
 																	</div>
                                                                     <div class="project-actions-container padTop10">
                                                                         <div class="btn-action">
-																			<a class="btn btn-dark btn_alternate_png_toggler">
+																			<a id="snapshotTT" class="btn btn-dark btn_alternate_png_toggler">
 																				<span class="btn-image"><img src="Images/snapshot.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Snapshot (PNG)</span>
 																			</a>
@@ -1716,7 +1715,7 @@
 																	</div>
                                                                     <div class="project-actions-container padTop10">
                                                                         <div class="btn-action">
-																			<a class="btn btn-dark btn_alternate_stl_toggler">
+																			<a id="stlTT" class="btn btn-dark btn_alternate_stl_toggler">
 																				<span class="btn-image"><img src="Images/stlExport.png" class="img-responsive" alt=""/></span>
 																				<span class="btn-text">Export STL</span>
 																			</a>
@@ -1844,220 +1843,13 @@
 									</div>
 
 									<div role="tabpanel" class="tab-pane visualization-tab-pane fade" id="scrn_visualize">
-										<div class="tab-title">
-											<h2>Visual Parameters</h2>
-										</div>
 										<div class="tab-content-container">
 											<div class="tab-content-section-container">
+                                                <div class="tab-section-title">
+													<h3>UNIT CELL AND CRYSTAL MODELS REPRESENTATION</h3>
+												</div>
 												<div class="tab-blocks-container">
-                                                    <div class="tab-block theme-light renderization-quality-block">
-														<div class="block-title">
-															<h3>Renderization Quality</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-                                                                <label id="autoRenderizationQuality" class="btn-label btn btn-light">
-																	AUTO
-																</label>
-																<label id="lowRenderizationQuality" class="btn-label btn btn-light">
-																	LOW
-																</label>
-																<label id="mediumRenderizationQuality" class="btn-label btn btn-light active">
-																	MEDIUM
-																</label>
-																<label id="highRenderizationQuality" class="btn-label btn btn-light">
-																	HIGH
-																</label>
-															</div>
-														</div>
-													</div>
-                                                    <div class="tab-block theme-dark renderization-quality-block">
-														<div class="block-title">
-															<h3>Level Of Detail</h3>
-														</div>
-                                                        <div class="lod-container">
-															<div class="row row-10">
-																<div class="col col-sm-2">
-                                                                    <div class="block-content lodLabel">
-                                                                        <div class="slider-input form-group-input">
-                                                                            <input id="lod" type="text" name="txt_visualize_color_density" id="txt_visualize_color_density" class="form-control"/>
-                                                                        </div>
-                                                                    </div>
-																</div>
-																<div class="col col-sm-6">
-																	<div class="sliders-container density-slider-container pad15">
-																		<div class="slider-group form-group density-slider theme-light">
-																			<div class="slider-control slider-control-sm">
-																				<div class="slider" id="lodSlider"></div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="tab-block theme-light renderization-block">
-														<div class="block-title">
-															<h3>Renderization Mode</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="wireframe" class="btn btn-light">
-																	<img src="Images/render-switch-icon-01.png" class="img-responsive" alt=""/>
-																	<img src="Images/render-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="toon" class="btn btn-light">
-																	<img src="Images/render-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/render-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="flat" class="btn btn-light">
-																	<img src="Images/render-switch-icon-03.png" class="img-responsive" alt=""/>
-																	<img src="Images/render-switch-icon-03-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="realistic" class="btn btn-light active">
-																	<img src="Images/render-switch-icon-04.png" class="img-responsive" alt=""/>
-																	<img src="Images/render-switch-icon-04-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-															</div>
-														</div>
-													</div>
-                                                    <div class="tab-block theme-dark lights-block">
-														<div class="block-title">
-															<h3>Lights</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="lights" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="ssao" class="btn btn-light">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="shadows" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-															</div>
-														</div>
-													</div>
-													<div class="tab-block theme-light visualization-block">
-														<div class="block-title">
-															<h3>Visualization Mode</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="distortionOn" class="btn btn-light">
-																	<img src="Images/visual-switch-icon-01.png" class="img-responsive" alt=""/>
-																	<img src="Images/visual-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="distortionOff" class="btn btn-light active">
-																	<img src="Images/visual-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/visual-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-															</div>
-														</div>
-													</div>
-													<div class="tab-block theme-dark stereoscopic-block">
-														<div class="block-title">
-															<label for="chkbx_stereoscope">
-																<h3>Stereoscopic Effect For Crystal</h3>
-															</label>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="anaglyph" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="oculus" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-                                                                <label id="3DsideBySide" class="btn btn-light">
-																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
-																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-                                                                <label id="3DonTop" class="btn btn-light">
-																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
-																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-															</div>
-														</div>
-													</div>
-                                                    <div class="tab-block theme-light stereoscopic-block">
-														<div class="block-title">
-															<label for="chkbx_stereoscope">
-																<h3>Stereoscopic Effect For Unit Cell</h3>
-															</label>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="anaglyphCell" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-																<label id="oculusCell" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-                                                                <label id="3DsideBySideCell" class="btn btn-light">
-																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
-																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-                                                                <label id="3DonTopCell" class="btn btn-light">
-																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
-																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
-																</label>
-															</div>
-														</div>
-													</div>
-													<div class="tab-block theme-dark stereoscopic-block">
-														<div class="row row-5">
-															
-															<div class="col col-sm-7">
-																<div class="block-title">
-																	<h3>Focal Point</h3>
-																</div>
-																<div class="block-content">
-																	<div class="btn-group" data-toggle="buttons">
-																		<label id="crystalCamTargetOn" class="btn btn-light active">
-																			
-																			<img src="Images/focal-point-switch-icon-01.png" class="img-responsive" alt=""/>
-																			<img src="Images/focal-point-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
-																		</label>
-																		<label id="crystalCamTargetOff" class="btn btn-light">
-																			
-																			<img src="Images/focal-point-switch-icon-02.png" class="img-responsive" alt=""/>
-																			<img src="Images/focal-point-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																		</label>
-																	</div>
-																</div>
-															</div>
-															<div class="col col-sm-5">
-																<div class="block-title">
-																	<h3>Full Screen</h3>
-																</div>
-																<div class="block-content">
-																	<div class="btn-fullscreen">
-																		<a id="fullScreen" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
-																	</div>
-																</div>
-															</div>
-
-														</div>
-													</div>
-													<div class="tab-block theme-light hit-block">
-														<div class="block-title">
-															<h3>Human Interaction Interfaces</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-hit">
-																<a id="leapMotion" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
-																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
-																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
-																</a>
-															</div>
-														</div>
-													</div>
+                                                    
                                                     <div class="tab-block theme-dark crystal-block">
 														<div class="block-title">
 															<h3>Crystal Model Representation</h3>
@@ -2104,6 +1896,328 @@
 																<label id="cellGradeLimited" class="btn btn-light">
 																	<img src="Images/render-switch-icon-04.png" class="img-responsive" alt=""/>
 																	<img src="Images/render-switch-icon-04-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+															</div>
+														</div>
+													</div>
+													<div class="tab-block theme-dark screen-color-block">
+														<div class="block-title">
+															<h3>INTERFACE COLOR CUSTOMIZATION</h3>
+														</div>
+														<div class="block-content">
+															<div class="screen-color-btns">
+																<div class="row row-3">
+																	
+																	<div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Crystal Screen</p>
+																				</div>
+																				<div id="crystalScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+																	<div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Cell Screen</p>
+																				</div>
+																				<div id="cellScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+																	<div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Motif X Screen</p>
+																				</div>
+																				<div id="motifXScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+																	<div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Motif Y Screen</p>
+																				</div>
+																				<div id="motifYScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+																	<div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Motif Z Screen</p>
+																				</div>
+																				<div id="motifZScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+                                                                    <div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Screen Mode</p>
+																				</div>
+																				<div id="screenMode" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+                                                                    <div class="col col-sm-6">
+																		<div class="btn-screen">
+																			<a class="btn btn-primary-dark btn-block padLeft9">
+																				<div class="btn-text">
+																					<p>Print Mode</p>
+																				</div>
+																				<div id="printMode" class="color-picker color-picker-lg theme-01 bg-purple">
+																					<div class="color"></div>
+																				</div>
+																			</a>
+																		</div>
+																	</div>
+
+																</div>
+															</div>
+														</div>
+													</div>
+                                                    
+                                                </div>
+                                                
+                                                <div class="tab-section-title">
+													<h3>3D RENDERING PARAMETERS</h3>
+												</div>
+												<div class="tab-blocks-container">
+                                                    
+                                                    <div class="tab-block theme-dark renderization-quality-block">
+														<div class="block-title">
+															<h3>RENDERING PRESETS</h3>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+                                                                <label id="autoRenderizationQuality" class="btn-label btn btn-light">
+																	AUTO
+																</label>
+																<label id="lowRenderizationQuality" class="btn-label btn btn-light">
+																	LOW
+																</label>
+																<label id="mediumRenderizationQuality" class="btn-label btn btn-light active">
+																	MEDIUM
+																</label>
+																<label id="highRenderizationQuality" class="btn-label btn btn-light">
+																	HIGH
+																</label>
+															</div>
+														</div>
+													</div>
+                                                    <div class="tab-block theme-light renderization-quality-block">
+														<div class="block-title">
+															<h3>3D OBJECTS LEVEL OF DETAIL (LOD)</h3>
+														</div>
+                                                        <div class="lod-container">
+															<div class="row row-10">
+																<div class="col col-sm-2">
+                                                                    <div class="block-content lodLabel">
+                                                                        <div class="slider-input form-group-input">
+                                                                            <input id="lod" type="text" name="txt_visualize_color_density" id="txt_visualize_color_density" class="form-control"/>
+                                                                        </div>
+                                                                    </div>
+																</div>
+																<div class="col col-sm-6">
+																	<div class="sliders-container density-slider-container pad15">
+																		<div class="slider-group form-group density-slider theme-light">
+																			<div class="slider-control slider-control-sm">
+																				<div class="slider" id="lodSlider"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="tab-block theme-dark renderization-block">
+														<div class="block-title">
+															<h3>3D RENDERING CUSTOM MODES, SHADERS AND EFFECTS </h3>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="wireframe" class="btn btn-light">
+																	<img src="Images/render-switch-icon-01.png" class="img-responsive" alt=""/>
+																	<img src="Images/render-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="toon" class="btn btn-light">
+																	<img src="Images/render-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/render-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="flat" class="btn btn-light">
+																	<img src="Images/render-switch-icon-03.png" class="img-responsive" alt=""/>
+																	<img src="Images/render-switch-icon-03-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="realistic" class="btn btn-light active">
+																	<img src="Images/render-switch-icon-04.png" class="img-responsive" alt=""/>
+																	<img src="Images/render-switch-icon-04-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+															</div>
+														</div>
+													</div>
+                                                    
+                                                </div>
+                                                
+                                                <div class="tab-section-title">
+													<h3>STEREOSCOPY, SPATIAL SOUND AND ADVANCED HID</h3>
+												</div>
+												<div class="tab-blocks-container">
+                                                    
+													<div class="tab-block theme-dark visualization-block">
+														<div class="block-title">
+															<h3>PERSPECTIVE MODE</h3>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="distortionOn" class="btn btn-light">
+																	<img src="Images/visual-switch-icon-01.png" class="img-responsive" alt=""/>
+																	<img src="Images/visual-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="distortionOff" class="btn btn-light active">
+																	<img src="Images/visual-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/visual-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+															</div>
+														</div>
+													</div>                                                 
+													<div class="tab-block theme-light stereoscopic-block">
+														<div class="row row-5">
+															
+															<div class="col col-sm-7">
+																<div class="block-title">
+																	<h3>FOCAL POINT MODE</h3>
+																</div>
+																<div class="block-content">
+																	<div class="btn-group" data-toggle="buttons">
+																		<label id="crystalCamTargetOn" class="btn btn-light active">
+																			
+																			<img src="Images/focal-point-switch-icon-01.png" class="img-responsive" alt=""/>
+																			<img src="Images/focal-point-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
+																		</label>
+																		<label id="crystalCamTargetOff" class="btn btn-light">
+																			
+																			<img src="Images/focal-point-switch-icon-02.png" class="img-responsive" alt=""/>
+																			<img src="Images/focal-point-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																		</label>
+																	</div>
+																</div>
+															</div>
+															<div class="col col-sm-5">
+																<div class="block-title">
+																	<h3>Full Screen</h3>
+																</div>
+																<div class="block-content">
+																	<div class="btn-fullscreen">
+																		<a id="fullScreen" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
+																	</div>
+																</div>
+															</div>
+
+														</div>
+													</div>
+													<div class="tab-block theme-dark stereoscopic-block">
+														<div class="block-title">
+															<label for="chkbx_stereoscope">
+																<h3>CRYSTAL STEREOSCOPIC MODE</h3>
+															</label>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="anaglyph" class="btn btn-light">
+																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="oculus" class="btn btn-light">
+																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="3DsideBySide" class="btn btn-light">
+																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
+																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="3DonTop" class="btn btn-light">
+																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
+																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+															</div>
+														</div>
+													</div>
+                                                    <div class="tab-block theme-light stereoscopic-block">
+														<div class="block-title">
+															<label for="chkbx_stereoscope">
+																<h3>UNIT CELL  STEREOSCOPIC MODE</h3>
+															</label>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="anaglyphCell" class="btn btn-light">
+																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+																<label id="oculusCell" class="btn btn-light">
+																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="3DsideBySideCell" class="btn btn-light">
+																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
+																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="3DonTopCell" class="btn btn-light">
+																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
+																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+															</div>
+														</div>
+													</div>
+                                                    
+													<div class="tab-block theme-dark hit-block">
+														<div class="block-title">
+															<h3>Human Interaction Interfaces</h3>
+														</div>
+														<div class="block-content">
+															<div class="btn-hit">
+																<a id="leapMotion" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
+																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
+																</a>
+															</div>
+														</div>
+													</div>
+                                                    <div class="tab-block theme-light lights-block">
+														<div class="block-title">
+															<h3>Lights</h3>
+														</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="lights" class="btn btn-light active">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
+																</label>
+                                                                <label id="ssao" class="btn btn-light">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
+																</label>
+                                                                <label id="shadows" class="btn btn-light active">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
 																</label>
 															</div>
 														</div>
@@ -2195,104 +2309,7 @@
 														</div>
 														
 													</div>
-													<div class="tab-block theme-light screen-color-block">
-														<div class="block-title">
-															<h3>Screen Colors Customization</h3>
-														</div>
-														<div class="block-content">
-															<div class="screen-color-btns">
-																<div class="row row-3">
-																	
-																	<div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Crystal Screen</p>
-																				</div>
-																				<div id="crystalScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-																	<div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Cell Screen</p>
-																				</div>
-																				<div id="cellScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-																	<div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Motif X Screen</p>
-																				</div>
-																				<div id="motifXScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-																	<div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Motif Y Screen</p>
-																				</div>
-																				<div id="motifYScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-																	<div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Motif Z Screen</p>
-																				</div>
-																				<div id="motifZScreenColor" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-                                                                    <div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Screen Mode</p>
-																				</div>
-																				<div id="screenMode" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-                                                                    <div class="col col-sm-6">
-																		<div class="btn-screen">
-																			<a class="btn btn-primary-dark btn-block">
-																				<div class="btn-text">
-																					<p>Print Mode</p>
-																				</div>
-																				<div id="printMode" class="color-picker color-picker-lg theme-01 bg-purple">
-																					<div class="color"></div>
-																				</div>
-																			</a>
-																		</div>
-																	</div>
-
-																</div>
-															</div>
-														</div>
-													</div>
-													<div class="tab-block theme-dark sound-light-block">
+													<div class="tab-block theme-light sound-light-block">
 														<div class="row row-10">
 															<div class="col col-sm-6">
 																<div class="block-title">
