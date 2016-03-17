@@ -1512,7 +1512,7 @@ define([
  
     _.each(this.points, function(point,kk) { 
       var p = point.object3d.position.clone(); 
-      _.each(motif, function(atom) {  
+      _.each(motif, function(atom) { 
         var opacity,wireframe,color,a;
         var ionicIndex = atom.ionicIndex; 
         if(atom.object3d === undefined){
@@ -1551,6 +1551,7 @@ define([
       });
     });  
      
+
     this.updateLatticeTypeRL();
     
     this.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
@@ -1565,6 +1566,7 @@ define([
 
     }   
     this.atomRelationshipManager.checkCrystalforOverlap();
+    
   }; 
   Lattice.prototype.createGrid = function() {
 
@@ -1907,14 +1909,14 @@ define([
     this.resetPlaneToggles();
 
     var _this = this;
-
+ 
     if( this.currentMotif.length === 0 ){
       return;
     }
  
     _.each(this.points, function(point,kk) { 
       var p = point.object3d.position; 
-      _.each(_this.currentMotif, function(atom) {  
+      _.each(_this.currentMotif, function(atom) { 
         var a = atom.object3d.position; 
         var ionicIndex = atom.ionicIndex; 
         var color, texture, opacity, wireframe;
@@ -2641,8 +2643,7 @@ define([
       this.actualAtoms.splice(0); 
       this.updatePoints();   
       this.createFaces();
-      this.setGradeParameters(); 
-      this.recreateMotif(); 
+      this.setGradeParameters();  
     }   
 
     this.updateLatticeTypeRL(); 
@@ -3048,6 +3049,87 @@ define([
         return false;
       }
 
+  };
+  var thingss=[];
+
+  function findInterceptedPlanePointsHex(a1, a2, a3, c, scaleZ, scaleY){
+
+    var points = [];
+    var trianglePoints = {d1 : new THREE.Vector3(), d2 : new THREE.Vector3(), c : new THREE.Vector3()};
+ 
+    trianglePoints.c = (c.length() === 0) ? new THREE.Vector3(a3.x, 100, a3.z) : c.clone(); 
+     
+    if(a3.length() !== 0 ){
+      // here only c can be zero
+
+      if(a1.length() === 0){
+        trianglePoints.d1 = a2.clone();
+        trianglePoints.d2 = a3.clone();
+      }
+      else{
+        trianglePoints.d1 = a1.clone();
+        trianglePoints.d2 = a3.clone();
+      }
+    }
+    else{
+      // here all vectors are 0 except c
+
+      trianglePoints = {d1 : new THREE.Vector3(5, c.y, 10), d2 : new THREE.Vector3(10, c.y, 10), c : c.lone()};
+    }
+      
+     
+
+    var triangle = new THREE.Triangle( trianglePoints.d1, trianglePoints.d1, trianglePoints.c );
+
+    var plane = triangle.plane();
+    
+    // to be deleted
+    for (var i = thingss.length - 1; i >= 0; i--) {
+      thingss[i].destroy();
+    };
+    thingss.splice(0);
+
+    /*thingss.push(new Point(true, trianglePoints.d1)); 
+    thingss.push(new Point(true, trianglePoints.d2)); 
+    thingss.push(new Point(true, trianglePoints.c)); */
+    
+    var lines = [];
+
+    _.times(6 , function(_r) {
+
+      var v1 = new THREE.Vector3( scaleZ, 0, 0 ); 
+      var v2 = new THREE.Vector3( scaleZ, 0, 0 );  
+
+      var axis = new THREE.Vector3( 0, 1, 0 );
+      
+      var angle1 = (Math.PI / 3) * _r ; 
+      v1.applyAxisAngle( axis, angle1 );
+
+      var angle2 = (Math.PI / 3) * (_r+1) ; 
+      v2.applyAxisAngle( axis, angle2 );
+
+       
+      lines.push(new THREE.Line3(v1,v2));
+      lines.push(new THREE.Line3(v1, new THREE.Vector3(v1.x, scaleY, v1.z)));
+      lines.push(new THREE.Line3(new THREE.Vector3(v1.x, scaleY, v1.z), new THREE.Vector3(v2.x, scaleY, v2.z))); 
+    });
+    
+    var intersetcedPoints = [];
+
+    for (var i = lines.length - 1; i >= 0; i--) { 
+      var p = plane.intersectLine(lines[i]);
+      if(p !== undefined){
+        intersetcedPoints.push(p);
+        thingss.push(new Point(true, p));
+      }
+    };
+
+    if(false /*checkIfOutOfBox(points)*/){
+      return [0];
+    }
+    else{
+      return points;
+    }
   };
   function findInterceptedPlanePoints(h, k, l, a, b, c, d, hInit, kInit, lInit ){
 
@@ -3691,9 +3773,10 @@ define([
 
         var i = -(h+k);
         var axis = new THREE.Vector3(0, 1, 0);
-        var verticalScale = this.parameters.scaleZ * Math.sqrt(3)/2 ;
-        var aLength = this.parameters.scaleZ ;
-        var cLength = this.parameters.scaleΥ ;
+        var verticalScale = parameters.scaleZ * Math.sqrt(3)/2 ;
+        var aLength = parameters.scaleZ ;
+        var cLength = parameters.scaleY ;
+
         var a = new THREE.Vector3(0,0,0), 
             b = new THREE.Vector3(0,0,0), 
             c = new THREE.Vector3(0,0,0), 
@@ -3710,11 +3793,13 @@ define([
         var a2 = (k>=0) ? new THREE.Vector3( -aLength/2, 0, verticalScale) : new THREE.Vector3( aLength/2, 0,-verticalScale);
       
         var c = new THREE.Vector3(0,cLength,0);  
-        
-        a1 = (h === 0) ? new THREE.Vector3() : a1.setLength(Math.abs( aLength/h));
-        a2 = (k === 0) ? new THREE.Vector3() : a2.setLength(Math.abs( aLength/k));
-        a3 = (i === 0) ? new THREE.Vector3() : a3.setLength(Math.abs( aLength/i));
-        c  = (l === 0) ? new THREE.Vector3() : c.setLength(Math.abs( cLength/l));
+         
+        a1 = (h === 0) ? new THREE.Vector3() : a1.setLength( aLength/hInit );
+        a2 = (k === 0) ? new THREE.Vector3() : a2.setLength( aLength/kInit );
+        a3 = (i === 0) ? new THREE.Vector3() : a3.setLength( aLength/ -(hInit+kInit) );
+        c  = (l === 0) ? new THREE.Vector3() : c.setLength( cLength/lInit );
+ 
+        var point = findInterceptedPlanePointsHex(a1, a2, a3, c, this.parameters.scaleZ, this.parameters.scaleY);
 
         return;
 
@@ -4592,8 +4677,8 @@ define([
       
       t = -(u+v);
       var devider = Math.max(Math.abs(u),Math.abs(v),Math.abs(w),Math.abs(t));
-      var aLength = parseFloat(this.parameters.scaleZ) ; 
-      var cLength = parseFloat(this.parameters.scaleY) ;
+      var aLength = this.parameters.scaleZ ; 
+      var cLength = this.parameters.scaleY ;
       var bLength = 2 * Math.sqrt((aLength*aLength) - ((aLength*aLength)/4)) ;
       
       var axis = new THREE.Vector3(0, 1, 0);

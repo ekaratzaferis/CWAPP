@@ -437,18 +437,38 @@ define([
   };
  
   Doll.prototype.dollMode  = function(atom){ 
-    
+ 
     var cameraPos = this.crystalOrbit.camera.position.clone();
     var movCubePos = this.crystalScene.movingCube.position.clone();
     var camToAtomDist = atom.position.clone().sub(cameraPos.clone()).length();
     var oldTargetModified = ((((movCubePos.clone()).sub(cameraPos.clone())).setLength(camToAtomDist) ).add(cameraPos.clone()));
 
-    var params = this.lattice.getParameters() ;
-    var x = params.scaleX * params.repeatX/2 ;
-    var y = params.scaleY * params.repeatY /2;
-    var z = params.scaleZ * params.repeatZ/2 ;
-    var target = new THREE.Vector3(x,y,z) ; 
+    var g = this.lattice.customBox(this.lattice.viewBox);
+    var target;
+
+    if(g !== undefined){
+
+      target = new THREE.Vector3(0,0,0);
+
+      if(g !== undefined){ 
+        target = new THREE.Vector3(); 
+        for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+          target.add( g.vertices[ z ] ); 
+        }  
+        target.divideScalar( g.vertices.length );
+      }
+    }
+    else{
+      var params = this.lattice.getParameters() ;
+      var x = params.scaleX * params.repeatX/2 ;
+      var y = params.scaleY * params.repeatY /2;
+      var z = params.scaleZ * params.repeatZ/2 ;
+      target = new THREE.Vector3(x,y,z) ; 
+    }
+ 
+
     var t = target.clone();
+
     var newCamPos = new THREE.Vector3(atom.position.x - target.x, atom.position.y - target.y, atom.position.z - target.z);
     newCamPos.setLength(newCamPos.length()+0.001);
     newCamPos.x += target.x ;

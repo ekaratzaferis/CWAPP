@@ -367,7 +367,7 @@ require([
   orbitCrystal.dollOnDocumentMouseDown(dollGearBarME.onDocumentMouseDown.bind(dollGearBarME)) ;
   
   // atom customizer
-  var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu);
+  var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu, orbitCrystal, crystalScene);
 
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor, atomCustomizer, keyboardControl);

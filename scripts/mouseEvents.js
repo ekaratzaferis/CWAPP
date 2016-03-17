@@ -18,7 +18,7 @@ define([
   var mouse = new THREE.Vector2(); 
 
   function MouseEvents( motifEditor, func, _camera, domElement, orbitControls, soundMachine, navCube) {
-    var _this =this;
+    var _this = this;
 
     this.plane = {'object3d' : undefined} ;
     this.func = func ;

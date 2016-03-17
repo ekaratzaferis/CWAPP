@@ -18,7 +18,7 @@ define([
   var uniqueId = -1; 
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, lod, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
-       
+        
     var _this = this; 
     this.radius = radius;  
     this.material;

@@ -10,7 +10,7 @@ define([
   _
 ) { 
  
-  function AtomCustomizer(lattice, soundMachine, dollEditor, menu) { 
+  function AtomCustomizer(lattice, soundMachine, dollEditor, menu, crystalOrbit, crystalScene) { 
       
     this.lattice = lattice ;
     this.soundMachine = soundMachine ;
@@ -20,6 +20,8 @@ define([
     this.singleAtom;
     this.editMode = 'single';
     this.menuIsOpen = false;
+    this.crystalOrbit = crystalOrbit;
+    this.crystalScene = crystalScene;
   };
  
   AtomCustomizer.prototype.atomJustClicekd = function(atom_, ctrl){ 
@@ -178,7 +180,11 @@ define([
         atom.setVisibility( arg.visibility); 
       }
       else if(arg.dollMode !== undefined){
+        var pos = this.crystalOrbit.camera.position.clone();
+        pos.setLength(pos.length() - 1);
+        this.crystalScene.movingCube.position.set(pos.x, pos.y, pos.z);
         this.dollEditor.dollMode(atom.object3d);
+        this.dollEditor.dollOn = true; 
       } 
       else if(arg.sound !== undefined){ 
         this.soundMachine.atomSourcePos = atom.object3d.position.clone();

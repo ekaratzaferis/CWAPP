@@ -96,11 +96,11 @@ define([
       mouse.x = ( event.clientX / $('#'+_this.container).width() ) * 2 - 3;
       mouse.y = - ( event.clientY / $('#'+_this.container).height() ) * 2 + 1; 
     }
-     
+  
     raycaster.setFromCamera( mouse, this.camera ); 
    
     var crystalPlanesIntersects = raycaster.intersectObjects( this.getCrystalPlanes() );
- 
+   
     if ( crystalPlanesIntersects.length > 0 ) {   
       this.coloredPlanesExist = true;
       if(crystalPlanesIntersects[0].object.name === 'plane'){
@@ -139,6 +139,7 @@ define([
       this.dollEditor.setAtomUnderDoll(crystalobjsIntersects[0].object.parent);
        
       var obj = crystalobjsIntersects[0].object ; 
+      //console.log(obj.parent.uniqueID);
       var filteredAtom = _.findWhere(_this.client.actualAtoms, {uniqueID : obj.parent.uniqueID});
          
 
