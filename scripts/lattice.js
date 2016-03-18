@@ -98,7 +98,7 @@ define([
     this.confirmationFunction = { id : ' ', object : ' '};
 
     this.atomRelationshipManager;
-    this.labeling = false;
+    this.labeling = false; 
   }; 
   Lattice.prototype.renderingModeChange = function(arg) {
     
@@ -1581,8 +1581,8 @@ define([
     var origin, g,destinationReference;
     var destination;
     var _this = this;
-    var visible = (this.gradeChoice.grid  ) ;
-     
+    var visible = (this.gradeChoice.grid  === true) ;
+      
     // erase previous grid 
     this.destroyGrids();
      
@@ -3073,7 +3073,7 @@ define([
     }
     else{
       // here all vectors are 0 except c
-      console.log(1);
+     
       trianglePoints = {d1 : new THREE.Vector3(5, c.y, 10), d2 : new THREE.Vector3(10, c.y, 10), c : c.clone()};
     
     }

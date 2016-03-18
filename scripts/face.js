@@ -43,8 +43,8 @@ define([
 
     geom.mergeVertices(); 
         
-    color = (( /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color))) ? color : 0xFFFFFF;
-    
+    color = (( /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color))) ? color : 0x927492;
+ 
     var mesh = new THREE.Mesh( geom, new THREE.MeshBasicMaterial( { side : THREE.DoubleSide, /* depthWrite: false, depthTest: false, */ color:  color , opacity:opacity/10,  transparent: true } ) );
     mesh.visible = visibility ;
     mesh.name = 'face' ;
@@ -68,7 +68,7 @@ define([
   Face.prototype.setColor = function(color) {
     
     if(_.isUndefined(color)) return;
- 
+    
     this.color = color;
     
     if(this.color[0] === '#'){

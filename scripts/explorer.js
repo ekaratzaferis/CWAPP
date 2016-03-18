@@ -85,6 +85,10 @@ define([
     this.yAxisLine = new THREE.Line( yAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
     this.zAxisLine = new THREE.Line( zAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
     
+    this.xAxisLine.visible = false;
+    this.yAxisLine.visible = false;
+    this.zAxisLine.visible = false;
+
     this.object3d.add(this.xAxisLine);
     this.object3d.add(this.yAxisLine);
     this.object3d.add(this.zAxisLine);
@@ -116,9 +120,9 @@ define([
     this.object3d.add(this.cAxisLine);
     this.object3d.add(this.aAxisLine);
 
-    this.cAxisLine.visible = false;
-    this.bAxisLine.visible = false;
-    this.aAxisLine.visible = false;
+    this.cAxisLine.visible = true;
+    this.bAxisLine.visible = true;
+    this.aAxisLine.visible = true;
   
     this.helper = new THREE.Mesh(new THREE.BoxGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshBasicMaterial( { color: 0x000000}));
     this.helper.visible = false;

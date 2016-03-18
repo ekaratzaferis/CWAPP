@@ -180,7 +180,7 @@ define([
       this.lattice.actualAtoms = []; 
 
       // grade
-      this.lattice.gradeChoice = {"face":false, "grid":false};
+      this.lattice.gradeChoice = {"face":true, "grid":true};
       this.lattice.gridPointsPos = [];
       this.lattice.grids = [];
       this.lattice.hexGrids = {};
