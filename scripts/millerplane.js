@@ -12,7 +12,7 @@ define([
 ) {
 
   function MillerPlane( b, a, c, d, e, opacity, color, visible, f) {
-  
+
     if(color.charAt(0) === '#'){
       this.color = color; 
     }
@@ -22,9 +22,7 @@ define([
     
     this.opacity = opacity; 
     this.visible = visible; 
-
-    //console.log(a,b,c );
-
+ 
     var _this = this; 
     
     var vertices = [];
@@ -55,15 +53,17 @@ define([
       faces.push(new THREE.Face3(2,3,1));
       faces.push(new THREE.Face3(3,4,1));
     }
-    else{
-      vertices.push(new THREE.Vector3(a.x,a.y,a.z));
+    else{ 
       vertices.push(new THREE.Vector3(b.x,b.y,b.z));
+      vertices.push(new THREE.Vector3(a.x,a.y,a.z));
       vertices.push(new THREE.Vector3(c.x,c.y,c.z));
       vertices.push(new THREE.Vector3(d.x,d.y,d.z));
       vertices.push(new THREE.Vector3(e.x,e.y,e.z));
+      vertices.push(new THREE.Vector3(f.x,f.y,f.z));
       faces.push(new THREE.Face3(0,2,1));
-      faces.push(new THREE.Face3(2,3,1));
-      faces.push(new THREE.Face3(3,4,1));
+      faces.push(new THREE.Face3(0,3,2));
+      faces.push(new THREE.Face3(0,4,3));
+      faces.push(new THREE.Face3(0,5,4));
     }
 
     var geom = new THREE.Geometry();
@@ -76,8 +76,8 @@ define([
     mesh.renderOrder = 1 ;
     mesh.name = 'plane' ;
     mesh.visible = visible; 
-    mesh.receiveShadow = true; 
-    mesh.castShadow = true; 
+    //mesh.receiveShadow = true; 
+    //mesh.castShadow = true; 
     this.object3d = mesh;
     Explorer.add(this);
 
