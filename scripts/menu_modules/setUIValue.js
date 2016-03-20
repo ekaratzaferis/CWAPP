@@ -858,6 +858,17 @@ define([
                 }
                 break; 
             }
+            case 'motifVisibilityInUC':{
+                if (value === true) {
+                    html.motif.other.motifVisibilityInUC.addClass('active');
+                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/lockCamerasActive.png');
+                }
+                else {
+                    html.motif.other.motifVisibilityInUC.removeClass('active');
+                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/lockCameras.png');
+                }
+                break; 
+            }
             case 'swapButton':{
                 if (value === true) html.motif.other.swapButton.addClass('motif');
                 else html.motif.other.swapButton.removeClass('motif');
@@ -1631,6 +1642,10 @@ define([
             }
             case 'lockCameras':{
                 PubSub.publish(events.MOTIF_CAMERASYNC_CHANGE, value);
+                break;
+            }
+            case 'motifVisibilityInUC':{
+                PubSub.publish(events.TOGGLE_MOTIF_VISIBILITY_IN_UC, value);
                 break;
             }
             case 'swapButton':{

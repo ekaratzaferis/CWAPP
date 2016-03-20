@@ -454,6 +454,16 @@ define([
                 }
             });          
         });
+        html.motif.other.motifVisibilityInUC.click(function() { 
+            var value = undefined;
+            (html.motif.other.motifVisibilityInUC.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                motifVisibilityInUC:{
+                    publish: {'toggleMotifVisibilityInUC':value},
+                    value: value
+                }
+            });          
+        });
         _.each(html.motif.latticeLabels, function($parameter, k){
             $parameter.parent().parent().on('click', function(){
                 $menuRibbon.switchTab('latticeTab');
