@@ -3324,6 +3324,14 @@ html,body {
     z-index: 20;
     cursor: pointer;
 }
+#utilIcon{
+    position: absolute;
+    display: block;
+    bottom: 5%;
+    right: 51%;
+    z-index: 20;
+    cursor: pointer;
+}
 
 #motifPosX,#unitCellRendererMouse,#crystalRendererMouse,#motifPosY,#motifPosZ,#motifPosXCaption,#motifPosYCaption,#motifPosZCaption{ display: table-cell; }
 #motifScreenTable{
@@ -3397,6 +3405,10 @@ html,body {
 .toggle_menu #highlightTangency{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-12.png');}
 .toggle_menu:hover #highlightTangency{background-image: url('../Images/toggle-icon-active-12.png');}
 .toggle_menu.lightThemeActive #highlightTangency{background-image: url('../Images/toggle-icon-active-12.png');}
+
+.toggle_menu #fullScreen{ height: 40px; width: 52px; background-image: url('../Images/toggle-icon-13.png');}
+.toggle_menu:hover #fullScreen{background-image: url('../Images/toggle-icon-active-13.png');}
+.toggle_menu.lightThemeActive #fullScreen{background-image: url('../Images/toggle-icon-active-13.png');}
 
 .motifBorderTop{ border-top: 8px solid #7F8289;}
 .motifBorderBottom{ border-bottom: 8px solid #7F8289; }

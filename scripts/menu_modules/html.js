@@ -33,18 +33,19 @@ define([
            'helpTab':jQuery('#helpTab')
         };
         this.menu.toggles = {
-            'xyzAxes': jQuery('#xyzAxes'),
-            'abcAxes': jQuery('#abcAxes'),
-            'edges': jQuery('#edges'),
-            'faces': jQuery('#faces'),
-            'latticePoints': jQuery('#latticePoints'),
-            'planes': jQuery('#planes'),
-            'directions': jQuery('#directions'),
-            'atomToggle': jQuery('#atomToggle'),
-            'atomRadius': jQuery('#atomRadius'),
-            'unitCellViewport': jQuery('#unitCellViewport'),
-            'labelToggle': jQuery('#labelToggle'),
-            'highlightTangency': jQuery('#highlightTangency')
+            xyzAxes: jQuery('#xyzAxes'),
+            abcAxes: jQuery('#abcAxes'),
+            edges: jQuery('#edges'),
+            faces: jQuery('#faces'),
+            latticePoints: jQuery('#latticePoints'),
+            planes: jQuery('#planes'),
+            directions: jQuery('#directions'),
+            atomToggle: jQuery('#atomToggle'),
+            atomRadius: jQuery('#atomRadius'),
+            unitCellViewport: jQuery('#unitCellViewport'),
+            labelToggle: jQuery('#labelToggle'),
+            highlightTangency: jQuery('#highlightTangency'),
+            fullScreen: jQuery('#fullScreen')
         };
         this.menu.other = {
             atomRadiusSlider: jQuery('#atomRadiusSlider'),
@@ -90,6 +91,7 @@ define([
             autoRefresh: jQuery('.autoRefresh'),
             refreshButtons: jQuery('.latticeButtons'),
             icheck: jQuery('input.icheckbox, input.iradio'),
+            icheckVisual: jQuery('#chkbx_visualization_cell_edge, #chkbx_visualization_cell_face'),
             spinner: jQuery('.spinner'),
             tangency: jQuery('#tangency'),
             selected: jQuery('#selected_lattice')
@@ -191,7 +193,6 @@ define([
             oculusCell: jQuery('#oculusCell'),
             sideBySide3DCell: jQuery('#3DsideBySideCell'),
             onTop3DCell: jQuery('#3DonTopCell'),
-            fullScreen: jQuery('#fullScreen'),
             leapMotion: jQuery('#leapMotion'),
             crystalCamTargetOn: jQuery("#crystalCamTargetOn"),
             crystalCamTargetOff: jQuery("#crystalCamTargetOff")
@@ -292,7 +293,9 @@ define([
         };
         this.pnd.other = {
             hexICoord: jQuery('#hexICoord'),
-            hexTCoord: jQuery('#hexTCoord')
+            hexTCoord: jQuery('#hexTCoord'),
+            planesSubmenuTitle: jQuery('#subPlane'),
+            directionsSubmenuTitle: jQuery('#subDirection')
         };
         
         // Public Library Tab //

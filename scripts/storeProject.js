@@ -125,7 +125,7 @@ define([
         jsonText = jsonText + '"stereoscopicEffect" : { "anaglyph":' + argument.app.anaglyph + ', "oculus":' + argument.app.oculus + ', "sideBySide3D":' + argument.app.sideBySide3D + ', "OnTop3D":' + argument.app.onTop3D + '},';
         jsonText = jsonText + '"stereoscopicCellEffect" : { "anaglyphCell":' + argument.app.anaglyphCell + ', "oculusCell":' + argument.app.oculusCell + ', "sideBySide3DCell":' + argument.app.sideBySide3DCell + ', "OnTop3DCell":' + argument.app.onTop3DCell + '},';
         jsonText = jsonText + '"focalPoint" : { "crystalCamTargetOn":' + argument.app.crystalCamTargetOn + ', "crystalCamTargetOff":' + argument.app.crystalCamTargetOff + '},';
-        jsonText = jsonText + '"fullScreen":' + argument.app.fullScreen + ', "leapMotion":' + argument.app.leapMotion + ',';
+        jsonText = jsonText + '"leapMotion":' + argument.app.leapMotion + ',';
         jsonText = jsonText + '"crystalModelRepresentation":{ "crystalClassic":' + argument.app.crystalClassic + ', "crystalSubstracted":' + argument.app.crystalSubstracted + ', "crystalSolidVoid":' + argument.app.crystalSolidVoid + ', "crystalGradeLimited":' + argument.app.crystalGradeLimited + '},';
         jsonText = jsonText + '"unitCellModelRepresentation":{ "cellClassic":' + argument.app.cellClassic + ', "cellSubstracted":' + argument.app.cellSubstracted + ',"cellSolidVoid":' + argument.app.cellSolidVoid + ', "cellGradeLimited":' + argument.app.cellGradeLimited + '}},';
         jsonText = jsonText + '"visualTools": { "menuZoom": { "autoZoom":' + argument.app.autoZoom + ', "zoom70":' + argument.app.zoom70 + ', "zoom80":' + argument.app.zoom80 + ', "zoom90":' + argument.app.zoom90 + ', "zoom100":' + argument.app.zoom100 + '},';

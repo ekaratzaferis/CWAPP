@@ -32,6 +32,7 @@ define([
         15:'Click to SHOW/HIDE UNITCELL VIEWPORT',
         16:'Click to SHOW/HIDE ATOM LABELS',
         17:'Click to SHOW/HIDE OVERLAPPED ATOMS',
+        99:'Click to SET FULL SCREEN MODE',
         18:'Choose a lattice',
         19:'Insert Integer',
         20:'Insert a number',
@@ -186,7 +187,15 @@ define([
         snapshotTT: 'Click to SAVE a snapshot of your project in the PNG format',
         stlTT: 'Click to EXPORT your 3D GEOMETRY in the STL format',
         searchQuery: 'Enter any keywords to search online database records',
-        openJSON: 'Click to UPLOAD and IMPORT saved CrystalWalk Project data'
+        openJSON: 'Click to UPLOAD and IMPORT saved CrystalWalk Project data',
+        cellEdge: 'Click to SHOW/HIDE CELL EDGES',
+        cellFace: 'Click to SHOW/HIDE CELL FACES',
+        subPlaneHex: 'MILLER-BRAVAIS INDICES OF A PLANE IN A HEXAGONAL SYSTEM - (hkil) COORIDNATES',
+        subDirectionHex: 'MILLER-BRAVAIS INDICES OF A DIRECTION IN A HEXAGONAL SYSTEM - [uvtw] COORIDNATES',
+        planeVisibility: 'Click to SHOW/HIDE selected PLANE',
+        directionVisibility: 'Click to SHOW/HIDE selected DIRECTION',
+        planeParallel: 'Click to SHOW/HIDE FAMILY OF PARALLEL PLANES',
+        planeInterception: 'Click to SHOW/HIDE PLANE INTERCEPTED ATOMS'
     };
     
     // Contructor //

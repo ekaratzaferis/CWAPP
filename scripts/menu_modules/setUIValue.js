@@ -164,6 +164,11 @@ define([
                 html.menu.other.atomRadiusSlider.slider('value',value);
                 break;
             }
+            case 'fullScreen':{
+                if (value === true) html.menu.toggles.fullScreen.parent().addClass('lightThemeActive');
+                else html.menu.toggles.fullScreen.parent().removeClass('lightThemeActive');
+                break;
+            }
             
             // Lattice Tab
             case 'latticePadlock':{
@@ -1095,15 +1100,6 @@ define([
                 }
                 break;
             }
-            case 'fullScreen':{
-                if (value === false) {
-                    if (html.visual.parameters.fullScreen.hasClass('active')) html.visual.parameters.fullScreen.button('toggle');
-                }
-                else {
-                    if (!(html.visual.parameters.fullScreen.hasClass('active'))) html.visual.parameters.fullScreen.button('toggle');   
-                }
-                break;
-            }
             case 'leapMotion':{
                 if (value === false) {
                     if (html.visual.parameters.leapMotion.hasClass('active')) html.visual.parameters.leapMotion.button('toggle');
@@ -1402,6 +1398,7 @@ define([
                 takeAction('atomToggle',true);
                 takeAction('labelToggle',false);
                 takeAction('highlightTangency',false);
+                takeAction('fullScreen',false);
                 
                 // Lattice //
                 takeAction('selectedLattice',$messages.getMessage(18));
@@ -2106,8 +2103,9 @@ define([
         takeAction('faces',appUI.menuRibbon.toggleButtons.faces);
         takeAction('xyzAxes',appUI.menuRibbon.toggleButtons.xyzAxes);
         takeAction('abcAxes',appUI.menuRibbon.toggleButtons.abcAxes);
-        // Ignore Viewport //
+        // Ignore Viewport and Full Screen //
         takeAction('unitCellViewport',false);
+        takeAction('fullScreen',false);
         //takeAction('unitCellViewport',appUI.menuRibbon.toggleButtons.unitCellViewport);
         takeActionWithoutPublish('planes',appUI.menuRibbon.toggleButtons.planes);
         takeActionWithoutPublish('directions',appUI.menuRibbon.toggleButtons.directions);

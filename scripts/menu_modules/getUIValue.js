@@ -105,6 +105,8 @@ define([
                 else result.labelToggle = false;
                 if (html.menu.toggles.highlightTangency.parent().hasClass('lightThemeActive')) result.highlightTangency = true;
                 else result.highlightTangency = false;
+                if (html.menu.toggles.fullScreen.parent().hasClass('lightThemeActive')) result.fullScreen = true;
+                else result.fullScreen = false;
                 
                 result.atomRadiusSlider = html.menu.other.atomRadiusSlider.slider('value');
                 return result;
@@ -369,10 +371,6 @@ define([
                 if (html.visual.parameters.crystalCamTargetOff.hasClass('active')) return true;
                 else return false;
             }
-            case 'fullScreen':{
-                if (html.visual.parameters.fullScreen.hasClass('active')) return true;
-                else return false;
-            }
             case 'leapMotion':{
                 if (html.visual.parameters.leapMotion.hasClass('active')) return true;
                 else return false;
@@ -564,7 +562,6 @@ define([
         app.onTop3DCell = retrieveValueFromID('onTop3DCell');
         app.crystalCamTargetOn = retrieveValueFromID('crystalCamTargetOn');
         app.crystalCamTargetOff = retrieveValueFromID('crystalCamTargetOff');
-        app.fullScreen = retrieveValueFromID('fullScreen');
         app.leapMotion = retrieveValueFromID('leapMotion');
         app.crystalClassic = retrieveValueFromID('crystalClassic');
         app.crystalSubstracted = retrieveValueFromID('crystalSubstracted');
