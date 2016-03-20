@@ -3324,7 +3324,7 @@ html,body {
     z-index: 20;
     cursor: pointer;
 }
-#utilIcon{
+#motifVisibilityInUC{
     position: absolute;
     display: block;
     bottom: 5%;

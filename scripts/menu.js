@@ -90,6 +90,7 @@ define([
 
     // Events //
     var events = {
+        TOGGLE_MOTIF_VISIBILITY_IN_UC: 'menu.toggle_motif_visibility_in_uc',
         SET_SSAO: 'menu.set_ssao',
         SET_SHADOWS: 'menu.set_shadows',
         RESET: 'menu.reset',
@@ -1033,6 +1034,9 @@ define([
     };
     Menu.prototype.onLOD = function(callback){
         PubSub.subscribe(events.LOD, callback);
+    };
+    Menu.prototype.onToggleVisibilityInUC = function(callback){
+        PubSub.subscribe(events.TOGGLE_MOTIF_VISIBILITY_IN_UC, callback);
     }; 
 
     /* TO BE DELETED SOON

@@ -124,6 +124,7 @@ define([
         };
         this.motif.other = {
             lockCameras: jQuery('#lockCameraIcon'),
+            motifVisibilityInUC: jQuery('#motifVisibilityInUC'),
             swapButton: jQuery('#swapBtn'),
             atomTable: jQuery('#atomTable'),
             cellVolume: jQuery('#cellVolume'),
