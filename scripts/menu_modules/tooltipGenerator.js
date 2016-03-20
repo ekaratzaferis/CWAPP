@@ -109,7 +109,6 @@ define([
         '3DonTopCell':'top',
         'crystalCamTargetOn':'top',
         'crystalCamTargetOff':'top',
-        'fullScreen':'top',
         'leapMotion':'top',
         'crystalClassic':'top',
         'crystalSubstracted':'top',
@@ -167,6 +166,10 @@ define([
         _.each(elementList, function($element, k){
             tooltipOnHover({ target: k.toString(), message: $messageList.getMessage(k.toString()), placement: $element.toString() });
         });
+        
+        // Check-Boxes
+        tooltipOnHover({ other: jQuery('#chkbx_visualization_cell_edge').parent().parent(), message: $messageList.getMessage('cellEdge'), placement: 'top' });
+        tooltipOnHover({ other: jQuery('#chkbx_visualization_cell_face').parent().parent(), message: $messageList.getMessage('cellFace'), placement: 'top' });
         
         // Canvas Tooltip for system messages //
         $canvasTooltip.tooltip({

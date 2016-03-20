@@ -335,8 +335,8 @@ define([
     pndTab.prototype.editPlane = function(argument){
         var parameters;
         // Parameters [,,,,] //
-        if ( argument['i'] === undefined ) parameters = '['+argument['h']+','+argument['k']+','+argument['l']+']';
-        else parameters = '['+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+']';
+        if ( argument['i'] === undefined ) parameters = '('+argument['h']+','+argument['k']+','+argument['l']+')';
+        else parameters = '('+argument['h']+','+argument['k']+','+argument['l']+','+argument['i']+')';
         
         // Buttons //
         if (!(_.isUndefined(argument.parallel))) (argument.parallel) ? argument.parallel = 'active' : argument.parallel = '';
@@ -345,12 +345,12 @@ define([
         // Add,Edit,Remove Entry //
         switch(argument['action']){
             case 'save':
-                html.pnd.tables.planes.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
+                html.pnd.tables.planes.find('tbody').append('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility vis"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
                 html.pnd.tables.planes.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;  
 
             case 'edit':
-                html.pnd.tables.planes.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel '+argument['parallel']+'"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception '+argument['interception']+'"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
+                html.pnd.tables.planes.find('#'+argument['oldId']).replaceWith('<tr id="'+argument['id']+'" class="bg-dark-gray"><td class="visibility vis"><a class="planeButton visible"><img src="Images/visible-icon-sm.png" class="img-responsive" alt=""/></a></td><td class="selectable pnd-serial">'+parameters+'</td><td class="selectable pnd-name">'+argument['name']+'</td><td class="selectable pnd-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td><td class="visibility"><a class="parallel '+argument['parallel']+'"><img src="Images/planes.png" class="img-responsive" alt=""/></a></td><td class="visibility"><a class="interception '+argument['interception']+'"><img src="Images/atomIcon.png" class="img-responsive" alt=""/></a></td></tr>');
                 html.pnd.tables.planes.find('#'+argument['id']).find('.color').css('background',argument['color']);
                 break;
 
@@ -361,6 +361,23 @@ define([
         
         // Handlers //
         if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            
+            // Tooltips //
+            $tooltipGenerator.addOnHoverTooltip({
+                other: html.pnd.tables.planes.find('#'+argument.id).find('.vis'),
+                message: $messages.getMessage('planeVisibility'),
+                placement: 'top'
+            });
+            $tooltipGenerator.addOnHoverTooltip({
+                other: html.pnd.tables.planes.find('#'+argument.id).find('.parallel'),
+                message: $messages.getMessage('planeParallel'),
+                placement: 'top'
+            });
+            $tooltipGenerator.addOnHoverTooltip({
+                other: html.pnd.tables.planes.find('#'+argument.id).find('.interception'),
+                message: $messages.getMessage('planeInterception'),
+                placement: 'top'
+            });
             
             // Select Entry //
             html.pnd.tables.planes.find('#'+argument['id']).find('.selectable').on('click',function(){
@@ -442,6 +459,13 @@ define([
         
         // Handlers //
         if ( (argument['action']==='save') | (argument['action']==='edit') ){
+            
+            // Tooltip //
+            $tooltipGenerator.addOnHoverTooltip({
+                other: html.pnd.tables.directions.find('#'+argument.id).find('.directionButton'),
+                message: $messages.getMessage('directionVisibility'),
+                placement: 'top'
+            });
             
             // Select Entry //
             html.pnd.tables.directions.find('#'+argument['id']).find('.selectable').on('click',function(){

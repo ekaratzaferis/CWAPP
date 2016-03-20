@@ -106,6 +106,15 @@ define([
                     }
                 }
             });
+            
+            // In case a hexagonal lattice is chosen, we're changing the Sub-Menu title in PnD tab //
+            if ( (jQuery(this).attr('id') === 'hexagonal') || (jQuery(this).attr('id') === 'hexagonal_primitive') ){
+                html.pnd.other.planesSubmenuTitle.html($messages.getMessage('subPlaneHex'));
+                html.pnd.other.directionsSubmenuTitle.html($messages.getMessage('subDirectionHex'));
+            }
+            else {
+                
+            }
         });
         html.modals.periodicTable.element.on('click',function(){
             // Element is not disabled or is the preview on footer //

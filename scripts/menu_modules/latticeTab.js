@@ -91,8 +91,10 @@ define([
         // Cell Visualization check-boxes //
         jQuery(html.lattice.other.icheck).iCheck({
             checkboxClass: 'icheckbox_square-grey',
-            radioClass: 'iradio_square-grey'
+            radioClass: 'iradio_square-grey',
+            checkedClass: 'checked'
         });
+        html.lattice.other.icheckVisual.iCheck('check');
         html.lattice.other.icheck.on('ifChecked',function(){
             var name = jQuery(this).attr('name');
             var argument = {};
@@ -115,6 +117,7 @@ define([
             argument[name] = value;
             $setUIValue.setValue(argument);
         });
+        
         
         // Cell Visualization color pickers //
         html.lattice.visual.edgeColorPicker.spectrum({

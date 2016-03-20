@@ -200,6 +200,9 @@ define([
                 case 'highlightTangency':
                     title = $messageList.getMessage(17);
                     break;
+                case 'fullScreen':
+                    title = $messageList.getMessage(99);
+                    break;
             }
             $tooltipGenerator.addOnHoverTooltip({
                 other: $parameter.parent(),
@@ -325,6 +328,15 @@ define([
                 highlightTangency:{
                     value: value,
                     publish: {highlightTangency:value}
+                }
+            });
+        });
+        html.menu.toggles.fullScreen.on('click', function(){
+            (html.menu.toggles.fullScreen.parent().hasClass('lightThemeActive')) ? value = false : value = true;
+            $setUI.setValue({
+                fullScreen:{
+                    value: value,
+                    publish: {}
                 }
             });
         });

@@ -248,13 +248,6 @@ define([
                 });
             }
         });
-        html.visual.parameters.fullScreen.on('click', function(){
-            $setUI.setValue({
-                fullScreen:{
-                    publish:{}
-                }
-            });
-        }); 
         html.visual.parameters.leapMotion.click(function() {
             (html.visual.parameters.leapMotion.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({

@@ -210,6 +210,9 @@
                     </div>
                     <div id="topRowTable">
                         <div id="unitCellRendererMouse"></div>
+                        <div id="utilIcon">
+                            <img src="Images/lockCameras.png" />
+                        </div>
                         <div id="crystalRendererMouse"></div>
                         <div id="lockCameraIcon">
                             <img src="Images/lockCameras.png" />
@@ -357,6 +360,11 @@
                                             <li>
 												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="highlightTangency" class="toggleButton" type="button"></button>
+												</a>
+											</li>
+                                            <li>
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
+													<button id="fullScreen" class="toggleButton" type="button"></button>
 												</a>
 											</li>
 										</ul>
@@ -740,10 +748,10 @@
 																		</div>
 																		<div class="section-head-action-btns-container">
 																			<div class="btn-action">
-																				<a id="atomPositioningXYZ" class="btn btn-purple-light">Absolut</a>
+																				<a id="atomPositioningXYZ" class="btn btn-purple-light">XYZ</a>
 																			</div>
 																			<div class="btn-action">
-																				<a id="atomPositioningABC" class="btn btn-light">VECTORIAL</a>
+																				<a id="atomPositioningABC" class="btn btn-light">ABC</a>
 																			</div>
 																		</div>
 																	</div>
@@ -1154,7 +1162,7 @@
 																			<div id="planesTooltip" class="coordinates-pnd-blocks-container mh_pnd_para_box" data-mh="mh_pnd_para_box" data-toggle="tooltip" data-placement="top">
 																				<div class="coordinates-block">
 																					<div class="block-title">
-																						<h3>MILLER INDICES - (hkl) COORIDNATES</h3>
+																						<h3 id="subPlane">MILLER INDICES - (hkl) COORIDNATES</h3>
 																					</div>
 																					<div class="block-content">
 																						<div class="coordinates-properties-container">
@@ -1324,7 +1332,7 @@
 																			<div id="directionsTooltip" class="coordinates-pnd-blocks-container mh_pnd_para_box" data-mh="mh_pnd_para_box" data-toggle="tooltip" data-placement="top">
 																				<div class="coordinates-block">
 																					<div class="block-title">
-																						<h3>MILLER INDICES - [uvw] COORIDNATES</h3>
+																						<h3 id="subDirection">MILLER INDICES - [uvw] COORIDNATES</h3>
 																					</div>
 																					<div class="block-content">
 																						<div class="coordinates-properties-container">
@@ -2117,17 +2125,6 @@
 																	</div>
 																</div>
 															</div>
-															<div class="col col-sm-5">
-																<div class="block-title">
-																	<h3>Full Screen</h3>
-																</div>
-																<div class="block-content">
-																	<div class="btn-fullscreen">
-																		<a id="fullScreen" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off"><img src="Images/fullscreen-icon.png" class="img-responsive" alt=""/></a>
-																	</div>
-																</div>
-															</div>
-
 														</div>
 													</div>
 													<div class="tab-block theme-dark stereoscopic-block">
