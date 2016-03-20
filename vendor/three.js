@@ -36045,6 +36045,60 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 	var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), _material );
 	_scene.add( mesh );
 
+	this.setNewMaterial = function ( ) {
+		  
+		var material = new THREE.ShaderMaterial( {
+
+			uniforms: {
+
+				"mapLeft": { type: "t", value: _renderTargetL },
+				"mapRight": { type: "t", value: _renderTargetR }
+
+			},
+
+			vertexShader: [
+
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+				"	vUv = vec2( uv.x, uv.y );",
+				"	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+				"}"
+
+			].join("\n"),
+
+			fragmentShader: [
+
+				"uniform sampler2D mapLeft;",
+				"uniform sampler2D mapRight;",
+				"varying vec2 vUv;",
+
+				"void main() {",
+
+				"	vec4 colorL, colorR;",
+				"	vec2 uv = vUv;",
+
+				"	colorL = texture2D( mapLeft, uv );",
+				"	colorR = texture2D( mapRight, uv );",
+
+					// http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
+
+				"	gl_FragColor = vec4( colorL.r, colorR.g, 1, colorL.a + colorR.a ) * 1.1;",
+
+			    "}"
+
+				].join("\n")
+
+		} );
+
+		_material = material;
+
+		mesh.material = material;
+		mesh.material.needsUpdate = true;
+
+	};
 	this.setSize = function ( width, height ) {
 		if(height === 0 ) {
 			renderer.setSize( width, height );

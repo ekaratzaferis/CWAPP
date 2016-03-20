@@ -182,6 +182,21 @@ define([
     } 
 
     ///// 
+    if ( this.keyboard.pressed("O") ){
+      if(this.mutex === false){ 
+        this.mutex = true;
+        if( this.hidden === true){
+          $('#secretMenu').show(); 
+          this.hidden = false; 
+        }
+        else{  
+          $('#secretMenu').hide();
+          this.hidden = true; 
+          this.crystalRendererTemporal.stereoscopicEffect.setNewMaterial({'blue' :3 , 'red' : 3});
+        }
+        setTimeout(function(){ _this.mutex = false;}, 200 );
+      } 
+    }
     if ( this.keyboard.pressed("P") ){
          
       if(this.mutex === false){ 

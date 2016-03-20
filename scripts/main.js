@@ -988,6 +988,119 @@ require([
     //motifEditor.setOctahedronDetail(arg);
   }); 
   
+
+  ///////////////////// TO BE DELETED - EXPERIMENTAL FEATURE
+
+  var fullWidth =  $(window).width();
+  var fullHeight =  $(window).height();
+
+  var menuWidth = (1*fullWidth/1.5);
+  var menuHeight = (7*fullHeight/8);
+
+  var menuleft = (fullWidth/6);
+  var menuTop = (fullHeight/9);
+  
+  $("#secretMenu").css({
+    "width" : menuWidth+'px',
+    "height" : menuHeight+'px',
+    "left" : menuleft+'px',
+    "top" : menuTop+'px'
+
+  }); 
+  //
+
+  $("#blue1").css({ 
+    "position" : 'absolute',
+    "background-color" : 'blue', 
+    "width" : (2*menuWidth/12 )+'px',
+    "left" : ( menuWidth/3)+'px', 
+    "height" : (2*menuWidth/12)+'px',
+    "top" :  menuHeight/20+'px'  
+  });
+
+  $("#red1").css({ 
+    "position" : 'absolute',
+    "background-color" : 'red', 
+    "width" : (2*menuWidth/12 )+'px',
+    "left" : ( menuWidth/3)+'px', 
+    "height" : (2*menuWidth/12)+'px',
+    "top" :  ( (2*menuWidth/12 ) + 2*menuHeight/20 )+'px'  
+  });
+
+  $("#red2").css({ 
+    "position" : 'absolute',
+    "background-color" : 'red', 
+    "width" : (2*menuWidth/12 )+'px',
+    "left" : ( menuWidth/3 +  2*menuWidth/12 + menuHeight/20   )+'px', 
+    "height" : (2*menuWidth/12)+'px',
+     "top" :  menuHeight/20+'px' 
+  });
+
+  $("#blue2").css({ 
+    "position" : 'absolute',
+    "background-color" : 'blue', 
+    "width" : (2*menuWidth/12 )+'px',
+    "left" : ( menuWidth/3 +  2*menuWidth/12 + menuHeight/20   )+'px', 
+    "height" : (2*menuWidth/12)+'px',
+    "top" :  ( (2*menuWidth/12 ) + 2*menuHeight/20 )+'px'   
+  });
+
+  ////
+
+  $("#colorPickerRedWrapper").css({ 
+    "position" : 'absolute',
+    "left" : ((fullWidth/6) + (1*fullWidth/4.5) )+'px',
+    "top" : (9*menuHeight/10)+'px'  
+
+  });
+
+  $("#colorPickerBlueWrapper").css({ 
+    "position" : 'absolute',
+    "left" : ((fullWidth/6) + (1*fullWidth/10.5) )+'px',
+    "top" : (9*menuHeight/10)+'px'  
+  });
+
+  ///////
+ 
+ 
+
+  $('#colorPickerRed').spectrum({
+      color: "red",
+      allowEmpty:true,
+      chooseText: "Choose",
+      cancelText: "Close",
+      move: function(){
+        var color = $('#colorPickerRed').spectrum("get").toHex();
+        $('#red1').css({ "background-color" : '#'+color});
+        $('#red2').css({ "background-color" : '#'+color});
+        crystalRenderer.stereoscopicEffect.setNewMaterial({'blue' : 3, 'red' : 3});
+      },
+      change: function(){
+           
+      }
+  });
+
+  $('#colorPickerBlue').spectrum({
+      color: "blue",
+      allowEmpty:true,
+      chooseText: "Choose",
+      cancelText: "Close",
+      move: function(){
+         var color = $('#colorPickerBlue').spectrum("get").toHex();
+        $('#blue1').css({ "background-color" : '#'+color});
+        $('#blue2').css({ "background-color" : '#'+color});
+        crystalRenderer.stereoscopicEffect.setNewMaterial({'blue' :3 , 'red' : 3});
+      },
+      change: function(){
+           
+      }
+  });
+        
+
+
+  ////////////////////
+
+
   // to read the json file
    
   var hash = window.location.hash.substr(1);

@@ -2496,6 +2496,9 @@ define([
 
       if(this.editorState.atomPosMode === 'relative'){ 
         var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
+        console.log(pos.x/x);
+        console.log(pos.y/y);
+        console.log(pos.z/z);
         this.menu.setSliderValue('atomPosX', pos.x/x);
         this.menu.setSliderValue('atomPosY', pos.y/y);
         this.menu.setSliderValue('atomPosZ', pos.z/z);
