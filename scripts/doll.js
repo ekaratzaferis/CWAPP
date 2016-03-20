@@ -114,6 +114,9 @@ define([
   }; 
   function createGearBarSlider(){
 
+  };
+  function createGearBarSlider(){
+
     var obj = new THREE.Object3D();
 
     var sliderG = new THREE.Geometry();

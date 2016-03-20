@@ -36085,7 +36085,7 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 
 					// http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
 
-				"	gl_FragColor = vec4( colorL.r, colorR.g, 1, colorL.a + colorR.a ) * 1.1;",
+				"	gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;",
 
 			    "}"
 

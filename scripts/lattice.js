@@ -27,6 +27,7 @@ define([
   var events = {
     LOAD: 'lattice.load',
     DIRECTION_STATE: 'lattice.direction_state', 
+    GRID_UPDATE: 'lattice.grid_update', 
     PLANE_STATE: 'lattice.plane_state'
   };
 
@@ -1700,7 +1701,9 @@ define([
         });
       });
     }); 
-     
+    
+    PubSub.publish(events.GRID_UPDATE, undefined); 
+
   }; 
  
   Lattice.prototype.updatePoints = function(callbacks) { 

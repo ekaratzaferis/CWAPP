@@ -73,6 +73,19 @@ define([
     this.labeling = false;
   
   };  
+  Motifeditor.prototype.toggleVisibilityByLatticeIndex = function(latticeIndex, visibility){ 
+
+    for (var j = this.unitCellAtoms.length - 1; j >= 0; j--) {  
+      
+      if( this.unitCellAtoms[j].latticeIndex === latticeIndex){   
+         this.unitCellAtoms[j].setVisibility(visibility);
+      }
+      else{
+        this.unitCellAtoms[j].setVisibility(!visibility);
+      }
+    }
+     
+  };
   Motifeditor.prototype.setDraggableAtom = function(arg, doNotRepos){ 
    
     this.menu.rotAnglesSection(arg.dragMode);
