@@ -1,30 +1,29 @@
  
 define([
-  'three',
-  'explorer',
+  'three', 
   'underscore'
 ], function(
-  THREE,
-  Explorer,
+  THREE, 
   _
 ) {
   var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 ); 
 
-  function Grid(pointA, pointB, visibility) {
- 
+  function Grid(scene, pointA, pointB, visibility) {
+    
     var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( { color: 0xA19EA1 } ) ); 
     mesh.visible = visibility;
     mesh.name = 'grid';
     mesh.scale.x = 2;
     mesh.scale.z = 2;
+    this.scene = scene; 
     this.object3d = mesh; 
-    Explorer.add(this);
+    this.scene.add(this.object3d);
     this.scale = 2;
     this.color;
   }
 
   Grid.prototype.destroy = function() {
-    Explorer.remove(this);
+    this.scene.remove(this.object3d);
   };
  
   Grid.prototype.setRadius = function( scale) {

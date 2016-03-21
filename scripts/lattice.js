@@ -28,6 +28,7 @@ define([
     LOAD: 'lattice.load',
     DIRECTION_STATE: 'lattice.direction_state', 
     GRID_UPDATE: 'lattice.grid_update', 
+    UPDATE_POINTS: 'lattice.update_points', 
     PLANE_STATE: 'lattice.plane_state'
   };
 
@@ -49,8 +50,9 @@ define([
 
   var reverseScaling = scaling.slice(0).reverse();
 
-  function Lattice(menu, soundMachine) {
+  function Lattice(cwState, menu, soundMachine) {
 
+    this.cwState = cwState;
     // lattice
     this.menu = menu ;  
     this.lattice = null;
@@ -1583,7 +1585,8 @@ define([
     var destination;
     var _this = this;
     var visible = (this.gradeChoice.grid  === true) ;
-      
+    var scene = Explorer.getInstance().object3d;
+
     // erase previous grid 
     this.destroyGrids();
      
@@ -1603,17 +1606,17 @@ define([
 
                     destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0';
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
                     
                     destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     usedGridOrigins[originReference] = 1;
@@ -1631,17 +1634,17 @@ define([
 
                     destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     usedGridOrigins[originReference] = 1;
@@ -1656,17 +1659,17 @@ define([
 
                     destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     usedGridOrigins[originReference] = 1;
@@ -1680,17 +1683,17 @@ define([
 
                     destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0';
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ;
                     destination = _this.points[destinationReference];
-                    g = new Grid(origin.object3d.position, destination.object3d.position, visible);
+                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
                     usedGridOrigins[originReference] = 1;
@@ -1840,12 +1843,8 @@ define([
     this.setCSGmode({mode : 'crystalClassic'}, 'reset');
     this.menu.chooseActiveCrystalMode('crystalClassic');
 
-    /*
-    console.log(' points : '+Object.keys(this.points).length);
-    console.log(' actualAtoms : '+Object.keys(this.actualAtoms).length);
-    console.log(' hexGrids : '+Object.keys(this.grids).length);
-    console.log(' faces : '+Object.keys(this.faces).length);
-    */
+    this.cwState.setLatticePoints(this.points);
+    PubSub.publish(events.UPDATE_POINTS, undefined ); 
 
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
@@ -1868,7 +1867,7 @@ define([
 
       var originReference = 'h_'+x+y+z ;
       var destinationReference = 'h_'+k+l+m ; 
-      var g = new Grid(hexPoints[0], hexPoints[1],  visible);
+      var g = new Grid(scene, hexPoints[0], hexPoints[1],  visible);
 
       _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0 });
       updateGrid(_this.grids[_this.grids.length-1]);
@@ -1900,7 +1899,7 @@ define([
         if(_this.hexGrids[reference] === false && _this.hexGrids[reference2] === undefined){  
           _this.hexGrids[reference] = true; */
   
-          var g = new Grid(a,b, visible);
+          var g = new Grid(scene, a,b, visible);
           _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
           updateGrid(_this.grids[_this.grids.length-1]);
         //}
@@ -1966,6 +1965,7 @@ define([
     this.latticeName = latticeName;
     require(['lattice/' + latticeName], function(lattice) {
       _this.lattice = lattice; 
+      _this.cwState.setCurrentLoadedLattice(lattice); 
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ; 
       /*if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){ 

@@ -155,7 +155,8 @@ require([
   'menu_html',
   'fitToCrystal',
   'LOD',
-  'multitouch'
+  'multitouch',
+  'cwState'
 
 ], function(
   PubSub, 
@@ -210,7 +211,8 @@ require([
   menu_html,
   FitToCrystal,
   LOD,
-  Multitouch
+  Multitouch,
+  CwState
 
 ) {
   
@@ -228,6 +230,10 @@ require([
     return; 
   }
   
+
+  // app's state
+  var cwState = crystalWalkState();
+
   // Scenes 
   var crystalScene = Explorer.getInstance();
   crystalScene.menu = menu;
@@ -277,7 +283,7 @@ require([
   animationMachine.soundMachine = soundMachine;
   crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
   
-  var lattice = new Lattice(menu, soundMachine);
+  var lattice = new Lattice(cwState, menu, soundMachine);
   soundMachine.lattice = lattice;
 
   // HUD  
@@ -332,7 +338,7 @@ require([
   motifRenderer.onAnimationUpdate(motifCamZ.update.bind(motifCamZ));
 
   // Motif editor
-  var motifEditor = new Motifeditor(menu, soundMachine); 
+  var motifEditor = new Motifeditor(cwState, menu, soundMachine); 
  
   var dragNdropXevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(0), 'motifPosX');
   var dragNdropYevent = new MouseEvents(motifEditor, 'dragNdrop', motifRenderer.getSpecificCamera(1), 'motifPosY');
@@ -912,7 +918,7 @@ require([
   });
   menu.onSaveOnline(function(message, arg) { 
     storeMechanism.saveOnline(arg);
-  });
+  }); 
   menu.onExportJSON(function(message, arg) { 
     storeMechanism.exportJSON(arg);
   });
@@ -987,7 +993,7 @@ require([
     if(arg.toggleMotifVisibilityInUC === true){
       motifEditor.toggleVisibilityByLatticeIndex(motifVis, true);
     }
-    else if(arg.toggleMotifVisibilityInUC === true){
+    else if(arg.toggleMotifVisibilityInUC === false){
        motifEditor.toggleVisibilityByLatticeIndex('nonexistent', false);
     }
      
@@ -1001,6 +1007,12 @@ require([
     //motifEditor.setOctahedronDetail(arg);
   }); 
   
+  // new software architecture
+  PubSub.subscribe('lattice.update_points', function(message, arg){  
+    
+    motifEditor.createGrid();
+     
+  });
 
   ///////////////////// TO BE DELETED - EXPERIMENTAL FEATURE
 
