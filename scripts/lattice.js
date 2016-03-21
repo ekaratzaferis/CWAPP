@@ -1933,16 +1933,21 @@ define([
     else{   
       _.each(this.hexGrids, function(g, reference) {
         _this.hexGrids[reference] = false;
+      }); 
+
+      _.each(this.motifSceneGrids, function(g, reference) {
+        _this.motifSceneGrids[reference] = false;
       });  
 
       var a = parameters.scaleZ ;
       var c = parameters.scaleY ;
       var co = 0 , previousPoint, currentPoint; 
       var vertDist = a*Math.sqrt(3);
+
       _this.hexagonalShapes.splice(0);
       _.times(parseInt(parameters.repeatY) + 1, function(_y) {
         _.times(parseInt(parameters.repeatX)   , function(_x) {
-          _.times(parseInt(parameters.repeatZ)  , function(_z) {
+          _.times(parseInt(parameters.repeatZ)  , function(_z) {  
             var hexPoints = [];
             // point in the middle
             var z = (_x % 2==0) ? (_z*vertDist) : ((_z*vertDist + vertDist/2));
@@ -1972,11 +1977,17 @@ define([
               if (_.isUndefined( _this.points[reference])) { 
                 _this.points[reference] = new Point(visible,position);   
                 if(_y>0) _this.createHexGrid([position, new THREE.Vector3(position.x, position.y - c, position.z)],true);
+                if(_y>0 && _y < 2 && _z < 1 && _x < 1) {
+                  _this.createHexGridMotifScene([position, new THREE.Vector3(position.x, position.y - c, position.z)],true);
+                }
               }  
 
             });
 
             _this.createHexGrid(hexPoints,false);
+            if(_y>0 && _y < 2 && _z < 1 && _x < 1) {
+              _this.createHexGridMotifScene(hexPoints,false);
+            }
             _this.hexagonalShapes.push(hexPoints); 
           });
         });
@@ -1992,6 +2003,67 @@ define([
     this.cwState.setLatticePoints(this.points);
     PubSub.publish(events.UPDATE_POINTS, undefined ); 
 
+  };
+  Lattice.prototype.createHexGridMotifScene = function(hexPoints, vertical) {
+    var _this = this;
+    var visible = (this.gradeChoice.grid ); //recreate motif inm lattice and add atom in motif
+    var scene = MotifExplorer.getInstance().object3d;
+
+    if(vertical){
+      var a = hexPoints[0];
+      var b = hexPoints[1];
+
+      var x = (a.x).toFixed(2);
+      var y = (a.y).toFixed(2);
+      var z = (a.z).toFixed(2);
+
+      var k = (b.x).toFixed(2);
+      var l = (b.y).toFixed(2);
+      var m = (b.z).toFixed(2); 
+          
+      if(z==0) z = '0.00';
+      if(m==0) m = '0.00'; 
+
+      var originReference = 'h_'+x+y+z ;
+      var destinationReference = 'h_'+k+l+m ; 
+      var g = new Grid(scene, hexPoints[0], hexPoints[1],  visible);
+
+      _this.motifSceneGrids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0 });
+      updateGrid(_this.motifSceneGrids[_this.motifSceneGrids.length-1]);
+         
+    }
+    else{ 
+      for (var i = 0 ; i< hexPoints.length ; i++) {
+        var a = hexPoints[i];
+        var b = (i === 5 ) ? hexPoints[0] : hexPoints[i+1];
+
+        var x = (a.x).toFixed(2);
+        var y = (a.y).toFixed(2);
+        var z = (a.z).toFixed(2);
+
+        var k = (b.x).toFixed(2);
+        var l = (b.y).toFixed(2);
+        var m = (b.z).toFixed(2); 
+            
+        if(z==0) z = '0.00';
+        if(m==0) m = '0.00';
+
+        var reference = 'h_'+x+y+z+k+l+m ;
+        var reference2 = 'h_'+k+l+m+x+y+z ;
+        var originReference = 'h_'+x+y+z ;
+        var destinationReference = 'h_'+k+l+m ;
+         
+        /*if(_this.hexGrids[reference] == undefined) _this.hexGrids[reference] = false;
+
+        if(_this.hexGrids[reference] === false && _this.hexGrids[reference2] === undefined){  
+          _this.hexGrids[reference] = true; */
+  
+          var g = new Grid(scene, a,b, visible);
+          _this.motifSceneGrids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
+          updateGrid(_this.motifSceneGrids[_this.motifSceneGrids.length-1]);
+        //}
+      };
+    }  
   };
   Lattice.prototype.createHexGrid = function(hexPoints, vertical) {
     var _this = this;
@@ -2063,7 +2135,7 @@ define([
     if( this.currentMotif.length === 0 ){
       return;
     }
- 
+    
     _.each(this.points, function(point,kk) { 
       var p = point.object3d.position; 
       _.each(_this.currentMotif, function(atom) { 
@@ -2783,7 +2855,7 @@ define([
         });
          
         this.actualAtoms.splice(0); 
-        
+         
         this.updatePoints(
           [ 
             this.createGrid,   
@@ -2815,6 +2887,7 @@ define([
       this.updatePoints();   
       this.createFaces();
       this.setGradeParameters();  
+      this.recreateMotif();
     }   
 
     this.updateLatticeTypeRL(); 
