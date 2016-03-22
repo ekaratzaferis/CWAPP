@@ -9,8 +9,7 @@ define([
   'unitCellExplorer' ,
   'csg',
   'threeCSG',
-  'motifExplorer',
-  'grid'
+  'motifExplorer' 
 ], function(
   jQuery, 
   PubSub, 
@@ -21,8 +20,7 @@ define([
   UnitCellExplorer,
   csg,
   ThreeCSG,
-  MotifExplorer,
-  Grid
+  MotifExplorer 
 ) {
   var events = {
     LOAD: 'motifeditor.load',
@@ -74,8 +72,7 @@ define([
     this.LOD = {level : 3}; 
     this.atomRelationshipManager;
     this.labeling = false;
-
-    this.grids = [];
+ 
   
   };  
   Motifeditor.prototype.toggleVisibilityByLatticeIndex = function(latticeIndex, visibility){ 
@@ -6662,231 +6659,7 @@ define([
     }
     
     return vec;
-  }; 
-  function updateGrid ( grid) {
-    
-    var _grid = grid.grid.object3d;
-    var pointA = grid.a;
-    var pointB = grid.b; 
-    var distance = pointA.distanceTo(pointB) ; 
-    var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
-
-    var newPoint =  pointA.clone().add(dir) ;  
-    var direction = new THREE.Vector3().subVectors( pointB, newPoint );
-    var direcNorm = direction;
-    direcNorm.normalize(); 
-
-    var arrow = new THREE.ArrowHelper( direcNorm ,newPoint );
-
-    _grid.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
-    _grid.scale.y = distance/0.001; //distance/grid.geometry.parameters.height;
-    _grid.position.set(newPoint.x,newPoint.y,newPoint.z);
-
-    var _grid = undefined;
-    var pointA = undefined;
-    var pointB = undefined; 
-
-  }; 
-  Motifeditor.prototype.transformGrid = function() {  /*
-    var matrix; 
-    var argument;
-   
-    var _this = this;
-    var parameters = this.cellParameters;
-
-    var shearing = [ 'alpha', 'beta', 'gamma' ];
-    var scaling = [ 'scaleX', 'scaleY', 'scaleZ' ]; 
-    
-    var parameterKeys = _.union(scaling, shearing);
-    
-    var points = this.cwState.getLatticePoints(); 
-
-    _.each(parameterKeys, function(k) { 
-
-      ///////////////////////////////////
-       
-      if (_.isUndefined(parameters[k]) === false) { 
-        argument = {};
-        argument[k] = parameters[k] ; 
-        matrix = transformationMatrix(argument);  
-       
-        ///////////////////////
- 
-        _.each(points, function(point, reference) { 
-          var pos = point.object3d.position.applyMatrix4(matrix);   
-          if(caller==0) { 
-            _.each(_this.grids, function(grid){ 
-              if(grid.origin == reference) {  
-                grid.a = pos;
-                grid.updated++; 
-                if(grid.updated==2) { 
-                  grid.updated = 0;
-                  updateGrid(grid);
-                }
-              }
-              else if(grid.destination == reference){ 
-                grid.b = pos;
-                grid.updated++; 
-                if(grid.updated==2){ 
-                  grid.updated = 0;
-                  updateGrid(grid);
-                } 
-              }
-            }); 
-          } 
-        });   
-        ////////////////////
-  
-    });  */
-  };   
-  Motifeditor.prototype.createGrid = function() {  
-  
-    var lattice = this.cwState.getCurrentLoadedLattice();
-    var latticeParameters = this.cwState.getLatticeParameters(); 
-    var points = this.cwState.getLatticePoints(); 
-    var gridPoints = lattice.gridPoints;
-    var usedGridOrigins = [];
-    var repeatX = 1;
-    var repeatY = 1;
-    var repeatZ = 1; 
- 
-    if (_.isUndefined(gridPoints) && (this.latticeName !== 'hexagonal')) { 
-      return;
-    }
-  
-    var parameters = this.cellParameters;
-    var origin, g,destinationReference;
-    var destination;
-    var _this = this;
-    var visible = latticeParameters.grid.visible ;
-    var scene = MotifExplorer.getInstance().object3d;
-   
-    // erase previous grid 
-    this.destroyGrids();
-    _.times( repeatX , function(_x) {
-      _.times( repeatY , function(_y) {
-        _.times( repeatZ , function(_z) {
-                     
-          _.each(gridPoints, function(xyz, which){
-       
-            switch(which) {
-              case 'first':  
-                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) + '_'+ (xyz[2]+_z) + '_0';
-                      
-                if (_.isUndefined(usedGridOrigins[originReference])) {
-                    
-                    origin = points[originReference];
-      
-                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0';
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                   
-                    _this.grids.push({ grid:g, origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
-                    
-                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    usedGridOrigins[originReference] = 1;
-                     
-                }
-                
-                break;
-
-              case 'left':
-                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
-
-                if (_.isUndefined(usedGridOrigins[originReference])) { 
-
-                    origin = points[originReference];
-
-                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    usedGridOrigins[originReference] = 1;
-                }
-                break;
-              case 'right':
-                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
-
-                if (_.isUndefined(usedGridOrigins[originReference])) { 
-
-                    origin = points[originReference];
-
-                    destinationReference = 'r_' + (1+_x) + '_' + _y + '_' + _z + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ; 
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    usedGridOrigins[originReference] = 1;
-                }
-                break;
-              case 'front':
-                var originReference = 'r_' + (xyz[0]+_x) +'_'+ (xyz[1]+_y) +'_'+ (xyz[2]+_z) + '_0'; 
-                if (_.isUndefined(usedGridOrigins[originReference])) { 
-
-                    origin = points[originReference];
-
-                    destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0';
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ;
-                    destination = points[destinationReference];
-                    g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
-                    _this.grids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
-
-                    usedGridOrigins[originReference] = 1;
-                }
-                break; 
-            } 
-          }); 
-        });
-      });
-    });
- 
-  } 
-  Motifeditor.prototype.destroyGrids = function() {
-    var _this = this; 
-    _.each(this.grids, function(grid, reference) {
-      grid.grid.destroy(); 
-    });
-    this.grids.splice(0);
-  }; 
+  };     
   Motifeditor.prototype.cellPointsWithAngles = function() {  
     //this.transform(reverseShearing, function(value) {  return -value; }); 
 

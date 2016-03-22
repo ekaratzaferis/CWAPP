@@ -1006,13 +1006,7 @@ require([
     //lattice.setOctahedronDetail(arg);
     //motifEditor.setOctahedronDetail(arg);
   }); 
-  
-  // new software architecture
-  PubSub.subscribe('lattice.update_points', function(message, arg){  
-    
-    motifEditor.createGrid();
-     
-  });
+   
 
   ///////////////////// TO BE DELETED - EXPERIMENTAL FEATURE
 
@@ -1026,9 +1020,9 @@ require([
   var menuTop = (fullHeight/9);
   
   $("#secretMenu").css({
-    "width" : menuWidth+'px',
+    "width" : menuWidth/2+'px',
     "height" : menuHeight+'px',
-    "left" : menuleft+'px',
+    "left" : menuleft*2+'px',
     "top" : menuTop+'px'
 
   }); 
@@ -1038,7 +1032,7 @@ require([
     "position" : 'absolute',
     "background-color" : 'blue', 
     "width" : (2*menuWidth/12 )+'px',
-    "left" : ( menuWidth/3)+'px', 
+    "left" : ( menuWidth/12)+'px', 
     "height" : (2*menuWidth/12)+'px',
     "top" :  menuHeight/20+'px'  
   });
@@ -1047,7 +1041,7 @@ require([
     "position" : 'absolute',
     "background-color" : 'red', 
     "width" : (2*menuWidth/12 )+'px',
-    "left" : ( menuWidth/3)+'px', 
+    "left" : ( menuWidth/12)+'px', 
     "height" : (2*menuWidth/12)+'px',
     "top" :  ( (2*menuWidth/12 ) + 2*menuHeight/20 )+'px'  
   });
@@ -1056,7 +1050,7 @@ require([
     "position" : 'absolute',
     "background-color" : 'red', 
     "width" : (2*menuWidth/12 )+'px',
-    "left" : ( menuWidth/3 +  2*menuWidth/12 + menuHeight/20   )+'px', 
+    "left" : ( menuWidth/12 +  2*menuWidth/12 + menuHeight/20   )+'px', 
     "height" : (2*menuWidth/12)+'px',
      "top" :  menuHeight/20+'px' 
   });
@@ -1065,7 +1059,7 @@ require([
     "position" : 'absolute',
     "background-color" : 'blue', 
     "width" : (2*menuWidth/12 )+'px',
-    "left" : ( menuWidth/3 +  2*menuWidth/12 + menuHeight/20   )+'px', 
+    "left" : ( menuWidth/12 +  2*menuWidth/12 + menuHeight/20   )+'px', 
     "height" : (2*menuWidth/12)+'px',
     "top" :  ( (2*menuWidth/12 ) + 2*menuHeight/20 )+'px'   
   });
@@ -1074,14 +1068,14 @@ require([
 
   $("#colorPickerRedWrapper").css({ 
     "position" : 'absolute',
-    "left" : ((fullWidth/6) + (1*fullWidth/4.5) )+'px',
+    "left" : ((fullWidth/24) + (1*fullWidth/20) )+'px',
     "top" : (9*menuHeight/10)+'px'  
 
   });
 
   $("#colorPickerBlueWrapper").css({ 
     "position" : 'absolute',
-    "left" : ((fullWidth/6) + (1*fullWidth/10.5) )+'px',
+    "left" : ((fullWidth/12) + (1*fullWidth/7) )+'px',
     "top" : (9*menuHeight/10)+'px'  
   });
 
@@ -1098,7 +1092,13 @@ require([
         var color = $('#colorPickerRed').spectrum("get").toHex();
         $('#red1').css({ "background-color" : '#'+color});
         $('#red2').css({ "background-color" : '#'+color});
-        crystalRenderer.stereoscopicEffect.setNewMaterial({'blue' : 3, 'red' : 3});
+        
+        var r = parseInt(color.substring(0,2), 16);
+        var g = parseInt(color.substring(2,4), 16);
+        var b = parseInt(color.substring(4,6), 16);
+        if(r === 0) r = 1;
+        if(r === 255) r = 254;
+        crystalRenderer.stereoscopicEffect.setNewMaterial({r : r/255});
       },
       change: function(){
            
@@ -1115,6 +1115,19 @@ require([
         $('#blue1').css({ "background-color" : '#'+color});
         $('#blue2').css({ "background-color" : '#'+color});
         crystalRenderer.stereoscopicEffect.setNewMaterial({'blue' :3 , 'red' : 3});
+
+        var r = parseInt(color.substring(0,2), 16);
+        var g = parseInt(color.substring(2,4), 16);
+        var b = parseInt(color.substring(4,6), 16);
+        
+        if(g === 0) g = 1;
+        if(b === 0) b = 1;
+
+        if(g === 255) g = 254;
+        if(b === 255) b = 254;
+         
+        
+        crystalRenderer.stereoscopicEffect.setNewMaterial({g : g/255, b : b/255});
       },
       change: function(){
            

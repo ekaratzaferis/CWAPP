@@ -35996,6 +35996,8 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 	var _renderTargetL = new THREE.WebGLRenderTarget( width, height, _params );
 	var _renderTargetR = new THREE.WebGLRenderTarget( width, height, _params );
 
+	var rgbUI = {r : 0.99999, g : 0.99999, b : 0.99999 };
+
 	var _material = new THREE.ShaderMaterial( {
 
 		uniforms: {
@@ -36045,8 +36047,18 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 	var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2, 2 ), _material );
 	_scene.add( mesh );
 
-	this.setNewMaterial = function ( ) {
-		  
+	this.setNewMaterial = function (rgb) {
+		
+		var r = rgb.r ? rgb.r : rgbUI.r;
+		var g = rgb.g ? rgb.g : rgbUI.g;
+		var b = rgb.b ? rgb.b : rgbUI.b;
+		
+		console.log('r '+r);
+		console.log('g '+g);
+		console.log('b '+b);
+		 
+		rgbUI = {r : r, g : g, b : b };
+
 		var material = new THREE.ShaderMaterial( {
 
 			uniforms: {
@@ -36083,9 +36095,9 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 				"	colorL = texture2D( mapLeft, uv );",
 				"	colorR = texture2D( mapRight, uv );",
 
-					// http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
+			 	// http://3dtv.at/Knowhow/AnaglyphComparison_en.aspx
 
-				"	gl_FragColor = vec4( colorL.g * 0.7 + colorL.b * 0.3, colorR.g, colorR.b, colorL.a + colorR.a ) * 1.1;",
+				"	gl_FragColor = vec4(  (colorL.g + colorL.b) * "+r+", colorR.g  * "+g+", colorR.b * "+b+" , colorL.a + colorR.a ) * 1.1;",
 
 			    "}"
 
@@ -36141,7 +36153,7 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 			_fov = camera.fov;
 
 			var projectionMatrix = camera.projectionMatrix.clone();
-			var eyeSep = focalLength / 30 * 0.3;
+			var eyeSep = focalLength / 60 * 0.3;
 			var eyeSepOnProjection = eyeSep * _near / focalLength;
 			var ymax = _near * Math.tan( THREE.Math.degToRad( _fov * 0.5 ) );
 			var xmin, xmax;
