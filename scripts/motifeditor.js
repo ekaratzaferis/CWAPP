@@ -1904,10 +1904,21 @@ define([
       case "creating":
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
-          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z) , {'revertShearing' : true});
+      
+          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z), { 'revertShearing' : true});
+
+          var posXforHex = { x : pos.x };
+
           pos.x = pos.x/ this.cellParameters.scaleX ;
           pos.y = pos.y/ this.cellParameters.scaleY ;
           pos.z = pos.z/ this.cellParameters.scaleZ ;
+          
+          if(this.latticeName === 'hexagonal'){ 
+            var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
+            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
+            
+          } 
+             
         } 
          
         this.menu.disableMEButtons(
@@ -1918,9 +1929,9 @@ define([
         );  
         this.menu.editMEInputs(
           {
-            'atomPosX' : pos.x,
-            'atomPosY' : pos.y,
-            'atomPosZ' : pos.z,  
+            'atomPosX' : (pos.x).toFixed(10),
+            'atomPosY' : (pos.y).toFixed(10),
+            'atomPosZ' : (pos.z).toFixed(10), 
             'atomColor' : color,  
             'atomOpacity' : 10,   
             'scaleZ' : this.cellParameters.scaleZ,
@@ -1951,10 +1962,20 @@ define([
       case "editing": 
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
-          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z) , {'revertShearing' : true});  
-          pos.x = pos.x/ parseFloat(this.cellParameters.scaleX);
-          pos.y = pos.y/ parseFloat(this.cellParameters.scaleY);
-          pos.z = pos.z/ parseFloat(this.cellParameters.scaleZ);
+     
+          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z), { 'revertShearing' : true});
+
+          var posXforHex = { x : pos.x };
+
+          pos.x = pos.x/ this.cellParameters.scaleX ;
+          pos.y = pos.y/ this.cellParameters.scaleY ;
+          pos.z = pos.z/ this.cellParameters.scaleZ ;
+          
+          if(this.latticeName === 'hexagonal'){ 
+            var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
+            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
+       
+          } 
         }  
         this.menu.disableMEButtons(
           { 
@@ -1964,9 +1985,9 @@ define([
         );   
         this.menu.editMEInputs(
           {
-            'atomPosX' : pos.x,
-            'atomPosY' : pos.y,
-            'atomPosZ' : pos.z,  
+            'atomPosX' : (pos.x).toFixed(10),
+            'atomPosY' : (pos.y).toFixed(10),
+            'atomPosZ' : (pos.z).toFixed(10),  
             'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
             'ionicIndex' : arg.ionicIndex, 
@@ -2006,11 +2027,24 @@ define([
       var atomPos;
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
-        var x = parseFloat(this.cellParameters.scaleX) ;
-        var y = parseFloat(this.cellParameters.scaleY) ;
-        var z = parseFloat(this.cellParameters.scaleZ) ;
+        var x = this.cellParameters.scaleX  ;
+        var y = this.cellParameters.scaleY  ;
+        var z = this.cellParameters.scaleZ  ;
         pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
-        atomPos = '('+(pos.z/z).toFixed(1)+','+(pos.x/x).toFixed(1)+','+(pos.y/y).toFixed(1)+')';
+  
+        var posXforHex = { x : pos.x };
+
+        pos.x = pos.x/ x ;
+        pos.y = pos.y/ y ;
+        pos.z = pos.z/ z ;
+        
+        if(this.latticeName === 'hexagonal'){ 
+          var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
+          pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
+           
+        } 
+
+        atomPos = '('+(pos.z).toFixed(2)+','+(pos.x).toFixed(2)+','+(pos.y).toFixed(2)+')';
       }  
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
@@ -2510,11 +2544,24 @@ define([
       this.newSphere.fresh = false;
 
       if(this.editorState.atomPosMode === 'relative'){ 
-        var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
-     
-        this.menu.setSliderValue('atomPosX', pos.x/x);
-        this.menu.setSliderValue('atomPosY', pos.y/y);
-        this.menu.setSliderValue('atomPosZ', pos.z/z);
+        
+        var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), { 'revertShearing' : true});
+
+
+        if(this.latticeName === 'hexagonal'){ 
+          var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - pos.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
+            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
+
+          this.menu.setSliderValue('atomPosZ',(pos.z/z ).toFixed(10)); 
+          
+        }
+        else{
+          this.menu.setSliderValue('atomPosZ',  (pos.z/z).toFixed(10)); 
+        }
+         
+        this.menu.setSliderValue('atomPosX',  (pos.x/x).toFixed(10));
+        this.menu.setSliderValue('atomPosY',  (pos.y/y).toFixed(10));
+        
       }
       else{
         this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x);
