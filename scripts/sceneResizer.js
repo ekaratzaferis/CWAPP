@@ -31,7 +31,7 @@ define([
     var _this = this;
  
     if( state === 'oculusCrystal'){
-
+      
       this.crystalRenderer.changeContainerDimensions(fullWidth , fullHeight );
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0);
@@ -80,6 +80,8 @@ define([
       $('#motifPosZCaption').css( "height", 0 ); 
     }
     else if( state === 'motifScreen'){
+      // to be removed
+      jQuery('#motifVisibilityInUC').show();
       this.crystalRenderer.changeContainerDimensions(width/2, height/2);
       this.unitCellRenderer.changeContainerDimensions(width/2, height/2);
       this.motifRenderer.changeContainerDimensions(width, height/2);
@@ -147,7 +149,7 @@ define([
       $('#hudRendererCube').height((0.5 * 1.5 * height) / this.hudDisplayFactor); 
     }
     else{
-      
+      jQuery('#motifVisibilityInUC').hide();
       if(this.ucViewPortActive === false){
         this.unitCellRenderer.changeContainerDimensions(0,0);
       }
