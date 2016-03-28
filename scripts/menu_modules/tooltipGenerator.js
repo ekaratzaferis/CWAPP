@@ -149,7 +149,9 @@ define([
         'snapshotTT':'top',
         'stlTT':'top',
         'searchQuery':'top',
-        'openJSON':'top'
+        'openJSON':'top',
+        'motifAuto':'top',
+        'motifEdge':'top'
     };
     
     var $messageList = undefined;

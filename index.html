@@ -302,6 +302,16 @@
 									<nav class="main-toggle-nav-container">
 										<ul class="list-unstyled">
 											<li class="list-title">Toggle</li>
+                                            <li>
+												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
+                                                    <button id="xyzAxes" class="toggleButton" type="button"></button>
+												</a>
+											</li>
+											<li>
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
+													<button id="abcAxes" class="toggleButton" type="button"></button>
+												</a>
+											</li>
 											<li>
 												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
                                                     <button id="latticePoints" class="toggleButton" type="button"></button>
@@ -317,22 +327,7 @@
                                                     <button id="faces" class="toggleButton" type="button"></button>
 												</a>
 											</li>
-											<li>
-												<a class="control-open toggle_menu lightTheme" data-toggle="tooltip" data-placement="left">
-                                                    <button id="xyzAxes" class="toggleButton" type="button"></button>
-												</a>
-											</li>
-											<li>
-												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
-													<button id="abcAxes" class="toggleButton" type="button"></button>
-												</a>
-											</li>
                                             <li>
-												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
-													<button id="unitCellViewport" class="toggleButton" type="button"></button>
-												</a>
-											</li>
-											<li>
 												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="planes" class="toggleButton" type="button"></button>
 												</a>
@@ -354,12 +349,17 @@
 											</li>
                                             <li>
 												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
+													<button id="highlightTangency" class="toggleButton" type="button"></button>
+												</a>
+											</li>
+                                            <li>
+												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
 													<button id="labelToggle" class="toggleButton" type="button"></button>
 												</a>
 											</li>
                                             <li>
 												<a data-toggle="tooltip" class="control-open toggle_menu lightTheme" data-placement="left">
-													<button id="highlightTangency" class="toggleButton" type="button"></button>
+													<button id="unitCellViewport" class="toggleButton" type="button"></button>
 												</a>
 											</li>
                                             <li>
@@ -877,7 +877,13 @@
 																							</div>
 																						</div>
 																					</div>
-
+                                                                                    <div class="col col-sm-9 padTop15">
+                                                                                        <div class="visualization-block-checkbox">
+                                                                                            <label for="chkbx_visualization_cell_edge" class="smFont" id="motifEdge">
+                                                                                                <input type="checkbox" name='gridCheckButton' id="chkbx_visualization_cell_edge" class="icheckbox"/>&nbsp;&nbsp;Cell Edge
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
 																				</div>
 																			</div>
 																		</div>
@@ -951,8 +957,8 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div class="action action-toggle-visiblity previewAtomChanges">
-																					<a><img src="Images/refresh.png" class="img-responsive" alt=""/></a>
+																				<div class="autoRefresh action action-toggle-visiblity previewAtomChanges">
+																					<a id="motifAuto">aut<img src="Images/refresh.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
