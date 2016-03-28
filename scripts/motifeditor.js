@@ -1761,6 +1761,8 @@ define([
           this.newSphere.blinkMode(false); 
           this.newSphere = undefined ;
           this.dragMode = false; 
+
+
           break;
         case "deleteAtom": 
           this.removeFromUnitCell(this.newSphere.getID());
@@ -1808,6 +1810,7 @@ define([
           this.newSphere.blinkMode(false);
           this.newSphere = undefined ;
           this.dragMode = false; 
+
           break;
         case "deleteAtom":
           this.removeFromUnitCell(this.newSphere.getID());
@@ -1854,7 +1857,7 @@ define([
       }
     });   
   };
-  Motifeditor.prototype.editorState_ = function (arg){
+  Motifeditor.prototype.editorState_ = function (arg){ 
     var _this = this ;
     this.editorState.state = arg.state;
     var atomPos = (arg.atomPos === undefined) ? new THREE.Vector3(0,0,0) : arg.atomPos;
@@ -1862,6 +1865,7 @@ define([
      
     switch(arg.state) {
       case "initial":  
+     
         this.menu.rotAnglesSection(false); 
         this.menu.disableMEButtons(
           {
@@ -1902,23 +1906,12 @@ define([
         ); 
         break;
       case "creating":
+      
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
-      
-          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z), { 'revertShearing' : true});
-
-          var posXforHex = { x : pos.x };
-
-          pos.x = pos.x/ this.cellParameters.scaleX ;
-          pos.y = pos.y/ this.cellParameters.scaleY ;
-          pos.z = pos.z/ this.cellParameters.scaleZ ;
-          
-          if(this.latticeName === 'hexagonal'){ 
-            var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
-            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
-            
-          } 
-             
+           
+          pos =  this.newSphere.uiRelPosition.clone();
+ 
         } 
          
         this.menu.disableMEButtons(
@@ -1929,9 +1922,9 @@ define([
         );  
         this.menu.editMEInputs(
           {
-            'atomPosX' : (pos.x).toFixed(10),
-            'atomPosY' : (pos.y).toFixed(10),
-            'atomPosZ' : (pos.z).toFixed(10), 
+            'atomPosX' : (pos.x).toFixed(2),
+            'atomPosY' : (pos.y).toFixed(2),
+            'atomPosZ' : (pos.z).toFixed(2), 
             'atomColor' : color,  
             'atomOpacity' : 10,   
             'scaleZ' : this.cellParameters.scaleZ,
@@ -1960,22 +1953,12 @@ define([
         );  
         break;
       case "editing": 
+     
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
      
-          pos = this.transformGeneric(new THREE.Vector3(arg.atomPos.x, arg.atomPos.y, arg.atomPos.z), { 'revertShearing' : true});
+          pos =  this.newSphere.uiRelPosition.clone();
 
-          var posXforHex = { x : pos.x };
-
-          pos.x = pos.x/ this.cellParameters.scaleX ;
-          pos.y = pos.y/ this.cellParameters.scaleY ;
-          pos.z = pos.z/ this.cellParameters.scaleZ ;
-          
-          if(this.latticeName === 'hexagonal'){ 
-            var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
-            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
-       
-          } 
         }  
         this.menu.disableMEButtons(
           { 
@@ -1985,9 +1968,9 @@ define([
         );   
         this.menu.editMEInputs(
           {
-            'atomPosX' : (pos.x).toFixed(10),
-            'atomPosY' : (pos.y).toFixed(10),
-            'atomPosZ' : (pos.z).toFixed(10),  
+            'atomPosX' : (pos.x).toFixed(2),
+            'atomPosY' : (pos.y).toFixed(2),
+            'atomPosZ' : (pos.z).toFixed(2),  
             'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
             'ionicIndex' : arg.ionicIndex, 
@@ -2030,26 +2013,44 @@ define([
         var x = this.cellParameters.scaleX  ;
         var y = this.cellParameters.scaleY  ;
         var z = this.cellParameters.scaleZ  ;
-        pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
-  
-        var posXforHex = { x : pos.x };
+        
+        var posForHex = { x : pos.x,  y : pos.y,  z : pos.z };
 
+        pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
+         
         pos.x = pos.x/ x ;
         pos.y = pos.y/ y ;
         pos.z = pos.z/ z ;
         
-        if(this.latticeName === 'hexagonal'){ 
-          var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - posXforHex.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
-          pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
+        if(this.latticeName === 'hexagonal'){  
+
+          // deprecated
+          var v = new THREE.Vector3( z, 0, 0 );
+          var axis = new THREE.Vector3( 0, 1, 0 );
+          var angle = (Math.PI / 3) * 4 ; 
+          v.applyAxisAngle( axis, angle );
            
+          pos.x = posForHex.x/ z ;
+          pos.y = posForHex.y/ y ;
+          pos.z = posForHex.z/ z ;
+          //
+
+          pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
         } 
 
-        atomPos = '('+(pos.z).toFixed(2)+','+(pos.x).toFixed(2)+','+(pos.y).toFixed(2)+')';
+        var xAdj = (Math.floor(pos.x * 100) / 100);
+        var yAdj = (Math.floor(pos.y * 100) / 100);
+        var zAdj = (Math.floor(pos.z * 100) / 100);
+
+        atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
+
+        this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj ); 
       }  
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-        
+       
+
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -2416,7 +2417,7 @@ define([
   Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState, afterConfirm){ 
     var _this = this;
     var doNotDestroy = false;
-    var x = this.cellParameters.scaleX ;
+    var x = this.cellParameters.scaleX;
     var y = this.cellParameters.scaleY;
     var z = this.cellParameters.scaleZ;
 
@@ -2543,32 +2544,23 @@ define([
       this.newSphere = _.find(_this.motifsAtoms, function(atom){ return atom.getID() == which; });
       this.newSphere.fresh = false;
 
-      if(this.editorState.atomPosMode === 'relative'){ 
-        
-        var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), { 'revertShearing' : true});
+      var pos = {x : undefined, y : undefined, z : undefined};
 
+      if(this.editorState.atomPosMode === 'relative'){   
 
-        if(this.latticeName === 'hexagonal'){ 
-          var adjPos = new THREE.Vector3( this.newSphere.object3d.position.x - pos.x, this.newSphere.object3d.position.y, this.newSphere.object3d.position.z) ;
-            pos.z = adjPos.distanceTo(new THREE.Vector3())/this.cellParameters.scaleZ ; 
-
-          this.menu.setSliderValue('atomPosZ',(pos.z/z ).toFixed(10)); 
-          
-        }
-        else{
-          this.menu.setSliderValue('atomPosZ',  (pos.z/z).toFixed(10)); 
-        }
-         
-        this.menu.setSliderValue('atomPosX',  (pos.x/x).toFixed(10));
-        this.menu.setSliderValue('atomPosY',  (pos.y/y).toFixed(10));
-        
+        pos = this.newSphere.uiRelPosition.clone();
+      
       }
       else{
-        this.menu.setSliderValue('atomPosX', this.newSphere.object3d.position.x);
-        this.menu.setSliderValue('atomPosY', this.newSphere.object3d.position.y);
-        this.menu.setSliderValue('atomPosZ', this.newSphere.object3d.position.z);
+        pos.x = this.newSphere.object3d.position.x;
+        pos.y = this.newSphere.object3d.position.y;
+        pos.z = this.newSphere.object3d.position.z;
       }
        
+      this.menu.setSliderValue('atomPosZ',  (pos.z).toFixed(10));  
+      this.menu.setSliderValue('atomPosX',  (pos.x).toFixed(10));
+      this.menu.setSliderValue('atomPosY',  (pos.y).toFixed(10));
+
       _.each(_this.motifsAtoms, function(atom, r) { 
         if(atom.getID() === which) { 
           _this.motifsAtoms.splice(r,1);
@@ -2580,8 +2572,9 @@ define([
       if(this.newSphere.tangentParent !== undefined){
         this.setDraggableAtom({'dragMode': true, 'parentId': this.newSphere.tangentParent}, true);
       } 
-      if(doNotChangeState === undefined){
-        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'ionicIndex' : this.newSphere.ionicIndex,'atomName' : this.newSphere.getName(), 'atomPos' : this.newSphere.object3d.position.clone(), 'opacity' : this.newSphere.opacity*10, 'atomColor' : this.newSphere.color });
+
+      if(doNotChangeState === undefined){ 
+        PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'ionicIndex' : this.newSphere.ionicIndex,'atomName' : this.newSphere.getName(), 'atomPos' : pos, 'opacity' : this.newSphere.opacity*10, 'atomColor' : this.newSphere.color });
       }
     } 
   };

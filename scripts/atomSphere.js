@@ -14,8 +14,7 @@ define([
 ) {
   //var globGeometry = new THREE.SphereGeometry(1,32, 32);
   var globGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
-  
-  // tangency is not used anymore!
+   
   function AtomSphere(visible, position, radius, color, lod, elementName, id, opacity, wireframe, ionicIndex, labeling) {
 
     var _this = this; 
@@ -37,6 +36,7 @@ define([
     this.position = position;  
     this.materialLetter;
     this.labeling = labeling;
+    this.uiRelPosition = position.clone();
  
     this.addMaterial(color, position, AtomMaterialManager.getTexture(this.elementName, this.ionicIndex)) ;
       
