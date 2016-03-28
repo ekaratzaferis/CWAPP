@@ -110,7 +110,10 @@ define([
         // Strech Progress Bar all over the screen //
         refreshDimensions();
         html.interface.progress.wrapper.width(screenWidth);
-        html.interface.progress.wrapper.height(screenHeight);        
+        html.interface.progress.wrapper.height(screenHeight);    
+        
+        // Init Labels //
+        this.showCanvasXYZLabels(false);
     };
     // Refresh canvas and screen width/height //
     function refreshDimensions(){

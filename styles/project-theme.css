@@ -4113,3 +4113,12 @@ margin-left: 200px;
 .cameraCheckbox { padding-top: 7px;}
 .align-left { text-align: left!important; margin-top: -50px;}
 .padLeft9 { padding-left: 9px!important; }
+.padTop15 { padding-top: 17px!important; }
+.smFont {
+    text-transform: uppercase;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12.6px;
+    font-weight: 900;
+    line-height: 16px;
+    color: #6a6a6e;
+}

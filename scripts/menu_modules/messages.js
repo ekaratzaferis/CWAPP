@@ -195,6 +195,8 @@ define([
         planeVisibility: 'Click to SHOW/HIDE selected PLANE',
         directionVisibility: 'Click to SHOW/HIDE selected DIRECTION',
         planeParallel: 'Click to SHOW/HIDE FAMILY OF PARALLEL PLANES',
+        motifEdge: "Click to SHOW/HIDE MOTIF'S CELL EDGES",
+        motifAuto: 'Allow CrystalWalk to automatically position atoms assuming the use of RIGID SPHERES model and selected BRAVAIS LATTICE',
         planeInterception: 'Click to SHOW/HIDE PLANE INTERCEPTED ATOMS'
     };
     
