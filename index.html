@@ -888,7 +888,7 @@
 																			</div>
 																		</div>
 																	</div>
-																	<div class="tangent-properties-container">
+																	<div id="rotAngleSection" class="tangent-properties-container">
 																		<div class="par-properties-container">
 																			<div class="par-properties-wrapper">
 																				<div class="row row-4">
@@ -963,7 +963,7 @@
 																			</div>
 																			<div class="col col-sm-6">
 																				<div class="saveAtomChanges action action-save">
-																					<a><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
+																					<a id="saveAtomChanges"><img src="Images/save-icon-sm.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 
@@ -2201,45 +2201,41 @@
 															</div>
 														</div>
 													</div>
-                                                    <div class="tab-block theme-light lights-block">
+                                                    
+                                                    
+													<div class="tab-block theme-light sound-dark-block">
 														<div class="block-title">
-															<h3>Lights</h3>
+															<h3>SPATIAL SOUND</h3>
 														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="lights" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="ssao" class="btn btn-light">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="shadows" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
+                                                        <div class="sounds-container">
+															<div class="row row-10">
+																<div class="col col-sm-3">
+                                                                    <div class="block-content">
+                                                                        <div class="btn-group" data-toggle="buttons">
+                                                                            <label id="sounds" class="btn btn-light">
+                                                                                <img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+																</div>
+																<div class="col col-sm-6">
+																	<div class="sliders-container density-slider-container">
+																		<div class="slider-group form-group density-slider theme-light">
+																			<div class="slider-control slider-control-sm">
+																				<div class="slider" id="soundSlider"></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
 															</div>
 														</div>
 													</div>
-												</div>
-											</div>
-
-											<div class="tab-content-section-container">
-												<div class="tab-section-title">
-													<h3>visualization tools</h3>
-												</div>
-												<div class="tab-blocks-container">
-                                                    <div class="tab-block theme-dark">
-														<div class="block-title">
-															<h3>Menu Zoom</h3>
+                                                    
+                                                    
+													<div class="tab-block theme-dark color-properties-block">
+                                                        <div class="block-title">
+															<h3>SPATIAL FOG</h3>
 														</div>
-														<div class="block-content zoomOption">
-                                                            <label id="autoZoom" class="btn btn-light">Auto</label>
-                                                            <label id="zoom100" class="btn btn-light active">100%</label>
-                                                            <label id="zoom90" class="btn btn-light">90%</label>
-                                                            <label id="zoom80" class="btn btn-light">80%</label>
-                                                            <label id="zoom70" class="btn btn-light">70%</label>
-														</div>
-													</div>
-													<div class="tab-block theme-light color-properties-block">
 														<div class="color-properties-container">
 															<div class="row row-10">
 																
@@ -2277,34 +2273,44 @@
 															</div>
 														</div>
 													</div>
-													<div class="tab-block theme-dark sound-light-block">
+                                                    
+                                                    <div class="tab-block theme-light lights-block">
 														<div class="block-title">
-															<h3>Sounds</h3>
+															<h3>Lights</h3>
 														</div>
-                                                        <div class="sounds-container">
-															<div class="row row-10">
-																
-																<div class="col col-sm-3">
-                                                                    <div class="block-content">
-                                                                        <div class="btn-group" data-toggle="buttons">
-                                                                            <label id="sounds" class="btn btn-light">
-                                                                                <img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/>
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-																</div>
-																<div class="col col-sm-6">
-																	<div class="sliders-container density-slider-container">
-																		<div class="slider-group form-group density-slider theme-light">
-																			<div class="slider-control slider-control-sm">
-																				<div class="slider" id="soundSlider"></div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
+														<div class="block-content">
+															<div class="btn-group" data-toggle="buttons">
+																<label id="lights" class="btn btn-light active">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
+																</label>
+                                                                <label id="ssao" class="btn btn-light">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
+																</label>
+                                                                <label id="shadows" class="btn btn-light active">
+																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
+																</label>
 															</div>
 														</div>
-														
+													</div>
+												</div>
+											</div> 
+
+											<div class="tab-content-section-container">
+												<div class="tab-section-title">
+													<h3>visualization tools</h3>
+												</div>
+												<div class="tab-blocks-container">
+                                                    <div class="tab-block theme-dark">
+														<div class="block-title">
+															<h3>Menu Zoom</h3>
+														</div>
+														<div class="block-content zoomOption">
+                                                            <label id="autoZoom" class="btn btn-light">Auto</label>
+                                                            <label id="zoom100" class="btn btn-light active">100%</label>
+                                                            <label id="zoom90" class="btn btn-light">90%</label>
+                                                            <label id="zoom80" class="btn btn-light">80%</label>
+                                                            <label id="zoom70" class="btn btn-light">70%</label>
+														</div>
 													</div>
 													<div class="tab-block theme-light sound-light-block">
 														<div class="row row-10">

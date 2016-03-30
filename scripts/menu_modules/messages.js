@@ -197,7 +197,17 @@ define([
         planeParallel: 'Click to SHOW/HIDE FAMILY OF PARALLEL PLANES',
         motifEdge: "Click to SHOW/HIDE MOTIF'S CELL EDGES",
         motifAuto: 'Allow CrystalWalk to automatically position atoms assuming the use of RIGID SPHERES model and selected BRAVAIS LATTICE',
-        planeInterception: 'Click to SHOW/HIDE PLANE INTERCEPTED ATOMS'
+        planeInterception: 'Click to SHOW/HIDE PLANE INTERCEPTED ATOMS',
+        elementSymbolContainer: "Click to CHANGE selected MOTIF'S ATOM CHEMICAL ELEMENT or ION",
+        atomVisibility: "Click to SHOW/HIDE selected MOTIF'S ATOM",
+        saveAtomChanges: "Click to SAVE selected MOTIF'S ATOM settings and implement changes in the whole CRYSTAL",
+        lockCameraIcon: "Click to ENABLE/DISABLE SYNCING UNIT CELL / CRYSTAL CAMERAS",
+        atomTangent: "Click to enable TANGENT MODE and set selected MOTIF'S ATOM POSITION relative to the ABOVE. Coordinates are given in θ, φ and r relative to spheric coordinates.",
+        rotAngleSection: "Enter  θ, φ and r relative to the ABOVE MOTIF'S ATOM POSITION spheric coordinates.",
+        cameraCheckbox: "Click to SAVE CAMERA POSITION",
+        reset: "Click to RESET THE CRYSTALWALK APPLICATION",
+        printMode: "Click to SET PRINT MODE PRESET",
+        screenMode: "Click to SET SCREEN MODE PRESET"
     };
     
     // Contructor //

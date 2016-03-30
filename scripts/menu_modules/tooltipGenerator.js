@@ -151,7 +151,13 @@ define([
         'searchQuery':'top',
         'openJSON':'top',
         'motifAuto':'top',
-        'motifEdge':'top'
+        'motifEdge':'top',
+        'saveAtomChanges':'top',
+        'lockCameraIcon':'top',
+        'rotAngleSection':'top',
+        'reset':'top',
+        'printMode':'top',
+        'screenMode':'top'
     };
     
     var $messageList = undefined;
@@ -172,6 +178,8 @@ define([
         // Check-Boxes
         tooltipOnHover({ other: jQuery('#chkbx_visualization_cell_edge').parent().parent(), message: $messageList.getMessage('cellEdge'), placement: 'top' });
         tooltipOnHover({ other: jQuery('#chkbx_visualization_cell_face').parent().parent(), message: $messageList.getMessage('cellFace'), placement: 'top' });
+        //tooltipOnHover({ other: jQuery('#cameraCheckbox').parent().parent(), message: $messageList.getMessage('cameraCheckbox'), placement: 'top' });
+        tooltipOnHover({ other: jQuery('#elementSymbolContainer').find('a'), message: $messageList.getMessage('elementSymbolContainer'), placement: 'top' });
         
         // Canvas Tooltip for system messages //
         $canvasTooltip.tooltip({
