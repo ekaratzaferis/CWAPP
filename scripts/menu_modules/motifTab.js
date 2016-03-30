@@ -802,6 +802,20 @@ define([
         
         // Handlers //
         if ( (argument['action']==='save') || (argument['action']==='edit') ){
+            
+            // Tooltips //
+            $tooltipGenerator.addOnHoverTooltip({
+                other: constructor.current.find('.atomButton'),
+                message: $messages.getMessage('atomVisibility'),
+                placement: 'top'
+            });
+            
+            $tooltipGenerator.addOnHoverTooltip({
+                other: constructor.current.find('.btn-tangent'),
+                message: $messages.getMessage('atomTangent'),
+                placement: 'top'
+            });
+            
             // Tangent //
             constructor.current.find('.btn-tangent').on('click', function(){
                 tangent(argument['id']);
