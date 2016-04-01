@@ -196,7 +196,7 @@ define([
         directionVisibility: 'Click to SHOW/HIDE selected DIRECTION',
         planeParallel: 'Click to SHOW/HIDE FAMILY OF PARALLEL PLANES',
         motifEdge: "Click to SHOW/HIDE MOTIF'S CELL EDGES",
-        motifAuto: 'Allow CrystalWalk to automatically position atoms assuming the use of RIGID SPHERES model and selected BRAVAIS LATTICE',
+        motifAuto: "Click to implement MOTIF'S ATOM UNIT CELL changes in the whole CRYSTAL",
         planeInterception: 'Click to SHOW/HIDE PLANE INTERCEPTED ATOMS',
         elementSymbolContainer: "Click to CHANGE selected MOTIF'S ATOM CHEMICAL ELEMENT or ION",
         atomVisibility: "Click to SHOW/HIDE selected MOTIF'S ATOM",
@@ -207,7 +207,8 @@ define([
         cameraCheckbox: "Click to SAVE CAMERA POSITION",
         reset: "Click to RESET THE CRYSTALWALK APPLICATION",
         printMode: "Click to SET PRINT MODE PRESET",
-        screenMode: "Click to SET SCREEN MODE PRESET"
+        screenMode: "Click to SET SCREEN MODE PRESET",
+        swapBtn: "CLICK TO SWITCH BETWEEN UNIT CELL AND MOTIF VIEWS"
     };
     
     // Contructor //

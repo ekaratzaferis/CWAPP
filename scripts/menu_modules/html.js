@@ -119,6 +119,7 @@ define([
             opacitySlider: jQuery('#atomOpacitySlider'),
             tangentR: jQuery('#tangentR'),
             tangency: jQuery('#tangency'),
+            atomPositioningAuto: jQuery('#atomPositioningAuto'),
             atomPositioningXYZ: jQuery('#atomPositioningXYZ'),
             atomPositioningABC: jQuery('#atomPositioningABC')
         };
@@ -188,6 +189,7 @@ define([
             distortionOff: jQuery('#distortionOff'),
             anaglyph: jQuery('#anaglyph'),
             oculus: jQuery('#oculus'),
+            oculusTracker: jQuery('#oculusTracker'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop'),
             anaglyphCell: jQuery('#anaglyphCell'),
@@ -200,13 +202,11 @@ define([
         };
         this.visual.stereoscopic = {
             anaglyph: jQuery('#anaglyph'),
-            oculus: jQuery('#oculus'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop')
         };
         this.visual.stereoscopicCell = {
             anaglyphCell: jQuery('#anaglyphCell'),
-            oculusCell: jQuery('#oculusCell'),
             sideBySide3DCell: jQuery('#3DsideBySideCell'),
             onTop3DCell: jQuery('#3DonTopCell')
         };

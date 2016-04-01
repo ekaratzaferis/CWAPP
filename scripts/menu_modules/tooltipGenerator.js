@@ -157,7 +157,8 @@ define([
         'rotAngleSection':'top',
         'reset':'top',
         'printMode':'top',
-        'screenMode':'top'
+        'screenMode':'top',
+        'swapBtn':'bottom'
     };
     
     var $messageList = undefined;

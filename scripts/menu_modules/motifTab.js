@@ -424,6 +424,18 @@ define([
                 });
             }
         });
+        html.motif.panel.atomPositioningAuto.on('click', function() {
+            var value = undefined;
+            if (!(html.motif.panel.atomPositioningAuto.hasClass('disabled'))){ 
+                (html.motif.panel.atomPositioningAuto.hasClass('buttonPressed')) ? value = false : value = true;
+                $setUIValue.setValue({
+                    atomPositioningAuto:{
+                        publish: {autoPos:value},
+                        value: value
+                    }
+                });
+            }
+        });
         html.motif.other.atomTable.find('tbody').sortable({
             appendTo: document.body,
             axis: 'y',
@@ -523,6 +535,9 @@ define([
                 value: true
             },
             atomPositioningABC:{
+                value: true
+            },
+            atomPositioningAuto:{
                 value: true
             },
             saveAtomChanges:{

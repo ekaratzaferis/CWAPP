@@ -148,10 +148,10 @@ define([
         STORE_PROJECT: 'menu.store_project',
         ANAGLYPH_EFFECT_CRYSTAL: 'menu.anaglyph_effect_crystal',
         OCULUS_CRYSTAL: 'menu.ocuclus_crystal',
+        OCULUS_CRYSTAL_TRACKER: 'menu.ocuclus_crystal',
         SIDE_BY_SIDE_3D_CRYSTAL: 'menu.side_by_side_3d_crystal',
         ON_TOP_3D_CRYSTAL: 'menu.on_top_3d_crystal',
         ANAGLYPH_EFFECT_UNIT_CELL: 'menu.anaglyph_effect_unit_cell',
-        OCULUS_UNIT_CELL: 'menu.ocuclus_unit_cell',
         SIDE_BY_SIDE_3D_UNIT_CELL: 'menu.side_by_side_3d_unit_cell',
         ON_TOP_3D_UNIT_CELL: 'menu.on_top_3d_unit_cell',
         SET_PADLOCK: 'menu.set_padlock',
@@ -872,6 +872,9 @@ define([
     };
     Menu.prototype.setOculusCrystal = function(callback) { 
         PubSub.subscribe(events.OCULUS_CRYSTAL, callback);
+    };
+    Menu.prototype.setOculusCrystalTracker = function(callback) { 
+        PubSub.subscribe(events.OCULUS_CRYSTAL_TRACKER, callback);
     };
     Menu.prototype.setOculusUnitCell = function(callback) { 
         PubSub.subscribe(events.OCULUS_UNIT_CELL, callback);
