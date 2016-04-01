@@ -351,7 +351,7 @@ define([
                 if (html.visual.stereoscopicCell.anaglyphCell.hasClass('active')) return true;
                 else return false;
             }
-            case 'oculusCell':{
+            case 'oculusCell':{ return false;
                 if (html.visual.stereoscopicCell.oculusCell.hasClass('active')) return true;
                 else return false;
             }

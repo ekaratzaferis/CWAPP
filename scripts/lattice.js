@@ -2783,6 +2783,10 @@ define([
         _.each(this.grids, function(grid) {
           grid.grid.setVisible(_this.gradeChoice.grid);
         });
+
+        _.each(this.motifSceneGrids, function(grid) {
+          grid.grid.setVisible(_this.gradeChoice.grid);
+        });
        
     }; 
   };
@@ -2800,6 +2804,11 @@ define([
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
 
+    _.each(this.motifSceneGrids, function(grid) { 
+      grid.grid.setRadius(_this.gradeParameters.radius);
+      grid.grid.setColor( _this.gradeParameters.cylinderColor); 
+    });
+ 
     _.each(this.faces, function(face) {
       face.setOpacity(_this.gradeParameters.faceOpacity);
       face.setColor( _this.gradeParameters.faceColor);

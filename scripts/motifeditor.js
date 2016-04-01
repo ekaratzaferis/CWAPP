@@ -850,7 +850,7 @@ define([
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
     
     var scalingTo ;
-
+    console.log(9);
     if(aScale !== undefined) { 
       this.cellParameters.scaleZ = aScale ;   
       scalingTo = 'aScale';
@@ -979,10 +979,7 @@ define([
 
       this.configureCellPoints('manual');
  
-    }
-    else{
-       
-    }
+    } 
 
     if(this.latticeName === 'hexagonal'){  
 
@@ -1004,20 +1001,20 @@ define([
     
     var aScale, bScale, cScale;
 
+    var scalingTo ;
+  
     if(par.scaleZ !== undefined) {
-      aScale = parseFloat(par.scaleZ) ; 
+      aScale = parseFloat(par.scaleZ) ;  
     } 
 
     if(par.scaleX !== undefined) {
-      bScale = parseFloat(par.scaleX) ; 
+      bScale = parseFloat(par.scaleX) ;  
     } 
 
     if(par.scaleY !== undefined) {
-      cScale = parseFloat(par.scaleY) ; 
+      cScale = parseFloat(par.scaleY) ;  
     } 
- 
-    var storeInps = {aScale : aScale, bScale : bScale, cScale : cScale};
-
+   
     if(this.editorState.atomPosMode === 'relative'){ 
       this.scaleRelative(par);
       return;
@@ -1029,9 +1026,42 @@ define([
       return;
     }
 
+    if(par.scaleZ !== undefined) { 
+      scalingTo = 'aScale';
+      this.menu.setLatticeCollision({
+        scaleY: false, 
+        scaleX: false
+      });
+      this.snapData.snapVal['aScale'] = undefined;
+    } 
+
+    if(par.scaleX !== undefined) { 
+      scalingTo = 'bScale';
+      this.menu.setLatticeCollision({
+        scaleY: false, 
+        scaleZ: false
+      });
+      this.snapData.snapVal['bScale'] = undefined;
+    } 
+
+    if(par.scaleY !== undefined) { 
+      scalingTo = 'cScale';
+      this.menu.setLatticeCollision({
+        scaleX: false, 
+        scaleZ: false
+      });
+      this.snapData.snapVal['cScale'] = undefined;
+    } 
+
     var moreCollisions = true;
 
     this.cellMutex = false ;
+
+    var storedScales = {
+      aScale : this.cellParameters.scaleZ, 
+      bScale : this.cellParameters.scaleX, 
+      cScale : this.cellParameters.scaleY
+    };
 
     var axis = 'none' ;
     var collisionHappened = false ;
@@ -1057,6 +1087,8 @@ define([
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
             if(this.globalTangency === true) this.menu.setSliderValue("scaleZ", offset); 
+            this.snapData.snapVal['aScale'] = offset;
+            this.snapData.collision['aScale'] = false;
           } 
         }
         aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
@@ -1080,6 +1112,8 @@ define([
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
             if(this.globalTangency === true) this.menu.setSliderValue("scaleX", offset); 
+            this.snapData.snapVal['bScale'] = offset;
+            this.snapData.collision['bScale'] = false;
           }
            
         }
@@ -1101,7 +1135,9 @@ define([
             }
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
-            if(this.globalTangency === true) this.menu.setSliderValue("scaleY", offset); 
+            if(this.globalTangency === true) this.menu.setSliderValue("scaleY", offset);
+            this.snapData.snapVal['cScale'] = offset;
+            this.snapData.collision['cScale'] = false; 
           }
         }
         cScale = this.cellParameters.scaleY ; // for recurrency of collision checks
@@ -1112,22 +1148,22 @@ define([
       moreCollisions = this.checkForMoreColls(); 
       counterHelper++;  
     } 
-     
+    
+
+    this.snapData.collision[scalingTo] = collisionHappened;
+    
+    console.log(this.snapData.snapVal);
+
     if(collisionHappened === true ){
-       
-      if(this.globalTangency === false && reducing === undefined){
-        if(aScale !== undefined){ 
-          this.cellParameters.scaleZ = aScale;
-        }
-        else if(bScale !== undefined){
-          this.cellParameters.scaleX = bScale;
-        }
-        else if(cScale !== undefined){
-          this.cellParameters.scaleY = cScale;
-        }
-        this.configureCellPoints('manual');
-      }
+        
+      this.cellParameters.scaleZ = storedScales.aScale;
+      this.cellParameters.scaleY = storedScales.cScale;
+      this.cellParameters.scaleX = storedScales.bScale;
+
+      this.configureCellPoints('manual');
+ 
     }
+
      
     if(this.latticeSystem === 'hexagonal' && this.latticeType === 'hexagonal'){  
 
@@ -1140,7 +1176,13 @@ define([
         this.menu.setSliderValue("scaleZ", bScale);  
       }
     }
-      
+    
+    if(volumeF !== undefined || reducing !== undefined){
+      this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
+      this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
+
+    }
+
     ///////////////////////
     this.cellMutex = true ;
     ///////////////////////   
@@ -6125,6 +6167,9 @@ define([
       return;
     }
     
+    this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
+    this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
+
     if(this.padlock === false) {  
 
       this.menu.setMotifPadlock('unlock');

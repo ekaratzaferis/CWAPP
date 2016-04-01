@@ -53,5 +53,5 @@ List with Ideas
     3. Miller object use sliders for indexes
     4. all screens resizable 
     5. give user a point to move light 
-        
- 
+    6. 'loader' besides url textbox while json is being sent to DB and app is waiting for url
+    7. default name in saved project

@@ -279,6 +279,7 @@ define([
       }
       else if(this.stereoEffectActive){  
         this.stereoEffect.render( this.explorer.object3d, this.cameras[0] );
+
       }
       else{  
         if(this.container === 'crystalRenderer') { 
@@ -298,17 +299,7 @@ define([
           }
           else{
             this.renderer.render( this.explorer.object3d, this.cameras[0], undefined, true);
-          }
-
-          if(this.doll !== undefined && this.enabledRenders['doll'] === true){  
-            this.renderer.clearDepth(); // celar depth buffer to have gear bar and doll on top
-            this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
-            this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
-            this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
-            this.dollCamera.updateProjectionMatrix();  
-            this.renderer.render( this.dollScene, this.dollCamera);        
-          }
-          
+          } 
         }
         else if(this.container === 'unitCellRenderer') {  
           if(this.ssao === true && this.composer !== undefined){  
@@ -330,6 +321,15 @@ define([
         }
       } 
 
+      if(this.doll !== undefined && this.enabledRenders['doll'] === true){  
+        this.renderer.clearDepth(); // clear depth buffer to have gear bar and doll on top
+        this.dollCamera.aspect = this.containerWidth/this.containerHeight;   
+        this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
+        this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
+        this.dollCamera.updateProjectionMatrix();  
+        this.renderer.render( this.dollScene, this.dollCamera);        
+      }
+          
       // hud arrows
       if(this.hudCamera !== undefined && this.enabledRenders['compass'] === true ){  
         this.renderer.clearDepth(); 

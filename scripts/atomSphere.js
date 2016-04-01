@@ -71,8 +71,7 @@ define([
          this.materialLetter
       ]; 
     }
- 
-
+  
     var sphere = THREE.SceneUtils.createMultiMaterialObject( globGeometries[this.lod], this.materials);
     sphere.name = 'atom';
     sphere.scale.set(this.radius, this.radius, this.radius);

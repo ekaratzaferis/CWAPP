@@ -111,10 +111,7 @@ define([
 
     this.rePosition();
   
-  }; 
-  function createGearBarSlider(){
-
-  };
+  };  
   function createGearBarSlider(){
 
     var obj = new THREE.Object3D();
@@ -161,10 +158,10 @@ define([
 
     // line 
     var lineG = new THREE.Geometry();
-    var Lv1 = new THREE.Vector3(-0.15,  0,  0);
-    var Lv2 = new THREE.Vector3(-0.15, -7.4,  0); 
-    var Lv3 = new THREE.Vector3( 0.15, -7.4,  0);  
-    var Lv4 = new THREE.Vector3( 0.15,  0,  0);  
+    var Lv1 = new THREE.Vector3(-0.15,  0,  -0.000001);
+    var Lv2 = new THREE.Vector3(-0.15, -7.4,  -0.000001); 
+    var Lv3 = new THREE.Vector3( 0.15, -7.4,  -0.000001);  
+    var Lv4 = new THREE.Vector3( 0.15,  0,  -0.000001);  
      
     lineG.vertices.push(Lv1);
     lineG.vertices.push(Lv2);
@@ -275,7 +272,7 @@ define([
   function createLevels(){
 
     var obj = new THREE.Object3D();
-
+     
     // levels 
     for (var i = 0; i < 6; i++) {
  
