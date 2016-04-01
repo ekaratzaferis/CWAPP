@@ -847,6 +847,9 @@ define([
                 }
                 break;
             }
+            case 'atomPositioningAuto':{
+                //////////////////////////
+            }
             case 'lockCameras':{
                 if (value === true) {
                     html.motif.other.lockCameras.addClass('active');
@@ -1034,11 +1037,21 @@ define([
                 break;
             }
             case 'oculus':{
-                if (value === true){
-                    _.each(html.visual.stereoscopic, function($param, a) { $param.removeClass('active');});
-                    html.visual.stereoscopic.oculus.addClass('active');
+                if (value === false) {
+                    if (html.visual.parameters.oculus.hasClass('active')) html.visual.parameters.oculus.button('toggle');
                 }
-                else html.visual.stereoscopic.oculus.removeClass('active');
+                else {
+                    if (!(html.visual.parameters.oculus.hasClass('active'))) html.visual.parameters.oculus.button('toggle');   
+                }
+                break;
+            }
+            case 'oculusTracker':{
+                if (value === false) {
+                    if (html.visual.parameters.oculusTracker.hasClass('active')) html.visual.parameters.oculusTracker.button('toggle');
+                }
+                else {
+                    if (!(html.visual.oculusTracker.oculus.hasClass('active'))) html.visual.parameters.oculusTracker.button('toggle');   
+                }
                 break;
             }
             case 'sideBySide':{
@@ -1063,14 +1076,6 @@ define([
                     html.visual.stereoscopicCell.anaglyphCell.addClass('active');
                 }
                 else html.visual.stereoscopicCell.anaglyphCell.removeClass('active');
-                break;
-            }
-            case 'oculusCell':{
-                if (value === true){
-                    _.each(html.visual.stereoscopicCell, function($param, a) { $param.removeClass('active');});
-                    html.visual.stereoscopicCell.oculusCell.addClass('active');
-                }
-                else html.visual.stereoscopicCell.oculusCell.removeClass('active');
                 break;
             }
             case 'sideBySideCell':{
@@ -1456,10 +1461,10 @@ define([
                 takeAction('distortionOff',true);
                 takeAction('anaglyph',false);
                 takeAction('oculus',false);
+                takeAction('oculusTracker',false);
                 takeAction('sideBySide',false);
                 takeAction('onTop',false);
                 takeAction('anaglyphCell',false);
-                takeAction('oculusCell',false);
                 takeAction('sideBySideCell',false);
                 takeAction('onTopCell',false);
                 takeAction('crystalCamTargetOn',true);
@@ -1637,6 +1642,10 @@ define([
                 break;
             }
             case 'atomPositioningABC':{
+                PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, value);
+                break;
+            }
+            case 'atomPositioningAuto':{
                 PubSub.publish(events.CHANGE_ATOM_POSITIONING_MODE, value);
                 break;
             }
@@ -1912,6 +1921,10 @@ define([
                 PubSub.publish(events.OCULUS_CRYSTAL, value);
                 break;
             }
+            case 'oculusTracker':{
+                PubSub.publish(events.OCULUS_CRYSTAL_TRACKER, value);
+                break;
+            }
             case 'sideBySide':{
                 PubSub.publish(events.SIDE_BY_SIDE_3D_CRYSTAL, value);
                 break;
@@ -1922,10 +1935,6 @@ define([
             }
             case 'anaglyphCell':{
                 PubSub.publish(events.ANAGLYPH_EFFECT_UNIT_CELL, value);
-                break;
-            }
-            case 'oculusCell':{
-                PubSub.publish(events.OCULUS_UNIT_CELL, value);
                 break;
             }
             case 'sideBySideCell':{

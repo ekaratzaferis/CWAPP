@@ -321,6 +321,17 @@ define([
                 }
                 break;
             }
+            case 'atomPositioningAuto':{
+                if (value === true){
+                    html.motif.panel.atomPositioningAuto.addClass('disabled');
+                    html.motif.panel.atomPositioningAuto.parent().addClass('disabled');
+                }
+                else {
+                    html.motif.panel.atomPositioningAuto.removeClass('disabled');
+                    html.motif.panel.atomPositioningAuto.parent().removeClass('disabled');
+                }
+                break;
+            }
             case 'saveAtomChanges':{
                 if (value === true) html.motif.actions.save.addClass('disabled');
                 else html.motif.actions.save.removeClass('disabled');

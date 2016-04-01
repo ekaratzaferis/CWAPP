@@ -746,12 +746,17 @@
 																		<div class="section-title">
 																			<h3>Coordinates</h3>
 																		</div>
+																	</div>
+                                                                    <div class="section-head-container">
 																		<div class="section-head-action-btns-container">
-																			<div class="btn-action">
-																				<a id="atomPositioningXYZ" class="btn btn-purple-light">XYZ</a>
+                                                                            <div class="btn-action">
+																				<a id="atomPositioningAuto" class="btn btn-purple-light">AUTO</a>
 																			</div>
 																			<div class="btn-action">
-																				<a id="atomPositioningABC" class="btn btn-light">ABC</a>
+																				<a id="atomPositioningXYZ" class="btn btn-light">VECTORIAL</a>
+																			</div>
+																			<div class="btn-action">
+																				<a id="atomPositioningABC" class="btn btn-light">ABSOLUT</a>
 																			</div>
 																		</div>
 																	</div>
@@ -957,8 +962,8 @@
 																		<div class="row row-1">
 																			
 																			<div class="col col-sm-6">
-																				<div class="autoRefresh action action-toggle-visiblity previewAtomChanges">
-																					<a id="motifAuto">aut<img src="Images/refresh.png" class="img-responsive" alt=""/></a>
+																				<div class="action action-toggle-visiblity previewAtomChanges">
+																					<a id="motifAuto"><img src="Images/refresh.png" class="img-responsive" alt=""/></a>
 																				</div>
 																			</div>
 																			<div class="col col-sm-6">
@@ -2081,10 +2086,22 @@
 																	<img src="Images/render-switch-icon-04.png" class="img-responsive" alt=""/>
 																	<img src="Images/render-switch-icon-04-hover.png" class="img-responsive hover" alt=""/>
 																</label>
+                                                                <br />
+                                                                <label id="lights" class="margTop10 btn btn-light active">
+																	<img src="Images/lights-icon.png" class="img-responsive" alt=""/>
+                                                                    <img src="Images/lights-icon-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="ssao" class="margTop10 btn btn-light">
+																	<img src="Images/ssao.png" class="img-responsive" alt=""/>
+                                                                    <img src="Images/ssao-hover.png" class="img-responsive hover" alt=""/>
+																</label>
+                                                                <label id="shadows" class="margTop10 btn btn-light active">
+																	<img src="Images/ambient.png" class="img-responsive" alt=""/>
+                                                                    <img src="Images/ambient-hover.png" class="img-responsive hover" alt=""/>
+																</label>
 															</div>
 														</div>
 													</div>
-                                                    
                                                 </div>
                                                 
                                                 <div class="tab-section-title">
@@ -2145,10 +2162,6 @@
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label id="oculus" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
                                                                 <label id="3DsideBySide" class="btn btn-light">
 																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
 																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
@@ -2172,10 +2185,6 @@
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-																<label id="oculusCell" class="btn btn-light">
-																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
-																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
-																</label>
                                                                 <label id="3DsideBySideCell" class="btn btn-light">
 																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
 																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
@@ -2198,8 +2207,16 @@
 																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
 																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
 																</a>
+                                                                <a id="oculus" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</a>
+                                                                <a id="oculusTracker" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
+																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
+																</a>
 															</div>
-														</div>
+                                                        </div>
 													</div>
                                                     
                                                     
@@ -2270,25 +2287,6 @@
 																	</div>
 																</div>
 
-															</div>
-														</div>
-													</div>
-                                                    
-                                                    <div class="tab-block theme-light lights-block">
-														<div class="block-title">
-															<h3>Lights</h3>
-														</div>
-														<div class="block-content">
-															<div class="btn-group" data-toggle="buttons">
-																<label id="lights" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="ssao" class="btn btn-light">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
-                                                                <label id="shadows" class="btn btn-light active">
-																	<img src="Images/lights-icon-hover.png" class="img-responsive" alt=""/>
-																</label>
 															</div>
 														</div>
 													</div>
