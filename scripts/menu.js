@@ -179,7 +179,8 @@ define([
         LOW_REND_QUALITY: 'menu.low_rend_quality',
         MEDIUM_REND_QUALITY: 'menu.medium_rend_quality',
         HIGH_REND_QUALITY: 'menu.high_rend_quality',
-        LOD: 'menu.lod'
+        LOD: 'menu.lod',
+        MUTE_SOUND: 'menu.mute_sound'
     };
             
     function Menu() {
@@ -890,6 +891,9 @@ define([
     };
     Menu.prototype.onSoundsSet = function(callback) { 
         PubSub.subscribe(events.SET_SOUNDS, callback);
+    };
+    Menu.prototype.onSoundsMute = function(callback) { 
+        PubSub.subscribe(events.MUTE_SOUND, callback);
     };
     Menu.prototype.onLightsSet = function(callback) { 
         PubSub.subscribe(events.SET_LIGHTS, callback);

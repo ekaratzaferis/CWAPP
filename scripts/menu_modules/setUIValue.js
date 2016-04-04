@@ -1253,10 +1253,12 @@ define([
                 if (value === true) {
                     html.visual.sound.sounds.addClass('active');
                     takeAction('soundSliderToggle',true);
+                    takeAction('muteToggle',true);
                 }
                 else {
                     html.visual.sound.sounds.removeClass('active');
                     takeAction('soundSliderToggle',false);
+                    takeAction('muteToggle',false);
                 }
                 break;
             }
@@ -1265,8 +1267,22 @@ define([
                 else html.visual.sound.soundSlider.slider('disable');
                 break;
             }
+            case 'muteToggle':{
+                if (value === true) html.visual.sound.mute.removeClass('disable');
+                else html.visual.sound.mute.addClass('disable');
+                break;
+            }
+            case 'muteSound':{
+                if (value === true) {
+                    html.visual.sound.mute.addClass('active');
+                    html.visual.sound.soundSlider.slider('value',0);
+                }
+                else html.visual.sound.mute.removeClass('active');
+                break;
+            }
             case 'soundSlider':{
                 html.visual.sound.soundSlider.slider('value',value);
+                if (value > 0) takeAction('muteSound',false);
                 break;
             }
             case 'lodQuality':{
@@ -2007,6 +2023,10 @@ define([
             }
             case 'sounds': {
                 PubSub.publish(events.SET_SOUNDS, value);
+                break;
+            }
+            case 'muteSound': {
+                PubSub.publish(events.MUTE_SOUND, value);
                 break;
             }
             case 'soundVolume': {

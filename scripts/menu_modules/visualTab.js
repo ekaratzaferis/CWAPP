@@ -26,6 +26,7 @@ define([
     var argument = undefined;
     var publish = undefined;
     var html = undefined;
+    var tempVolume = 70;
     
     // Contructor //
     function visualTab(argument) {
@@ -376,6 +377,25 @@ define([
             }
         });
         // Sound //
+        html.visual.sound.mute.on('click', function(){
+            (html.visual.sound.mute.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                muteSound:{
+                    publish:{muteSound:value},
+                    value:value
+                }
+            }); 
+            if (value === false) {
+                $setUI.setValue({
+                    soundVolume:{
+                        publish:{soundVolume: tempVolume}
+                    },
+                    soundSlider:{
+                        value: tempVolume
+                    }
+                });
+            }
+        });
         html.visual.sound.sounds.on('click', function(){
             (html.visual.sound.sounds.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
@@ -392,14 +412,28 @@ define([
             step: 1,
             animate: true,
             slide: function(event, ui){
+                tempVolume = ui.value;
                 $setUI.setValue({
                     soundVolume:{
                         publish:{soundVolume: ui.value}
                     }
                 });
+                console.log(ui.value);
+                if (ui.value > 0) {
+                    $setUI.setValue({
+                        muteSound:{
+                            value:false
+                        }
+                    });
+                }
             }
         });
         html.visual.sound.soundSlider.slider('disable');
+        $disableUIElement.disableElement({
+            muteSound: {
+                value: true
+            }
+        });
         _.each(html.visual.tools.colorPickers, function($parameter, k) {
             $parameter.spectrum({
                 color: "#ffffff",
