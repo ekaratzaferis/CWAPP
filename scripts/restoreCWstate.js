@@ -15,7 +15,7 @@ define([
   AtomSphere
 ) {
   
-  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod )  {  
+  function RestoreCWstate( menu, lattice, motifEditor, orbitCrystal , orbitUnitCell, motifXcam,motifYcam,motifZcam, crystalRenderer, unitCellRenderer,crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod, dollGearBarME )  {  
     this.menu = menu ;
     this.lattice = lattice ;
     this.motifEditor = motifEditor ;
@@ -36,6 +36,7 @@ define([
     this.atomMaterialManager = atomMaterialManager;
     this.gearTour = gearTour;
     this.dollEditor = dollEditor; 
+    this.dollGearBarME = dollGearBarME; 
     this.lod = lod; 
     this.cwObj; 
   }; 
@@ -408,9 +409,26 @@ define([
     this.unitCellRenderer.initAnaglyph({anaglyph : false} /*visualTab.visualParameters.stereoscopicEffect.cellAnaglyph*/ ); 
     
     var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
+
     this.gearTour.crystalHasChanged = true;
     this.gearTour.state = this.cwObj.system.latticeParams.gearTourState ;
-    this.dollEditor.gearBarSlider.position.y = yPosGearSlider[this.gearTour.state - 1] ;
+    
+
+    if(this.cwObj.system.latticeParams.walkStep>3){
+      this.dollEditor.levelLabels[1].allowed = true;  
+      this.dollEditor.levelLabels[2].allowed = true;  
+      this.dollEditor.levelLabels[3].allowed = true;
+      this.dollEditor.levelLabels[4].allowed = true;
+      this.dollEditor.levelLabels[5].allowed = true;
+      this.dollGearBarME.levelClicked(5);
+    }
+    else{
+      this.dollEditor.levelLabels[1].allowed = true; 
+      this.dollGearBarME.levelClicked(this.cwObj.system.latticeParams.walkStep-1);
+    }
+    
+    this.dollGearBarME.setWalkStep(this.cwObj.system.latticeParams.walkStep) ;
+ 
 
     if(this.gearTour.state > 2){
       for (var i = 0; i <= 5; i++) {

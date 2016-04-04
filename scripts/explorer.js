@@ -199,8 +199,8 @@ define([
     this.light.shadowCamera.far = max * 6;
     this.light.shadowCamera.left = -max * 3;
     this.light.shadowCamera.right = max * 3 ;
-    this.light.shadowCamera.bottom = -max * 3;
-    this.light.shadowCamera.top = max * 3;  
+    this.light.shadowCamera.bottom = -max * 4;
+    this.light.shadowCamera.top = max * 4;  
    
     this.light.shadowCamera.updateProjectionMatrix();
 

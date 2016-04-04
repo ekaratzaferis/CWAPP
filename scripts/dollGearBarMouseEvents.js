@@ -206,15 +206,7 @@ define([
       else if(intersects[0].object.name === 0 || intersects[0].object.name === 1 || intersects[0].object.name === 2 || intersects[0].object.name === 3 || intersects[0].object.name === 4 || intersects[0].object.name === 5 ){ 
         clickedOnMe = true;
         
-        if(this.dollEditor.levelLabels[intersects[0].object.name].allowed === true){ 
-          this.walkTourSet(intersects[0].object.name);
-          this.dollEditor.gearBarSlider.position.y = yPosGearSlider[intersects[0].object.name];
-          this.dollEditor.gearState = intersects[0].object.name + 1 ;
-          this.gearTour.setState(this.dollEditor.gearState);
-        }
-        if(this.soundMachine.procced) {
-          this.soundMachine.storePlay('dollHolder'); 
-        }
+        this.levelClicked(intersects[0].object.name);
         
       }  
       else if(intersects[0].object.name === 'doll'){   
@@ -230,11 +222,24 @@ define([
     return clickedOnMe; 
   }; 
   
+  DollGearBarMouseEvents.prototype.levelClicked = function(num){ 
+    console.log(num);
+    if(this.dollEditor.levelLabels[num].allowed === true){ 
+          
+      this.walkTourSet(num);
+      this.dollEditor.gearBarSlider.position.y = yPosGearSlider[num];
+      this.dollEditor.gearState = num + 1 ;
+      this.gearTour.setState(this.dollEditor.gearState);
+    }
+    if(this.soundMachine.procced) {
+      this.soundMachine.storePlay('dollHolder'); 
+    }
+  }
   DollGearBarMouseEvents.prototype.setWalkStep = function(num){ 
     this.walkStep = num;
-    
+  
     if(num === 2){
-        
+         
       this.dollEditor.gearBarSliderLevels.children[0].material.color.setHex(0xA19EA1);
       this.dollEditor.gearBarSliderLevels.children[1].material.color.setHex(0xA19EA1);
       this.dollEditor.gearBarSlider.position.y = -5.7;
@@ -247,9 +252,9 @@ define([
       this.dollEditor.gearBarSlider.position.y = -0.30;
     }
   }; 
-  DollGearBarMouseEvents.prototype.walkTourSet = function(clickedLevel){  
-  
-    if(this.walkStep === 1 && clickedLevel === 0){
+  DollGearBarMouseEvents.prototype.walkTourSet = function(clickedLevel){   
+     
+    if(this.walkStep === 1 && clickedLevel === 0){  
        
       this.menu.highlightElement({id:'selected_lattice'}); 
       this.menu.switchTab('latticeTab'); 

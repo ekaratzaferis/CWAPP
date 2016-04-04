@@ -182,7 +182,7 @@ define([
     } 
 
     ///// 
-    if ( this.keyboard.pressed("O") ){
+    if ( this.keyboard.pressed("O") && this.keyboard.pressed("alt") && this.keyboard.pressed("ctrl") ){
       if(this.mutex === false){ 
         this.mutex = true;
         if( this.hidden === true){
@@ -197,7 +197,7 @@ define([
         setTimeout(function(){ _this.mutex = false;}, 200 );
       } 
     }
-    if ( this.keyboard.pressed("P") ){
+    if ( this.keyboard.pressed("P") && this.keyboard.pressed("alt") && this.keyboard.pressed("ctrl") ){
          
       if(this.mutex === false){ 
         this.mutex = true;
@@ -214,7 +214,7 @@ define([
         setTimeout(function(){ _this.mutex = false;}, 200 );
       } 
     }
-    if ( this.keyboard.pressed("B") ){
+    if ( this.keyboard.pressed("B") && false){
          
       if(this.mutex === false){ 
         this.mutex = true;

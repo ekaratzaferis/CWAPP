@@ -105,8 +105,7 @@ define([
         atom.setVisibility(bool); 
       }
     });
-
-    
+ 
   };   
   GearTour.prototype.hideCachedAtoms = function(){
     var i =0;

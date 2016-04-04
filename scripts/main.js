@@ -365,13 +365,14 @@ require([
   crystalRenderer.setDoll(dollScene.object3d ); 
   var dollEditor = new Doll(crystalRenderer.dollCamera, crystalScene, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
-  dollEditor.rePosition(); 
+  //dollEditor.rePosition(); 
   
 
   // doll and gear tour mouse events
   var dollGearBarME = new DollGearBarMouseEvents(crystalRenderer.dollCamera, orbitCrystal, lattice, dollEditor, soundMachine, animationMachine, keyboard, gearTour, menu, crystalScene);
   orbitCrystal.dollOnDocumentMouseDown(dollGearBarME.onDocumentMouseDown.bind(dollGearBarME)) ;
-  
+  storeMechanism.dollGearBarME = dollGearBarME;
+
   // atom customizer
   var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu, orbitCrystal, crystalScene);
 
@@ -411,7 +412,7 @@ require([
   storeMechanism.LOD = lod;
 
   // restoring
-  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod);
+  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod, dollGearBarME);
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
@@ -438,7 +439,11 @@ require([
     restoreMechanism.globalReset();
     lattice.load(latticeName);
     motifEditor.latticeName = latticeName;
-    dollGearBarME.setWalkStep(2);
+    dollGearBarME.setWalkStep(2); 
+     
+    dollEditor.gearState = 2;
+    
+
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
     if(gearTour.state !== 1){
@@ -571,14 +576,19 @@ require([
     tabActionsManager.tabClick($(this).attr('id'));
   }); 
   menu.atomSelection(function(message , arg) {
+    
     motifEditor.selectElem(arg); 
     var parameters = motifEditor.getDimensions() ;
     lattice.setMotif(motifEditor.getMotif(), parameters) ;
+    
     dollGearBarME.setWalkStep(3);
-    dollEditor.levelLabels[2].allowed = true;
+    dollEditor.levelLabels[2].allowed = true;  
     dollEditor.levelLabels[3].allowed = true;
     dollEditor.levelLabels[4].allowed = true;
     dollEditor.levelLabels[5].allowed = true;
+ 
+    gearTour.setState(6, true);
+    dollEditor.gearState = 6;
 
     atomRelationshipManager.checkCrystalforOverlap(); 
     motifEditor.checkCellForCollisions();
