@@ -236,7 +236,8 @@ define([
         };
         this.visual.sound = {
             sounds: jQuery('#sounds'),
-            soundSlider: jQuery('#soundSlider')
+            soundSlider: jQuery('#soundSlider'),
+            mute: jQuery('#muteSound')
         };
         this.visual.other = {
             reset: jQuery('#reset')

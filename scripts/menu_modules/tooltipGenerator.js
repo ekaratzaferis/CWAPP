@@ -163,6 +163,155 @@ define([
     
     var $messageList = undefined;
     var $canvasTooltip = jQuery('#canvasTooltip');
+    var lattices = {
+        cubic_primitive:'Cubic Simple',
+        cubic_body_centered:'Cubic Body Centered',
+        cubic_face_centered:'Cubic Face Centered',
+        tetragonal_primitive:'Tetragonal Simple',
+        tetragonal_body_centered:'Tetragonal Body Centered',
+        orthorhombic_primitive:'Orthorhombic Simple',
+        orthorhombic_body_centered:'Orthorhombic Body Centered',
+        orthorhombic_face_centered:'Orthorhombic Face Centered',
+        orthorhombic_base_centered:'Orthorhombic Base Centered',
+        hexagonal_primitive:'Hexagonal',
+        hexagonal:'Hexagonal Strange',
+        rhombohedral_primitive:'Rhombohedral / Trigonal',
+        monoclinic_primitive:'Monoclinic Simple',
+        monoclinic_base_centered:'Monoclinic Base Centered',
+        triclinic_primitive:'Triclinic Simple'
+    };
+    var restrictions = {
+        tetragonal_primitive:'a ≠ c',
+        tetragonal_body_centered:'a ≠ c',
+        orthorhombic_primitive:'a ≠ b ≠ c',
+        orthorhombic_body_centered:'a ≠ b ≠ c',
+        orthorhombic_face_centered:'a ≠ b ≠ c',
+        orthorhombic_base_centered:'a ≠ b ≠ c',
+        rhombohedral_primitive:'α = β = γ ≠ 90°',
+        monoclinic_primitive:'β ≠ 90°, α,γ = 90°',
+        monoclinic_base_centered:'β ≠ 90°, α,γ = 90°',
+        triclinic_primitive:'α,β,γ ≠ 90°'
+    };
+    var atoms = {
+        H  : 'Hydrogen',   
+        He : 'Helium', 
+        Li : 'Lithium',
+        Be : 'Beryllium',
+        B  : 'Boron',
+        C  : 'Carbon',
+        N  : 'Nitrogen',
+        O  : 'Oxygen',
+        F  : 'Fluorine',
+        Ne : 'Neon',
+        Na : 'Sodium',
+        Mg : 'Magnesium',
+        Al : 'Aluminium',
+        Si : 'Silicon',
+        P  : 'Phosphorus',
+        S  : 'Sulfur',
+        Cl : 'Chlorine',
+        Ar : 'Argon',
+        K  : 'Potassium',
+        Ca : 'Calcium',
+        Sc : 'Scandium',
+        Ti : 'Titanium',
+        V  : 'Vanadium',
+        Cr : 'Chromium',
+        Mn : 'Manganese',
+        Fe : 'Iron',
+        Co : 'Cobalt',
+        Ni : 'Nickel',
+        Cu : 'Copper',
+        Zn : 'Zinc',
+        Ga : 'Gallium',
+        Ge : 'Germanium',
+        As : 'Arsenic',
+        Se : 'Selenium',
+        Br : 'Bromine',
+        Kr : 'Krypton',
+        Rb : 'Rubidium',
+        Sr : 'Strontium',
+        Y  : 'Yttrium',
+        Zr : 'Zirconium',
+        Nb : 'Niobium',
+        Mo : 'Molybdenum',
+        Tc : 'Technetium',
+        Ru : 'Ruthenium',
+        Rh : 'Rhodium',
+        Pd : 'Palladium',
+        Ag : 'Silver',
+        Cd : 'Cadmium',
+        In : 'Indium',
+        Sb : 'Antimony',
+        Sn : 'Tin',
+        Te : 'Tellurium',
+        I  : 'Iodine',
+        Xe : 'Xenon',
+        Cs : 'Caesium',
+        Ba : 'Barium',
+        La : 'Lanthanum',
+        Ce : 'Cerium',
+        Pr : 'Praseodymium',
+        Nd : 'Neodymium',
+        Pm : 'Promethium',
+        Sm : 'Samarium',
+        Eu : 'Europium',
+        Gd : 'Gadolinium',
+        Tb : 'Terbium',
+        Dy : 'Dysprosium',
+        Ho : 'Holmium',
+        Er : 'Erbium',
+        Tm : 'Thulium',
+        Yb : 'Ytterbium',
+        Lu : 'Lutetium',
+        Hf : 'Hafnium',
+        Ta : 'Tantalum',
+        W  : 'Tungsten',
+        Re : 'Rhenium',
+        Os : 'Osmium',
+        Ir : 'Iridium',
+        Pt : 'Platinum',
+        Au : 'Gold',
+        Hg : 'Mercury',
+        Tl : 'Thallium',
+        Pb : 'Lead',
+        Bi : 'Bismuth',
+        Po : 'Polonium',
+        At : 'Astatine',
+        Rn : 'Radon',
+        Fr : 'Francium',
+        Ra : 'Radium',
+        Ac : 'Actinium',
+        Th : 'Thorium',
+        Pa : 'Protactinium',
+        U  : 'Uranium',
+        Np : 'Neptunium',
+        Pu : 'Plutonium',
+        Am : 'Americium',
+        Cm : 'Curium',
+        Bk : 'Berkelium',
+        Cf : 'Californium',
+        Es : 'Einsteinium',
+        Fm : 'Fermium',
+        Md : 'Mendelevium',
+        No : 'Nobelium',
+        Lr : 'Lawrencium',
+        Rf : 'Rutherfordium',
+        Db : 'Dubnium',
+        Sg : 'Seaborgium',
+        Bh : 'Bohrium',
+        Hs : 'Hassium',
+        Mt : 'Meitnerium',
+        Ds : 'Darmstadtium',
+        Rg : 'Roentgenium',
+        Cn : 'Copernicium',
+        Uut: 'Ununtrium',
+        Fl : 'Flerovium',
+        Uup: 'Ununpentium',
+        Lv : 'Livermorium',
+        Uus: 'Ununseptium',
+        Uuo: 'Ununoctium'  
+    };
     
     // Contructor //
     function tooltipGenerator(argument) {
@@ -181,6 +330,18 @@ define([
         tooltipOnHover({ other: jQuery('#chkbx_visualization_cell_face').parent().parent(), message: $messageList.getMessage('cellFace'), placement: 'top' });
         //tooltipOnHover({ other: jQuery('#cameraCheckbox').parent().parent(), message: $messageList.getMessage('cameraCheckbox'), placement: 'top' });
         tooltipOnHover({ other: jQuery('#elementSymbolContainer').find('a'), message: $messageList.getMessage('elementSymbolContainer'), placement: 'top' });
+        
+        // Lattices Tooltips //
+        _.each(lattices, function($parameter,k){
+            if ( restrictions[k] === undefined ) tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE.', placement: 'top' });
+            else tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE. RESTRICTIONS FOR YOUR LATTICE ARE ' + restrictions[k], placement: 'top' });
+        });
+
+        // Element Tooltips //
+        _.each( jQuery('.periodic-table').find('.ch'), function($parameter,k){
+            var iteration = jQuery($parameter);
+            tooltipOnHover({ other: iteration, message: 'CLICK TO ADD A ' + iteration.html() + ' (' + atoms[iteration.html()] + ') ATOM TO YOUR MOTIFF COMPOSITION', placement: 'top' });
+        });
         
         // Canvas Tooltip for system messages //
         $canvasTooltip.tooltip({
