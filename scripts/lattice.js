@@ -2234,15 +2234,7 @@ define([
     );
      
     return m;
-  }; 
-  var times_ = {
-    'actualatoms' : 0,
-    'planes' : 0,
-    'directions' : 0,
-    'pointsANDgrids' : 0,
-    'faces' : 0,
-    'grids' : 0
-  };
+  };  
  
   Lattice.prototype.transform = function(caller, parameterKeys, operation) {  
     var matrix; 
@@ -3649,7 +3641,7 @@ define([
   } 
   Lattice.prototype.createMillerPlane = function(millerParameters, temp, transform, _lastSaved) {
     var _this = this ;
- 
+     
     var parameters = this.parameters ;
     var hInit = parseInt(millerParameters.millerH); 
     var kInit = parseInt(millerParameters.millerK); 

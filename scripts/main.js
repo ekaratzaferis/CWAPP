@@ -54,7 +54,8 @@ require.config({
     'EffectComposer': '../vendor/ssao/EffectComposer',
     'OculusRiftEffect': '../vendor/OculusRiftEffect',
     'html2canvas': '../vendor/html2canvas',
-    'jszip': '../vendor/jszip'
+    'jszip': '../vendor/jszip',
+    'deviceOrientationControls': '../vendor/DeviceOrientationControls'
 
   },
   shim: {
@@ -74,6 +75,7 @@ require.config({
     'MaskPass': { deps: [ 'three' ] },
     'CopyShader': { deps: [ 'three' ] },
     'OculusRiftEffect': { deps: [ 'three' ] },
+    'deviceOrientationControls': { deps: [ 'three' ] },
     'jquery.qrcode-0.12.0.min': { deps: [ 'jquery' ] },
     'tag-it': { deps: [ 'jquery' ] },
     'stringEditor': { deps: [ 'jquery' ] },
@@ -156,7 +158,8 @@ require([
   'fitToCrystal',
   'LOD',
   'multitouch',
-  'cwState'
+  'cwState',
+  'deviceOrientationControls'
 
 ], function(
   PubSub, 
@@ -212,7 +215,8 @@ require([
   FitToCrystal,
   LOD,
   Multitouch,
-  CwState
+  CwState,
+  DeviceOrientationControls
 
 ) {
   
@@ -434,6 +438,9 @@ require([
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
 
+  // Device Orientation Controls for mobile 
+  var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true); 
+   
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     restoreMechanism.globalReset();
@@ -933,7 +940,7 @@ require([
     storeMechanism.exportJSON(arg);
   });
   $(document).keyup(function(e) {
-    if (e.keyCode === 27 && crystalScreenEvents.state === 'oculusCrystal') { // escape key maps to keycode `27`
+    if (e.keyCode === 27 && (crystalScreenEvents.state === 'oculusCrystal' || crystalScreenEvents.state === 'oculusCrystal')) { // escape key maps to keycode `27`
       
       dollEditor.setVisibility(true); 
       hudCube.setVisibility(true);
@@ -941,6 +948,7 @@ require([
       CubeEvent.enableCubeEvents = true ;
       sceneResizer.resize('crystal');
       crystalRenderer.initOculusEffect({oculus : false}); 
+      crystalRenderer.initCardBoard({onTop : false}); 
       crystalScreenEvents.state = 'default';
     }
   });
@@ -962,6 +970,29 @@ require([
     hudArrows.setVisibility(!arg.stereo);
     CubeEvent.enableCubeEvents = !arg.stereo ; 
     crystalRenderer.initStereoEffect(arg);
+  });
+  menu.onOnTop3DCrystal(function(message, arg) { 
+    dollEditor.setVisibility(!arg.onTop); 
+    hudCube.setVisibility(!arg.onTop);
+    hudArrows.setVisibility(!arg.onTop);
+    CubeEvent.enableCubeEvents = !arg.onTop ; 
+
+    orbitCrystal.disableUpdate = arg.stereo;
+ 
+    if(arg.onTop){
+      //deviceOrientationControls.connect();
+      //crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+      dollEditor.setVisibility(!arg.onTop); 
+      hudCube.setVisibility(!arg.onTop);
+      hudArrows.setVisibility(!arg.onTop);
+      CubeEvent.enableCubeEvents = !arg.onTop ;
+      sceneResizer.resize('oculusCrystal');
+       
+      crystalScreenEvents.state = 'oculusCrystal';
+      fullScreen.fs(); 
+      
+      crystalRenderer.initCardBoard(arg);
+    }
   });
   menu.setOculusUnitCell(function(message, arg) {  
     unitCellRenderer.initOculusEffect({oculus : arg.oculusCell});

@@ -77,6 +77,7 @@ define([
     this.stereoEffectActive = false;
     this.stereoEffect = new THREE.StereoEffect( this.renderer );
     this.oculusEffectActive = false;
+    this.cardBoardRender;
 
     jQuery('#'+container).append(this.renderer.domElement);
  
@@ -210,6 +211,11 @@ define([
     this.oculusEffectActive = false ;  
     this.stereoEffectActive = arg.sideBySide ; 
   };
+  Renderer.prototype.initCardBoard = function(arg) {  
+    this.anaglyphEffectActive = false ;  
+    this.oculusEffectActive = false ;  
+    this.stereoEffectActive = arg.onTop ; 
+  };
   Renderer.prototype.initOculusEffect = function(arg) { 
     this.stereoEffectActive =  false ;
     this.anaglyphEffectActive = false ;
@@ -240,6 +246,9 @@ define([
       this.externalFunctions[i]();
     };
 
+    if( this.cardBoardRender){
+      this.cardBoardRender();
+    }
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
