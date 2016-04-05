@@ -569,6 +569,16 @@ define([
                 }
                 break;   
             }
+            case 'muteSound':{
+                if (value === true){
+                    html.visual.sound.mute.removeClass('active');
+                    html.visual.sound.mute.addClass('disable');
+                }
+                else {
+                    html.visual.sound.mute.removeClass('disable');
+                }
+                break;
+            };
                 
             // Reset
             case 'reset':{
