@@ -850,7 +850,7 @@ define([
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
     
     var scalingTo ;
-    console.log(9);
+    
     if(aScale !== undefined) { 
       this.cellParameters.scaleZ = aScale ;   
       scalingTo = 'aScale';
@@ -1151,9 +1151,7 @@ define([
     
 
     this.snapData.collision[scalingTo] = collisionHappened;
-    
-    console.log(this.snapData.snapVal);
-
+     
     if(collisionHappened === true ){
         
       this.cellParameters.scaleZ = storedScales.aScale;
