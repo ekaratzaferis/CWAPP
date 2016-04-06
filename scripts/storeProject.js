@@ -336,7 +336,7 @@ define([
                 zip.remove("CWAPP-master/Gemfile.lock");
                 
                 zip.file('CWAPP-master/settings.json',settings);
-
+                
                 content = zip.generate({type:"blob"});
                 saveAs(content, argument.name + '.' + argument.extention);  
  
