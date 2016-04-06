@@ -320,7 +320,7 @@ define([
                 
             var content = null;
             var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
-            var url = 'https://cors-anywhere.herokuapp.com/https://github.com/gvcm/CWAPP/archive/master.zip';
+            var url = 'http://cors-anywhere.herokuapp.com/https://github.com/gvcm/CWAPP/archive/master.zip';
 
             JSZipUtils.getBinaryContent(url, function(err, data) {
                 if(err) {
