@@ -161,7 +161,7 @@
                                                         </div>
                                                         <div class="col col-sm-2">
                                                             <div class="action action-toggle-visiblity" id="iacSound">
-                                                                <a><img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/></a>
+                                                                <a class="experimental"><img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/></a>
                                                             </div>
                                                         </div>
                                                         <div class="col col-sm-2">
@@ -882,13 +882,6 @@
 																							</div>
 																						</div>
 																					</div>
-                                                                                    <div class="col col-sm-9 padTop15">
-                                                                                        <div class="visualization-block-checkbox">
-                                                                                            <label for="chkbx_visualization_cell_edge" class="smFont" id="motifEdge">
-                                                                                                <input type="checkbox" name='gridCheckButton' id="chkbx_visualization_cell_edge" class="icheckbox"/>&nbsp;&nbsp;Cell Edge
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    </div>
 																				</div>
 																			</div>
 																		</div>
@@ -1628,9 +1621,108 @@
 
 									<div role="tabpanel" class="tab-pane public-library-tab-pane fade" id="scrn_public_library">
 										<div class="tab-content-container">
+                                            
+											<div class="tab-content-section-container public-project-section">
+												<div class="tab-section-title">
+													<h3>LOAD A SAVED CRYSTALWALK PROJECT</h3>
+												</div>
+												<div class="tab-blocks-container">
+													<div class="tab-block">
+														<div class="tab-boxes-container">
+															
+															<div class="tab-box">
+                                                                
+																<div class="box-body">
+																	<div class="project-search-form-container">
+																		<form id="searchField">
+																			<div class="form-group">
+																				<input id="searchQuery" type="text" class="form-control" placeholder="Name, Tags, Description" name="project"/>
+																			</div>
+																			<div class="btn-search">
+																				<button class="btn btn-purple-dark"><img src="Images/search-icon.png" class="img-responsive" alt="Search"/></button>
+																			</div>
+																		</form>
+																	</div>
+                                                                    <div class="loader" id="databaseLoader"></div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchName">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchDesc">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="project-blocks-container">
+                                                                        <div class="row row-5">
+                                                                            <div class="searchCat" id="searchTags">
+                                                                                <a></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+																	<div class="project-blocks-container">
+																		<div class="row row-5" id="searchResults">
+																			<div class="col col-sm-12" id="resultPreviewBig">
+																				<div class="project-block-xl">
+																					<div class="block-image">
+																						<img id = 'selectedProjectPreview' src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
+																					</div>
+																					<div class="block-details">
+																						<div class="block-title" id="previewTitle">
+																							<h4>Project Name 1</h4>
+																						</div>
+																						<div class="row row-5">
+																							
+																							<div class="col col-sm-7">
+																								<div class="block-tags" id="previewTags">
+																									<a class="tag tag-purple">NaCl</a>
+																									<a class="tag tag-purple">Tag 1</a>
+																									<a class="tag tag-purple">Dark Crystal</a>
+																									<a class="tag tag-purple">Tag</a>
+																									<a class="tag tag-purple">Large Tag</a>
+																								</div>
+																							</div>
+																							<div class="col col-sm-5">
+																								<div class="block-actions">
+																									<a id="openPreviewQR" data-toggle="modal" data-target="#qr_scan_modal" class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
+																									<a id="openPreview" class="btn btn-primary btn-open">Open</a>
+																								</div>
+																							</div>
+
+																						</div>
+																						<div class="block-description" id="previewDescription">
+																							<p>This is the Decription of Project 2 of Lorem Ipsum proin gravida nibh vel velit auctor aliquet aenean sollicitudin, lorem quis bibendum auctor is simply dummy text of the printing typesetting industry.</p>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="browse">
+                                                                    <div class="btn-action">
+                                                                        <input id="openJSONInput" type="file" style="visibility:hidden" />
+                                                                        <a id="openJSON" class="btn btn-dark">
+                                                                            <span class="btn-image"><img src="Images/json.png" class="img-responsive" alt=""/></span>
+                                                                            <span class="btn-text">Upload JSON</span>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+																<div class="box-footer"></div>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
 											<div class="tab-content-section-container">
 												<div class="tab-section-title">
-													<h3>Save Project</h3>
+													<h3>Save a CrystalWalk Project</h3>
 												</div>
 												<div class="tab-blocks-container">
 													<div class="tab-block">
@@ -1660,18 +1752,6 @@
 																<div class="box-head"></div>
 																<div class="box-body">
 																	<div class="project-actions-container">
-																		<div class="btn-action">
-																			<a id="downloadProject" class="btn btn-dark">
-																				<span class="btn-image"><img src="Images/download-icon.png" class="img-responsive" alt=""/></span>
-																				<span class="btn-text">Download to your PC</span>
-																			</a>
-																		</div>
-                                                                        <div class="btn-action">
-																			<a id="exportJSON" class="btn btn-dark">
-																				<span class="btn-image"><img src="Images/jsonPurlpe.png" class="img-responsive" alt=""/></span>
-																				<span class="btn-text">Export JSON DATA</span>
-																			</a>
-																		</div>
                                                                         <div class="btn-action">
 																			<a id="saveOnlinett" class="btn btn-dark btn_alternate_action_toggler">
 																				<span class="btn-image"><img src="Images/save-icon.png" class="img-responsive" alt=""/></span>
@@ -1747,111 +1827,28 @@
 																			</div>
 																		</div>
 																	</div>
-																</div>
-																<div class="box-footer"></div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-
-											<div class="tab-content-section-container public-project-section">
-												<div class="tab-section-title">
-													<h3>Open Project</h3>
-												</div>
-												<div class="tab-blocks-container">
-													<div class="tab-block">
-														<div class="tab-boxes-container">
-															
-															<div class="tab-box">
-																<div class="browse">
-                                                                    <div class="btn-action">
-                                                                        <input id="openJSONInput" type="file" style="visibility:hidden" />
-                                                                        <a id="openJSON" class="btn btn-dark">
-                                                                            <span class="btn-image"><img src="Images/json.png" class="img-responsive" alt=""/></span>
-                                                                            <span class="btn-text">Upload JSON</span>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-																<div class="box-body">
-																	<div class="project-search-form-container">
-																		<form id="searchField">
-																			<div class="form-group">
-																				<input id="searchQuery" type="text" class="form-control" placeholder="Name, Tags, Description" name="project"/>
-																			</div>
-																			<div class="btn-search">
-																				<button class="btn btn-purple-dark"><img src="Images/search-icon.png" class="img-responsive" alt="Search"/></button>
-																			</div>
-																		</form>
-																	</div>
-                                                                    <div class="loader" id="databaseLoader"></div>
-                                                                    <div class="project-blocks-container">
-                                                                        <div class="row row-5">
-                                                                            <div class="searchCat" id="searchName">
-                                                                                <a></a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="project-blocks-container">
-                                                                        <div class="row row-5">
-                                                                            <div class="searchCat" id="searchDesc">
-                                                                                <a></a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="project-blocks-container">
-                                                                        <div class="row row-5">
-                                                                            <div class="searchCat" id="searchTags">
-                                                                                <a></a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-																	<div class="project-blocks-container">
-																		<div class="row row-5" id="searchResults">
-																			<div class="col col-sm-12" id="resultPreviewBig">
-																				<div class="project-block-xl">
-																					<div class="block-image">
-																						<img id = 'selectedProjectPreview' src="Images/project-screenshot.png" class="img-responsive img-fullwidth" alt=""/>
-																					</div>
-																					<div class="block-details">
-																						<div class="block-title" id="previewTitle">
-																							<h4>Project Name 1</h4>
-																						</div>
-																						<div class="row row-5">
-																							
-																							<div class="col col-sm-7">
-																								<div class="block-tags" id="previewTags">
-																									<a class="tag tag-purple">NaCl</a>
-																									<a class="tag tag-purple">Tag 1</a>
-																									<a class="tag tag-purple">Dark Crystal</a>
-																									<a class="tag tag-purple">Tag</a>
-																									<a class="tag tag-purple">Large Tag</a>
-																								</div>
-																							</div>
-																							<div class="col col-sm-5">
-																								<div class="block-actions">
-																									<a id="openPreviewQR" data-toggle="modal" data-target="#qr_scan_modal" class="btn btn-primary btn-qr"><img src="Images/qr-icon-white-sm.png" class="img-responsive" alt=""/></a>
-																									<a id="openPreview" class="btn btn-primary btn-open">Open</a>
-																								</div>
-																							</div>
-
-																						</div>
-																						<div class="block-description" id="previewDescription">
-																							<p>This is the Decription of Project 2 of Lorem Ipsum proin gravida nibh vel velit auctor aliquet aenean sollicitudin, lorem quis bibendum auctor is simply dummy text of the printing typesetting industry.</p>
-																						</div>
-																					</div>
-																				</div>
-																			</div>
+                                                                    <div class="project-actions-container padTop10">
+                                                                        <div class="btn-action">
+																			<a id="exportJSON" class="btn btn-dark">
+																				<span class="btn-image"><img src="Images/jsonPurlpe.png" class="img-responsive" alt=""/></span>
+																				<span class="btn-text">Export JSON DATA</span>
+																			</a>
+																		</div>
+																		<div class="btn-action">
+																			<a id="downloadProject" class="btn btn-dark experimental">
+																				<span class="btn-image"><img src="Images/download-icon.png" class="img-responsive" alt=""/></span>
+																				<span class="btn-text">Download to your PC</span>
+																			</a>
 																		</div>
 																	</div>
 																</div>
 																<div class="box-footer"></div>
 															</div>
-
 														</div>
 													</div>
 												</div>
 											</div>
+
 										</div>
 									</div>
 
@@ -2091,11 +2088,11 @@
 																	<img src="Images/lights-icon.png" class="img-responsive" alt=""/>
                                                                     <img src="Images/lights-icon-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="ssao" class="margTop10 btn btn-light">
+                                                                <label id="ssao" class="margTop10 btn btn-light experimental">
 																	<img src="Images/ssao.png" class="img-responsive" alt=""/>
                                                                     <img src="Images/ssao-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="shadows" class="margTop10 btn btn-light active">
+                                                                <label id="shadows" class="margTop10 btn btn-light active experimental">
 																	<img src="Images/ambient.png" class="img-responsive" alt=""/>
                                                                     <img src="Images/ambient-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -2158,15 +2155,15 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label id="anaglyph" class="btn btn-light">
+																<label id="anaglyph" class="btn btn-light experimental">
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="3DsideBySide" class="btn btn-light">
+                                                                <label id="3DsideBySide" class="btn btn-light experimental">
 																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
 																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="3DonTop" class="btn btn-light">
+                                                                <label id="3DonTop" class="btn btn-light experimental">
 																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
 																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -2181,15 +2178,15 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-group" data-toggle="buttons">
-																<label id="anaglyphCell" class="btn btn-light">
+																<label id="anaglyphCell" class="btn btn-light experimental">
 																	<img src="Images/stereoscope-switch-icon-01.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-01-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="3DsideBySideCell" class="btn btn-light">
+                                                                <label id="3DsideBySideCell" class="btn btn-light experimental">
 																	<img src="Images/sideBySide.png" class="img-responsive" alt=""/>
 																	<img src="Images/sideBySide-hover.png" class="img-responsive hover" alt=""/>
 																</label>
-                                                                <label id="3DonTopCell" class="btn btn-light">
+                                                                <label id="3DonTopCell" class="btn btn-light experimental">
 																	<img src="Images/onTop.png" class="img-responsive" alt=""/>
 																	<img src="Images/onTop-hover.png" class="img-responsive hover" alt=""/>
 																</label>
@@ -2203,15 +2200,15 @@
 														</div>
 														<div class="block-content">
 															<div class="btn-hit">
-																<a id="leapMotion" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+																<a id="leapMotion" class="btn btn-light experimental" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/leap-icon.png" class="img-responsive" alt=""/>
 																	<img src="Images/leap-icon-hover.png" class="img-responsive hover" alt=""/>
 																</a>
-                                                                <a id="oculus" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                                <a id="oculus" class="btn btn-light experimental" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</a>
-                                                                <a id="oculusTracker" class="btn btn-light" data-toggle="button" aria-pressed="false" autocomplete="off">
+                                                                <a id="oculusTracker" class="btn btn-light experimental" data-toggle="button" aria-pressed="false" autocomplete="off">
 																	<img src="Images/stereoscope-switch-icon-02.png" class="img-responsive" alt=""/>
 																	<img src="Images/stereoscope-switch-icon-02-hover.png" class="img-responsive hover" alt=""/>
 																</a>
@@ -2229,7 +2226,7 @@
 																<div class="col col-sm-3">
                                                                     <div class="block-content">
                                                                         <div class="btn-group" data-toggle="buttons">
-                                                                            <label id="sounds" class="btn btn-light">
+                                                                            <label id="sounds" class="btn btn-light experimental">
                                                                                 <img src="Images/sound-icon-hover.png" class="img-responsive" alt=""/>
                                                                             </label>
                                                                         </div>
