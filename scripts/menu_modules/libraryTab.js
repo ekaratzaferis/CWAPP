@@ -340,7 +340,7 @@ define([
         html.library.search.searchField.on('submit', function(){
             
             // Loader //
-            html.interface.screen.body.mCustomScrollbar("scrollTo",'bottom');
+            //html.interface.screen.body.mCustomScrollbar("scrollTo",'bottom');
             
             // Hide Headers and clear previous results //
             html.library.search.databaseLoader.show();
