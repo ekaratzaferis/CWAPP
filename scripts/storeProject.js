@@ -3,12 +3,14 @@ define([
   'jquery', 
   "three", 
   "underscore", 
-  "jszip"
+  "jszip",
+  'jszip-utils'
 ], function(
   jQuery, 
   THREE, 
   _, 
-  jszip
+  jszip,
+  jszipUtils 
 ) {
     // Zipper //
    var zip = new jszip();
@@ -315,46 +317,35 @@ define([
              
         }
         else if (argument.extention === 'zip'){
-            
-            return;
-
-            // Gather Info //
+                
             var content = null;
-
             var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
-            var stl = this.stlExporter.saveSTL(this.crystalRenderer.explorer.object3d);
 
-            var whatToPrint = $('#app-container'); 
-            var pngImage ;
-
-            html2canvas(whatToPrint, {
-              onrendered: function (canvas) { 
-                pngImage = canvas.toDataURL();  
-                
-                // Zip File //
-                zip.file('CrystalWalk/settings.json',settings);
-                zip.file('CrystalWalk/snapShot.png',pngImage);
-                zip.file('CrystalWalk/object.stl',stl);
-                content = zip.generate();
-                
-                // Create Download Link //
-                var dlLink = document.createElement('a');
-                dlLink.download = argument.name + '.' + argument.extention;
-                dlLink.href = "data:application/zip;base64,"+content;
-                dlLink.dataset.downloadurl = [argument.type, dlLink.download, dlLink.href].join(':');
-
-                // Trigger and Dispose Link //
-                document.body.appendChild(dlLink);
-                dlLink.click();
-                document.body.removeChild(dlLink);
+            JSZipUtils.getBinaryContent("https://github.com/gvcm/CWAPP/archive/master.zip", function(err, data) {
+                if(err) {
+                  throw err; // or handle err
                 }
-            });
+
+                var zip = new jszip(data);
+
+                zip.remove("CWAPP-master/config.ru");
+                zip.remove("CWAPP-master/.ruby-version"); 
+                zip.remove("CWAPP-master/LICENSE");
+                zip.remove("CWAPP-master/Gemfile");
+                zip.remove("CWAPP-master/Gemfile.lock");
+                
+                zip.file('CWAPP-master/settings.json',settings);
+
+                content = zip.generate({type:"blob"});
+                saveAs(content, argument.name + '.' + argument.extention);  
+ 
+            }); 
         }
     };
     StoreProject.prototype.downloadProject = function(argument){
         this.downLoadfile({
             extention: 'zip',
-            name: 'cw_bandle',
+            name: 'cw_bundle',
             details: argument 
         });
     };
@@ -703,5 +694,6 @@ define([
 
         return (start+directions.join('')+planes.join('')) ;
     };
+
     return StoreProject;
 });

@@ -55,6 +55,7 @@ require.config({
     'OculusRiftEffect': '../vendor/OculusRiftEffect',
     'html2canvas': '../vendor/html2canvas',
     'jszip': '../vendor/jszip',
+    'jszip-utils': '../vendor/jszip-utils',
     'deviceOrientationControls': '../vendor/DeviceOrientationControls'
 
   },
@@ -154,6 +155,7 @@ require([
   'CopyShader',
   'html2canvas',
   'jszip',
+  'jszip-utils',
   'menu_html',
   'fitToCrystal',
   'LOD',
@@ -211,6 +213,7 @@ require([
   CopyShader,
   html2canvas,
   jszip,
+  jszipUtils,
   menu_html,
   FitToCrystal,
   LOD,
@@ -1179,6 +1182,23 @@ require([
 
   ////////////////////
 
+  
+  function loadJSON(callback) {   
+
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', 'settings.json', true); // Replace 'my_data' with the path to your file
+    xobj.onreadystatechange = function () { 
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            
+            restoreMechanism.configureState(JSON.parse(xobj.responseText));
+          }
+    };
+    xobj.send(null);  
+  }
+  
+  loadJSON();
 
   // to read the json file
    
@@ -1200,6 +1220,8 @@ require([
       } 
     }); 
   } 
+
+
    
 });
  
