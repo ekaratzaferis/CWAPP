@@ -102,16 +102,24 @@ define([
         if (!(_.isUndefined(argument.caller))) html.modals.dialog.warning.modal.caller = argument.caller;
     };
     userDialog.prototype.showInfoDialog = function(argument){
-        var screen_height = jQuery(window).height();
-        html.modals.dialog.info.find('#infoMessage').html($messageList.getMessage(argument.messageID));
-        if (argument.messageID === 4) html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-250);
-        else html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
+        if(argument.messageID === undefined){  
+            var screen_height = jQuery(window).height();
+            html.modals.dialog.warning.modal.find('#infoMessage').html(argument.message);
+            html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
+        }
+        else{ 
+            var screen_height = jQuery(window).height();
+            html.modals.dialog.info.find('#infoMessage').html($messageList.getMessage(argument.messageID));
+            if (argument.messageID === 4) html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-250);
+            else html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
+        } 
     };
     userDialog.prototype.showErrorDialog = function(argument){
         var screen_height = jQuery(window).height();
         html.modals.dialog.error.find('#errorLabel h2').html('Error '+argument.code);
         html.modals.dialog.error.find('#errorMessage').html($messageList.getMessage(argument.messageID));
         html.modals.dialog.error.modal('show').css('margin-top',(screen_height/2)-100);
+
     };
     userDialog.prototype.hideInfoDialog = function(){
         html.modals.dialog.info.modal('hide');
