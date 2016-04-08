@@ -320,7 +320,7 @@ define([
             
             menu.showWarningDialog({message : '<strong>Downloading File: Pending... <br> Packing Files: Pending...</strong> <br><br> CrystalWalk standalone mode requires <a href="https://www.w3.org/TR/html5/browsers.html#origin" target="_blank">same origin policy</a> and local files access to properly execute in your computer. From one side you will no longer need internet access, but it may require some special permission on your browser to run it properly. We’ve put some scripts to facilitate on this process to you, but please refer to this <a href="https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally" target="_blank">link</a> or the <a href="link: http://www.instructables.com/id/CrystalWalk-Collection/" target="_blank">CrystalWalk instructable</a> channel for more information. '});
           
-            return;
+          
             var content = null;
             var settings = JSON.stringify(JSON.parse(this.constructJSONString(argument.details)),null,2);
             var url = 'https://cors-anywhere.herokuapp.com/http://github.com/gvcm/CWAPP/archive/master.zip';
