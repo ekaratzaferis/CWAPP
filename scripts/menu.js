@@ -180,7 +180,9 @@ define([
         MEDIUM_REND_QUALITY: 'menu.medium_rend_quality',
         HIGH_REND_QUALITY: 'menu.high_rend_quality',
         LOD: 'menu.lod',
-        MUTE_SOUND: 'menu.mute_sound'
+        MUTE_SOUND: 'menu.mute_sound',
+        OCULUS_UNIT_CELL: 'menu.oculus_unit_cell',
+        CARDBOARD: 'menu.cardboard'
     };
             
     function Menu() {
@@ -1011,6 +1013,9 @@ define([
     };
     Menu.prototype.onNoteColor = function(callback){
         PubSub.subscribe(events.NOTE_COLOR, callback);
+    };
+    Menu.prototype.onCardBoard = function(callback){
+        PubSub.subscribe(events.CARDBOARD, callback);
     };
     Menu.prototype.onSSAOChange = function(callback){
         PubSub.subscribe(events.SET_SSAO, callback);

@@ -189,7 +189,9 @@ define([
             distortionOff: jQuery('#distortionOff'),
             anaglyph: jQuery('#anaglyph'),
             oculus: jQuery('#oculus'),
+            oculusCell: jQuery('#oculus'),
             oculusTracker: jQuery('#oculusTracker'),
+            cardboard: jQuery('#cardboard'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop'),
             anaglyphCell: jQuery('#anaglyphCell'),
@@ -202,11 +204,13 @@ define([
         };
         this.visual.stereoscopic = {
             anaglyph: jQuery('#anaglyph'),
+            oculus: jQuery('#oculus'),
             sideBySide3D: jQuery('#3DsideBySide'),
             onTop3D: jQuery('#3DonTop')
         };
         this.visual.stereoscopicCell = {
             anaglyphCell: jQuery('#anaglyphCell'),
+            oculusCell: jQuery('#oculus'),
             sideBySide3DCell: jQuery('#3DsideBySideCell'),
             onTop3DCell: jQuery('#3DonTopCell')
         };

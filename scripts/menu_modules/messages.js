@@ -212,7 +212,9 @@ define([
         reset: "Click to RESET THE CRYSTALWALK APPLICATION",
         printMode: "Click to SET PRINT MODE PRESET",
         screenMode: "Click to SET SCREEN MODE PRESET",
-        swapBtn: "CLICK TO SWITCH BETWEEN UNIT CELL AND MOTIF VIEWS"
+        swapBtn: "CLICK TO SWITCH BETWEEN UNIT CELL AND MOTIF VIEWS",
+        oculusTracker: "CLICK TO ENABLE/DISABLE OCULUS RIFT MOTION TRACKER",
+        cardboard: "CLICK TO ENABLE/DISABLE CARDBOARD VIEW AND TRACKERS"
     };
     
     // Contructor //

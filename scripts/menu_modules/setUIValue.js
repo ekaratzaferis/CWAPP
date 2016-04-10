@@ -864,11 +864,11 @@ define([
             case 'motifVisibilityInUC':{
                 if (value === true) {
                     html.motif.other.motifVisibilityInUC.addClass('active');
-                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/lockCamerasActive.png');
+                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/motif-icon-white.png');
                 }
                 else {
                     html.motif.other.motifVisibilityInUC.removeClass('active');
-                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/lockCameras.png');
+                    html.motif.other.motifVisibilityInUC.find('img').attr('src','Images/motif-icon.png');
                 }
                 break; 
             }
@@ -1037,12 +1037,11 @@ define([
                 break;
             }
             case 'oculus':{
-                if (value === false) {
-                    if (html.visual.parameters.oculus.hasClass('active')) html.visual.parameters.oculus.button('toggle');
+                if (value === true){
+                    _.each(html.visual.oculus, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.oculus.addClass('active');
                 }
-                else {
-                    if (!(html.visual.parameters.oculus.hasClass('active'))) html.visual.parameters.oculus.button('toggle');   
-                }
+                else html.visual.stereoscopic.oculus.removeClass('active');
                 break;
             }
             case 'oculusTracker':{
@@ -1051,6 +1050,15 @@ define([
                 }
                 else {
                     if (!(html.visual.oculusTracker.oculus.hasClass('active'))) html.visual.parameters.oculusTracker.button('toggle');   
+                }
+                break;
+            }
+            case 'cardboard':{
+                if (value === false) {
+                    if (html.visual.parameters.cardboard.hasClass('active')) html.visual.parameters.cardboard.button('toggle');
+                }
+                else {
+                    if (!(html.visual.parameters.cardboard.hasClass('active'))) html.visual.parameters.cardboard.button('toggle');   
                 }
                 break;
             }
@@ -1076,6 +1084,14 @@ define([
                     html.visual.stereoscopicCell.anaglyphCell.addClass('active');
                 }
                 else html.visual.stereoscopicCell.anaglyphCell.removeClass('active');
+                break;
+            }
+            case 'oculusCell':{
+                if (value === true){
+                    _.each(html.visual.oculusCell, function($param, a) { $param.removeClass('active');});
+                    html.visual.stereoscopic.oculusCell.addClass('active');
+                }
+                else html.visual.stereoscopic.oculusCell.removeClass('active');
                 break;
             }
             case 'sideBySideCell':{
@@ -1481,10 +1497,13 @@ define([
                 takeAction('sideBySide',false);
                 takeAction('onTop',false);
                 takeAction('anaglyphCell',false);
+                takeAction('oculusCell',false);
                 takeAction('sideBySideCell',false);
                 takeAction('onTopCell',false);
                 takeAction('crystalCamTargetOn',true);
                 takeAction('leapMotion',false);
+                takeAction('cardboard',false);
+                takeAction('oculusTracker',false);
                 takeAction('crystalClassic',true);
                 takeAction('cellClassic',true);
                 takeAction('fog',false);
@@ -1941,6 +1960,10 @@ define([
                 PubSub.publish(events.OCULUS_CRYSTAL_TRACKER, value);
                 break;
             }
+            case 'cardboard':{
+                PubSub.publish(events.CARDBOARD, value);
+                break;
+            }
             case 'sideBySide':{
                 PubSub.publish(events.SIDE_BY_SIDE_3D_CRYSTAL, value);
                 break;
@@ -1951,6 +1974,10 @@ define([
             }
             case 'anaglyphCell':{
                 PubSub.publish(events.ANAGLYPH_EFFECT_UNIT_CELL, value);
+                break;
+            }
+            case 'oculusCell':{
+                PubSub.publish(events.OCULUS_UNIT_CELL, value);
                 break;
             }
             case 'sideBySideCell':{
