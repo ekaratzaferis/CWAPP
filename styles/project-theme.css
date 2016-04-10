@@ -4132,5 +4132,5 @@ margin-left: 200px;
 }
 #atomPositioningAuto, #atomPositioningABC, atomPositioningXYZ { letter-spacing: 0px!important; }
 .margTop10 { margin-top: 10px!important; }
-.experimental { box-shadow: 0 0 3px 2px #4D4950; }
-.experimental.active { box-shadow: 0 0 3px 2px #4D4950!important; }
+.experimental { background-color: #76760a!important; }
+.experimental.active { background-color: #abab20!important; }

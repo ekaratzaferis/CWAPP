@@ -158,7 +158,9 @@ define([
         'reset':'top',
         'printMode':'top',
         'screenMode':'top',
-        'swapBtn':'bottom'
+        'swapBtn':'bottom',
+        'oculusTracker':'top',
+        'cardboard':'top'
     };
     
     var $messageList = undefined;
