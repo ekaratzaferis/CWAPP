@@ -1020,7 +1020,7 @@ require([
     unitCellRenderer.initStereoEffect({sideBySide : arg.sideBySideCell});
   });
   menu.onExportPNG(function(message, arg) { 
-    if(arg.pngOptions.frameIT){
+    if(arg.pngOptions.frameIT){ 
       var storeBoll = orbitCrystal.control.syncCams;
       orbitCrystal.syncCams(false);
       orbitUnitCell.syncCams(false);

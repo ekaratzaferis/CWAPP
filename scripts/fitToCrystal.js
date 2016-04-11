@@ -45,17 +45,13 @@ define([
       centroid.divideScalar( g.vertices.length );
     }
     //
- 
-    camera.updateMatrix(); // make sure camera's local matrix is updated
-    camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-    camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-
+    
     var camLookingAt = centroid, counter = 0 ;
     this.orbitControl.control.target = centroid ;
     this.orbitControl.update();
-    
+  
     var frustum = new THREE.Frustum();
-    frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
+    frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
     for (var j = frustum.planes.length - 1; j >= 0; j--) {  
       var p = frustum.planes[j]; 
@@ -69,7 +65,7 @@ define([
 
     var finished = false;
   
-    while( finished === false && camera.position.length() > 2 && counter < 1000 ){ /* counter is bug handler */
+    while( finished === false && camera.position.length() > 2 && counter < 10000 ){ /* counter is bug handler */
      
       var vec = camLookingAt.clone().sub(camera.position.clone());
       vec.setLength(vec.length() + sign);
@@ -79,13 +75,9 @@ define([
       MCpos.setLength(MCpos.length()-1);  
       this.scene.movingCube.position.copy(MCpos);
       camera.position.copy(newPos);
-
-      camera.updateMatrix(); // make sure camera's local matrix is updated
-      camera.updateMatrixWorld(); // make sure camera's world matrix is updated
-      camera.matrixWorldInverse.getInverse( camera.matrixWorld );
   
       var frustum = new THREE.Frustum();
-      frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
+      frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
       
       finished = (sign === -1) ? finished : true ;
 
@@ -109,7 +101,9 @@ define([
       
       counter++;
     }  
-    
+    console.log(this.orbitControl.camera.position);
+    console.log(this.orbitControl.control.target);
+    this.orbitControl.update();
   }; 
 
   function checkCollision(p, camera, position, radius, visibility, sign, bool){

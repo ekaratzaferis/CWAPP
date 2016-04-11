@@ -286,12 +286,15 @@ define([
                 .append(qrDiv)
                 .append(urlDiv)
                 .appendTo(divToPrintWrapper);
- 
+            
+            this.crystalRenderer.cameras[0].updateMatrix(); // make sure camera's local matrix is updated
+            this.crystalRenderer.cameras[0].updateMatrixWorld(); // make sure camera's world matrix is updated
+
             tempRenderer.render(
                 this.crystalRenderer.explorer.object3d, 
                 this.crystalRenderer.cameras[0] 
             );  
-   
+              
             html2canvas($(divToPrintWrapper), {
               onrendered: function (canvas) { 
                 var imgSrc = canvas.toDataURL(undefined, 1); 
