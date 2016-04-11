@@ -1193,12 +1193,13 @@ require([
   
   function loadJSON(callback) {   
   
-    var xobj = new XMLHttpRequest();
+    var xobj = new XMLHttpRequest(); 
+
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'settings.json', true); // Replace 'my_data' with the path to your file
-
+ 
     xobj.onreadystatechange = function () { 
-      
+      console.log(99);
       if (xobj.readyState == 4 ) {
         // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
        
