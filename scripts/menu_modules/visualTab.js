@@ -168,7 +168,8 @@ define([
             (html.visual.parameters.oculus.hasClass('active')) ? value = false : value = true;
             $setUI.setValue({
                 oculus:{
-                    publish:{oculus:value}
+                    publish:{oculus:value},
+                    value:value
                 }
             });
         });
@@ -177,6 +178,14 @@ define([
             $setUI.setValue({
                 oculusTracker:{
                     publish:{oculusTracker:value}
+                }
+            });
+        });
+        html.visual.parameters.cardboard.on('click', function() {
+            (html.visual.parameters.cardboard.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                cardboard:{
+                    publish:{cardboard:value}
                 }
             });
         });
@@ -203,6 +212,15 @@ define([
             $setUI.setValue({
                 anaglyphCell:{
                     publish:{anaglyphCell:value},
+                    value:value
+                }
+            });
+        });
+        html.visual.parameters.oculusCell.on('click', function() {
+            (html.visual.parameters.oculusCell.hasClass('active')) ? value = false : value = true;
+            $setUI.setValue({
+                oculusCell:{
+                    publish:{oculusCell:value},
                     value:value
                 }
             });
