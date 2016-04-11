@@ -332,6 +332,7 @@ require([
   orbitUnitCell.setSyncedCamControl(orbitCrystal);
   orbitCrystal.setSyncedCamControl(orbitUnitCell); 
 
+
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
   var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "perspective", true, 'motif'   );
   var motifCamZ = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "perspective", true, 'motif'   );
@@ -444,7 +445,13 @@ require([
 
   // Device Orientation Controls for mobile 
   var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true); 
-   
+  
+  // experimental feature 
+  unitCellRenderer.getMainCamera().position.set( crystalRenderer.getMainCamera().position.x, crystalRenderer.getMainCamera().position.y, crystalRenderer.getMainCamera().position.z );   
+  orbitUnitCell.control.target = orbitCrystal.control.target.clone();
+  orbitCrystal.syncCams(true);
+  orbitUnitCell.syncCams(true);
+
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     restoreMechanism.globalReset();

@@ -11,7 +11,8 @@ define([
   'millerplane', 
   'crystalAtom', 
   'motifExplorer', 
-  'explorer'
+  'explorer',
+  'unitCellExplorer'
 ], function(
   jQuery, 
   PubSub, 
@@ -24,7 +25,8 @@ define([
   MillerPlane, 
   CrystalAtom, 
   MotifExplorer, 
-  Explorer
+  Explorer,
+  UnitCellExplorer
 ) {
   var events = {
     LOAD: 'lattice.load',
@@ -74,6 +76,7 @@ define([
     this.gridPointsPos = [];
     this.grids = [];
     this.motifSceneGrids = [];
+    this.unitCellSceneGrids = [];
     this.hexGrids = {};
     this.faces = [];
     this.gradeParameters = {"radius" : 2, "cylinderColor" : "A19EA1" , "faceOpacity" : 3 , "faceColor" : "907190"};
@@ -1464,6 +1467,11 @@ define([
     });
     this.motifSceneGrids.splice(0);
 
+    _.each(this.unitCellSceneGrids, function(grid, reference) {
+      grid.grid.destroy(); 
+    });
+    this.unitCellSceneGrids.splice(0);
+
   }; 
   Lattice.prototype.updateLatticeUI = function(params){
     
@@ -1597,6 +1605,7 @@ define([
     var _this = this;
     var visible = (this.gradeChoice.grid  === true) ;
     var scene = MotifExplorer.getInstance().object3d;
+    var scene2 = UnitCellExplorer.getInstance().object3d;
 
     // erase previous grid  
      
@@ -1618,16 +1627,22 @@ define([
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({ grid:g, origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
-                    
+
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+                      
                     destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+               
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ;
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     usedGridOrigins[originReference] = 1;
                      
@@ -1646,16 +1661,22 @@ define([
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+                    
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     destinationReference = 'r_' + _x + '_' + (1+_y) + '_' + _z + '_0' ;
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     usedGridOrigins[originReference] = 1;
                 }
@@ -1672,15 +1693,21 @@ define([
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ; 
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     usedGridOrigins[originReference] = 1;
                 }
@@ -1696,15 +1723,21 @@ define([
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+
                     destinationReference = 'r_' + _x + '_' + _y + '_' + (1+_z) + '_0';
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
 
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
+
                     destinationReference = 'r_' + (1+_x) + '_' + (1+_y) + '_' + (1+_z) + '_0' ;
                     destination = _this.points[destinationReference];
                     g = new Grid(scene, origin.object3d.position, destination.object3d.position, visible);
                     _this.motifSceneGrids.push({grid:g, origin:originReference,destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0});
+
+                    _this.unitCellSceneGrids.push({ grid:new Grid(scene2, origin.object3d.position, destination.object3d.position, visible), origin:originReference, destination:destinationReference, a:origin.object3d.position, b:destination.object3d.position, updated:0 });
 
                     usedGridOrigins[originReference] = 1;
                 }
@@ -1939,6 +1972,10 @@ define([
         _this.motifSceneGrids[reference] = false;
       });  
 
+      _.each(this.unitCellSceneGrids, function(g, reference) {
+        _this.unitCellSceneGrids[reference] = false;
+      });
+
       var a = parameters.scaleZ ;
       var c = parameters.scaleY ;
       var co = 0 , previousPoint, currentPoint; 
@@ -1985,7 +2022,7 @@ define([
             });
 
             _this.createHexGrid(hexPoints,false);
-            if(_y>0 && _y < 2 && _z < 1 && _x < 1) {
+            if( _y < 2 && _z < 1 && _x < 1) {
               _this.createHexGridMotifScene(hexPoints,false);
             }
             _this.hexagonalShapes.push(hexPoints); 
@@ -2008,6 +2045,7 @@ define([
     var _this = this;
     var visible = (this.gradeChoice.grid ); //recreate motif inm lattice and add atom in motif
     var scene = MotifExplorer.getInstance().object3d;
+    var scene2 = UnitCellExplorer.getInstance().object3d;
 
     if(vertical){
       var a = hexPoints[0];
@@ -2030,6 +2068,12 @@ define([
 
       _this.motifSceneGrids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0 });
       updateGrid(_this.motifSceneGrids[_this.motifSceneGrids.length-1]);
+
+      var g2 = new Grid(scene2, hexPoints[0], hexPoints[1],  visible);
+
+      _this.unitCellSceneGrids.push({ grid:g2, origin:originReference, destination:destinationReference, a:a, b:b, updated:0 });
+      updateGrid(_this.unitCellSceneGrids[_this.unitCellSceneGrids.length-1]);
+ 
          
     }
     else{ 
@@ -2061,6 +2105,10 @@ define([
           var g = new Grid(scene, a,b, visible);
           _this.motifSceneGrids.push({ grid:g, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
           updateGrid(_this.motifSceneGrids[_this.motifSceneGrids.length-1]);
+
+          var g2 = new Grid(scene2, a,b, visible);
+          _this.unitCellSceneGrids.push({ grid:g2, origin:originReference, destination:destinationReference, a:a, b:b, updated:0  });
+          updateGrid(_this.unitCellSceneGrids[_this.unitCellSceneGrids.length-1]);
         //}
       };
     }  
@@ -2287,6 +2335,25 @@ define([
 
             // temp features
             _.each(_this.motifSceneGrids, function(grid){ 
+              if(grid.origin == reference) {  
+                grid.a = pos;
+                grid.updated++; 
+                if(grid.updated==2) { 
+                  grid.updated = 0;
+                  updateGrid(grid);
+                }
+              }
+              else if(grid.destination == reference){ 
+                grid.b = pos;
+                grid.updated++; 
+                if(grid.updated==2){ 
+                  grid.updated = 0;
+                  updateGrid(grid);
+                } 
+              }
+            });
+
+            _.each(_this.unitCellSceneGrids, function(grid){ 
               if(grid.origin == reference) {  
                 grid.a = pos;
                 grid.updated++; 
@@ -2780,6 +2847,9 @@ define([
           grid.grid.setVisible(_this.gradeChoice.grid);
         });
        
+        _.each(this.unitCellSceneGrids, function(grid) {
+          grid.grid.setVisible(_this.gradeChoice.grid);
+        });
     }; 
   };
 
@@ -2800,7 +2870,12 @@ define([
       grid.grid.setRadius(_this.gradeParameters.radius);
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
- 
+    
+    _.each(this.unitCellSceneGrids, function(grid) { 
+      grid.grid.setRadius(_this.gradeParameters.radius);
+      grid.grid.setColor( _this.gradeParameters.cylinderColor); 
+    });
+
     _.each(this.faces, function(face) {
       face.setOpacity(_this.gradeParameters.faceOpacity);
       face.setColor( _this.gradeParameters.faceColor);
