@@ -406,7 +406,7 @@ define([
                 (html.motif.panel.atomPositioningXYZ.hasClass('buttonPressed')) ? value = false : value = true;
                 $setUIValue.setValue({
                     atomPositioningXYZ:{
-                        publish: {xyz:value},
+                        publish: {abc:value},
                         value: value
                     }
                 });
@@ -418,7 +418,7 @@ define([
                 (html.motif.panel.atomPositioningABC.hasClass('buttonPressed')) ? value = false : value = true;
                 $setUIValue.setValue({
                     atomPositioningABC:{
-                        publish: {abc:value},
+                        publish: {xyz:value},
                         value: value
                     }
                 });

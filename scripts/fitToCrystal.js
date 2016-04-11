@@ -69,7 +69,7 @@ define([
 
     var finished = false;
   
-    while( finished === false && camera.position.length() > 2){ /* counter is bug handler */
+    while( finished === false && camera.position.length() > 2 && counter < 1000 ){ /* counter is bug handler */
      
       var vec = camLookingAt.clone().sub(camera.position.clone());
       vec.setLength(vec.length() + sign);
@@ -85,7 +85,7 @@ define([
       camera.matrixWorldInverse.getInverse( camera.matrixWorld );
   
       var frustum = new THREE.Frustum();
-      frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
+      frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
       
       finished = (sign === -1) ? finished : true ;
 

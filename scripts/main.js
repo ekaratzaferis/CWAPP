@@ -305,7 +305,7 @@ require([
   crystalRenderer.initHud(navArrowsScene.object3d, navCubeScene.object3d, displayFactor);
 
   var unitCellRenderer = new Renderer(unitCellScene, 'unitCellRenderer', 'cell');
-  unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 20,20,40, 15);
+  unitCellRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 30,30,60, 15);
 
   var motifRenderer = new Renderer(motifScene, 'motifRenderer','motif'); 
   motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 0,0,50, 15);
@@ -446,9 +446,7 @@ require([
   // Device Orientation Controls for mobile 
   var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true); 
   
-  // experimental feature 
-  unitCellRenderer.getMainCamera().position.set( crystalRenderer.getMainCamera().position.x, crystalRenderer.getMainCamera().position.y, crystalRenderer.getMainCamera().position.z );   
-  orbitUnitCell.control.target = orbitCrystal.control.target.clone();
+  // experimental feature  
   orbitCrystal.syncCams(true);
   orbitUnitCell.syncCams(true);
 
@@ -538,7 +536,7 @@ require([
   menu.onRadiusToggle(function(message, arg) { 
     lattice.toggleRadius(arg); 
   });
-  menu.onAtomPosModeChange(function(message, arg) {   
+  menu.onAtomPosModeChange(function(message, arg) { 
     motifEditor.atomPosMode(arg); 
   });
   menu.onSoundVolume(function(message, arg) {   
@@ -1013,7 +1011,12 @@ require([
   });
   menu.onExportPNG(function(message, arg) { 
     if(arg.pngOptions.frameIT){
+      var storeBoll = orbitCrystal.control.syncCams;
+      orbitCrystal.syncCams(false);
+      orbitUnitCell.syncCams(false);
       fitToCrystal.fit(); 
+      orbitCrystal.syncCams(storeBoll);
+      orbitUnitCell.syncCams(storeBoll);
     }
      
     storeMechanism.exportPNG(arg);
@@ -1199,7 +1202,7 @@ require([
     xobj.open('GET', 'settings.json', true); // Replace 'my_data' with the path to your file
  
     xobj.onreadystatechange = function () { 
-      console.log(99);
+    
       if (xobj.readyState == 4 ) {
         // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
        
