@@ -14,17 +14,46 @@ define([
     this.lattice = lattice ; 
     this.renderer = renderer ; 
     this.scene = scene;
+    this.lastCameState = {
+      position : this.orbitControl.camera.position.clone(), 
+      target : this.orbitControl.control.target.clone()
+    };
+
   };
- 
+  FitToCrystal.prototype.revertCamera = function(arg){
+    var camera = this.orbitControl.camera;
+    camera.position.copy(this.lastCameState.position);
+    this.orbitControl.control.target.copy(this.lastCameState.target); 
+  };
   FitToCrystal.prototype.fit = function(){
     
     var  sign = -1; // direction
     var camera = this.orbitControl.camera;
 
+    this.lastCameState.position = camera.position.clone();
+    this.lastCameState.target = this.orbitControl.control.target.clone();
+
+    // find centroid
+    var g = this.lattice.customBox(this.lattice.viewBox);
+    var centroid = new THREE.Vector3(0,0,0);
+
+    if(g !== undefined){ 
+      centroid = new THREE.Vector3(); 
+      for ( var z = 0, l = g.vertices.length; z < l; z ++ ) {
+        centroid.add( g.vertices[ z ] ); 
+      }  
+      centroid.divideScalar( g.vertices.length );
+    }
+    //
+ 
     camera.updateMatrix(); // make sure camera's local matrix is updated
     camera.updateMatrixWorld(); // make sure camera's world matrix is updated
     camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
+    var camLookingAt = centroid, counter = 0 ;
+    this.orbitControl.control.target = centroid ;
+    this.orbitControl.update();
+    
     var frustum = new THREE.Frustum();
     frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
@@ -39,11 +68,9 @@ define([
     };
 
     var finished = false;
- 
-    var camLookingAt = this.orbitControl.control.target.clone(), counter = 0 ;
-      
+  
     while( finished === false && camera.position.length() > 2){ /* counter is bug handler */
-       
+     
       var vec = camLookingAt.clone().sub(camera.position.clone());
       vec.setLength(vec.length() + sign);
        
@@ -88,7 +115,7 @@ define([
   function checkCollision(p, camera, position, radius, visibility, sign, bool){
 
     if(visibility === false){
-      return bool;
+      //return bool;
     }
 
     var sphere = new THREE.Sphere(position, radius); 

@@ -428,6 +428,7 @@ require([
 
   // fit camera to crystal 
   var fitToCrystal = new FitToCrystal(orbitCrystal, lattice, crystalRenderer, crystalScene);
+  storeMechanism.fitToCrystal = fitToCrystal;
 
   // for menu - to be removed!
   menu.toggleExtraParameter('i', 'none');

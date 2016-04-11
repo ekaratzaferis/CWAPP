@@ -1064,7 +1064,7 @@ define([
   };
 
   Lattice.prototype.setCSGmode = function(arg, reset, newBox) { 
-     
+      
     var _this = this, i = 0;
     this.viewMode = arg.mode ; 
       

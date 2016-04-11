@@ -18,7 +18,7 @@ define([
     
     // Constructor //
 
-    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam, motifYcam, motifZcam, crystalRenderer, stlExporter, menuIn, gearTour) { 
+    function StoreProject(lattice, motifeditor, camera, cellCamera, motifXcam, motifYcam, motifZcam, crystalRenderer, stlExporter, menuIn, gearTour, fitToCrystal) { 
         this.idle = false;
         this.lattice = lattice;
         this.motifeditor = motifeditor;
@@ -32,6 +32,7 @@ define([
         this.gearTour = gearTour;
         this.dollGearBarME ;
         this.LOD;
+        this.fitToCrystal = fitToCrystal;
         menu = menuIn;
     };
      
@@ -209,7 +210,7 @@ define([
             // Caprture Snapshot //
             
             var lod = this.LOD.lodLevel;
-            this.LOD.setLOD({lod:5});
+            this.LOD.setLOD({lod:5, dontReset : true});
            
             this.crystalRenderer.enabledRenders.doll = false;
             this.crystalRenderer.enabledRenders.compass = false;
@@ -311,7 +312,8 @@ define([
                 _this.crystalRenderer.enabledRenders.navCube = true;
                 divToPrint.remove(); 
                 divToPrintWrapper.remove(); 
-                _this.LOD.setLOD({lod :lod});
+                _this.LOD.setLOD({lod :lod, dontReset : true});
+                _this.fitToCrystal.revertCamera();
               }
             });
              

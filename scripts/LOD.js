@@ -40,10 +40,13 @@ define([
       this.lattice.cachedAtoms[i].lod = this.lodLevel;
       var chs = this.lattice.cachedAtoms[i].setNewLodGeometry();
     }
-    this.lattice.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
-    this.lattice.setCSGmode({mode : 'crystalClassic'}, 'reset');
-    this.menu.chooseActiveCrystalMode('crystalClassic');
 
+    if(arg.dontReset === undefined){
+      this.lattice.crystalNeedsRecalculation = {'crystalSolidVoid' : true, 'crystalSubstracted' : true}; // for view modes 
+      this.lattice.setCSGmode({mode : 'crystalClassic'}, 'reset');
+      this.menu.chooseActiveCrystalMode('crystalClassic');
+    }
+ 
     // ME atoms
     for (var i = 0, len = this.motifEditor.unitCellAtoms.length; i < len; i++) { 
       this.motifEditor.unitCellAtoms[i].lod = this.lodLevel;
@@ -61,10 +64,13 @@ define([
       this.motifEditor.newSphere.lod = this.lodLevel; 
       this.motifEditor.newSphere.setNewLodGeometry(); 
     }
-    this.motifEditor.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; 
-    if(this.motifEditor.viewMode !== 'cellClassic' ){
-      this.motifEditor.setCSGmode({mode : 'cellClassic'} , 'reset' );
-      this.menu.chooseActiveUnitCellMode('cellClassic');
+
+    if(arg.dontReset === undefined){
+      this.motifEditor.cellNeedsRecalculation = {'cellSolidVoid' : true, 'cellSubstracted' : true}; 
+      if(this.motifEditor.viewMode !== 'cellClassic' ){
+        this.motifEditor.setCSGmode({mode : 'cellClassic'} , 'reset' );
+        this.menu.chooseActiveUnitCellMode('cellClassic');
+      }
     }
   
   } 
