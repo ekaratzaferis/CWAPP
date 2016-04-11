@@ -617,8 +617,18 @@ require([
     var p = new THREE.Vector3(parameters.x, parameters.y, parameters.z);
      
     unitCellScene.updateShadowCameraProperties( p.length()*2);
+      
+    var t = orbitCrystal.control.target.clone();
 
-    fitToCrystal.fit();
+    fitToCrystal.fit(); 
+
+    fitToCrystal.revertCamera();
+
+    var storeBoll = orbitCrystal.control.syncCams; 
+    orbitCrystal.syncCams(storeBoll);
+    orbitUnitCell.syncCams(storeBoll);
+
+
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
