@@ -316,7 +316,7 @@ define([
                 divToPrint.remove(); 
                 divToPrintWrapper.remove(); 
                 _this.LOD.setLOD({lod :lod, dontReset : true});
-                _this.fitToCrystal.revertCamera();
+                _this.fitToCrystal.revertCamera({});
               }
             });
              

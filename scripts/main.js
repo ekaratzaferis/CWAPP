@@ -450,6 +450,25 @@ require([
   orbitCrystal.syncCams(true);
   orbitUnitCell.syncCams(true);
 
+   
+  if($(window).width() < 400){
+    // mobile
+
+    setTimeout( function(){
+      dollEditor.setVisibility(false); 
+      hudCube.setVisibility(false);
+      hudArrows.setVisibility(false);
+      CubeEvent.enableCubeEvents = false ;
+      sceneResizer.resize('oculusCrystal');
+       
+      crystalScreenEvents.state = 'oculusCrystal';
+      //fullScreen.fs(); 
+      
+      crystalRenderer.initCardBoard({onTop:true});
+    },2000);
+    
+  }
+  
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
     restoreMechanism.globalReset();
@@ -620,9 +639,8 @@ require([
       
     var t = orbitCrystal.control.target.clone();
 
-    fitToCrystal.fit(); 
-
-    fitToCrystal.revertCamera();
+    fitToCrystal.fit({ target : t}); 
+ 
 
     var storeBoll = orbitCrystal.control.syncCams; 
     orbitCrystal.syncCams(storeBoll);

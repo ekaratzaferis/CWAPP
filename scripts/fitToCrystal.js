@@ -22,17 +22,24 @@ define([
   };
   FitToCrystal.prototype.revertCamera = function(arg){
     var camera = this.orbitControl.camera;
-    camera.position.copy(this.lastCameState.position);
-    this.orbitControl.control.target.copy(this.lastCameState.target); 
+
+    if(arg.position === undefined){
+      camera.position.copy(this.lastCameState.position);
+    }
+
+    if(arg.target === undefined){
+      this.orbitControl.control.target.copy(this.lastCameState.target); 
+    }
+      
   };
-  FitToCrystal.prototype.fit = function(){
+  FitToCrystal.prototype.fit = function(arg){
     
     var  sign = -1; // direction
     var camera = this.orbitControl.camera;
 
     this.lastCameState.position = camera.position.clone();
     this.lastCameState.target = this.orbitControl.control.target.clone();
-
+  
     // find centroid
     var g = this.lattice.customBox(this.lattice.viewBox);
     var centroid = new THREE.Vector3(0,0,0);
@@ -46,38 +53,45 @@ define([
     }
     //
     
-    var camLookingAt = centroid, counter = 0 ;
-    this.orbitControl.control.target = centroid ;
+    var camLookingAt = (arg && arg.target) ? arg.target : centroid, counter = 0 ;
+    this.orbitControl.control.target.copy(camLookingAt); 
     this.orbitControl.update();
-  
+
+    camera.updateMatrix(); // make sure camera's local matrix is updated
+    camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+    camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+
     var frustum = new THREE.Frustum();
-    frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
+    frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
     
     for (var j = frustum.planes.length - 1; j >= 0; j--) {  
-      var p = frustum.planes[j]; 
-      for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) { 
-        var sphere = new THREE.Sphere(this.lattice.actualAtoms[i].object3d.position.clone(), this.lattice.actualAtoms[i].radius); 
+      var p = frustum.planes[j];  
+      _.each(this.lattice.points, function(point, reference) { 
+        var sphere = new THREE.Sphere(point.object3d.position.clone(), point.radius); 
         if(p.distanceToSphere(sphere) < 0.1 ){
           sign = 1;
         } 
-      };
+      }); 
     };
 
     var finished = false;
   
-    while( finished === false && camera.position.length() > 2 && counter < 10000 ){ /* counter is bug handler */
+    while( finished === false && camera.position.length() > 2 && counter < 1000 ){ /* counter is bug handler */
      
-      var vec = camLookingAt.clone().sub(camera.position.clone());
-      vec.setLength(vec.length() + sign);
+      var camToTargetVec = camLookingAt.clone().sub(camera.position.clone());
        
-      var newPos = new THREE.Vector3(-1*vec.x, -1*vec.y, -1*vec.z);
-      var MCpos = newPos.clone();  
-      MCpos.setLength(MCpos.length()-1);  
-      this.scene.movingCube.position.copy(MCpos);
-      camera.position.copy(newPos);
+      var newPos = new THREE.Vector3(-1*camToTargetVec.x, -1*camToTargetVec.y, -1*camToTargetVec.z);
+       
+      newPos.setLength(newPos.length()+1*sign);
+ 
+      camera.position.copy(newPos.add(camLookingAt));
+
+      camera.updateMatrix(); // make sure camera's local matrix is updated
+      camera.updateMatrixWorld(); // make sure camera's world matrix is updated
+      camera.matrixWorldInverse.getInverse( camera.matrixWorld );
   
       var frustum = new THREE.Frustum();
-      frustum.setFromMatrix( new THREE.Matrix4().multiply( camera.projectionMatrix, camera.matrixWorldInverse ) );
+      frustum.setFromMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
       
       finished = (sign === -1) ? finished : true ;
 
@@ -100,10 +114,7 @@ define([
       };
       
       counter++;
-    }  
-    console.log(this.orbitControl.camera.position);
-    console.log(this.orbitControl.control.target);
-    this.orbitControl.update();
+    }   
   }; 
 
   function checkCollision(p, camera, position, radius, visibility, sign, bool){

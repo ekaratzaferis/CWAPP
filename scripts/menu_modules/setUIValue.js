@@ -1091,7 +1091,7 @@ define([
                     _.each(html.visual.oculusCell, function($param, a) { $param.removeClass('active');});
                     html.visual.stereoscopic.oculusCell.addClass('active');
                 }
-                else html.visual.stereoscopic.oculusCell.removeClass('active');
+                //else html.visual.stereoscopic.oculusCell.removeClass('active');
                 break;
             }
             case 'sideBySideCell':{
