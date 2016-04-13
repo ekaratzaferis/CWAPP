@@ -404,28 +404,30 @@ require([
     if (!e.alpha) {
       return;
     }
-    var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true);
-    deviceOrientationControls.connect();
-    deviceOrientationControls.update();
+    setTimeout( function(){ 
+      var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true);
+      deviceOrientationControls.connect();
+      deviceOrientationControls.update();
 
-    orbitCrystal.disableUpdate = true;
+      orbitCrystal.disableUpdate = true;
 
-    element.addEventListener('click', fullscreen, false);
+      element.addEventListener('click', fullscreen, false);
 
-    dollEditor.setVisibility(false); 
-    hudCube.setVisibility(false);
-    hudArrows.setVisibility(false);
-    CubeEvent.enableCubeEvents = false ;
-    sceneResizer.resize('oculusCrystal');
-     
-    crystalScreenEvents.state = 'oculusCrystal';
-    //fullScreen.fs(); 
-  
-    crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+      dollEditor.setVisibility(false); 
+      hudCube.setVisibility(false);
+      hudArrows.setVisibility(false);
+      CubeEvent.enableCubeEvents = false ;
+      sceneResizer.resize('oculusCrystal');
+       
+      crystalScreenEvents.state = 'oculusCrystal';
+      //fullScreen.fs(); 
+    
+      crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
 
-    crystalRenderer.initCardBoard({onTop:true});
+      crystalRenderer.initCardBoard({onTop:true});
 
-    window.removeEventListener('deviceorientation', setOrientationControls, true);
+      window.removeEventListener('deviceorientation', setOrientationControls, true);
+    }, 3000);
   }
 
   // leap motion
