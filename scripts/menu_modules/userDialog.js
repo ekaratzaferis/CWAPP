@@ -121,7 +121,11 @@ define([
             start_tutorial(); 
         });
         html.modals.dialog.doNotShowAgain.on('click',function(){
-            console.log('EDW KANEIS SAVE TA COOKIES');
+            var d = new Date();
+            var exdays = 1000;
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires=" + d.toGMTString();
+            document.cookie = 'hasVisited'+"="+'true'+"; "+expires; 
         });
         
         // Tutorial Layout //
@@ -138,11 +142,25 @@ define([
             tutorial_next(); 
         });
         
-        // Show info at startup //       <----------- AYTO TO TREXEIS MONO AN DEIS ME KAPOIO ELEGXO PWS YPARXOUN TA COOKIES
-        this.showInfoDialog({ messageID: 4 });
+        // Show info at startup // 
+        if(getCookie("hasVisited") === undefined){
+            this.showInfoDialog({ messageID: 4 });
+        }   
+        
         
     };
-    
+    function getCookie(key) {
+        var name = key + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return ;
+    }
     function start_tutorial(){
         html.tutorial.box.body.show();
         tutorial_step('1');

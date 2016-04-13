@@ -1248,7 +1248,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 400){
+          if($(window).width() < 400 || $(window).height() < 400){
           // mobile
    
             dollEditor.setVisibility(false); 
