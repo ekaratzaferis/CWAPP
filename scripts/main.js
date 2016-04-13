@@ -408,6 +408,8 @@ require([
     deviceOrientationControls.connect();
     deviceOrientationControls.update();
 
+    orbitCrystal.disableUpdate = true;
+
     element.addEventListener('click', fullscreen, false);
 
     dollEditor.setVisibility(false); 
