@@ -27,13 +27,42 @@ define([
     // Variables
     var argument = undefined;
     var $messageList = undefined;
+    var $interface = undefined;
     var html = undefined;
     var pubEvent = 'menu.dialog_result';
+    var steps = {
+        1 : {
+            element : 'tutorial_next',
+            text    : 'THIS IS STEP 1',
+            state   : true,
+            next    : '2'
+        },
+        2 : {
+            element : 'tutorial_close',
+            text    : 'THIS IS STEP 1112312311',
+            state   : false,
+            next    : '3'
+        },
+        3 : {
+            element : 'publicTab',
+            text    : 'THANOS',
+            state   : false,
+            next    : 'last'
+        },
+        last : {
+            element : 'notesTab',
+            text    : 'FERNANDO FERNANDO FERNANDO FERNANDO FERNANDO',
+            state   : false,
+            next    : ''
+        }
+    };
     
     // Contructor //
     function userDialog(argument) {
         // Acquire Module References
         if (!(_.isUndefined(argument.messages))) $messageList = argument.messages;
+        else return false;
+        if (!(_.isUndefined(argument.interfaceResizer))) $interface = argument.interfaceResizer;
         else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
@@ -86,6 +115,62 @@ define([
             PubSub.publish(pubEvent, argument);
             html.modals.dialog.warning.modal.caller = 'none';
         });
+        
+        // Info Modal Handlers //
+        html.modals.dialog.tutorial.on('click',function(){
+            start_tutorial(); 
+        });
+        html.modals.dialog.doNotShowAgain.on('click',function(){
+            console.log('EDW KANEIS SAVE TA COOKIES');
+        });
+        
+        // Tutorial Layout //
+        html.tutorial.box.body.draggable({
+            scroll: false,
+            handle: '#tutorialHeader'
+        });
+        
+        // Tutorial Handlers //
+        html.tutorial.box.close.on('click', function(){
+            finish_tutorial();
+        });
+        html.tutorial.box.next.on('click', function(){
+            tutorial_next(); 
+        });
+        
+        // Show info at startup //       <----------- AYTO TO TREXEIS MONO AN DEIS ME KAPOIO ELEGXO PWS YPARXOUN TA COOKIES
+        this.showInfoDialog({ messageID: 4 });
+        
+    };
+    
+    function start_tutorial(){
+        html.tutorial.box.body.show();
+        tutorial_step('1');
+    };
+    
+    function finish_tutorial(){
+        html.tutorial.box.body.hide('slow');
+        $interface.tutorialElementOff();
+    };
+    
+    function tutorial_next(){
+        var active = '';
+        _.each(steps, function($parameter, k){
+            if ($parameter.state === true) active = k;
+        });
+        if (active === 'last') finish_tutorial();
+        else {
+            steps[active].state = false;
+            tutorial_step(steps[active].next);
+        }
+    };
+    
+    function tutorial_step(i){
+        $interface.tutorialElementOff();
+        html.tutorial.box.text.html(steps[i].text);
+        steps[i].state = true;
+        $interface.tutorialElementOn({ id: steps[i].element });
+        if (i === 'last') html.tutorial.box.next.html('Finish');
     };
     
     userDialog.prototype.showWarningDialog = function(argument){

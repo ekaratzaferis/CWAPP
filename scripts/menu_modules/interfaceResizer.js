@@ -114,8 +114,6 @@ define([
         
         // Init Labels //
         this.showCanvasXYZLabels(false);
-        this.transformMenu(0.8);
-        this.closeMenu();
     };
     // Refresh canvas and screen width/height //
     function refreshDimensions(){
@@ -325,6 +323,24 @@ define([
     interfaceResizer.prototype.highlightElement = function(argument){
         jQuery('#'+argument.id).addClass('highlight');
         $animating = jQuery('#'+argument.id);
+    };
+    // Highlight HTML element fot tutorial //
+    interfaceResizer.prototype.tutorialElementOn = function(argument){
+        jQuery('#'+argument.id).addClass('highlight animating');
+        $animating = jQuery('#'+argument.id);
+    };
+    // Dehighlight HTML element for tutorial //
+    interfaceResizer.prototype.tutorialElementOff = function(){
+        if (!(_.isUndefined($animating))){
+            if ($animating.hasClass('stop')){
+                $animating.removeClass('highlight');
+                $animating.removeClass('animating');
+                $animating.removeClass('stop');
+                $animating.stop();
+            }
+            if ($animating.hasClass('animating')) $animating.addClass('stop');
+            if ($animating.hasClass('highlight')) $animating.addClass('animating');
+        }  
     };
     // Pick new label position inside the canvas //
     interfaceResizer.prototype.moveLabel = function(argument){

@@ -199,13 +199,14 @@ define([
         toolTipGeneratorModule = new tooltipGenerator({
             messages:messagesModule
         });
-        userDialogModule = new userDialog({
-            messages:messagesModule,
-            html:html
-        });
         interfaceResizerModule = new interfaceResizer({
             tooltipGenerator:toolTipGeneratorModule,
             messages:messagesModule,
+            html:html
+        });
+        userDialogModule = new userDialog({
+            messages:messagesModule,
+            interfaceResizer:interfaceResizerModule,
             html:html
         });
         getUIValueModule = new getUIValue({

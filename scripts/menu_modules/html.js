@@ -383,6 +383,16 @@ define([
             opacitySlider: jQuery('#iacOpacitySlider')
         };
         
+        // Tutorial //
+        this.tutorial = {};
+        this.tutorial.box = {
+            body: jQuery('#tutorialBox'),
+            title: jQuery('#tutorialLabel h2'),
+            close: jQuery('#closeTutorial'),
+            text: jQuery('#tutorial_text'),
+            next: jQuery('#tutorial_next')
+        }
+        
         // Modals //
         this.modals = {};
         this.modals.dialog = {
@@ -393,6 +403,8 @@ define([
                 continue: jQuery('#continueWarning')
             },
             info: jQuery('#info_modal'),
+            doNotShowAgain: jQuery('#doNotShowAgain'),
+            tutorial: jQuery('#tutorial'),
             error: jQuery('#error_modal')
         };
         this.modals.qr = {
