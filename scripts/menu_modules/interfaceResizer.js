@@ -114,6 +114,8 @@ define([
         
         // Init Labels //
         this.showCanvasXYZLabels(false);
+        this.transformMenu(0.8);
+        this.closeMenu();
     };
     // Refresh canvas and screen width/height //
     function refreshDimensions(){
