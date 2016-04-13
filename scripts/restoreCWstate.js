@@ -40,7 +40,7 @@ define([
     this.lod = lod; 
     this.cwObj; 
   }; 
-  RestoreCWstate.prototype.configureState = function(cwObj) { 
+  RestoreCWstate.prototype.configureState = function(cwObj, callbacks) { 
       
     var _this = this; 
     var latticeName = cwObj.system.latticeParams.lattice.latticeName;
@@ -55,6 +55,9 @@ define([
         _this.menu.setLatticeRestrictions(lattice.restrictions); 
         _this.menu.restore(cwObj); 
         _this.beginRestoring(cwObj);
+        for (var i = 0; i < callbacks.length ; i++) {
+          callbacks[i]();
+        };
       }); 
     }
     else{

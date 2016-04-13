@@ -420,7 +420,7 @@ require([
   storeMechanism.LOD = lod;
 
   // restoring
-  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod, dollGearBarME);
+  var restoreMechanism = new RestoreCWstate(menu, lattice, motifEditor, orbitCrystal, orbitUnitCell, motifRenderer.getSpecificCamera(0),motifRenderer.getSpecificCamera(1),motifRenderer.getSpecificCamera(2), crystalRenderer, unitCellRenderer, crystalScene, unitCellScene, hudCube, hudArrows, motifRenderer, soundMachine, atomMaterialManager, renderingModes, gearTour, dollEditor, lod, dollGearBarME, sceneResizer);
   
   // NoteManager
   var noteManager = new NoteManager(lattice, menu, crystalScene, crystalRenderer.getMainCamera());
@@ -449,26 +449,7 @@ require([
   // experimental feature  
   orbitCrystal.syncCams(true);
   orbitUnitCell.syncCams(true);
-
-   
-  if($(window).width() < 400){
-    // mobile
-
-    setTimeout( function(){
-      dollEditor.setVisibility(false); 
-      hudCube.setVisibility(false);
-      hudArrows.setVisibility(false);
-      CubeEvent.enableCubeEvents = false ;
-      sceneResizer.resize('oculusCrystal');
-       
-      crystalScreenEvents.state = 'oculusCrystal';
-     
-      crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
  
-      crystalRenderer.initOculusEffect({oculus : true}); 
-    },2000);
-    
-  }
   
   // lattice events binding
   menu.onLatticeChange(function(message, latticeName) {
@@ -1266,7 +1247,25 @@ require([
     })
     .done(function(res) {  
       if(res){
-        restoreMechanism.configureState(res.data); 
+        restoreMechanism.configureState(res.data, [function(){
+          if($(window).width() < 400){
+          // mobile
+   
+            dollEditor.setVisibility(false); 
+            hudCube.setVisibility(false);
+            hudArrows.setVisibility(false);
+            CubeEvent.enableCubeEvents = false ;
+            sceneResizer.resize('oculusCrystal');
+             
+            crystalScreenEvents.state = 'oculusCrystal';
+           
+            crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
+       
+            crystalRenderer.initOculusEffect({oculus : true}); 
+          }
+        }]
+        ); 
+        
       } 
     }); 
   } 
