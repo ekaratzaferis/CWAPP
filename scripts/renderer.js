@@ -39,6 +39,7 @@ define([
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: true }); 
     this.backgroundColor =  '#000000' ; 
     this.renderer.setSize( width, height);
+    this.renderer.setPixelRatio( window.devicePixelRatio );
 
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // options are THREE.BasicShadowMap | THREE.PCFShadowMap | THREE.PCFSoftShadowMap
