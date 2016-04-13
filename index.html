@@ -84,6 +84,44 @@
                     </div>
                     <!-- Canvas Tooltip -->
                     <div id="canvasTooltip"></div>
+                    <!-- Tutorial -->
+                    <div class="bravais-lattice-modal-container">
+                        <div class="modal bravais-lattice-modal" id="tutorialBox">
+                            <div class="modal-dialog" role="document" id="infoModalDialog">
+                                <div class="modal-content">
+                                    <div class="modal-header mega-header grayHeader" id="tutorialHeader">
+                                        <span id="steps"><img src="Images/steps.png" class="imgClose img-responsive" alt=""/></span>
+                                        <div class="modal-title-container" id="tutorialLabel">
+                                            <h2>Step-By-Step Tutorial</h2>
+                                        </div>
+                                        <div class="btn-close">
+                                            <button id="closeTutorial" type="button" class="btn btn-primary" aria-label="Close">
+                                                <span><img src="Images/close-icon-white.png" class="imgClose img-responsive" alt=""/></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="tutorial_body" class="tab-block visualization-block block-pad-sm theme-light">
+                                            <div class="block-content">
+                                                <div class="visualization-blocks-container">
+                                                    <div class="row row-1_0">
+                                                        <div class="col col-sm-12">
+                                                            <div id="tutorial_text">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="tutorial_next" class="btn btn-dark-02" data-dismiss="modal">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Individual Atom Controller -->
                     <div class="bravais-lattice-modal-container">
                         <div class="modal bravais-lattice-modal" id="iacBox">
@@ -3054,7 +3092,7 @@
 									<img src="Images/information.png" class="img-responsive" alt=""/>
 								</div>
 								<div class="modal-title-container" id="infoLabel">
-									<h2>Information</h2>
+									<h2>Welcome to CrystalWalk</h2>
 								</div>
 								<div class="btn-close">
 									<button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">
@@ -3067,7 +3105,8 @@
 								<p id="infoMessage">Error 404 Beer not found!</p>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-dark-02" data-dismiss="modal">Continue</button>
+								<button type="button" id="doNotShowAgain" class="btn btn-dark-02" data-dismiss="modal">Do not show me this again</button>
+								<button type="button" id="tutorial" class="btn btn-dark-02" data-dismiss="modal">&nbsp;&nbsp;Tutorial&nbsp;&nbsp;</button>
 							</div>
 						</div>
 					</div>

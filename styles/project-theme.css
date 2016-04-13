@@ -3770,7 +3770,26 @@ input.disabled[type="text"]{ background-color: black; }
 .modal-footer .btn + .btn{ margin-left: 0px!important; }
 
 #soundSlider{ margin-top: 20px; }
-
+#tutorialHeader { cursor: pointer; }
+#tutorialBox{
+    position: absolute;
+    z-index: 9000;
+    top: 33%;
+    left: 33%;
+    display: none;
+    max-width: 440px;
+}
+#tutorial_close { float: left; }
+#tutorialBox #infoModalDialog{
+    margin: 0;
+}
+#tutorialLabel{ padding: 13px 2px !important; }
+#tutorial_text { color: white; }
+#steps {
+    float: left;
+    margin-top: 10px;
+    margin-left: 16px;
+}
 #iacBox{
     position: absolute;
     z-index: 9000;
@@ -3905,7 +3924,8 @@ input.disabled[type="text"]{ background-color: black; }
 }
 #radiusLabel{ color: #6a6a6e; font-size: 12.6px; }
 #radiusLabelValue{ color: white; font-size: 12.6px; }
-.purpleHeader{ background:#6f6299!important; ; }
+.purpleHeader{ background:#6f6299!important; }
+.grayHeader{ background:#25272b!important; }
 .zoomOption label { color: #6a6a6e; font-weight: bold; }
 .zoomOption label:hover { color: white!important; }
 .zoomOption label.active { color: white; background: #6f6299; }
@@ -4134,3 +4154,8 @@ margin-left: 200px;
 .margTop10 { margin-top: 10px!important; }
 .experimental { background-color: #76760a!important; }
 .experimental.active { background-color: #abab20!important; }
+#doNotShowAgain { float: left; }
+#tutorial {
+    padding-left: 33px;
+    padding-right: 33px;
+}
