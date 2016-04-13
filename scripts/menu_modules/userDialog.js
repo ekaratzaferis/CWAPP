@@ -33,28 +33,35 @@ define([
     var steps = {
         1 : {
             element : 'tutorial_next',
-            text    : 'THIS IS STEP 1',
+            text    : '<h3>Step 1: Choosing a Bravais Lattice</h3><br><p>Following the approach of combining Bravais Lattice with a Motif to create a Crystal Structure <a href="" target="_blank">Crystal Structure</a>, CrystalWalk’s first step to take you to the Lattice Tab to create a Crystal Structure is to interactively guide you into choosing a Lattice.<br>Click at the highlighted menu button at your right and choose between the 14 Bravais + Hexagonal Lattices. And don’t worry if you don’t know what Lattice you should be using in your Crystal Structure, you can return to this tab and change its parameters at any time. Also just keep in mind that your lattice parameters will always be available to you on the Navigation Compass, in highlighted.<br>Additionally to the main menu, toggle bar will always be available so that you can switch on or off scene elements as abc / xyz axes, lattice points, edges and faces as well planes, directions, atoms and much more.</p>',
             state   : true,
             next    : '2'
         },
         2 : {
-            element : 'tutorial_close',
-            text    : 'THIS IS STEP 1112312311',
+            element : 'motifTab',
+            text    : '<h3>Step 2: Composing your Motif</h3><br><p>Having chosen your Lattice and its parameters, next step to create a Crystal Structure is to use the Motif Editor tab to interactively guide you into composing your Motif.<br>Click at the highlighted menu button at your right and add an atom by interactively choosing an ion from the periodic table. CrystalWalk uses the AUTO mode as per default, which assumes prototype structures and the rigid sphere’s model to guess and automatically position your atoms and adjust your lattice parameters. If you are a student its likely all you need to know are the lattice and atoms that compose your motif, although a set of additional parameters is also available if you want to manually position motif atoms at a particular ABSOLUT (in Å) or VECOTORIAL coordinates relative to the crystallographic axys<br>Repeat this process as many times as you want, you can always return to this tab.</p>',
             state   : false,
             next    : '3'
         },
         3 : {
-            element : 'publicTab',
-            text    : 'THANOS',
+            element : 'visualTab',
+            text    : '<h3>Step 3: Visualizing and Interacting</h3><br><p>Congratulations, you have just created your Crystal Structure!<br>A few options highlighted at both your left and right sides are now available to help you better visualize it. In Blue at your left you can see both Atom View which can position you in first person at a selected atom location, as well GearBox which can help you transition scales from Lattice points, Motif, different representations of unit cell and Crystal Structure.<br>In the menu, at your left, a whole lot of visualization tools and options are given. You can explore different types of model representations, rendering parameters and effects as well interacting with your Crystal Structure in 3D using experimental human interaction devices (HID) if your system supports it. <br>Just give it a try, you can always do/undo any of the options you choose.</p>',
+            state   : false,
+            next    : '4'
+        },
+        4 : {
+            element : 'visualTab',
+            text    : '<h3>Step 4: Additional Visualization Resources</h3><br><p>At this point a whole set of extra features and resources are available, you can create a diverse planes and directions representation at this tab, as well a didactic narrative with texts, links and animations to illustrate classes and examples. <br>Just give it a try, you can always do/undo any of the options you choose.</p>',
             state   : false,
             next    : 'last'
         },
         last : {
-            element : 'notesTab',
-            text    : 'FERNANDO FERNANDO FERNANDO FERNANDO FERNANDO',
+            element : 'publicTab',
+            text    : '<h3>Step 5: Save Your Project</h3><br><p>Going through all of these steps, it’s now time to save your project for later use so that you share them with students and other colleagues. <br>After providing some basic information about your project highlighted in the Import / Export tab at your right, several options will become available. You can save your project online at our servers, using our cool cw.gl url shortner and QR code generator services, create bitmap images and even export geometry in the STL format for 3D printing your model.</p><p>Finally you can have access to our online library, search for specific terms / description and open your model at the options menu below.</p><p>Thank you for making to this far! A series of community supported tutorials on how to create and explore crystal structures is accessible at CrystalWalk’s Instructable Channel at http://www.instructables.com/id/CrystalWalk-Collection/<br>You can also find more information at CrystalWalk project’s page at crystalwalk.org, or reach the author at bardella@ipen.br for any questions, comments or concerns.</p>',
             state   : false,
             next    : ''
         }
+
     };
     
     // Contructor //

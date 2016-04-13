@@ -181,12 +181,11 @@ define([
       this.orbitCrystal.control.rotateSpeed =  0.2;  
     } 
 
-    ///// 
+    ///// Secret Features
+    
     if ( this.keyboard.pressed("C") && this.keyboard.pressed("alt") && this.keyboard.pressed("ctrl") ){
-      //delete cookie
-      console.log(9);
-      document.cookie = "hasVisited=; expires=Thu, 01 Jan 1970 00:00:00 UTC"; 
-
+      //delete cookie 
+      document.cookie = "hasVisited=; expires=Thu, 01 Jan 1970 00:00:00 UTC";  
     }
     if ( this.keyboard.pressed("O") && this.keyboard.pressed("alt") && this.keyboard.pressed("ctrl") ){
       if(this.mutex === false){ 
