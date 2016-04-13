@@ -398,6 +398,33 @@ require([
   window.addEventListener('resize', function () {
     sceneResizer.resize( crystalScreenEvents.state);
   }, false);
+  
+  window.addEventListener('deviceorientation', setOrientationControls, true);
+  function setOrientationControls(e) {
+    if (!e.alpha) {
+      return;
+    }
+    var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true);
+    deviceOrientationControls.connect();
+    deviceOrientationControls.update();
+
+    element.addEventListener('click', fullscreen, false);
+
+    dollEditor.setVisibility(false); 
+    hudCube.setVisibility(false);
+    hudArrows.setVisibility(false);
+    CubeEvent.enableCubeEvents = false ;
+    sceneResizer.resize('oculusCrystal');
+     
+    crystalScreenEvents.state = 'oculusCrystal';
+    //fullScreen.fs(); 
+  
+    crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+
+    crystalRenderer.initCardBoard({onTop:true});
+
+    window.removeEventListener('deviceorientation', setOrientationControls, true);
+  }
 
   // leap motion
   var leapM = new LeapMotionHandler(lattice, motifEditor, orbitCrystal, soundMachine, dollEditor, keyboard, crystalScene, crystalRenderer.getMainCamera(), animationMachine);
@@ -442,18 +469,15 @@ require([
   var domElTOTouch = document;
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
-
-  // Device Orientation Controls for mobile 
-  var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true); 
   
   // experimental feature  
   orbitCrystal.syncCams(true);
   orbitUnitCell.syncCams(true);
 
    
-  if($(window).width() < 400){
+  if($(window).width() < 500){
     // mobile
-
+    /*
     setTimeout( function(){
       dollEditor.setVisibility(false); 
       hudCube.setVisibility(false);
@@ -463,10 +487,12 @@ require([
        
       crystalScreenEvents.state = 'oculusCrystal';
       //fullScreen.fs(); 
-      
+      deviceOrientationControls.connect();
+      crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+
       crystalRenderer.initCardBoard({onTop:true});
     },2000);
-    
+    */
   }
   
   // lattice events binding
