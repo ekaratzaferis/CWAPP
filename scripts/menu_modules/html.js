@@ -405,6 +405,8 @@ define([
             info: jQuery('#info_modal'),
             doNotShowAgain: jQuery('#doNotShowAgain'),
             tutorial: jQuery('#tutorial'),
+            continueInfo: jQuery('#continueInfo'),
+            title: jQuery('#infoLabel'),
             error: jQuery('#error_modal')
         };
         this.modals.qr = {
