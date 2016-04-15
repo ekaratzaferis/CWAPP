@@ -45,7 +45,7 @@ define([
     var _this = this; 
     var latticeName = cwObj.system.latticeParams.lattice.latticeName;
 
-    this.lattice.latticeName = latticeName;
+    this.lattice.latticeName = latticeName; 
 
     if(cwObj.system.latticeParams.lattice){ 
       require(['lattice/' + latticeName], function(lattice) {
@@ -55,9 +55,11 @@ define([
         _this.menu.setLatticeRestrictions(lattice.restrictions); 
         _this.menu.restore(cwObj); 
         _this.beginRestoring(cwObj);
-        for (var i = 0; i < callbacks.length ; i++) {
-          callbacks[i]();
-        };
+        if(callbacks !== undefined){ 
+          for (var i = 0; i < callbacks.length ; i++) {
+            callbacks[i]();
+          };
+        }
       }); 
     }
     else{

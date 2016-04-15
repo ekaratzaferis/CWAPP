@@ -400,7 +400,10 @@ define([
     var x = this.cellParameters.scaleX;
     var y = this.cellParameters.scaleY;
     var z = this.cellParameters.scaleZ;
- 
+    
+    this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
+    this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
+
     this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
   
     if(this.editorState.atomPosMode === 'relative'){ 
@@ -630,13 +633,8 @@ define([
 
     this.configureCellPoints();
 
-    this.menu.setLatticeCollision({
-      scaleY: false, 
-      scaleZ: false, 
-      scaleX: false
-    });
+    this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
     this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-    this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
  
   }; 
   
@@ -788,6 +786,7 @@ define([
   Motifeditor.prototype.scaleRelative = function(par){
 
     var _this = this;
+
     var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
     var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
     var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
@@ -807,9 +806,7 @@ define([
         var newPos = ratio * aScale ;
         this.newSphere.object3d.position.z = newPos; 
         this.translateCellAtoms("z", newPos ,this.newSphere.getID());
-      }
-
-      this.cellParameters.scaleZ = aScale; 
+      } 
 
     }
     else if(bScale != undefined){ 
@@ -825,9 +822,7 @@ define([
         var newPos = ratio * bScale ;
         this.newSphere.object3d.position.x = newPos; 
         this.translateCellAtoms("x", newPos ,this.newSphere.getID());
-      }
-
-      this.cellParameters.scaleX = bScale; 
+      } 
     } 
     else if(cScale != undefined){ 
 
@@ -842,15 +837,15 @@ define([
         var newPos = ratio * cScale ;
         this.newSphere.object3d.position.y = newPos; 
         this.translateCellAtoms("y", newPos ,this.newSphere.getID());
-      }
-      this.cellParameters.scaleY = cScale;  
+      }  
     }
-    this.configureCellPoints();
+   
   };
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
     
     var scalingTo ;
-    
+    var collisionInOthers;
+
     if(aScale !== undefined) { 
       this.cellParameters.scaleZ = aScale ;   
       scalingTo = 'aScale';
@@ -859,6 +854,7 @@ define([
         scaleX: false
       });
       this.snapData.snapVal['aScale'] = undefined;
+      collisionInOthers = (this.snapData.collision['bScale'] === false &&  this.snapData.collision['cScale'] === false) ? false : true;
     } 
 
     if(bScale !== undefined) {
@@ -869,6 +865,7 @@ define([
         scaleZ: false
       });
       this.snapData.snapVal['bScale'] = undefined;
+      collisionInOthers = (this.snapData.collision['aScale'] === false &&  this.snapData.collision['cScale'] === false) ? false : true;
     } 
 
     if(cScale !== undefined) {
@@ -879,6 +876,7 @@ define([
         scaleX: false
       });
       this.snapData.snapVal['cScale'] = undefined;
+      collisionInOthers = (this.snapData.collision['bScale'] === false &&  this.snapData.collision['aScale'] === false) ? false : true;
     } 
  
     this.configureCellPoints('manual');
@@ -893,8 +891,9 @@ define([
     var collisionHappened = false ;
     var counterHelper = 0; // help exit infinite loops in case of a bug
     var moreCollisions = true ;
+     
 
-    while(moreCollisions === true && counterHelper < 20 && this.snapData.collision['aScale'] === false && this.snapData.collision['bScale'] === false && this.snapData.collision['cScale'] === false){
+    while(moreCollisions === true && counterHelper < 20 && collisionInOthers === false){
        
       if(aScale != undefined){ 
         this.cellParameters.scaleZ = aScale ; 
@@ -913,9 +912,11 @@ define([
           });
            
           this.snapData.snapVal['aScale'] = offset;
-          this.snapData.collision['aScale'] = false;
-
+          this.snapData.collision['aScale'] = true;
         } 
+        else{
+          this.snapData.collision['aScale'] = false;
+        }
         
         aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
         
@@ -936,7 +937,10 @@ define([
           this.menu.setLatticeCollision({
             scaleX: offset 
           }); 
-          this.snapData.snapVal['bScale'] = offset;
+          this.snapData.snapVal['bScale'] = offset; 
+          this.snapData.collision['bScale'] = true;
+        }
+        else{
           this.snapData.collision['bScale'] = false;
         }
              
@@ -956,7 +960,10 @@ define([
           this.menu.setLatticeCollision({
             scaleY: offset 
           }); 
-          this.snapData.snapVal['cScale'] = offset;
+          this.snapData.snapVal['cScale'] = offset; 
+          this.snapData.collision['cScale'] = true;
+        }
+        else{
           this.snapData.collision['cScale'] = false;
         }
          
@@ -969,8 +976,11 @@ define([
       counterHelper++;  
     } 
     
-    this.snapData.collision[scalingTo] = collisionHappened;
 
+    if(this.snapData.collision['aScale'] === false && this.snapData.collision['bScale'] === false && this.snapData.collision['cScale'] === false){
+
+    }
+     
     if(collisionHappened === true ){
         
       this.cellParameters.scaleZ = storedScales.aScale;
@@ -992,6 +1002,8 @@ define([
         this.menu.setSliderValue("scaleZ", bScale);  
       }
     } 
+
+   
   };
   Motifeditor.prototype.setManuallyCellLengths = function(par, volumeF, reducing){
       
@@ -1016,7 +1028,8 @@ define([
     } 
    
     if(this.editorState.atomPosMode === 'relative'){ 
-      this.scaleRelative(par);
+      this.scaleRelative(par); 
+      this.setManuallyCellLengthsNoTangency(aScale, bScale, cScale);
       return;
     }
 
@@ -1087,8 +1100,7 @@ define([
             this.menu.forceToLooseEvent('cellVolume'); // not needed in many cases 
             this.cellVolume.aCol = Math.abs(offset - this.cellParameters.scaleZ); 
             if(this.globalTangency === true) this.menu.setSliderValue("scaleZ", offset); 
-            this.snapData.snapVal['aScale'] = offset;
-            this.snapData.collision['aScale'] = false;
+            this.snapData.snapVal['aScale'] = offset; 
           } 
         }
         aScale = this.cellParameters.scaleZ ; // for recurrency of collision checks
@@ -1112,8 +1124,7 @@ define([
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.bCol = Math.abs(offset - this.cellParameters.scaleX);
             if(this.globalTangency === true) this.menu.setSliderValue("scaleX", offset); 
-            this.snapData.snapVal['bScale'] = offset;
-            this.snapData.collision['bScale'] = false;
+            this.snapData.snapVal['bScale'] = offset; 
           }
            
         }
@@ -1136,8 +1147,7 @@ define([
             this.menu.forceToLooseEvent('cellVolume');
             this.cellVolume.cCol = Math.abs(offset - this.cellParameters.scaleY); 
             if(this.globalTangency === true) this.menu.setSliderValue("scaleY", offset);
-            this.snapData.snapVal['cScale'] = offset;
-            this.snapData.collision['cScale'] = false; 
+            this.snapData.snapVal['cScale'] = offset; 
           }
         }
         cScale = this.cellParameters.scaleY ; // for recurrency of collision checks
@@ -1150,7 +1160,7 @@ define([
     } 
     
 
-    this.snapData.collision[scalingTo] = collisionHappened;
+    //this.snapData.collision[scalingTo] = collisionHappened;
      
     if(collisionHappened === true ){
         
@@ -1176,9 +1186,9 @@ define([
     }
     
     if(volumeF !== undefined || reducing !== undefined){
+      this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
       this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-      this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
-
+      
     }
 
     ///////////////////////
@@ -1801,7 +1811,10 @@ define([
     var _this = this;
 
     var buttonClicked = parameters.button;
-   
+
+    this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
+    this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
+    
     if(this.editorState.state === "creating"){ 
       switch(buttonClicked) { 
         case "saveChanges":   
@@ -1844,9 +1857,7 @@ define([
             scaleX: false,
             scaleY: false, 
             scaleZ: false 
-          });
-          this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-          this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
+          }); 
 
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});
@@ -1900,14 +1911,7 @@ define([
           }
           this.dragMode = false; 
           PubSub.publish(events.EDITOR_STATE, {'state' : "initial"});  
-          this.initVolumeState(); 
-          this.menu.setLatticeCollision({
-            scaleX: false,
-            scaleY: false, 
-            scaleZ: false 
-          });
-          this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-          this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
+          this.initVolumeState();  
 
           break; 
       }
@@ -3109,13 +3113,8 @@ define([
     var _this = this;  
     var dimensions, identity ;
    
-    this.menu.setLatticeCollision({
-      scaleX: false,
-      scaleY: false, 
-      scaleZ: false 
-    });
+    this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
     this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-    this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
  
     if( (!this.padlock && this.globalTangency === false) && _.isUndefined(restore)){
       dimensions = {"xDim" : this.cellParameters.scaleX, "yDim" : this.cellParameters.scaleY, "zDim" : this.cellParameters.scaleZ };
@@ -6165,8 +6164,8 @@ define([
       return;
     }
     
+    this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
     this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
-    this.snapData.collision = { 'aScale' : false,  'bScale' : false,  'cScale' : false};
 
     if(this.padlock === false) {  
 

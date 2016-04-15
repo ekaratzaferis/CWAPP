@@ -223,7 +223,7 @@ define([
   }; 
   
   DollGearBarMouseEvents.prototype.levelClicked = function(num){ 
-    console.log(num);
+   
     if(this.dollEditor.levelLabels[num].allowed === true){ 
           
       this.walkTourSet(num);
