@@ -3747,7 +3747,7 @@ input.disabled[type="text"]{ background-color: black; }
 }
 #infoIcon img{ height: 25px; }
 #infoHeader { background: #2362C0; }
-#infoModalDialog { max-width: 450px; }
+#infoModalDialog { max-width: 580px; }
 #infoLabel{ padding: 13px 15px !important; }
 #iacLabel{ padding: 13px 15px !important; }
 #infoMessage{ padding: 20px;}
@@ -3774,14 +3774,21 @@ input.disabled[type="text"]{ background-color: black; }
 #tutorialBox{
     position: absolute;
     z-index: 9000;
-    top: 33%;
-    left: 33%;
+    top: 10%;
+    left: 29%;
     display: none;
-    max-width: 440px;
+    max-width: 540px;
+}
+#tutorial_body {
+    height: 450px;
 }
 #tutorial_close { float: left; }
 #tutorialBox #infoModalDialog{
     margin: 0;
+}
+#continueInfo{ 
+    float: right; 
+    display: none;
 }
 #tutorialLabel{ padding: 13px 2px !important; }
 #tutorial_text { color: white; }
