@@ -3225,7 +3225,7 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     cursor: pointer;
     margin-right: 10px;
     float: right;
-    height: 10px;}
+    height: 13px;}
 .noteBar img:hover{cursor: pointer;}
 #screenWrapper{
     float: left;
