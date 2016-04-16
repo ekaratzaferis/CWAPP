@@ -441,6 +441,7 @@ define([
         this.notes.other = {
             body: jQuery('#noteBody'),
             table: jQuery('#notesTable'),
+            tableID: 'notesTable',
             saveCameraCheckbox: jQuery('[name=saveCameraButton]')
         };
         
