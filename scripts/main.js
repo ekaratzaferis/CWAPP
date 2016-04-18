@@ -160,8 +160,7 @@ require([
   'fitToCrystal',
   'LOD',
   'multitouch',
-  'cwState',
-  'deviceOrientationControls'
+  'cwState' 
 
 ], function(
   PubSub, 
@@ -218,8 +217,7 @@ require([
   FitToCrystal,
   LOD,
   Multitouch,
-  CwState,
-  DeviceOrientationControls
+  CwState 
 
 ) {
   
@@ -443,8 +441,6 @@ require([
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
 
-  // Device Orientation Controls for mobile 
-  var deviceOrientationControls = new THREE.DeviceOrientationControls(crystalRenderer.getMainCamera(), true); 
   
   // experimental feature  
   orbitCrystal.syncCams(true);
@@ -1071,7 +1067,35 @@ require([
     //lattice.setOctahedronDetail(arg);
     //motifEditor.setOctahedronDetail(arg);
   }); 
-   
+  menu.askSystemCamState(function(message, arg) { 
+    var p = crystalRenderer.getMainCamera().position.clone();
+    var t = orbitCrystal.control.target.clone();
+
+    menu.doSmthWithSystemCamState({
+      position : {
+        x:p.x,
+        y:p.y,
+        z:p.z
+      },
+      target : {
+        x : t.x,
+        y : t.y,
+        z : t.z
+      }  
+    });
+  }); 
+
+  menu.publishCameraState(function(message, arg) { 
+    var cam = crystalRenderer.getMainCamera() ; 
+
+    orbitCrystal.control.target.x = arg.target.x;
+    orbitCrystal.control.target.y = arg.target.y;
+    orbitCrystal.control.target.z = arg.target.z;
+
+    cam.position.x = arg.position.x;
+    cam.position.y = arg.position.y;
+    cam.position.z = arg.position.z;
+  });  
 
   ///////////////////// TO BE DELETED - EXPERIMENTAL FEATURE
 
@@ -1248,9 +1272,9 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 400 || $(window).height() < 400){
-          // mobile
-   
+          if($(window).width() < 450 || $(window).height() < 450){
+          // mobile 
+            orbitCrystal.deviceOrientationControlsActive = true;
             dollEditor.setVisibility(false); 
             hudCube.setVisibility(false);
             hudArrows.setVisibility(false);
@@ -1269,6 +1293,25 @@ require([
       } 
     }); 
   } 
+  else{
+    if($(window).width() < 450 || $(window).height() < 450){
+      // mobile
+      setTimeout(function(){ 
+        orbitCrystal.deviceOrientationControlsActive = true;
+        dollEditor.setVisibility(false); 
+        hudCube.setVisibility(false);
+        hudArrows.setVisibility(false);
+        CubeEvent.enableCubeEvents = false ;
+        sceneResizer.resize('oculusCrystal');
+         
+        crystalScreenEvents.state = 'oculusCrystal';
+       
+        crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
+   
+        crystalRenderer.initOculusEffect({oculus : true}); 
+      },2000);
+    }
+  }
 
 
    

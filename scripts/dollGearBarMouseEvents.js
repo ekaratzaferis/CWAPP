@@ -404,7 +404,7 @@ define([
   DollGearBarMouseEvents.prototype.onDocumentMouseUp  = function(event){  
     var _this = this;
   
-    //this.crystalOrbit.control.enabled = true ; 
+    this.crystalOrbit.control.enabled = true ; 
     
     if ( this.INTERSECTED ) {
 

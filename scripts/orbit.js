@@ -3,7 +3,8 @@ define([
   'jquery', 
   'three', 
   'threejs-controls/OrbitControls', // no AMD module
-  'threejs-controls/OrbitAndPanControls' // no AMD module
+  'threejs-controls/OrbitAndPanControls',
+  'deviceOrientationControls'  
 ], function(
   jQuery,
   THREE 
@@ -20,7 +21,8 @@ define([
     this.phi = 0;   
     this.currPos = new THREE.Vector3(0,0,0); 
     this.disableUpdate = false;
-
+    this.deviceOrientationControls = new THREE.DeviceOrientationControls( camera );
+    this.deviceOrientationControlsActive = false;
     this.externalFunctions = []; 
 
     if(type == "perspective" ) {
@@ -79,10 +81,16 @@ define([
   };
   Orbit.prototype.update = function() {
 
+    if(this.deviceOrientationControlsActive === true){
+      this.deviceOrientationControls.update();
+      return;
+    }
+
     if(this.disableUpdate === true){
       return;
     }
     
+
     this.control.update(); 
        
     if( this.camName === 'crystal'){
@@ -121,8 +129,7 @@ define([
         this.hudCameras[i].lookAt( new THREE.Vector3(0,0,0) );
 
       }; 
- 
-      
+   
     }
   }; 
   return Orbit;

@@ -16,8 +16,8 @@ define([
 ) 
 {
     /* This module handles the user notes.
-            Each note can be connect to an atom (via IAC) or not.
-            Each note may appear on the canvas.
+        Each note can be connect to an atom (via IAC) or not.
+        Each note may appear on the canvas.
     */
     // Variables
     var target = undefined;
@@ -229,7 +229,7 @@ define([
                 id = 'note'+idCounter;
                 idCounter++;
             } while(!(_.isUndefined(notes[id])));
-        }
+        } 
         // Restore Note //
         else if (_.isUndefined(restore)){
             atomNote = true;
@@ -237,7 +237,7 @@ define([
         }
         // Atom Related //
         else id = newID;
-        
+       
         html.notes.other.table.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
         html.notes.other.table.show('slow');
         
@@ -258,6 +258,14 @@ define([
             cameraPosition[id] = 'asd'; 
         }
         
+        ///////
+            
+        // o fernando thelei na apothikeuetai i thesi tis cameras otan pataei to "c"amera icon" o xristis.opote
+        // mporeis na mou stelneis esu ena pubsub ekeini ti stigmi, kai egw na callw mia sunartisi tis menu kapakia me ena argument pou tha exei mesa {position : ..., target : ...} . kai esi na ta kratas se mia cache kserw gw kai otan einai na patisei save o xristis na pairneis apo tin cache ta dedomena auta. ara theloume 1 event gia na epikoinwnoume gia to parapanw. akoma ena event omws tha xreiastoume gia na mou dineis esu opote thes to argument {position : ..., target : ...} gia na vazw thn kamera sti thesi tis. 
+
+        
+        ////
+
         // Handlers //
         html.notes.other.table.find('#'+id).find('.selectable').on('click',function(){
             selectNote(id);
@@ -474,6 +482,8 @@ define([
             }
         });
         notepad.find('img.swapRight').on('click',function(){
+ 
+
             // Hide Current Note //
             $setUIValue.setValue({
                 noteVisibility:{
@@ -493,45 +503,34 @@ define([
                 });
             }
             showCanvasNote(id,false);
-            
-            
-            
-            
-            ///////
-            
-            // sth 257 peripou grammh 8a prepe na apo8hkeyw to cameraPosition pou dn kserw poio einai
-            // an 8es kanw apo dw ena publish pros to systhma
-            // mou apantas me to camera position, opote kaneis edw mesa ena subscribe gia otan apanta to systhma kai etsi apo8hkeyetai
-            // kapws etsi :P
-            // filia
-            
-            ////
-            
+             
             
             // Find Next Note //
-            console.log('@@@ '+id);
+            console.log(id);
             var table = {
                 first: jQuery('#'+html.notes.other.tableID+' tr:first'),
                 last: jQuery('#'+html.notes.other.tableID+' tr:last'),
                 current: html.notes.other.table.find('#'+id),
-                next: html.notes.other.table.find('#'+id).closest('tr').next()
+                next: html.notes.other.table.find('#'+id).closest('tr').next('tr')
             };
-            console.log('first '+table.first[0].id);
-            console.log('last '+table.last[0].id);
+
+          
             if (table.next.length > 0) {
                 console.log('next '+table.next[0].id);
             }
-            if (table.next.length > 0) id = table.next[0].id;
-            else id = table.first[0].id;
-            // Show Note //
-            console.log('showing '+id);
-            console.log('------------------');
-            
-            
-            
-            
-            
-            
+            else{
+                console.log(table.first[0].id);
+
+            }
+
+            if (table.next.length > 0) {
+                id = table.next[0].id;
+            }
+            else {
+                id = table.first[0].id;
+            }
+
+             
             
             var value = undefined;
             (html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
@@ -589,8 +588,8 @@ define([
                 current: html.notes.other.table.find('#'+id),
                 next: html.notes.other.table.find('#'+id).closest('tr').prev()
             };
-            console.log('first '+table.first[0].id);
-            console.log('last '+table.last[0].id);
+
+        
             if (table.next.length > 0) {
                 console.log('next '+table.next[0].id);
             }

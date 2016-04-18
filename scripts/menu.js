@@ -182,7 +182,9 @@ define([
         LOD: 'menu.lod',
         MUTE_SOUND: 'menu.mute_sound',
         OCULUS_UNIT_CELL: 'menu.oculus_unit_cell',
-        CARDBOARD: 'menu.cardboard'
+        CARDBOARD: 'menu.cardboard',
+        ASK_FOR_CAM_STATE: 'menu.ask_system_cam_state',
+        PUBLISH_CAMERA_STATE: 'menu.publish_camera_state'
     };
             
     function Menu() {
@@ -1047,10 +1049,23 @@ define([
     };
     Menu.prototype.onLOD = function(callback){
         PubSub.subscribe(events.LOD, callback);
-    };
+    }; 
     Menu.prototype.onToggleVisibilityInUC = function(callback){
         PubSub.subscribe(events.TOGGLE_MOTIF_VISIBILITY_IN_UC, callback);
     }; 
+
+
+    Menu.prototype.askSystemCamState = function(callback){
+         PubSub.subscribe(events.ASK_FOR_CAM_STATE, callback);
+    }; 
+    Menu.prototype.doSmthWithSystemCamState = function(arg){
+        console.log('this is your data. this function is called every time you publish the ASK_FOR_CAM_STATE event. you can call any function to save the arg in cache');
+        console.log(arg);
+        console.log('-');
+    }; 
+    Menu.prototype.publishCameraState = function(callback){
+        PubSub.subscribe(events.PUBLISH_CAMERA_STATE, callback);
+    }
 
     /* TO BE DELETED SOON
     $( "#sliderWS" ).slider({

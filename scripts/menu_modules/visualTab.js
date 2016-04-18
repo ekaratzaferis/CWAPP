@@ -436,7 +436,7 @@ define([
                         publish:{soundVolume: ui.value}
                     }
                 });
-                console.log(ui.value);
+            
                 if (ui.value > 0) {
                     $setUI.setValue({
                         muteSound:{
