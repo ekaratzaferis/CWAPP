@@ -21,7 +21,7 @@ define([
     this.phi = 0;   
     this.currPos = new THREE.Vector3(0,0,0); 
     this.disableUpdate = false;
-    this.deviceOrientationControls = new THREE.DeviceOrientationControls( camera );
+    this.deviceOrientationControls;
     this.deviceOrientationControlsActive = false;
     this.externalFunctions = []; 
 
@@ -33,6 +33,7 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{
+        this.deviceOrientationControls = new THREE.DeviceOrientationControls( camera );
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
     }

@@ -1272,7 +1272,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 950 || $(window).height() < 950){
+          if($(window).width() < 450 || $(window).height() < 450){
           // mobile 
             orbitCrystal.deviceOrientationControlsActive = true;
             dollEditor.setVisibility(false); 
@@ -1294,7 +1294,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 950 || $(window).height() < 950){
+    if($(window).width() < 450 || $(window).height() < 450){
       // mobile
       setTimeout(function(){ 
         orbitCrystal.deviceOrientationControlsActive = true;
