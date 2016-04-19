@@ -160,7 +160,9 @@ define([
         'screenMode':'top',
         'swapBtn':'bottom',
         'oculusTracker':'top',
-        'cardboard':'top'
+        'cardboard':'top',
+        'saveCamera':'top',
+        'enableParameters':'top'
     };
     
     var $messageList = undefined;

@@ -184,7 +184,8 @@ define([
         OCULUS_UNIT_CELL: 'menu.oculus_unit_cell',
         CARDBOARD: 'menu.cardboard',
         ASK_FOR_CAM_STATE: 'menu.ask_system_cam_state',
-        PUBLISH_CAMERA_STATE: 'menu.publish_camera_state'
+        PUBLISH_CAMERA_STATE: 'menu.publish_camera_state',
+        ENABLE_MOTIF_PARAMETERS: 'menu.enable_motif_parameters'
     };
             
     function Menu() {
@@ -1053,7 +1054,9 @@ define([
     Menu.prototype.onToggleVisibilityInUC = function(callback){
         PubSub.subscribe(events.TOGGLE_MOTIF_VISIBILITY_IN_UC, callback);
     }; 
-
+    Menu.prototype.onEnableMotifParameters = function(callback){
+        PubSub.subscribe(events.ENABLE_MOTIF_PARAMETERS, callback);
+    };
 
     Menu.prototype.askSystemCamState = function(callback){
          PubSub.subscribe(events.ASK_FOR_CAM_STATE, callback);

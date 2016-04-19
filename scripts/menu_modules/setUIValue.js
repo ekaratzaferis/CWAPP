@@ -1360,6 +1360,28 @@ define([
                 html.notes.properties.color.children().css('background',value);
                 break;
             }
+            case 'saveCamera':{
+                if (value === true) {
+                    html.notes.other.saveCamera.addClass('active');
+                    html.notes.other.saveCamera.find('img').attr('src','Images/comments-hover.png');
+                }
+                else {
+                    html.notes.other.saveCamera.removeClass('active');
+                    html.notes.other.saveCamera.find('img').attr('src','Images/comments.png');
+                }
+                break;   
+            }
+            case 'enableParameters':{
+                if (value === true) {
+                    html.notes.other.enableParameters.addClass('active');
+                    html.notes.other.enableParameters.find('img').attr('src','Images/motif-icon-white.png');
+                }
+                else {
+                    html.notes.other.enableParameters.removeClass('active');
+                    html.notes.other.enableParameters.find('img').attr('src','Images/motif-icon.png');
+                }
+                break;  
+            }
             case 'noteVisibility':{
                 if (value === false) {
                     selector.find('.noteButton').find('img').attr('src','Images/hidden-icon-sm.png');
@@ -2101,6 +2123,14 @@ define([
             case 'noteColor':{
                 PubSub.publish(events.NOTE_COLOR, value);
                 break;
+            }
+            case 'saveCamera':{
+                PubSub.publish(events.ASK_FOR_CAM_STATE, value);
+                break;   
+            }
+            case 'enableParameters':{
+                PubSub.publish(events.ENABLE_MOTIF_PARAMETERS, value);
+                break;   
             }
                 
             // IAC Box
