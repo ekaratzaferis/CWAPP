@@ -78,14 +78,14 @@ THREE.DeviceOrientationControls = function ( object ) {
 	 	 
 		if ( scope.enabled === false ) return;
 
-		var alpha  = scope.deviceOrientation.alpha*10 ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) : 0; // Z
-		var beta   = scope.deviceOrientation.beta *10 ? THREE.Math.degToRad( scope.deviceOrientation.beta  ) : 0; // X'
-		var gamma  = scope.deviceOrientation.gamma*10 ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
+		var alpha  = scope.deviceOrientation.alpha  ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) : 0; // Z
+		var beta   = scope.deviceOrientation.beta   ? THREE.Math.degToRad( scope.deviceOrientation.beta  ) : 0; // X'
+		var gamma  = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
 		var orient = scope.screenOrientation       ? THREE.Math.degToRad( scope.screenOrientation       ) : 0; // O
 	    
 	  	document.getElementById('logg').innerHTML = alpha;
 
-		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, 3 );
 
 	};
 

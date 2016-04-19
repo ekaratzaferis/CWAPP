@@ -24,6 +24,7 @@ define([
     this.deviceOrientationControls;
     this.deviceOrientationControlsActive = false;
     this.externalFunctions = []; 
+    this.orientationCam;
 
     if(type == "perspective" ) {
       if( camName === 'hud') { 
@@ -33,7 +34,8 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{
-        this.deviceOrientationControls = new THREE.DeviceOrientationControls( camera );
+        this.orientationCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100) ;
+        this.deviceOrientationControls = new THREE.DeviceOrientationControls(this.orientationCam);
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
     }
@@ -81,7 +83,7 @@ define([
     this.control.setRotationManually(theta,phi);
   };
   Orbit.prototype.update = function() {
-  
+
     if(this.deviceOrientationControlsActive === true){
       this.deviceOrientationControls.update();
       return;

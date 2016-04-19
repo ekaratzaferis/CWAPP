@@ -247,9 +247,7 @@ define([
       this.externalFunctions[i]();
     };
 
-    if( this.cardBoardRender){
-      this.cardBoardRender();
-    }
+     
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
