@@ -3589,12 +3589,14 @@ input.disabled[type="text"]{ background-color: black; }
     margin-top: 10px;
     margin-right: 15px;
     max-height: 40px;
+    cursor: pointer;
 }
 #enableParameters {
     float: left;
     margin-left: 0px;
     margin-top: 10px;
     max-height: 40px;
+    cursor: pointer;
 }
 .sk-cube-grid {
   width: 80px;
