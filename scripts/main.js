@@ -1272,10 +1272,10 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 950 || $(window).height() < 950){
-          // mobile 
+          if($(window).width() < 550 || $(window).height() < 550){
+          // mobile  
             orbitCrystal.deviceOrientationControlsActive = true;
-            orbitCrystal.deviceOrientationControls.connect();  
+            
             dollEditor.setVisibility(false); 
             hudCube.setVisibility(false);
             hudArrows.setVisibility(false);
@@ -1295,7 +1295,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() <950 || $(window).height() < 950){
+    if($(window).width() < 550 || $(window).height() < 550){
       // mobile
     
       setTimeout(function(){ 
