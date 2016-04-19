@@ -1275,6 +1275,7 @@ require([
           if($(window).width() < 950 || $(window).height() < 950){
           // mobile 
             orbitCrystal.deviceOrientationControlsActive = true;
+            orbitCrystal.deviceOrientationControls.connect();  
             dollEditor.setVisibility(false); 
             hudCube.setVisibility(false);
             hudArrows.setVisibility(false);

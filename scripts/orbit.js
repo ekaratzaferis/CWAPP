@@ -81,7 +81,7 @@ define([
     this.control.setRotationManually(theta,phi);
   };
   Orbit.prototype.update = function() {
-    alert(' orbit update callled');
+  
     if(this.deviceOrientationControlsActive === true){
       this.deviceOrientationControls.update();
       return;
