@@ -282,13 +282,12 @@ define([
             'rotAnglePhi' :  45 
           }
         );
-      } 
-      
+      }  
     }
     else if(this.latticeSystem === 'hexagonal' && this.motifsAtoms.length >= 1  ){
       this.tangentToThis = this.motifsAtoms[0] ;
       var sign = (this.motifsAtoms.length % 2 == 0) ? -1 : 1;
-
+ 
       this.setTangentAngle(0.0000, sign*35.2644 , parseFloat(  newAtomRadius + this.motifsAtoms[this.motifsAtoms.length-1].getRadius() ), this.motifsAtoms[this.motifsAtoms.length-1] );
    
       this.menu.editMEInputs(

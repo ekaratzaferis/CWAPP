@@ -2236,14 +2236,14 @@ define([
       _this.cwState.setCurrentLoadedLattice(lattice); 
       _this.latticeSystem = _this.lattice.latticeSystem ;
       _this.latticeType = _this.lattice.latticeType ; 
-      /*if(_this.latticeType === 'hexagonal' && _this.latticeSystem === 'hexagonal'){ 
+      if(_this.latticeName === 'hexagonal' ){ 
         _this.menu.toggleExtraParameter('i', 'block');
         _this.menu.toggleExtraParameter('t', 'block');
       }
       else{
         _this.menu.toggleExtraParameter('i', 'none');
         _this.menu.toggleExtraParameter('t', 'none');
-      }*/
+      } 
       _this.update();
        
       PubSub.publish(events.LOAD, lattice); 
@@ -3738,6 +3738,7 @@ define([
     
     var planeNum = (maxIndex) *2 - 1 ;
     var m = (this.latticeName !== 'hexagonal') ? 1 : -2*maxIndex;
+    $('#millerI').val(- (hInit + kInit)); // to be deleted
 
     while(finished === false){  
       if(m > 10) {
@@ -4586,7 +4587,7 @@ define([
         'millerH' : h,
         'millerK' : k,
         'millerL' : l,
-        'millerI' : -1,
+        'millerI' : -(h+k),
         'planeColor' : color,
         'planeOpacity' : opacity,
         'planeName' : name
@@ -4810,6 +4811,8 @@ define([
     var id  ; 
     var visible = this.toggleStates.directions;
     var pid = ("_"+millerParameters.millerU+""+millerParameters.millerV+""+millerParameters.millerW+"").split('.').join(''); 
+
+    $('#millerT').val(- (u + v)); // to be deleted
 
     if(hexagonal){ 
       
@@ -5250,7 +5253,7 @@ define([
         'millerU' : u,
         'millerV' : v,
         'millerW' : w,
-        'millerT' : -1,
+        'millerT' : -(u+v),
         'directionColor' : color,
         'dirRadius' : dirRadius,
         'directionName' : name
