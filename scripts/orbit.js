@@ -33,7 +33,7 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{
-        this.deviceOrientationControls = new THREE.DeviceOrientationControls( new THREE.Object3D() );
+        this.deviceOrientationControls = new THREE.DeviceOrientationControls( camera );
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
     }
@@ -81,7 +81,7 @@ define([
     this.control.setRotationManually(theta,phi);
   };
   Orbit.prototype.update = function() {
-
+  
     if(this.deviceOrientationControlsActive === true){
       this.deviceOrientationControls.update();
       return;
