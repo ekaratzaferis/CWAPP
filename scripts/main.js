@@ -1308,7 +1308,7 @@ require([
        
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
    
-        crystalRenderer.initOculusEffect({oculus : true}); 
+        crystalRenderer.initOculusEffect({oculus : true}); alert('ok')
       },2000);
     }
   }
