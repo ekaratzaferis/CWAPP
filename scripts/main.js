@@ -1297,7 +1297,7 @@ require([
   else{
     if($(window).width() <950 || $(window).height() < 950){
       // mobile
-      console.log(9);
+    
       setTimeout(function(){ 
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
