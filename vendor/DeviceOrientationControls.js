@@ -31,30 +31,29 @@ THREE.DeviceOrientationControls = function ( object ) {
 
 	// The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
 
-var setObjectQuaternion = function () {
+	var setObjectQuaternion = function () {
 
-    var zee = new THREE.Vector3( 0, 0, 1 );
+		var zee = new THREE.Vector3( 0, 0, 1 );
 
-    var euler = new THREE.Euler();
+		var euler = new THREE.Euler();
 
-    var q0 = new THREE.Quaternion();
+		var q0 = new THREE.Quaternion();
 
-    var q1 = new THREE.Quaternion(  - Math.sqrt( 0.5 ), 0, 0,  Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
+		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
-    //beta=beta-180;
-    return function ( quaternion, alpha, beta, gamma, orient ) {
+		return function ( quaternion, alpha, beta, gamma, orient ) {
+			document.getElementById('logg').innerHTML = ' beta '+beta+' alpha '+alpha+' gamma '+gamma;
+			euler.set( beta, alpha, - gamma, 'YXZ' );                       // 'ZXY' for the device, but 'YXZ' for us
 
-        euler.set( beta, alpha, - gamma, 'YXZ' );                       // 'ZXY' for the device, but 'YXZ' for us
+			quaternion.setFromEuler( euler );                               // orient the device
 
-        quaternion.setFromEuler( euler );                               // orient the device
+			quaternion.multiply( q1 );                                      // camera looks out the back of the device, not the top
 
-        quaternion.multiply( q1 );                                      // camera looks out the back of the device, not the top
+			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) );    // adjust for screen orientation
 
-        quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) );    // adjust for screen orientation
+		}
 
-    }
-
-}();
+	}();
 
 	this.connect = function() {
 
@@ -98,34 +97,4 @@ var setObjectQuaternion = function () {
 
 	this.connect();
 
-	function Quat2Angle( x, y, z, w ) {
-
-    var pitch, roll, yaw;
-
-    var test = x * y + z * w;
-    if (test > 0.499) { // singularity at north pole
-        yaw = 2 * Math.atan2(x, w);
-        pitch = Math.PI / 2;
-        roll = 0;
-
-        var euler = new THREE.Vector3( pitch, roll, yaw);
-        return euler;
-    }
-    if (test < -0.499) { // singularity at south pole
-        yaw = -2 * Math.atan2(x, w);
-        pitch = -Math.PI / 2;
-        roll = 0;
-        var euler = new THREE.Vector3( pitch, roll, yaw);
-        return euler;
-    }
-    var sqx = x * x;
-    var sqy = y * y;
-    var sqz = z * z;
-    yaw = Math.atan2(2 * y * w - 2 * x * z, 1 - 2 * sqy - 2 * sqz);
-    pitch = Math.asin(2 * test);
-    roll = Math.atan2(2 * x * w - 2 * y * z, 1 - 2 * sqx - 2 * sqz);
-
-    var euler = new THREE.Vector3( pitch, roll, yaw);
-    return euler;
-}
 };
