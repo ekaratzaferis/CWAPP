@@ -76,7 +76,8 @@ THREE.DeviceOrientationControls = function ( object ) {
 	};
 
 	this.update = function () {
-		alert(scope.enabled);
+		var myNode = document.getElementById("crystalRenderer");
+			myNode.innerHTML = '';
 		if ( scope.enabled === false ) return;
 
 		var alpha  = scope.deviceOrientation.alpha ? THREE.Math.degToRad( scope.deviceOrientation.alpha ) : 0; // Z
