@@ -1272,7 +1272,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 700 || $(window).height() < 700){
+          if($(window).width() < 500 || $(window).height() < 500){
           // mobile  
             orbitCrystal.deviceOrientationControlsActive = true;
             
@@ -1294,7 +1294,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 700 || $(window).height() < 700){
+    if($(window).width() < 500 || $(window).height() < 500){
       // mobile
     
       setTimeout(function(){ 
