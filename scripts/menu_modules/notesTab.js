@@ -50,6 +50,12 @@ define([
         else return false;
         
         // Inputs //
+        html.notes.properties.title.on('keyup',function(){
+            jQuery('.noteTitle').html(html.notes.properties.title.val());
+        });
+        html.notes.other.body.on('keyup',function(){
+            jQuery('.wordwrap.notes').html(html.notes.other.body.val());
+        });
         html.notes.properties.opacity.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
         html.notes.properties.opacity.selectpicker();
         html.notes.properties.opacity.selectpicker('val','10');
@@ -84,13 +90,29 @@ define([
                 html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').css('background-color','#'+html.notes.properties.color.spectrum('get').toHex());
             }
         });
-        html.notes.other.saveCameraCheckbox.iCheck('check');
-        html.notes.other.saveCameraCheckbox.on('ifChecked',function(){
-            html.notes.other.saveCameraCheckbox.addClass('active');
+        
+        html.notes.other.saveCamera.on('click',function(){
+            var value = undefined;
+            (html.notes.other.saveCamera.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                saveCamera:{
+                    value:value,
+                    publish:{saveCamera:value}
+                }
+            });
+            
         });
-        html.notes.other.saveCameraCheckbox.on('ifUnchecked',function(){
-            html.notes.other.saveCameraCheckbox.removeClass('active');
+        html.notes.other.enableParameters.on('click',function(){
+            var value = undefined;
+            (html.notes.other.enableParameters.hasClass('active')) ? value = false : value = true;
+            $setUIValue.setValue({
+                enableParameters:{
+                    value:value,
+                    publish:{enableMotifParameters:value}
+                }
+            });
         });
+        
         $disableUIElement.disableElement({
             noteTitle:{
                 value: true    
@@ -221,7 +243,7 @@ define([
         html.notes.properties.opacity.val('');
         html.notes.other.body.val('');
         html.notes.properties.opacity.selectpicker('val','10');
-        html.notes.properties.color.children().css('background','transparent');
+        html.notes.properties.color.children().css('background','white');
         
         // Note is not related to an atom //
         if (_.isUndefined(newID)) {
@@ -238,7 +260,7 @@ define([
         // Atom Related //
         else id = newID;
        
-        html.notes.other.table.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td></tr>');
+        html.notes.other.table.find('tbody').append('<tr id="'+id+'" class="bg-dark-gray"><td colspan="1" class="visibility"><a class="noteButton"><img src="Images/hidden-icon-sm.png" class="img-responsive" alt=""/></a></td><td colspan="4" class="selectable note-name">Untitled Note</td><td class="selectable note-color"><div class="color-picker color-picker-sm theme-02 bg-purple"><div class="color"></div></div></td></tr>');
         html.notes.other.table.show('slow');
         
         // Create Database Entry //
@@ -253,18 +275,11 @@ define([
         };
         // Create on Canvas //
         createCanvasNote(id);
+        
         // Store Camera Position //
         if (html.notes.other.saveCameraCheckbox.hasClass('active')) {
             cameraPosition[id] = 'asd'; 
         }
-        
-        ///////
-            
-        // o fernando thelei na apothikeuetai i thesi tis cameras otan pataei to "c"amera icon" o xristis.opote
-        // mporeis na mou stelneis esu ena pubsub ekeini ti stigmi, kai egw na callw mia sunartisi tis menu kapakia me ena argument pou tha exei mesa {position : ..., target : ...} . kai esi na ta kratas se mia cache kserw gw kai otan einai na patisei save o xristis na pairneis apo tin cache ta dedomena auta. ara theloume 1 event gia na epikoinwnoume gia to parapanw. akoma ena event omws tha xreiastoume gia na mou dineis esu opote thes to argument {position : ..., target : ...} gia na vazw thn kamera sti thesi tis. 
-
-        
-        ////
 
         // Handlers //
         html.notes.other.table.find('#'+id).find('.selectable').on('click',function(){
@@ -325,18 +340,22 @@ define([
         // Initiation //
         $setUIValue.setValue({
             noteVisibility:{
-                value: false,
-                other: html.interface.screen.wrapper.find('#'+id)
+                value: true,
+                other: html.notes.other.table.find('#'+id)
             }
         });
-        if (atomNote === true) $setUIValue.setValue({
-            atomNoteTable: { 
-                publish: {
-                    id: id,
-                    add: true
-                }          
-            } 
-        });
+        if (notes[id].atomNote === true) {
+            var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+            var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
+            notes[id].x = x;
+            notes[id].y = y;
+            $setUIValue.setValue({
+                noteVisibility:{
+                    publish: {id:id, visible: true, x: x, y: y, color: notes[id].color}
+                }
+            });
+        }
+        showCanvasNote(id,true);
         
         return id;
     };
@@ -352,6 +371,7 @@ define([
             html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
         }
         if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
+        html.notes.other.table.find('#'+notes.activeEntry).find('.color').css('background',note.color);
         highlightNote(notes.activeEntry,false);
         
         // Clear Forms //
@@ -440,7 +460,7 @@ define([
     };
     // Create note on Canvas //
     function createCanvasNote(id){
-        html.interface.screen.wrapper.prepend('<div id="'+id+'" class="noteWrapper"><div class="noteBar"><img class="closeNote" src="Images/close.png" /><img class="swapRight" src="Images/right.png" /><img class="swapLeft" src="Images/left.png" /><div class="noteTitle">Notes</div></div><div class="wordwrap notes">'+notes[id].body+'</div></div>');
+        html.interface.screen.wrapper.prepend('<div id="'+id+'" class="noteWrapper"><div class="noteBar"><img class="closeNote" src="Images/close.png" /><img class="swapRight" src="Images/right.png" /><img class="swapLeft" src="Images/left.png" /><div class="noteTitle">Title</div></div><div class="wordwrap notes">'+notes[id].body+'</div></div>');
         var notepad = html.interface.screen.wrapper.find('#'+id);
         notepad.hide();
         notepad.draggable({
@@ -483,77 +503,19 @@ define([
         });
         notepad.find('img.swapRight').on('click',function(){
  
-
-            // Hide Current Note //
-            $setUIValue.setValue({
-                noteVisibility:{
-                    value: false,
-                    other: html.notes.other.table.find('#'+id)
-                }
-            });
-            if (notes[id].atomNote === true) {
-                var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
-                var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
-                notes[id].x = x;
-                notes[id].y = y;
-                $setUIValue.setValue({
-                    noteVisibility:{
-                        publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
-                    }
-                });
-            }
-            showCanvasNote(id,false);
-             
+            var nextID = undefined;
             
             // Find Next Note //
-            console.log(id);
             var table = {
                 first: jQuery('#'+html.notes.other.tableID+' tr:first'),
                 last: jQuery('#'+html.notes.other.tableID+' tr:last'),
                 current: html.notes.other.table.find('#'+id),
                 next: html.notes.other.table.find('#'+id).closest('tr').next('tr')
             };
-
-          
-            if (table.next.length > 0) {
-                console.log('next '+table.next[0].id);
-            }
-            else{
-                console.log(table.first[0].id);
-
-            }
-
-            if (table.next.length > 0) {
-                id = table.next[0].id;
-            }
-            else {
-                id = table.first[0].id;
-            }
-
-             
             
-            var value = undefined;
-            (html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
-            $setUIValue.setValue({
-                noteVisibility:{
-                    value: value,
-                    other: html.notes.other.table.find('#'+id)
-                }
-            });
-            if (notes[id].atomNote === true) {
-                var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
-                var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
-                notes[id].x = x;
-                notes[id].y = y;
-                $setUIValue.setValue({
-                    noteVisibility:{
-                        publish: {id:id, visible: value, x: x, y: y, color: notes[id].color}
-                    }
-                });
-            }
-            showCanvasNote(id,value);
-        });
-        notepad.find('img.swapLeft').on('click',function(){
+            if (table.next.length > 0) nextID = table.next[0].id;
+            else nextID = table.first[0].id;
+
             // Hide Current Note //
             $setUIValue.setValue({
                 noteVisibility:{
@@ -574,42 +536,45 @@ define([
             }
             showCanvasNote(id,false);
             
+            // Show Next Note //
+            $setUIValue.setValue({
+                noteVisibility:{
+                    value: true,
+                    other: html.notes.other.table.find('#'+nextID)
+                }
+            });
+            if (notes[nextID].atomNote === true) {
+                var x = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('height'),10) / 2;
+                notes[nextID].x = x;
+                notes[nextID].y = y;
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        publish: {id:nextID, visible: true, x: x, y: y, color: notes[nextID].color}
+                    }
+                });
+            }
+            showCanvasNote(nextID,true);
+        });
+        notepad.find('img.swapLeft').on('click',function(){
             
-            
-            
-            
-            
+            var nextID = undefined;
             
             // Find Next Note //
-            console.log('@@@ '+id);
             var table = {
                 first: jQuery('#'+html.notes.other.tableID+' tr:first'),
                 last: jQuery('#'+html.notes.other.tableID+' tr:last'),
                 current: html.notes.other.table.find('#'+id),
-                next: html.notes.other.table.find('#'+id).closest('tr').prev()
+                prev: html.notes.other.table.find('#'+id).closest('tr').prev('tr')
             };
+            
+            if (table.prev.length > 0) nextID = table.prev[0].id;
+            else nextID = table.last[0].id;
 
-        
-            if (table.next.length > 0) {
-                console.log('next '+table.next[0].id);
-            }
-            if (table.next.length > 0) id = table.next[0].id;
-            else id = table.last[0].id;
-            // Show Note //
-            console.log('showing '+id);
-            console.log('------------------');
-            
-            
-            
-            
-            
-            
-            
-            var value = undefined;
-            (html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
+            // Hide Current Note //
             $setUIValue.setValue({
                 noteVisibility:{
-                    value: value,
+                    value: false,
                     other: html.notes.other.table.find('#'+id)
                 }
             });
@@ -620,11 +585,32 @@ define([
                 notes[id].y = y;
                 $setUIValue.setValue({
                     noteVisibility:{
-                        publish: {id:id, visible: value, x: x, y: y, color: notes[id].color}
+                        publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
                     }
                 });
             }
-            showCanvasNote(id,value);
+            showCanvasNote(id,false);
+            
+            // Show Next Note //
+            $setUIValue.setValue({
+                noteVisibility:{
+                    value: true,
+                    other: html.notes.other.table.find('#'+nextID)
+                }
+            });
+            if (notes[nextID].atomNote === true) {
+                var x = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('width'),10) / 2;
+                var y = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('height'),10) / 2;
+                notes[nextID].x = x;
+                notes[nextID].y = y;
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        publish: {id:nextID, visible: true, x: x, y: y, color: notes[nextID].color}
+                    }
+                });
+            }
+            showCanvasNote(nextID,true);
+            
         });
     };
     // Delete note from canvas //

@@ -442,7 +442,8 @@ define([
             body: jQuery('#noteBody'),
             table: jQuery('#notesTable'),
             tableID: 'notesTable',
-            saveCameraCheckbox: jQuery('[name=saveCameraButton]')
+            saveCamera: jQuery('#saveCamera'),
+            enableParameters: jQuery('#enableParameters')
         };
         
         // Interface //

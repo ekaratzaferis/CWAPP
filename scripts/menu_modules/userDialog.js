@@ -203,6 +203,7 @@ define([
     function tutorial_step(i){
         $interface.tutorialElementOff();
         html.tutorial.box.text.html(steps[i].text);
+        console.log(steps[i].title);
         html.tutorial.box.title.html(steps[i].title);
         steps[i].state = true;
         $interface.tutorialElementOn({ id: steps[i].element });
