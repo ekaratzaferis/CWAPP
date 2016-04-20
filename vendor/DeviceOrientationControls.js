@@ -42,7 +42,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 		var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - PI/2 around the x-axis
 
 		return function ( quaternion, alpha, beta, gamma, orient ) {
-			document.getElementById('logg').innerHTML = (scope.object.position.x).toFixed(1)+'-'+(scope.object.position.y).toFixed(1)+'-'+(scope.object.position.z).toFixed(1)+' orient : '+orient;
+			
 			
 			euler.set( beta, alpha, - gamma, 'YXZ' );                       // 'ZXY' for the device, but 'YXZ' for us
 
@@ -85,7 +85,8 @@ THREE.DeviceOrientationControls = function ( object ) {
 		var orient = scope.screenOrientation       ? THREE.Math.degToRad( scope.screenOrientation       ) : 0; // O
 	    
 	  	
-
+		document.getElementById('logg').innerHTML = (THREE.Math.degToRad( scope.deviceOrientation.alpha )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.beta )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.gamma )).toFixed(1)+' orient : '+THREE.Math.degToRad( scope.screenOrientation );
+		console.log(9);
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 
 	};
