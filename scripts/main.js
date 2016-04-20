@@ -1298,6 +1298,7 @@ require([
       // mobile
     
       setTimeout(function(){ 
+        
         crystalScene.add({object3d:orbitCrystal.orientationCam});
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
