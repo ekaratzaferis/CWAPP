@@ -247,7 +247,9 @@ define([
       this.externalFunctions[i]();
     };
 
-     
+    this.renderer.render( this.explorer.object3d, this.cameras[0]);
+    return;
+    
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
@@ -276,11 +278,11 @@ define([
         this.renderer.clear();
       }
       this.renderer.setClearColor( this.backgroundColor );
-      //this.cameras[0].aspect = this.containerWidth/this.containerHeight;
+      this.cameras[0].aspect = this.containerWidth/this.containerHeight;
       this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
       this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
       this.renderer.enableScissorTest ( true );   
-      //this.cameras[0].updateProjectionMatrix();  
+      this.cameras[0].updateProjectionMatrix();  
        
       if(this.anaglyphEffectActive){  
         this.stereoscopicEffect.render( this.explorer.object3d, this.cameras[0] );
