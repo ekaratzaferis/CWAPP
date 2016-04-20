@@ -112,9 +112,9 @@ define([
       new THREE.Vector3( 0,0,-1000 )
     );
      
-    this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
-    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
-    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
+    this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#FFFFFF" }) );
+    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#ffffff" }) );
+    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#000000" }) ); 
 
     this.object3d.add(this.bAxisLine);
     this.object3d.add(this.cAxisLine);

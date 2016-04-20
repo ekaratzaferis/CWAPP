@@ -43,6 +43,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 
 		return function ( quaternion, alpha, beta, gamma, orient ) {
 			document.getElementById('logg').innerHTML = (scope.object.position.x).toFixed(1)+'-'+(scope.object.position.y).toFixed(1)+'-'+(scope.object.position.z).toFixed(1)+' orient : '+orient;
+			
 			euler.set( beta, alpha, - gamma, 'YXZ' );                       // 'ZXY' for the device, but 'YXZ' for us
 
 			quaternion.setFromEuler( euler );                               // orient the device

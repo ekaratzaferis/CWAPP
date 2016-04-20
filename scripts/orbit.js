@@ -35,7 +35,8 @@ define([
       }
       else{
         this.orientationCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100) ;
-           
+        this.orientationCam.position.set(50,55,50);
+        this.orientationCam.lookAt(new THREE.Vector3());
         this.deviceOrientationControls = new THREE.DeviceOrientationControls(this.orientationCam);
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
