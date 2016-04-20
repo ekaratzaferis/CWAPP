@@ -51,7 +51,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 			quaternion.multiply( q1 );                                      // camera looks out the back of the device, not the top
 
 			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) );    // adjust for screen orientation
-
+		 
 		}
 
 	}();
@@ -85,9 +85,11 @@ THREE.DeviceOrientationControls = function ( object ) {
 		var orient = scope.screenOrientation       ? THREE.Math.degToRad( scope.screenOrientation       ) : 0; // O
 	    
 	  	
-		document.getElementById('logg').innerHTML = (THREE.Math.degToRad( scope.deviceOrientation.alpha )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.beta )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.gamma )).toFixed(1)+' r : '+window.orientation;
+		
 
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, 2.2 );
+
+		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.quaternion.y).toFixed(1)+'-';
 
 	};
 
