@@ -91,7 +91,7 @@ THREE.DeviceOrientationControls = function( object ) {
 	 
 	 	var v = scope.object.position.clone();
 		scope.object.position.set(v.setLength(v.length()-0.1));
-		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.quaternion.y).toFixed(1)+'+=';
+		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.position.y).toFixed(1)+'+v';
 
 	};
 
