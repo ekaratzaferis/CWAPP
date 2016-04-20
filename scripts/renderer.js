@@ -276,11 +276,7 @@ define([
         this.renderer.clear();
       }
       this.renderer.setClearColor( this.backgroundColor );
-      this.cameras[0].aspect = this.containerWidth/this.containerHeight;
-      this.renderer.setViewport(0, 0, this.containerWidth, this.containerHeight); 
-      this.renderer.setScissor(0, 0, this.containerWidth, this.containerHeight); 
-      this.renderer.enableScissorTest ( true );   
-      this.cameras[0].updateProjectionMatrix();  
+       
        
       if(this.anaglyphEffectActive){  
         this.stereoscopicEffect.render( this.explorer.object3d, this.cameras[0] );
