@@ -395,7 +395,7 @@ define([
      
   };
   Motifeditor.prototype.atomPosMode = function(arg){   
-        
+       
     var x = this.cellParameters.scaleX;
     var y = this.cellParameters.scaleY;
     var z = this.cellParameters.scaleZ;
@@ -2655,7 +2655,7 @@ define([
   Motifeditor.prototype.configureCellPoints = function(manual){  
   
     var _this = this;  
-
+ 
     if(this.isEmpty) {
       return; 
     }
@@ -3792,7 +3792,7 @@ define([
   };
   Motifeditor.prototype.leastVolume = function(restore){ 
 
-    if(restore !== undefined){
+    if(restore !== undefined || /*to remove this during restr*/ this.latticeName === 'hexagonal'/*to remove this during restr*/ ){
       return;
     }
 
@@ -6195,7 +6195,13 @@ define([
   }; 
 
   Motifeditor.prototype.initVolumeState = function(){   
-   
+    
+    /*to remove this during restr*/ 
+    if(this.latticeName === 'hexagonal'){ 
+      return;
+    }
+    /*to remove this during restr*/ 
+
     if(this.padlock === true || this.globalTangency === true){
       this.leastVolume();
             
@@ -6414,13 +6420,13 @@ define([
 
             var r0 = this.motifsAtoms[0].getRadius();
             var r1 = (this.motifsAtoms[1]) ? this.motifsAtoms[1].getRadius() : this.newSphere.getRadius();
-            
-            dims.xDim =  dims.zDim = r0 + r1; 
-            dims.yDim = (r0 + r1) * Math.sqrt(8/3)
               
+            dims.xDim =  dims.zDim = r0 + r1; 
+            dims.yDim = (r0 + r1) * Math.sqrt(8/3);
+            
           }
           else if(this.motifsAtoms.length === 2){ 
-            
+           
             var r0 = this.motifsAtoms[0].getRadius();
             var r1 = this.motifsAtoms[1].getRadius(); 
             var r2 = 0;
@@ -6438,7 +6444,7 @@ define([
             var r = _.max([ r0, r1, r2 ]);
             dims.xDim =  dims.zDim = r*2; 
             dims.yDim = lastAtomY + r*2;
-          
+       
           }
         }
       break;
@@ -6506,28 +6512,28 @@ define([
     var dimensions;
 
     if( (!this.padlock && !this.globalTangency ) || _manual !== undefined){
-      dimensions = _dimensions ;  
+      dimensions = _dimensions ;   
     }
     else{  
       dimensions = this.calcABCforParticularCases(_dimensions); 
-   
+     
       // store initial values for reduce volume feature
       if(!(_dimensions.xDim === 1 && _dimensions.xDim && _dimensions.xDim) ){  
         this.cellVolume.xInitVal = dimensions.xDim;
         this.cellVolume.yInitVal = dimensions.yDim;
         this.cellVolume.zInitVal = dimensions.zDim;  
-      }
+      } 
     } 
      
     this.cellParameters.scaleX = dimensions.xDim;
     this.cellParameters.scaleY = dimensions.yDim;
     this.cellParameters.scaleZ = dimensions.zDim;
 
-    if( (this.latticeSystem === 'hexagonal'  && this.latticeType === 'hexagonal')){
+    if( (this.latticeName === 'hexagonal' )){
 
-      var a = _this.cellParameters.scaleZ ;
-      var c = _this.cellParameters.scaleY ; 
-
+      var a = this.cellParameters.scaleZ ;
+      var c = this.cellParameters.scaleY ; 
+       
       var vertDist = a * Math.sqrt(3);
 
       _.times(2, function(_y) {

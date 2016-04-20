@@ -1272,7 +1272,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 700 || $(window).height() < 700){
+          if($(window).width() < 450 || $(window).height() < 450){
           // mobile  
             setTimeout(function(){ 
               crystalScene.add({object3d:orbitCrystal.orientationCam});
@@ -1305,7 +1305,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 700 || $(window).height() < 700){
+    if($(window).width() < 450 || $(window).height() < 450){
       // mobile
     
       setTimeout(function(){ 

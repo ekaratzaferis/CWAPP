@@ -806,7 +806,7 @@ define([
             case 'atomPositioningXYZ':{
                 var tempValue = undefined;
                 if ((_.isUndefined(value.toggle))) {
-                    takeAction('atomPositioningABC',{value:!value,toggle:true});
+                    takeAction('atomPositioningXYZ',{value:!value,toggle:true});
                     tempValue = value;
                 }
                 else tempValue = value.value;
@@ -814,9 +814,11 @@ define([
                     html.motif.panel.atomPositioningXYZ.addClass('buttonPressed');
                     html.motif.panel.atomPositioningXYZ.removeClass('btn-light');
                     html.motif.panel.atomPositioningXYZ.addClass('btn-purple');
-                    html.motif.motifInputsLabels.xa.html('x');
-                    html.motif.motifInputsLabels.yb.html('y');
-                    html.motif.motifInputsLabels.zc.html('z');
+                     
+                    html.motif.motifInputsLabels.xa.html('a');
+                    html.motif.motifInputsLabels.yb.html('b');
+                    html.motif.motifInputsLabels.zc.html('c');
+
                 }
                 else{  
                     html.motif.panel.atomPositioningXYZ.removeClass('buttonPressed');
@@ -828,7 +830,7 @@ define([
             case 'atomPositioningABC':{
                 var tempValue = undefined;
                 if ((_.isUndefined(value.toggle))) {
-                    takeAction('atomPositioningXYZ',{value:!value,toggle:true});
+                    takeAction('atomPositioningABC',{value:!value,toggle:true});
                     tempValue = value;
                 }
                 else tempValue = value.value;
@@ -836,9 +838,9 @@ define([
                     html.motif.panel.atomPositioningABC.addClass('buttonPressed');
                     html.motif.panel.atomPositioningABC.removeClass('btn-light');
                     html.motif.panel.atomPositioningABC.addClass('btn-purple');
-                    html.motif.motifInputsLabels.xa.html('a');
-                    html.motif.motifInputsLabels.yb.html('b');
-                    html.motif.motifInputsLabels.zc.html('c');
+                    html.motif.motifInputsLabels.xa.html('x');
+                    html.motif.motifInputsLabels.yb.html('y');
+                    html.motif.motifInputsLabels.zc.html('z');
                 }
                 else{  
                     html.motif.panel.atomPositioningABC.removeClass('buttonPressed');
