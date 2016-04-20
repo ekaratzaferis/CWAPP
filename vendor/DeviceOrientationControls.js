@@ -16,8 +16,7 @@ THREE.DeviceOrientationControls = function( object ) {
 
 	this.deviceOrientation = {};
 	this.screenOrientation = 0;
-
-	this.alpha = 0;
+ 
 	this.alphaOffsetAngle = 0;
 
 
@@ -89,7 +88,9 @@ THREE.DeviceOrientationControls = function( object ) {
 		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
 
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
-		this.alpha = alpha;
+	 
+
+		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.quaternion.y).toFixed(1)+'+=';
 
 	};
 
