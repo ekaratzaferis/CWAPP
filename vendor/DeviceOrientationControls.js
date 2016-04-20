@@ -49,11 +49,11 @@ THREE.DeviceOrientationControls = function( object ) {
 			euler.set( beta, alpha, - gamma, 'YXZ' ); // 'ZXY' for the device, but 'YXZ' for us
 
 			quaternion.setFromEuler( euler ); // orient the device
-			
+
 			quaternion.multiply( q1 ); // camera looks out the back of the device, not the top
 
 			quaternion.multiply( q0.setFromAxisAngle( zee, - orient ) ); // adjust for screen orientation
-			
+
 		}
 
 	}();
@@ -89,7 +89,8 @@ THREE.DeviceOrientationControls = function( object ) {
 
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 	 
-
+	 	var v = scope.object.position.clone();
+		scope.object.position.set(v.setLength(v.length()-0.1));
 		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.quaternion.y).toFixed(1)+'+=';
 
 	};
