@@ -34,8 +34,8 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{
-        this.orientationCam = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1100) ;
-        this.orientationCam.position.set(10,10,10);
+        this.orientationCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100) ;
+           
         this.deviceOrientationControls = new THREE.DeviceOrientationControls(this.orientationCam);
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
       }
