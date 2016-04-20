@@ -90,7 +90,7 @@ THREE.DeviceOrientationControls = function( object ) {
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 	 
 
-		
+		document.getElementById('logg').innerHTML = (scope.object.quaternion.x).toFixed(1)+'-'+(scope.object.quaternion.y).toFixed(1)+'+=';
 
 	};
 
