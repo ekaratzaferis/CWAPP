@@ -74,7 +74,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 		scope.enabled = false;
 
 	};
-
+ 
 	this.update = function () {
 	 	 
 		if ( scope.enabled === false ) return;
@@ -85,7 +85,7 @@ THREE.DeviceOrientationControls = function ( object ) {
 		var orient = scope.screenOrientation       ? THREE.Math.degToRad( scope.screenOrientation       ) : 0; // O
 	    
 	  	
-		document.getElementById('logg').innerHTML = (THREE.Math.degToRad( scope.deviceOrientation.alpha )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.beta )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.gamma )).toFixed(1)+' orient : '+THREE.Math.degToRad( scope.screenOrientation );
+		document.getElementById('logg').innerHTML = (THREE.Math.degToRad( scope.deviceOrientation.alpha )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.beta )).toFixed(1)+'-'+(THREE.Math.degToRad( scope.deviceOrientation.gamma )).toFixed(1)+' orient : '+window.orientation;
 
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, 2.2 );
 
