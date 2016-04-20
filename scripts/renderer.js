@@ -247,9 +247,12 @@ define([
       this.externalFunctions[i]();
     };
 
-    this.renderer.render( this.explorer.object3d, this.cameras[0]);
+    if(this.oculusEffectActive === true && this.oculusEffect !== undefined){  
+            
+            this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
+          }
     return;
-    
+
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
