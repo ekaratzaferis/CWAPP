@@ -1298,6 +1298,7 @@ require([
       // mobile
     
       setTimeout(function(){ 
+        crystalScene.add({object3d:orbitCrystal.orientationCam});
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
@@ -1312,7 +1313,9 @@ require([
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
    
         crystalRenderer.initOculusEffect({oculus : true}); 
- 
+        orbitCrystal.orientationCam.position.set(2,2,2);
+        orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
+
       },2000);
     }
   }
