@@ -277,7 +277,7 @@ define([
         createCanvasNote(id);
         
         // Store Camera Position //
-        if (html.notes.other.saveCameraCheckbox.hasClass('active')) {
+        if (html.notes.other.saveCamera.hasClass('active')) {
             cameraPosition[id] = 'asd'; 
         }
 
