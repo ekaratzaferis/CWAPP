@@ -3800,8 +3800,7 @@ input.disabled[type="text"]{ background-color: black; }
     margin: 0;
 }
 #continueInfo{ 
-    float: right; 
-    display: none;
+    float: right;
 }
 #tutorialLabel{ padding: 13px 2px !important; }
 #tutorial_text { color: white; }

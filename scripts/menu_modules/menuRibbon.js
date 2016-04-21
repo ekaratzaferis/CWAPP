@@ -136,7 +136,7 @@ define([
             html.motif.other.swapButton.hide();
         });
         html.menu.tabs.helpTab.on('click', function(){
-            if (!(html.menu.tabs.helpTab.hasClass('disabled'))) $userDialog.showInfoDialog({ messageID: 4 });
+            if (!(html.menu.tabs.helpTab.hasClass('disabled'))) $userDialog.showInfoTutDialog({ messageID: 4 });
         });
         
         // Block Tabs //

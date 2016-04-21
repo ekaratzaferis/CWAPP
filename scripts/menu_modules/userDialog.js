@@ -131,9 +131,6 @@ define([
         // Info Modal Handlers //
         html.modals.dialog.tutorial.on('click',function(){
             start_tutorial();
-            html.modals.dialog.tutorial.hide();
-            html.modals.dialog.doNotShowAgain.hide();
-            html.modals.dialog.continueInfo.show();
             html.modals.dialog.title.find('h2').html('Information');
         });
         html.modals.dialog.doNotShowAgain.on('click',function(){
@@ -160,7 +157,7 @@ define([
         
         // Show info at startup // 
         if(getCookie("hasVisited") === undefined){
-            this.showInfoDialog({ messageID: 4 });
+            this.showInfoTutDialog({ messageID: 4 });
         }   
         
     };
@@ -234,6 +231,19 @@ define([
             html.modals.dialog.info.find('#infoMessage').html($messageList.getMessage(argument.messageID));
             if (argument.messageID === 4) html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-250);
             else html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
+        } 
+    };
+    userDialog.prototype.showInfoTutDialog = function(argument){
+        if(argument.messageID === undefined){  
+            var screen_height = jQuery(window).height();
+            html.modals.dialog.warning.modal.find('#infoMessage').html(argument.message);
+            html.modals.dialog.info.modal('show').css('margin-top',(screen_height/2)-100);
+        }
+        else{ 
+            var screen_height = jQuery(window).height();
+            html.modals.dialog.infoTut.find('#infoMessage').html($messageList.getMessage(argument.messageID));
+            if (argument.messageID === 4) html.modals.dialog.infoTut.modal('show').css('margin-top',(screen_height/2)-250);
+            else html.modals.dialog.infoTut.modal('show').css('margin-top',(screen_height/2)-100);
         } 
     };
     userDialog.prototype.showErrorDialog = function(argument){
