@@ -403,7 +403,7 @@ define([
                 continue: jQuery('#continueWarning')
             },
             info: jQuery('#info_modal'),
-            infTut: jQuery('#info_modal_Tut'),
+            infoTut: jQuery('#info_modal_Tut'),
             doNotShowAgain: jQuery('#doNotShowAgain'),
             tutorial: jQuery('#tutorial'),
             continueInfo: jQuery('#continueInfo'),
