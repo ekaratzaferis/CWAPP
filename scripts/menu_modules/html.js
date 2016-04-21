@@ -403,10 +403,12 @@ define([
                 continue: jQuery('#continueWarning')
             },
             info: jQuery('#info_modal'),
+            infTut: jQuery('#info_modal_Tut'),
             doNotShowAgain: jQuery('#doNotShowAgain'),
             tutorial: jQuery('#tutorial'),
             continueInfo: jQuery('#continueInfo'),
             title: jQuery('#infoLabel'),
+            titleTut: jQuery('#infoLabelTut'),
             error: jQuery('#error_modal')
         };
         this.modals.qr = {

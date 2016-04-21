@@ -23,6 +23,8 @@ define([
     var target = undefined;
     var notes = {};
     var cameraPosition = {};
+    var cameraData = {}; // here are stored data about the camera position that each note can be related to
+
     var idCounter = 0;
     
     // Module References
@@ -92,14 +94,14 @@ define([
         });
         
         html.notes.other.saveCamera.on('click',function(){
-            var value = undefined;
+            var value = undefined; 
             (html.notes.other.saveCamera.hasClass('active')) ? value = false : value = true;
             $setUIValue.setValue({
                 saveCamera:{
                     value:value,
-                    publish:{saveCamera:value}
+                    publish:{saveCamera:value, id : notes.activeEntry}
                 }
-            });
+            }); 
             
         });
         html.notes.other.enableParameters.on('click',function(){
@@ -110,7 +112,7 @@ define([
                     value:value,
                     publish:{enableMotifParameters:value}
                 }
-            });
+            });  
         });
         
         $disableUIElement.disableElement({
@@ -637,7 +639,7 @@ define([
     };
     
     // Module Interface //
-    // Focus note on Note Tab //
+    // Focus note on Note Tab // 
     notesTab.prototype.moveToNote = function(id){
         $menuRibbon.switchTab('notesTab');
         // Create new note if none is specified //
@@ -731,6 +733,8 @@ define([
     notesTab.prototype.resetTable = function(){
         html.notes.other.table.find('tbody').html('');
     };
-    
+    notesTab.prototype.doSmthWithSystemCamState = function(arg){
+        cameraData[arg.id] = arg ; 
+    };
     return notesTab;
 });

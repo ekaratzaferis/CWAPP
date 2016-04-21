@@ -1062,9 +1062,7 @@ define([
          PubSub.subscribe(events.ASK_FOR_CAM_STATE, callback);
     }; 
     Menu.prototype.doSmthWithSystemCamState = function(arg){
-        console.log('this is your data. this function is called every time you publish the ASK_FOR_CAM_STATE event. you can call any function to save the arg in cache');
-        console.log(arg);
-        console.log('-');
+        notesTabModule.doSmthWithSystemCamState(arg);
     }; 
     Menu.prototype.publishCameraState = function(callback){
         PubSub.subscribe(events.PUBLISH_CAMERA_STATE, callback);

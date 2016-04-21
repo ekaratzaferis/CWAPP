@@ -1067,7 +1067,7 @@ require([
     //lattice.setOctahedronDetail(arg);
     //motifEditor.setOctahedronDetail(arg);
   }); 
-  menu.askSystemCamState(function(message, arg) { 
+  menu.askSystemCamState(function(message, arg) {  
     var p = crystalRenderer.getMainCamera().position.clone();
     var t = orbitCrystal.control.target.clone();
 
@@ -1081,7 +1081,8 @@ require([
         x : t.x,
         y : t.y,
         z : t.z
-      }  
+      },
+      id : arg.id
     });
   }); 
 

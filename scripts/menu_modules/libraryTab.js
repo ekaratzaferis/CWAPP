@@ -106,8 +106,7 @@ define([
                 var details = readDetails();
                 if (details !== false) {
                     $userDialog.showInfoDialog({ messageID: 29 });
-                    PubSub.publish('menu.save_online', details);
-                    PubSub.publish('menu.ask_system_cam_state', {});
+                    PubSub.publish('menu.save_online', details); 
                     html.library.saveOnline.target.slideDown('fast');
                     jQuery(this).addClass('active');
                 }
