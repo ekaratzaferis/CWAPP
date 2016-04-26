@@ -16,6 +16,7 @@ define([
     this.radius = radius ;
     this.color = ( color.charAt(0) !== '#' ) ? '#'+color : color ;
     this.tubeMesh = { 'object3d' : undefined } ; 
+    this.notStates = {};
     
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
@@ -31,7 +32,7 @@ define([
 
   }; 
   MillerVector.prototype.updateTubeRadius = function(radius ) { 
-
+ 
     this.radius = parseInt(radius)  ; 
     this.tubeMesh.object3d.scale.x = this.radius*2.5;
     this.tubeMesh.object3d.scale.z = this.radius*2.5;
@@ -113,13 +114,35 @@ define([
     this.tubeMesh.object3d.visible = bool ;
   };
  
-  MillerVector.prototype.setColor = function(color) {  
+  MillerVector.prototype.setColor = function(color) { 
+
     this.color = color;     
     this.object3d.children[0].material.color.setHex( color ); 
     this.object3d.children[1].material.color.setHex( color );  
     this.tubeMesh.object3d.material.color.setHex( color );
   };
- 
+  MillerVector.prototype.setNoteState = function( noteID, arg) {
+
+    this.notStates[noteID] = arg;
+    
+  };
+  MillerVector.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  MillerVector.prototype.applyNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisible(this.notStates[noteID].visible);
+    this.setColor(this.notStates[noteID].color); 
+  };
   MillerVector.prototype.destroy = function() { 
     Explorer.remove(this);
     Explorer.remove(this.tubeMesh);

@@ -20,12 +20,36 @@ define([
     this.scene.add(this.object3d);
     this.scale = 2;
     this.color;
+    this.notStates = {};
+
   }
 
   Grid.prototype.destroy = function() {
     this.scene.remove(this.object3d);
   };
- 
+  Grid.prototype.setNoteState = function( noteID, arg) {
+
+    this.notStates[noteID] = arg;
+    
+  };
+  Grid.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  Grid.prototype.applyNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisible(this.notStates[noteID].visible);
+    this.setColor(this.notStates[noteID].color); 
+    this.setRadius(this.notStates[noteID].scale); 
+  };
   Grid.prototype.setRadius = function( scale) {
 
     if(_.isUndefined(scale)) return;

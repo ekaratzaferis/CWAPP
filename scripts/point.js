@@ -16,10 +16,39 @@ define([
     this.object3d = new THREE.Mesh(globGeometry,material); 
     this.object3d.name = 'point'; 
     this.object3d.visible = visible; 
+    this.visible = visible;
+    this.notStates = {};
     this.object3d.position.fromArray(position.toArray());
     Explorer.add(this);
   }
+  Point.prototype.setNoteState = function( noteID, arg) {
+    
+    this.notStates[noteID] = arg;
+    
+  };
+  Point.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  Point.prototype.applyNoteState = function( noteID ) {
 
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisible(this.notStates[noteID].visible);  
+  };
+  Point.prototype.setVisible = function(bool) {
+       
+    this.object3d.visible = bool ;
+    this.visible = bool ; 
+
+  };
   Point.prototype.destroy = function() {
     Explorer.remove(this);
   };

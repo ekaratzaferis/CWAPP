@@ -45,6 +45,7 @@ define([
     this.uniqueID = uniqueID(); 
     this.materialLetter;
     this.outlineMesh; 
+    this.notStates = {};
 
     this.labeling = labeling;
 
@@ -121,6 +122,29 @@ define([
       chs[j].geometry = globalGeometries[this.lod] ;
     }
   };
+  CrystalAtom.prototype.setNoteState = function( noteID, arg) {
+
+    this.notStates[noteID] = arg;
+    
+  };
+  CrystalAtom.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  CrystalAtom.prototype.applyNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisibility(this.notStates[noteID].visible);
+    this.setColorMaterial(this.notStates[noteID].color);
+    this.setOpacity(this.notStates[noteID].opacity);
+  };
   CrystalAtom.prototype.setVisibility = function( bool) {
 
     this.visibility = bool;  
@@ -136,7 +160,9 @@ define([
     if(_.isUndefined(opacity)) return;
     this.opacity = opacity;
     this.object3d.children[0].material.opacity = opacity ; 
-    this.object3d.children[1].material.opacity = opacity ; 
+    if(this.labeling){
+      this.object3d.children[1].material.opacity = opacity ; 
+    }
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
     

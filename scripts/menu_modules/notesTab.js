@@ -21,8 +21,7 @@ define([
     */
     // Variables
     var target = undefined;
-    var notes = {};
-    var cameraPosition = {};
+    var notes = {}; 
     var cameraData = {}; // here are stored data about the camera position that each note can be related to
 
     var idCounter = 0;
@@ -106,13 +105,14 @@ define([
         });
         html.notes.other.enableParameters.on('click',function(){
             var value = undefined;
-            (html.notes.other.enableParameters.hasClass('active')) ? value = false : value = true;
+            (html.notes.other.enableParameters.hasClass('active')) ? value = false : value = true; 
             $setUIValue.setValue({
                 enableParameters:{
                     value:value,
                     publish:{enableMotifParameters:value}
                 }
             });  
+
         });
         
         $disableUIElement.disableElement({
@@ -170,8 +170,18 @@ define([
                 });
             }
         });
-        html.notes.actions.save.on('click',function(){
+        html.notes.actions.save.on('click',function(){ 
             if (!(html.notes.actions.save.hasClass('disabled'))){
+
+                var cameraToggle = (html.notes.other.saveCamera.hasClass('active')) ? true : false;
+                var sceneObjsToggle = (html.notes.other.enableParameters.hasClass('active')) ? true : false;
+
+                $setUIValue.setValue({
+                    saveNoteForSystem:{
+                        publish: {id:notes.activeEntry, cameraToggle : cameraToggle, sceneObjsToggle : sceneObjsToggle }
+                    }
+                });
+
                 editNote({
                     title: html.notes.properties.title.val(),
                     body: html.notes.other.body.val(),
@@ -208,6 +218,13 @@ define([
         });
         html.notes.actions.delete.on('click',function(){
             if (!(html.notes.actions.delete.hasClass('disabled'))){
+                $setUIValue.setValue({
+                    deleteNote: { 
+                        publish: {
+                            id: notes.activeEntry 
+                        }          
+                    }  
+                });
                 deleteNote();
                 $disableUIElement.disableElement({
                     noteTitle:{
@@ -277,14 +294,16 @@ define([
         };
         // Create on Canvas //
         createCanvasNote(id);
-        
-        // Store Camera Position //
-        if (html.notes.other.saveCamera.hasClass('active')) {
-            cameraPosition[id] = 'asd'; 
-        }
-
+         
         // Handlers //
         html.notes.other.table.find('#'+id).find('.selectable').on('click',function(){
+             
+            $setUIValue.setValue({
+                selectNote:{
+                    publish: {id:id}
+                }
+            });
+
             selectNote(id);
         });
         // Note Visibility //
@@ -396,6 +415,7 @@ define([
                         }          
                     }  
                 });
+                
             }
             else delete notes[notes.activeEntry];
         }

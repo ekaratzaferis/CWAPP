@@ -52,6 +52,7 @@ define([
     mesh.receiveShadow = true; 
     mesh.castShadow = true; 
     this.object3d = mesh;
+    this.notStates = {};
      
     Explorer.add(this);
   }
@@ -64,7 +65,29 @@ define([
     this.object3d.material.needsUpdate = true;
     this.object3d.material.opacity= opacity/10; 
   };
-  
+  Face.prototype.setNoteState = function( noteID, arg) {
+
+    this.notStates[noteID] = arg;
+    
+  };
+  Face.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  Face.prototype.applyNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisible(this.notStates[noteID].visible);
+    this.setColor(this.notStates[noteID].color); 
+    this.setOpacity(this.notStates[noteID].opacity); 
+  };
   Face.prototype.setColor = function(color) {
     
     if(_.isUndefined(color)) return;

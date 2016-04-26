@@ -22,7 +22,8 @@ define([
     
     this.opacity = opacity; 
     this.visible = visible; 
- 
+    this.notStates = {};
+    
     var _this = this; 
     
     var vertices = [];
@@ -94,6 +95,29 @@ define([
     this.updateTube(start, end);
 
   };
+  MillerPlane.prototype.setNoteState = function( noteID, arg) {
+
+    this.notStates[noteID] = arg;
+    
+  };
+  MillerPlane.prototype.deleteNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+    else{
+      this.notStates[noteID] === undefined;
+    }
+     
+  };
+  MillerPlane.prototype.applyNoteState = function( noteID ) {
+    if(this.notStates[noteID] === undefined){
+      return;
+    }
+     
+    this.setVisible(this.notStates[noteID].visible);
+    this.setColor(this.notStates[noteID].color);
+    this.setOpacity(this.notStates[noteID].opacity);
+  };
   MillerPlane.prototype.setVisible = function(bool) {
        
     this.object3d.visible = bool ;
@@ -103,6 +127,7 @@ define([
   MillerPlane.prototype.setOpacity = function( opacity) {
   
     if(_.isUndefined(opacity)) return;
+ 
     this.opacity = opacity;
     this.object3d.material.needsUpdate = true;
     this.object3d.material.opacity= opacity/10;

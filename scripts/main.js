@@ -160,7 +160,8 @@ require([
   'fitToCrystal',
   'LOD',
   'multitouch',
-  'cwState' 
+  'cwState',
+  'narrative_system'
 
 ], function(
   PubSub, 
@@ -217,7 +218,8 @@ require([
   FitToCrystal,
   LOD,
   Multitouch,
-  CwState 
+  CwState,
+  Narrative_system
 
 ) {
   
@@ -441,7 +443,8 @@ require([
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
 
-  
+  var narrative_system = new Narrative_system(lattice, orbitCrystal );
+
   // experimental feature  
   orbitCrystal.syncCams(true);
   orbitUnitCell.syncCams(true);
@@ -1067,36 +1070,48 @@ require([
     //lattice.setOctahedronDetail(arg);
     //motifEditor.setOctahedronDetail(arg);
   }); 
-  menu.askSystemCamState(function(message, arg) {  
-    var p = crystalRenderer.getMainCamera().position.clone();
-    var t = orbitCrystal.control.target.clone();
+  menu.onNoteSelectForSystem(function(message, arg) { 
+    narrative_system.enableNoteState(arg);
+  });
+  menu.onNoteDeleteForSystem(function(message, arg) { 
+   narrative_system.deleteNoteState(arg);
+  });
+  menu.onNoteSaveForSystem(function(message, arg) { 
+    narrative_system.saveNoteState(arg);
+  });
 
-    menu.doSmthWithSystemCamState({
-      position : {
-        x:p.x,
-        y:p.y,
-        z:p.z
-      },
-      target : {
-        x : t.x,
-        y : t.y,
-        z : t.z
-      },
-      id : arg.id
-    });
-  }); 
+  // menu.aNoteWasJustSavedDearSystem(function(message, arg) {  
+  //   var p = crystalRenderer.getMainCamera().position.clone();
+  //   var t = orbitCrystal.control.target.clone();
 
-  menu.publishCameraState(function(message, arg) { 
-    var cam = crystalRenderer.getMainCamera() ; 
+  //   menu.doSmthWithSystemCamState({
+  //     position : {
+  //       x:p.x,
+  //       y:p.y,
+  //       z:p.z
+  //     },
+  //     target : {
+  //       x : t.x,
+  //       y : t.y,
+  //       z : t.z
+  //     },
+  //     id : arg.id
+  //   });
+  // }); 
 
-    orbitCrystal.control.target.x = arg.target.x;
-    orbitCrystal.control.target.y = arg.target.y;
-    orbitCrystal.control.target.z = arg.target.z;
+   
+  // menu.publishCameraState(function(message, arg) { 
+ 
+  //   var cam = crystalRenderer.getMainCamera() ; 
 
-    cam.position.x = arg.position.x;
-    cam.position.y = arg.position.y;
-    cam.position.z = arg.position.z;
-  });  
+  //   orbitCrystal.control.target.x = arg.data.target.x;
+  //   orbitCrystal.control.target.y = arg.data.target.y;
+  //   orbitCrystal.control.target.z = arg.data.target.z;
+
+  //   cam.position.x = arg.data.position.x;
+  //   cam.position.y = arg.data.position.y;
+  //   cam.position.z = arg.data.position.z;
+  // });  
 
   ///////////////////// TO BE DELETED - EXPERIMENTAL FEATURE
 

@@ -1909,8 +1909,7 @@ define([
                 PubSub.publish(events.DIRECTION_SELECTION, value);
                 break;
             }
-            case 'directionVisibility':{
-                console.log(value);
+            case 'directionVisibility':{ 
                 PubSub.publish(events.DIRECTION_VISIBILITY, value);
                 break;
             }
@@ -2127,11 +2126,28 @@ define([
                 break;
             }
             case 'saveCamera':{
-                PubSub.publish(events.ASK_FOR_CAM_STATE, value);
+                PubSub.publish(events.ENABLE_CAMERA_PARAMETERS, value);
                 break;   
             }
-            case 'enableParameters':{
+            case 'saveNoteForSystem':{
+                PubSub.publish(events.SAVE_NOTE_FOR_SYSTEM, value);
+                break;   
+            }
+            case 'selectNote':{
+                PubSub.publish(events.SELECT_NOTE_FOR_SYSTEM, value);
+                break;   
+            }
+            case 'deleteNote':{
+                PubSub.publish(events.DELETE_NOTE_FOR_SYSTEM, value);
+                break;   
+            }
+
+            case 'enableParameters':{ 
                 PubSub.publish(events.ENABLE_MOTIF_PARAMETERS, value);
+                break;   
+            }
+            case 'publishCameraData':{ 
+                PubSub.publish(events.PUBLISH_CAMERA_STATE, value);
                 break;   
             }
                 

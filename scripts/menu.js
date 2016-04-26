@@ -182,10 +182,12 @@ define([
         LOD: 'menu.lod',
         MUTE_SOUND: 'menu.mute_sound',
         OCULUS_UNIT_CELL: 'menu.oculus_unit_cell',
-        CARDBOARD: 'menu.cardboard',
-        ASK_FOR_CAM_STATE: 'menu.ask_system_cam_state',
-        PUBLISH_CAMERA_STATE: 'menu.publish_camera_state',
-        ENABLE_MOTIF_PARAMETERS: 'menu.enable_motif_parameters'
+        CARDBOARD: 'menu.cardboard', 
+        ENABLE_CAMERA_PARAMETERS: 'menu.enable_camera_parameters',  
+        ENABLE_MOTIF_PARAMETERS: 'menu.enable_motif_parameters',
+        SAVE_NOTE_FOR_SYSTEM: 'menu.save_note_for_system', 
+        SELECT_NOTE_FOR_SYSTEM: 'menu.select_note_for_system',
+        DELETE_NOTE_FOR_SYSTEM: 'menu.delete_note_for_system'
     };
             
     function Menu() {
@@ -1054,18 +1056,15 @@ define([
     Menu.prototype.onToggleVisibilityInUC = function(callback){
         PubSub.subscribe(events.TOGGLE_MOTIF_VISIBILITY_IN_UC, callback);
     }; 
-    Menu.prototype.onEnableMotifParameters = function(callback){
-        PubSub.subscribe(events.ENABLE_MOTIF_PARAMETERS, callback);
-    };
-
-    Menu.prototype.askSystemCamState = function(callback){
-         PubSub.subscribe(events.ASK_FOR_CAM_STATE, callback);
-    }; 
-    Menu.prototype.doSmthWithSystemCamState = function(arg){
-        notesTabModule.doSmthWithSystemCamState(arg);
-    }; 
-    Menu.prototype.publishCameraState = function(callback){
-        PubSub.subscribe(events.PUBLISH_CAMERA_STATE, callback);
+  
+    Menu.prototype.onNoteSaveForSystem = function(callback){
+        PubSub.subscribe(events.SAVE_NOTE_FOR_SYSTEM, callback);
+    }
+    Menu.prototype.onNoteSelectForSystem = function(callback){
+        PubSub.subscribe(events.SELECT_NOTE_FOR_SYSTEM, callback);
+    }
+    Menu.prototype.onNoteDeleteForSystem = function(callback){
+        PubSub.subscribe(events.DELETE_NOTE_FOR_SYSTEM, callback);
     }
 
     /* TO BE DELETED SOON
