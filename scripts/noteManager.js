@@ -21,7 +21,9 @@ define([
     this.lineWeight = 1;
   };
   function updateLine (pointA, pointB, line) {
-     
+    
+    if(line === undefined) return;
+
     var distance = pointA.distanceTo(pointB) ; 
     var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
 
@@ -57,7 +59,7 @@ define([
     this.noteLinesMeshes[arg.id].material.color.set( arg.color );
   };
   NoteManager.prototype.addNote = function(arg) {
-     
+    
     var _this = this;
     var scene = Explorer.getInstance().object3d; 
     var color = arg.color;
@@ -118,7 +120,7 @@ define([
     }
   };
   NoteManager.prototype.updateNotesPositions = function(arg) { 
-    
+     
     this.camera.updateMatrixWorld();
     
     this.explorer.plane.object3d.lookAt(this.camera.position);
@@ -128,15 +130,18 @@ define([
     this.explorer.plane.object3d.updateMatrixWorld();
 
     var notes = this.menu.getAtomNoteTable();
+     
     for (var i = notes.length - 1; i >= 0; i--) { 
       this.noteMove({ id : parseInt(notes[i].id), x : notes[i].x, y : notes[i].y }, 'camera');
     };
 
   };
+ 
+
   NoteManager.prototype.noteMove = function(arg, whatMoved) { 
  
     var _this = this;
-
+  
     if(this.noteLinesMeshes[arg.id] === undefined){
       return;
     }
@@ -148,7 +153,7 @@ define([
     var atomPos = atom.object3d.position.clone();
   
     var notePos = this.findNotePoint(arg.x, arg.y); 
-
+     
     updateLine(atomPos, notePos, this.noteLinesMeshes[arg.id]); 
  
   };
@@ -160,13 +165,13 @@ define([
        
       var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; });
 
-      if(atom === undefined){
+      if(atom === undefined || this.noteLinesMeshes[arg.id] === undefined){
         return;
       }
  
       var atomPos = atom.object3d.position.clone();
       var notePos = this.findNotePoint(arg.x, arg.y);
-      updateLine(atomPos, atomPos, this.noteLinesMeshes[arg.id])
+      updateLine(atomPos, atomPos, this.noteLinesMeshes[arg.id]); 
       this.noteLinesMeshes[arg.id].visible = true;
     } 
     else if(arg.visible === false){

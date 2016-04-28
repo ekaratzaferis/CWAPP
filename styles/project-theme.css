@@ -3805,22 +3805,27 @@ input.disabled[type="text"]{ background-color: black; }
 .fLeft {
     float: left;
 }
+.playerButton.active{ 
+  background: #6f6299;
+  cursor: pointer;
+}
 .playerButton {
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 19px;
     padding-right: 18.3px;
 }
-.playerButton.disabled {
+.playerButton.disabled { 
     background: #36383d;
-    cursor: not-allowed;
+    cursor: not-allowed!important;
 }
 .player{
     height: 50px;
+    cursor: pointer;
     background: #25272b;
     margin-top: 10px;
     margin-bottom: 10px;
-}
+} 
 #tutorialLabel{ padding: 13px 2px !important; }
 #tutorial_text { color: white; }
 #steps {

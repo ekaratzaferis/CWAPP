@@ -33,7 +33,8 @@ define([
     var $menuRibbon = undefined;
     var $stringEditor = undefined;
     var html = undefined;
-    
+    var playerTimer;
+
     // Contructor //
     function notesTab(argument) {
         // Acquire Module References //
@@ -173,6 +174,27 @@ define([
         html.notes.actions.save.on('click',function(){ 
             if (!(html.notes.actions.save.hasClass('disabled'))){
 
+                $setUIValue.setValue({
+                    noteVisibility:{
+                        value: false,
+                        other: html.notes.other.table.find('#'+notes.activeEntry)
+                    }
+                });
+ 
+                if (notes[notes.activeEntry].atomNote === true) {
+                    var x = parseInt(html.interface.screen.wrapper.find('#'+notes.activeEntry).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+notes.activeEntry).css('width'),10) / 2;
+                    var y = parseInt(html.interface.screen.wrapper.find('#'+notes.activeEntry).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+notes.activeEntry).css('height'),10) / 2;
+                    notes[notes.activeEntry].x = x;
+                    notes[notes.activeEntry].y = y;
+                    $setUIValue.setValue({
+                        noteVisibility:{
+                            publish: {id:notes.activeEntry, visible: false, x: x, y: y, color: notes[notes.activeEntry].color}
+                        }
+                    });
+                }
+
+                showCanvasNote(notes.activeEntry,false);
+
                 var cameraToggle = (html.notes.other.saveCamera.hasClass('active')) ? true : false;
                 var sceneObjsToggle = (html.notes.other.enableParameters.hasClass('active')) ? true : false;
 
@@ -191,6 +213,7 @@ define([
                     x: notes[notes.activeEntry].x,
                     y: notes[notes.activeEntry].y
                 });
+
                 $disableUIElement.disableElement({
                     noteTitle:{
                         value: true    
@@ -214,6 +237,22 @@ define([
                         value: true   
                     }
                 });
+
+                clearInterval(playerTimer);
+
+                $setUIValue.setValue({
+                    playerPause:{
+                        value:false,
+                        publish:{play:false }
+                    }
+                }); 
+      
+                $setUIValue.setValue({
+                    playerPlay:{
+                        value:false,
+                        publish:{play:false }
+                    }
+                }); 
             }
         });
         html.notes.actions.delete.on('click',function(){
@@ -251,6 +290,141 @@ define([
                 });
             }
         });
+
+        // player
+
+        html.notes.other.play.on('click',function(){
+            var value = undefined; 
+            (html.notes.other.play.find('a').hasClass('active')) ? value = false : value = true;
+
+            if(value === true){ 
+
+                $setUIValue.setValue({
+                    playerPlay:{
+                        value:value,
+                        publish:{play:value }
+                    }
+                }); 
+     
+                $setUIValue.setValue({
+                    playerPause:{
+                        value:false,
+                        publish:{play:false}
+                    }
+                }); 
+
+
+
+                playerTimer = setInterval(function(){ 
+
+                    var nextID = undefined;
+                    
+                    var id = notes.activeEntry;
+                    var newStart = false ;
+
+                    if( id === false){ 
+                        newStart=true;
+                        id = (jQuery('#'+html.notes.other.tableID+' tr:last'))[0].id ;
+                    };
+                   
+                    // Find Next Note //
+                    var table = {
+                        first: jQuery('#'+html.notes.other.tableID+' tr:first'),
+                        last: jQuery('#'+html.notes.other.tableID+' tr:last'),
+                        current: html.notes.other.table.find('#'+id),
+                        next: html.notes.other.table.find('#'+id).closest('tr').next('tr')
+                    };
+ 
+
+                    if (table.next.length > 0){
+                        nextID = table.next[0].id; 
+                    }
+                    else if((html.notes.other.repeat.find('a').hasClass('active')) || newStart === true){ 
+                        nextID = table.first[0].id; 
+                    } 
+                    else{
+                        clearInterval(playerTimer);
+                        return;
+                    }
+
+                    // Hide Current Note //
+                    $setUIValue.setValue({
+                        noteVisibility:{
+                            value: false,
+                            other: html.notes.other.table.find('#'+id)
+                        }
+                    });
+                    if (notes[id].atomNote === true) {
+                        var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                        var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
+                        notes[id].x = x;
+                        notes[id].y = y;
+                        $setUIValue.setValue({
+                            noteVisibility:{
+                                publish: {id:id, visible: false, x: x, y: y, color: notes[id].color}
+                            }
+                        });
+                    }
+                    showCanvasNote(id,false);
+                    
+                    // Show Next Note //
+                    $setUIValue.setValue({
+                        noteVisibility:{
+                            value: true,
+                            other: html.notes.other.table.find('#'+nextID)
+                        }
+                    });
+
+                    if (notes[nextID].atomNote === true) {
+                        var x = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('width'),10) / 2;
+                        var y = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('height'),10) / 2;
+                        notes[nextID].x = x;
+                        notes[nextID].y = y;
+                        $setUIValue.setValue({
+                            noteVisibility:{
+                                publish: {id:nextID, visible: true, x: x, y: y, color: notes[nextID].color}
+                            }
+                        });
+                    }
+                    showCanvasNote(nextID,true);
+
+                    $setUIValue.setValue({
+                        selectNote:{
+                            publish: {id:nextID}
+                        }
+                    });
+
+                    selectNote(nextID);
+
+                }, 2000);
+            }
+            
+        });
+        html.notes.other.pause.on('click',function(){
+            var value = undefined; 
+            (html.notes.other.pause.find('a').hasClass('active')) ? value = false : value = true;
+
+            if(value === true){ 
+
+                clearInterval(playerTimer);
+
+                $setUIValue.setValue({
+                    playerPause:{
+                        value:value,
+                        publish:{play:value }
+                    }
+                }); 
+      
+                $setUIValue.setValue({
+                    playerPlay:{
+                        value:false,
+                        publish:{play:false }
+                    }
+                }); 
+            }
+            
+        });
+ 
     };
     
     // Add note to Table //
@@ -308,6 +482,7 @@ define([
         });
         // Note Visibility //
         html.notes.other.table.find('#'+id).find('.noteButton').on('click', function(){
+ 
             var value = undefined;
             (html.notes.other.table.find('#'+id).find('.noteButton').hasClass('visible')) ? value = false : value = true;
             $setUIValue.setValue({
@@ -331,7 +506,9 @@ define([
         });
         // Remote Hide/Show Note //
         html.notes.other.table.find('#'+id).on('hide',function(){
-            if(_.isUndefined(notes[id].temp)) return false;
+            if(_.isUndefined(notes[id].temp)) {
+                return false;
+            }
             else{
                 if (notes[id].temp === true){
                     // UI //
@@ -365,6 +542,15 @@ define([
                 other: html.notes.other.table.find('#'+id)
             }
         });
+        $setUIValue.setValue({
+            atomNoteTable: { 
+                publish: {
+                    id: id,
+                    add: true,
+                    color : notes[id].color
+                }          
+            }  
+        });
         if (notes[id].atomNote === true) {
             var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
             var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
@@ -378,19 +564,22 @@ define([
         }
         showCanvasNote(id,true);
         
+
         return id;
     };
     // Edit note //
-    function editNote(note){
+    function editNote(note){ 
         // Update Database //
         if (notes.activeEntry !== false) notes[notes.activeEntry] = note;
         else return false;
-        
+         
+
         // Update Entry //
         if (note.title !== '') {
             html.notes.other.table.find('#'+notes.activeEntry).find('.note-name').html(note.title);
             html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
         }
+        
         if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
         html.notes.other.table.find('#'+notes.activeEntry).find('.color').css('background',note.color);
         highlightNote(notes.activeEntry,false);
@@ -433,7 +622,7 @@ define([
         html.notes.properties.color.children().css('background','transparent');
     };
     // Select Active Note //
-    function selectNote(id){
+    function selectNote(id){ 
         highlightNote(notes.activeEntry,false);
         html.notes.properties.title.val(notes[id].title);
         html.notes.other.body.val(notes[id].body);
@@ -466,6 +655,27 @@ define([
                 value: false   
             }
         });
+
+        $setUIValue.setValue({
+            noteVisibility:{
+                value: true,
+                other: html.notes.other.table.find('#'+id)
+            }
+        });
+
+        if (notes[id].atomNote === true) {
+            var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+            var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
+            notes[id].x = x;
+            notes[id].y = y;
+            $setUIValue.setValue({
+                noteVisibility:{
+                    publish: {id:id, visible: true, x: x, y: y, color: notes[id].color}
+                }
+            });
+        }
+
+        showCanvasNote(id,true);
     };
     // Highlight Table Entry //
     function highlightNote(id,state){

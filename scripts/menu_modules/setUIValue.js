@@ -1451,6 +1451,51 @@ define([
                 html.iac.other.opacitySlider.slider('value',value);
                 break;
             }
+            case 'playerPlay':{
+                if (value === true) {
+                    html.notes.other.play.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.play.find('a').removeClass('active');
+                } 
+                break;
+            } 
+            case 'playerPause':{
+                if (value === true) {
+                    html.notes.other.pause.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.pause.find('a').removeClass('active');
+                } 
+                break;
+            } 
+            case 'playerForward':{
+                if (value === true) {
+                    html.notes.other.forward.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.forward.find('a').removeClass('active');
+                } 
+                break;
+            }
+            case 'playerRewind':{
+                if (value === true) {
+                    html.notes.other.rewind.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.rewind.find('a').removeClass('active');
+                } 
+                break;
+            }
+            case 'playerRepeat':{
+                if (value === true) {
+                    html.notes.other.repeat.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.repeat.find('a').removeClass('active');
+                } 
+                break;
+            }
             
             case 'reset':{
                 
@@ -2179,6 +2224,29 @@ define([
 
             case 'reset':{
                 PubSub.publish(events.RESET, value); 
+                break;
+            }
+
+            // player narrative
+
+            case 'playerPlay':{
+                PubSub.publish(events.PLAYER_PLAY, value); 
+                break;
+            } 
+            case 'playerPause':{
+                PubSub.publish(events.PLAYER_PAUSE, value); 
+                break;
+            }
+            case 'playerForward':{
+                PubSub.publish(events.PLAYER_FORWARD, value); 
+                break;
+            }
+            case 'playerRepeat':{
+                PubSub.publish(events.PLAYER_REPEAT, value); 
+                break;
+            }
+            case 'playerRewind':{
+                PubSub.publish(events.PLAYER_REWIND, value); 
                 break;
             }
         };

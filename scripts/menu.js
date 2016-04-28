@@ -187,9 +187,16 @@ define([
         ENABLE_MOTIF_PARAMETERS: 'menu.enable_motif_parameters',
         SAVE_NOTE_FOR_SYSTEM: 'menu.save_note_for_system', 
         SELECT_NOTE_FOR_SYSTEM: 'menu.select_note_for_system',
-        DELETE_NOTE_FOR_SYSTEM: 'menu.delete_note_for_system'
+        DELETE_NOTE_FOR_SYSTEM: 'menu.delete_note_for_system',
+
+        PLAYER_PLAY: 'menu.player_play', 
+        PLAYER_PAUSE: 'menu.player_pause',
+        PLAYER_FORWARD: 'menu.player_forward',
+        PLAYER_REPEAT: 'menu.player_repeat',
+        PLAYER_REWIND: 'menu.player_rewind'
     };
             
+
     function Menu() {
 
         var _this = this;

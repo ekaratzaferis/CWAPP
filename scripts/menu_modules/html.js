@@ -444,6 +444,12 @@ define([
             body: jQuery('#noteBody'),
             table: jQuery('#notesTable'),
             tableID: 'notesTable',
+            play: jQuery('#play'),
+            stop: jQuery('#stop'),
+            pause: jQuery('#pause'),
+            forward: jQuery('#forward'),
+            rewind: jQuery('#rewind'),
+            repeat: jQuery('#repeat'),
             saveCamera: jQuery('#saveCamera'),
             enableParameters: jQuery('#enableParameters')
         };
