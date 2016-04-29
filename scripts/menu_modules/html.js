@@ -451,6 +451,8 @@ define([
             rewind: jQuery('#rewind'),
             repeat: jQuery('#repeat'),
             saveCamera: jQuery('#saveCamera'),
+            playerSlider: jQuery('#playerSlider'),
+            playerSliderTitle: jQuery('#playerSliderTitle'),
             enableParameters: jQuery('#enableParameters')
         };
         

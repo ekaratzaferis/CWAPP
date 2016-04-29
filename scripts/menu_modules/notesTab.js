@@ -292,7 +292,16 @@ define([
         });
 
         // player
-
+        html.notes.other.playerSlider.slider({
+            value: 5,
+            min: 5,
+            max: 300,
+            step: 1,
+            animate: true,
+            slide: function(event, ui){
+                html.notes.other.playerSliderTitle.val(ui.value); 
+            }
+        });
         html.notes.other.play.on('click',function(){
             var value = undefined; 
             (html.notes.other.play.find('a').hasClass('active')) ? value = false : value = true;
