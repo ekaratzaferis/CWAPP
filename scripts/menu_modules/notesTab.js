@@ -53,10 +53,10 @@ define([
         
         // Inputs //
         html.notes.properties.title.on('keyup',function(){
-            jQuery('.noteTitle').html(html.notes.properties.title.val());
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(html.notes.properties.title.val() );
         });
         html.notes.other.body.on('keyup',function(){
-            jQuery('.wordwrap.notes').html(html.notes.other.body.val());
+            html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.wordwrap.notes').html(html.notes.other.body.val());
         });
         html.notes.properties.opacity.html('<option>0</option><option>2</option><option>4</option><option>6</option><option>8</option><option>10</option>');
         html.notes.properties.opacity.selectpicker();

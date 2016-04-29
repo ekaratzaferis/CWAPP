@@ -161,6 +161,7 @@ define([
      
     var _this = this; 
     console.log(arg);
+    arg.id = parseInt(arg.id);
     if(arg.visible === true){ 
        
       var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; });
