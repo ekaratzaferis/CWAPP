@@ -1460,6 +1460,15 @@ define([
                 } 
                 break;
             } 
+            case 'playerRepeat':{
+                if (value === true) {
+                    html.notes.other.repeat.find('a').addClass('active');
+                }
+                else {
+                    html.notes.other.repeat.find('a').removeClass('active');
+                } 
+                break;
+            } 
             case 'playerPause':{
                 if (value === true) {
                     html.notes.other.pause.find('a').addClass('active');
@@ -2231,6 +2240,10 @@ define([
 
             case 'playerPlay':{
                 PubSub.publish(events.PLAYER_PLAY, value); 
+                break;
+            } 
+            case 'playerRepeat':{
+                PubSub.publish(events.PLAYER_REPEAT, value); 
                 break;
             } 
             case 'playerPause':{

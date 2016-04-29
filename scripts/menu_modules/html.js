@@ -453,6 +453,7 @@ define([
             saveCamera: jQuery('#saveCamera'),
             playerSlider: jQuery('#playerSlider'),
             playerSliderTitle: jQuery('#playerSliderTitle'),
+            interval: jQuery('#interval'),
             enableParameters: jQuery('#enableParameters')
         };
         
