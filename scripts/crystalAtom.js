@@ -163,6 +163,10 @@ define([
     if(this.labeling){
       this.object3d.children[1].material.opacity = opacity ; 
     }
+
+    if(this.outlineMesh !== undefined){
+      this.outlineMesh.material.opacity = opacity ;
+    }
   }; 
   CrystalAtom.prototype.setColorMaterial = function(color, temp) {
     

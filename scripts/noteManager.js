@@ -102,12 +102,12 @@ define([
         for (var j = this.lattice.actualAtoms.length - 1; j >= 0; j--) {
           
           if(this.lattice.actualAtoms[j].uniqueID === id){ 
-            var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0x0040FF, side: THREE.BackSide } );
+            var outlineMaterial1 = new THREE.MeshBasicMaterial( { opacity : this.lattice.actualAtoms[j].object3d.children[0].material.opacity,color: 0x0040FF, transparent : true, side: THREE.BackSide } );
             var outlineMesh1 = new THREE.Mesh( this.lattice.actualAtoms[j].object3d.children[0].geometry.clone(), outlineMaterial1 );
             outlineMesh1.position.set(this.lattice.actualAtoms[j].object3d.position.x, this.lattice.actualAtoms[j].object3d.position.y, this.lattice.actualAtoms[j].object3d.position.z);
             
             var sc = this.lattice.actualAtoms[j].getScaledRadius();
-            outlineMesh1.scale.set( sc , sc , sc );  
+            outlineMesh1.scale.set( sc , sc , sc );     
             outlineMesh1.scale.multiplyScalar(1.05);
             this.lattice.actualAtoms[j].outlineMesh = outlineMesh1 ;
             scene.add( this.lattice.actualAtoms[j].outlineMesh ); 
@@ -159,8 +159,8 @@ define([
   };
   NoteManager.prototype.noteVisibility = function(arg) {
      
-    var _this = this;
-
+    var _this = this; 
+    console.log(arg);
     if(arg.visible === true){ 
        
       var atom = _.find(_this.lattice.actualAtoms, function(a){ return a.uniqueID === arg.id; });

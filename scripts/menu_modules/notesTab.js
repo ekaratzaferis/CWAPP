@@ -367,6 +367,7 @@ define([
                     }
                     showCanvasNote(id,false);
                     
+
                     // Show Next Note //
                     $setUIValue.setValue({
                         noteVisibility:{
@@ -375,14 +376,14 @@ define([
                         }
                     });
 
-                    if (notes[nextID].atomNote === true) {
+                    if (notes[nextID].atomNote === true) { console.log(9);
                         var x = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('width'),10) / 2;
                         var y = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('height'),10) / 2;
                         notes[nextID].x = x;
                         notes[nextID].y = y;
                         $setUIValue.setValue({
                             noteVisibility:{
-                                publish: {id:nextID, visible: true, x: x, y: y, color: notes[nextID].color}
+                                publish: {id: nextID, visible: true, x: x, y: y, color: notes[nextID].color}
                             }
                         });
                     }
@@ -579,7 +580,7 @@ define([
             html.notes.other.table.find('#'+notes.activeEntry).find('.note-name').html(note.title);
             html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
         }
-        
+
         if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
         html.notes.other.table.find('#'+notes.activeEntry).find('.color').css('background',note.color);
         highlightNote(notes.activeEntry,false);

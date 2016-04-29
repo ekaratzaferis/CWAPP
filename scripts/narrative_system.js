@@ -190,7 +190,7 @@ define([
 
   }
     
-  Narrative_system.prototype.deleteNoteState = function(bool){
+  Narrative_system.prototype.deleteNoteState = function(arg){
   
     var l = this.lattice, _this = this; 
     var indexes;
