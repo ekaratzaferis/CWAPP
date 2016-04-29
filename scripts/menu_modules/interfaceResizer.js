@@ -326,8 +326,8 @@ define([
     };
     // Highlight HTML element fot tutorial //
     interfaceResizer.prototype.tutorialElementOn = function(argument){
-        jQuery('#'+argument.id).addClass('highlight animating');
-        $animating = jQuery('#'+argument.id);
+        argument.obj.addClass('highlight animating');
+        $animating = argument.obj;
     };
     // Dehighlight HTML element for tutorial //
     interfaceResizer.prototype.tutorialElementOff = function(){
