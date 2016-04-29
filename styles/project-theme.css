@@ -3985,6 +3985,13 @@ input.disabled[type="text"]{ background-color: black; }
     100%   {background:white;}
 }
 
+#playerSlider { margin-top: 29px; }
+
+#playerSliderTitle{
+    margin-top: 7px;
+    margin-bottom: -19px;
+}
+
 .highlight {
   animation: highlight 2s infinite;
 }
