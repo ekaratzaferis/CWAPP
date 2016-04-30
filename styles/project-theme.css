@@ -737,11 +737,23 @@ body {
     position: fixed;
     right: -100%;
     top: 0; }
-  .main-controls-container.controls-close { 
-    right:-435px;}
+  
     .main-controls-container.controls-close .controls-toggler-container .btn .img-close {
       display: none; }
-
+.main-controls-container.controls-close { 
+    right:-435px;}
+@media (max-width: 1400px) {
+  .main-controls-container.controls-close { 
+    right:-441.5px;}
+}
+@media (max-width: 1200px) {
+  .main-controls-container.controls-close { 
+    right:-448px;}
+}
+@media (max-width: 1000px) {
+  .main-controls-container.controls-close { 
+    right:-455.5px;}
+}
 /*==========  Tab Pane  ==========*/
 .tab-pane {
   background: #2c2e33; }

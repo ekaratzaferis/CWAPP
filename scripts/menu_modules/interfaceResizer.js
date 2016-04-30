@@ -32,7 +32,7 @@ define([
     var $viewport = false;
     var $animating = undefined;
     var $animating2 = undefined;
-    var autoZoom = false;
+    var autoZoom = true;
     
     // How many pixels does the menu occupy on screen //
     var $menuWidthOpen;
@@ -136,7 +136,6 @@ define([
     function resizeScene(){
         // Calculate current screen size.
         refreshDimensions();
-        
         // Calculate canvas resizing amount and adjust menu if auto-zoom is enabled //
         var x = 0;
         if (html.interface.sidebar.menu.hasClass('controls-open')) {
@@ -186,11 +185,7 @@ define([
         html.interface.sidebar.menuContainer.css('transform','scale('+percentage+')');
         html.interface.sidebar.menuContainer.css('transform-origin','0 0');
         // Update scrollbar //
-        var elem = html.interface.sidebar.menuContainer, scaledHeight = elem[0].getBoundingClientRect().height;
-        elem.parents(".mCSB_container").css({
-            "height": elem.outerHeight()!==scaledHeight ? scaledHeight : "auto"
-        }); 
-        html.interface.screen.body.mCustomScrollbar('update');
+        updateScrollbar();
         // Calculate key values //
         switch(percentage){
             case 0.7:
@@ -227,12 +222,19 @@ define([
     function adjustMenu(open){
         if (autoZoom === true){
             var zoom = 1;
-            if (screenWidth > 1300) zoom = 1;
-            else if (screenWidth > 1100) zoom = 0.9;
+            if (screenWidth > 1400) zoom = 1;
+            else if (screenWidth > 1200) zoom = 0.9;
             else if (screenWidth > 1000) zoom = 0.8;
             else zoom = 0.7;
             transformMenu(zoom,open);
         }   
+    };
+    function updateScrollbar(){
+        var elem = html.interface.sidebar.menuContainer, scaledHeight = elem[0].getBoundingClientRect().height;
+        elem.parents(".mCSB_container").css({
+            "height": elem.outerHeight()!==scaledHeight ? scaledHeight : "auto"
+        }); 
+        html.interface.screen.body.mCustomScrollbar('update');  
     };
     
     // Module Interface //
@@ -296,6 +298,9 @@ define([
                 }
             }
         }
+        setTimeout(function(){
+            updateScrollbar();
+        },300);
     };
     // Hide/Show xyz labels //
     interfaceResizer.prototype.showCanvasXYZLabels = function(state){
