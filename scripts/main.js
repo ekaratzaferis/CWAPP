@@ -233,7 +233,7 @@ require([
       }
   } )(); 
   if(!bSupport){ 
-    menu.showWarningDialog({message : 'Oops, seems your browser does not support WebGL. Check out http://get.webgl.org/, or try installing the latest version of Chrome ( https://www.google.com/chrome ), or Firefox ( https://www.mozilla.org/en-US/firefox )'});
+    menu.showWarningDialog({message : '<p> Oops, :-(<br />It seems that your browser does not support WebGL.</p><br/><p>Check out <a href="http://get.webgl.org/">WebGL</a>, or try installing the latest version of: </p><br/></p> <a href="https://www.google.com/chrome">Chrome</a> [ https://www.google.com/chrome ] </p></p><a href="https://www.mozilla.org/en-US/firefox">Firefox</a> [ https://www.mozilla.org/en-US/firefox ]</p>'});
     return; 
   }
   

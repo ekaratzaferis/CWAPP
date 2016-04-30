@@ -31,6 +31,7 @@ define([
     var screenWidth = undefined;
     var $viewport = false;
     var $animating = undefined;
+    var $animating2 = undefined;
     var autoZoom = false;
     
     // How many pixels does the menu occupy on screen //
@@ -49,10 +50,10 @@ define([
     function interfaceResizer(argument) {
         
         // Initiation values //
-        $menuWidthOpen = 520;
-        $menuWidthClose = 103;
-        $menuShiftRight = -417;
-        $menuShiftLeft = 0;
+        $menuWidthOpen = 500;
+        $menuWidthClose = 65;
+        $menuShiftRight = -435;
+        $menuShiftLeft = -18;
         
         // Acquire Module References //
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
@@ -193,32 +194,32 @@ define([
         // Calculate key values //
         switch(percentage){
             case 0.7:
-                $menuWidthOpen = 370;
-                $menuWidthClose = 78.3;
-                $menuShiftRight = -442;
-                $menuShiftLeft = -150;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','-150px');
+                $menuWidthOpen = 350;
+                $menuWidthClose = 45.5;
+                $menuShiftRight = -455.5;
+                $menuShiftLeft = -168;
+                if(open === true) html.interface.sidebar.menuContainer.css('right','-168px');
                 break;
             case 0.8:
-                $menuWidthOpen = 420;
-                $menuWidthClose = 86.6;
-                $menuShiftRight = -434;
-                $menuShiftLeft = -100;
-                if(open === true)  html.interface.sidebar.menuContainer.css('right','-100px');
+                $menuWidthOpen = 400;
+                $menuWidthClose = 52;
+                $menuShiftRight = -448;
+                $menuShiftLeft = -118;
+                if(open === true)  html.interface.sidebar.menuContainer.css('right','-118px');
                 break;
             case 0.9:
-                $menuWidthOpen = 470;
-                $menuWidthClose = 94.9;
-                $menuShiftRight = -427;
-                $menuShiftLeft = -50;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','-50px');
+                $menuWidthOpen = 450;
+                $menuWidthClose = 58.5;
+                $menuShiftRight = -441.5;
+                $menuShiftLeft = -68;
+                if(open === true) html.interface.sidebar.menuContainer.css('right','-68px');
                 break;
             case 1:
-                $menuWidthOpen = 520;
-                $menuWidthClose = 103;
-                $menuShiftRight = -417;
-                $menuShiftLeft = 0;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','0px');
+                $menuWidthOpen = 500;
+                $menuWidthClose = 65;
+                $menuShiftRight = -435;
+                $menuShiftLeft = -18;
+                if(open === true) html.interface.sidebar.menuContainer.css('right','-18px');
                 break;
         };
     };
@@ -229,7 +230,7 @@ define([
             if (screenWidth > 1300) zoom = 1;
             else if (screenWidth > 1100) zoom = 0.9;
             else if (screenWidth > 1000) zoom = 0.8;
-            else if (screenWidth > 800) zoom = 0.7;
+            else zoom = 0.7;
             transformMenu(zoom,open);
         }   
     };
@@ -329,6 +330,10 @@ define([
         argument.obj.addClass('highlight animating');
         $animating = argument.obj;
     };
+    interfaceResizer.prototype.tutorialElementOnSecond = function(argument){
+        argument.obj.addClass('highlight animating');
+        $animating2 = argument.obj;
+    };
     // Dehighlight HTML element for tutorial //
     interfaceResizer.prototype.tutorialElementOff = function(){
         if (!(_.isUndefined($animating))){
@@ -340,7 +345,13 @@ define([
             }
             if ($animating.hasClass('animating')) $animating.addClass('stop');
             if ($animating.hasClass('highlight')) $animating.addClass('animating');
-        }  
+        }
+        if (!(_.isUndefined($animating2))){
+            $animating2.removeClass('highlight');
+            $animating2.removeClass('animating');
+            $animating2.removeClass('stop');
+            $animating2.stop();
+        }
     };
     // Pick new label position inside the canvas //
     interfaceResizer.prototype.moveLabel = function(argument){

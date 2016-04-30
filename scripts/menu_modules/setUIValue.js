@@ -1589,11 +1589,11 @@ define([
                 takeAction('fogColor','transparent');
                 takeAction('sounds',false);
                 takeAction('soundSlider',75);
-                takeAction('crystalScreenColor','#74629c');
-                takeAction('cellScreenColor','#74629c');
-                takeAction('motifXScreenColor','#74629c');
-                takeAction('motifYScreenColor','#74629c');
-                takeAction('motifZScreenColor','#74629c');
+                takeAction('crystalScreenColor','#000');
+                takeAction('cellScreenColor','#000');
+                takeAction('motifXScreenColor','#000');
+                takeAction('motifYScreenColor','#000');
+                takeAction('motifZScreenColor','#000');
                 
                 // PnD //
                 takeAction('planeOpacity','6');
