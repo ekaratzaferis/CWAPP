@@ -619,6 +619,7 @@ define([
     };
 
     Menu.prototype.editDirectionInputs = function(values){
+        if (values.dirRadius !== undefined) values.dirRadius = values.dirRadius * 10; 
         var argument = {};
         _.each(values, function($parameter, k) {
             argument[k] = {

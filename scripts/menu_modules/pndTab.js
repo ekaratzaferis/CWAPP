@@ -35,6 +35,16 @@ define([
     var $setUIValue = undefined;
     var $messages = undefined;
     var html = undefined;
+    var millers = {
+        millerH : 0,  
+        millerK : 0,  
+        millerL : 0,  
+        millerI : 0,  
+        millerU : 0,  
+        millerV : 0,  
+        millerW : 0,  
+        millerT : 0  
+    };
     
     // Contructor //
     function pndTab(argument) {
@@ -107,7 +117,13 @@ define([
                         publish: publish
                     };
                     $setUIValue.setValue(argument);
-                });   
+                });
+                $parameter.on('keyup',function() {
+                    if (millers[k] !== undefined) {
+                        if (isInt($parameter.val())) millers[k] = parseInt($parameter.val());
+                    }
+                    html.pnd.planeParameters.millerI.val(-(millers.millerH+millers.millerK)); 
+                });
             }
         }); 
         _.each(html.pnd.directionParameters, function($parameter, k) {
@@ -153,6 +169,12 @@ define([
                         publish: publish
                     }
                     $setUIValue.setValue(argument);
+                });
+                $parameter.on('keyup',function() {
+                    if (millers[k] !== undefined) {
+                        if (isInt($parameter.val())) millers[k] = parseInt($parameter.val());
+                    }
+                    html.pnd.directionParameters.millerT.val(-(millers.millerU+millers.millerV)); 
                 });
             }
         });
@@ -278,7 +300,14 @@ define([
         else argument.interception = false;  
         return argument;
     };
-    
+    function isInt(value){
+        if (isNaN(value)) {
+            return false;
+        }
+        var x = parseFloat(value);
+        return (x | 0) === x;
+    };
+            
     // Module Interface //
     // Show Hide Extra Miller Parameters //
     pndTab.prototype.toggleExtraParameter = function(choice,action){ 

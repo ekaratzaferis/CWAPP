@@ -356,7 +356,7 @@ define([
                 else $param.removeClass('blocked');
             }
         });
-    }
+    };
     function disableTab(argument){
         _.each(html.menu.tabs, function($param,a){
             if (a === argument.tab) {
@@ -389,7 +389,7 @@ define([
                 }
             }
         });
-    }
+    };
     
     menuRibbon.prototype.setSwapButtonState = function(state){
         if (!(_.isUndefined(state))) swapState = state;

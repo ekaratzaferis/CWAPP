@@ -445,7 +445,6 @@ define([
                 return html.visual.sound.soundSlider.slider('value');   
             }
             case 'crystalScreenColor':{
-                console.log('#'+html.visual.tools.colorPickers.crystalScreen.spectrum('get').toHex());
                 return '#'+html.visual.tools.colorPickers.crystalScreen.spectrum('get').toHex();
             }
             case 'cellScreenColor':{
