@@ -892,7 +892,7 @@ define([
     var moreCollisions = true ;
      
 
-    while(moreCollisions === true && counterHelper < 20 && collisionInOthers === false){
+    while(this.latticeName !== 'hexagonal' && moreCollisions === true && counterHelper < 20 && collisionInOthers === false){
        
       if(aScale != undefined){ 
         this.cellParameters.scaleZ = aScale ; 

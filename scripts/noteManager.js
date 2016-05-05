@@ -160,7 +160,7 @@ define([
   NoteManager.prototype.noteVisibility = function(arg) {
      
     var _this = this; 
-    console.log(arg);
+    
     arg.id = parseInt(arg.id);
     if(arg.visible === true){ 
        
