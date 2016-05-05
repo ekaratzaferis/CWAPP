@@ -53,8 +53,10 @@ define([
         _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
         _this.lattice.latticeType = _this.lattice.lattice.latticeType ;   
         _this.menu.setLatticeRestrictions(lattice.restrictions); 
-        _this.menu.restore(cwObj); 
+        
         _this.beginRestoring(cwObj);
+        _this.menu.restore(cwObj); 
+        
         if(callbacks !== undefined){ 
           for (var i = 0; i < callbacks.length ; i++) {
             callbacks[i]();
@@ -126,6 +128,26 @@ define([
 
     this.configureVisualizationSettings();
 
+    this.configureNotesState();
+  
+  }; 
+  RestoreCWstate.prototype.configureNotesState = function(arg) {
+
+    var uiNoteList = this.cwObj.notes;
+
+    for (var prop in uiNoteList) {
+      if(uiNoteList[prop] !== undefined){ 
+        
+      }
+    }
+
+    var noteParams = this.cwObj.system.notesSettings;
+
+    _.extend(this.narrative_system.cameraData, noteParams.cameraData);
+    _.extend(this.narrative_system.planeData, noteParams.planeData);
+    _.extend(this.narrative_system.dirData, noteParams.dirData);
+
+    console.log(this.narrative_system);
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 
@@ -345,6 +367,8 @@ define([
 
       this.soundMachine.switcher(false);
       this.soundMachine.changeVolume(75);
+
+      this.narrative_system;
   };
   RestoreCWstate.prototype.configureVisualizationSettings = function() {
 

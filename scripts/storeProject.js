@@ -33,6 +33,7 @@ define([
         this.dollGearBarME ;
         this.LOD;
         this.fitToCrystal = fitToCrystal;
+        this.narrative_system ;
         menu = menuIn;
     };
      
@@ -449,6 +450,7 @@ define([
                 this.getUnitCellState()+
                 this.getCamerasStates()+ 
                 this.createJsonVisualizationParams()+ 
+                this.getNotesState()+
                 end ;
 
             return (text); 
@@ -464,6 +466,16 @@ define([
         text.push(',"visualizationParams": { "anaglyph": '+anaglyph+', "fog" : ' +fog+', "fogColor" : "'+($( "#fogColor" ).val())+'", "fogDensity" : "'+($( "#fogDensity" ).val())+'" , "crystalScreenColor" : "'+($( "#crystalScreenColor" ).val())+'", "cellScreenColor" : "'+($( "#cellScreenColor" ).val())+'", "motifXScreenColor" : "'+($( "#motifXScreenColor" ).val())+'", "motifYScreenColor" : "'+($( "#motifYScreenColor" ).val())+'", "motifZScreenColor" : "'+($( "#motifZScreenColor" ).val())+'", "lights" : '+lights+' }');
 
         return text ;
+    };
+    StoreProject.prototype.getNotesState = function(){
+        var cameraData = JSON.stringify(this.narrative_system.cameraData);
+        var planeData = JSON.stringify(this.narrative_system.planeData);
+        var dirData = JSON.stringify(this.narrative_system.dirData);
+
+        var text = ', "notesSettings" : { "cameraData" :  '+cameraData+', "planeData" : '+planeData+' , "dirData" : '+ dirData+'}';
+
+        return text;
+        
     };
     StoreProject.prototype.getUnitCellState = function(){
         var _this = this ;

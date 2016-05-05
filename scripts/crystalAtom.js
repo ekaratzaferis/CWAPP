@@ -25,8 +25,7 @@ define([
     this.materialLetter;
     this.scale = 1;
     this.lod = lod;
-    this.identity = id ;
-    this.materialls; 
+    this.identity = id ; 
     this.color = color; 
     this.cachedColor = color; 
     this.ionicIndex = ionicIndex; 
@@ -117,6 +116,7 @@ define([
   CrystalAtom.prototype.setNewLodGeometry = function( ) {
 
     var chs = this.object3d.children; 
+    
     for (var j = 0, k = chs.length; j < k; j++) {
       chs[j].geometry.dispose();
       chs[j].geometry = globalGeometries[this.lod] ;

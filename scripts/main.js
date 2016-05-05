@@ -444,6 +444,8 @@ require([
   dollGearBarME.multitouch = mtEvents;
 
   var narrative_system = new Narrative_system(lattice, orbitCrystal );
+  storeMechanism.narrative_system = narrative_system;
+  restoreMechanism.narrative_system = narrative_system;
 
   // experimental feature  
   orbitCrystal.syncCams(true);

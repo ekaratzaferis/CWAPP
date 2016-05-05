@@ -429,7 +429,7 @@ define([
                 }
             });
 
-            if (notes[nextID].atomNote === true) { console.log(9);
+            if (notes[nextID].atomNote === true) {  
                 var x = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('width'),10) / 2;
                 var y = parseInt(html.interface.screen.wrapper.find('#'+nextID).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+nextID).css('height'),10) / 2;
                 notes[nextID].x = x;
@@ -1146,7 +1146,7 @@ define([
                 highlightNote(addNote(k,true),true);
 
                 // Overwrite with data from the JSON file //
-                editNote({
+                editNote({ 
                     title: $parameter.title,
                     opacity: $parameter.opacity,
                     color: $parameter.color,
@@ -1154,6 +1154,12 @@ define([
                     atomNote: atomConnection,
                     x: parseInt($parameter.x),
                     y: parseInt($parameter.y)
+                }); 
+
+                 $setUIValue.setValue({
+                    saveNoteForSystem:{
+                        publish: {id:k, cameraToggle : true, sceneObjsToggle : true }
+                    }
                 });
             }
         });

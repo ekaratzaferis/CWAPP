@@ -17,9 +17,22 @@ define([
     this.cameraData = {};
     this.planeData = {};
     this.dirData = {};
+
+    this.restoreData ={
+      atoms : undefined,
+      planes : undefined,
+      dirs : undefined,
+      grids : undefined,
+      points : undefined,
+      faces : undefined
+    };
+
   };
   
 
+  Narrative_system.prototype.restoreNoteState = function(arg){
+
+  };
   Narrative_system.prototype.saveNoteState = function(arg){
     
     var _this = this;
@@ -45,19 +58,22 @@ define([
         }
       }
     }
+
     if( sceneObjsToggle === true){
        
       var l = this.lattice, _this = this; 
       var indexes;
     
       l.actualAtoms.forEach(function(atom, i) { 
-       
+        
         var noteState = {
           visible : atom.visibility,
           opacity : atom.opacity,
           color : atom.color
-        }
+        } 
+
         atom.setNoteState(id, noteState);
+        // _this.restoreData.atoms[idd] = atom.notStates;
         
       });
  
@@ -121,7 +137,7 @@ define([
       });
  
     }
- 
+    
   };   
   Narrative_system.prototype.enableNoteState = function(arg){
   
