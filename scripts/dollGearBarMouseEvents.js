@@ -224,7 +224,7 @@ define([
   
   DollGearBarMouseEvents.prototype.levelClicked = function(num){ 
    
-    if(this.dollEditor.levelLabels[num].allowed === true){ 
+    if(this.dollEditor.levelLabels[num] && this.dollEditor.levelLabels[num].allowed === true){ 
           
       this.walkTourSet(num);
       this.dollEditor.gearBarSlider.position.y = yPosGearSlider[num];

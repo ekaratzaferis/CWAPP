@@ -54,8 +54,9 @@ define([
         _this.lattice.latticeType = _this.lattice.lattice.latticeType ;   
         _this.menu.setLatticeRestrictions(lattice.restrictions); 
         
+        _this.menu.restore(cwObj);
         _this.beginRestoring(cwObj);
-        _this.menu.restore(cwObj); 
+         
         
         if(callbacks !== undefined){ 
           for (var i = 0; i < callbacks.length ; i++) {
@@ -142,7 +143,7 @@ define([
     }
 
     var noteParams = this.cwObj.system.notesSettings;
-
+    return;
     _.extend(this.narrative_system.cameraData, noteParams.cameraData);
     _.extend(this.narrative_system.planeData, noteParams.planeData);
     _.extend(this.narrative_system.dirData, noteParams.dirData);
