@@ -468,13 +468,39 @@ define([
         return text ;
     };
     StoreProject.prototype.getNotesState = function(){
-        var cameraData = JSON.stringify(this.narrative_system.cameraData);
-        var planeData = JSON.stringify(this.narrative_system.planeData);
-        var dirData = JSON.stringify(this.narrative_system.dirData);
+      var cameraData = JSON.stringify(this.narrative_system.cameraData);
+      var planeData = JSON.stringify(this.narrative_system.planeData);
+      var dirData = JSON.stringify(this.narrative_system.dirData);
+      var gridNotes = (this.lattice.grids[0] === undefined) ? {} : JSON.stringify(this.lattice.grids[0].grid.notStates);
+      var faceNotes = (this.lattice.faces[0] === undefined) ? {} : JSON.stringify(this.lattice.faces[0].notStates);
 
-        var text = ', "notesSettings" : { "cameraData" :  '+cameraData+', "planeData" : '+planeData+' , "dirData" : '+ dirData+'}';
+      var randomKey = Object.keys(this.lattice.points)[0];
+      var randomPoint = (randomKey === undefined) ? undefined : this.lattice.points[Object.keys(this.lattice.points)[0]];
 
-        return text;
+      var pointNotes = ( randomPoint === undefined) ? {} : JSON.stringify(randomPoint.notStates);
+      
+      var text = ', "notesSettings" : {  "gridNotes" : '+gridNotes+' , "pointNotes" : '+pointNotes+' , "faceNotes" : '+faceNotes+' , "cameraData" :  '+cameraData+', "planeData" : '+planeData+' , "dirData" : '+ dirData+', "atoms" : [';
+
+      var atomNoteData = [] ;
+      var counter = 0; 
+
+      for (var i = 0 ; i < this.lattice.actualAtoms.length ; i++) {
+        var atom = this.lattice.actualAtoms[i] ;
+
+        if(i>0)  atomNoteData.push(', ') ; 
+ 
+        
+        atomNoteData.push(JSON.stringify(atom.notStates) );  
+  
+      };
+
+      atomNoteData.push(']'); 
+
+
+      atomNoteData.push('}');
+       
+      return (text+atomNoteData.join('')) ;
+      
         
     };
     StoreProject.prototype.getUnitCellState = function(){

@@ -42,6 +42,7 @@ define([
     this.viewMode = 'Classic';
     this.viewModeBeen = {'crystalSolidVoid' : false, 'crystalSubstracted' : false, 'crystalGradeLimited' : false, 'crystalClassic' : false}; 
     this.uniqueID = uniqueID(); 
+    this.tempKEY = uniqueID(); 
     this.materialLetter;
     this.outlineMesh; 
     this.notStates = {};

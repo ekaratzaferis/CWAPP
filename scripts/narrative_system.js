@@ -17,22 +17,9 @@ define([
     this.cameraData = {};
     this.planeData = {};
     this.dirData = {};
-
-    this.restoreData ={
-      atoms : undefined,
-      planes : undefined,
-      dirs : undefined,
-      grids : undefined,
-      points : undefined,
-      faces : undefined
-    };
-
-  };
   
-
-  Narrative_system.prototype.restoreNoteState = function(arg){
-
   };
+   
   Narrative_system.prototype.saveNoteState = function(arg){
     
     var _this = this;
@@ -72,8 +59,7 @@ define([
           color : atom.color
         } 
 
-        atom.setNoteState(id, noteState);
-        // _this.restoreData.atoms[idd] = atom.notStates;
+        atom.setNoteState(id, noteState); 
         
       });
  

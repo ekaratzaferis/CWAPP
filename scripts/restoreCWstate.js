@@ -104,7 +104,8 @@ define([
         this.lattice.setGradeParameters, 
         this.lattice.forwardTransformations,   
         this.lattice.reCreateMillers, 
-        this.lattice.recreateMotif 
+        this.lattice.recreateMotif,
+        this.configureNotesState.bind(this)
       ]);   
 
       this.configureMotifEditorSettings();
@@ -128,27 +129,49 @@ define([
     }
 
     this.configureVisualizationSettings();
-
-    this.configureNotesState();
+ 
   
   }; 
   RestoreCWstate.prototype.configureNotesState = function(arg) {
 
-    var uiNoteList = this.cwObj.notes;
+    var _this = this;
 
-    for (var prop in uiNoteList) {
-      if(uiNoteList[prop] !== undefined){ 
-        
-      }
-    }
+    var noteParams = this.cwObj.system.notesSettings; 
 
-    var noteParams = this.cwObj.system.notesSettings;
-    return;
     _.extend(this.narrative_system.cameraData, noteParams.cameraData);
     _.extend(this.narrative_system.planeData, noteParams.planeData);
     _.extend(this.narrative_system.dirData, noteParams.dirData);
 
-    console.log(this.narrative_system);
+    if(this.lattice.actualAtoms.length === noteParams.atoms.length){ 
+      for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) {
+
+        this.lattice.actualAtoms[i].notStates = {};
+        _.extend(this.lattice.actualAtoms[i].notStates, noteParams.atoms[i]); 
+
+      }
+    };
+ 
+    _.each(noteParams.gridNotes, function(n, k) { 
+
+      _.each(_this.lattice.grids, function(grid, reference) { 
+        grid.grid.setNoteState(k, n); 
+      });
+    });
+
+    _.each(noteParams.faceNotes, function(n, k) { 
+      _.each(_this.lattice.faces, function(face, reference) { 
+        face.setNoteState(k,n); 
+      });
+
+    });
+
+    _.each(noteParams.pointNotes, function(n, k) { 
+      _.each(_this.lattice.points, function(p, reference) { 
+        p.setNoteState(k,n); 
+      });
+
+    });
+ 
   }; 
   RestoreCWstate.prototype.globalReset = function(arg) { 
 

@@ -495,6 +495,7 @@ define([
 
     if(this.editorState.atomPosMode === 'relative'){ 
       
+
       var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
        
       this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
@@ -789,43 +790,112 @@ define([
     var aScale = (par.scaleZ === undefined) ? undefined : parseFloat(par.scaleZ) ;
     var bScale = (par.scaleX === undefined) ? undefined : parseFloat(par.scaleX) ;
     var cScale = (par.scaleY === undefined) ? undefined : parseFloat(par.scaleY) ;
+    
+    var pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
+    var v = new THREE.Vector3( _this.cellParameters.scaleZ, 0, 0 ); 
+    var axis = new THREE.Vector3( 0, 1, 0 );
+    var angle =  4*Math.PI / 3 ; 
+    v.applyAxisAngle( axis, angle );
 
     if(aScale != undefined){ 
+       
+      _.each(this.motifsAtoms, function(atom, r) { 
+        if(_this.latticeName === 'hexagonal'){
+          var rp = atom.uiRelPosition.clone();
 
-      _.each(_this.motifsAtoms, function(atom, r) { 
-        
+          var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
+          var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
+          bPos.add(aPos);
+
+          _this.translateCellAtoms("x", bPos.x ,atom.getID());
+          _this.translateCellAtoms("z", bPos.z ,atom.getID());
+               
+          atom.object3d.position.x = bPos.x; 
+          atom.object3d.position.z = bPos.z; 
+        } 
+        else{
           var ratio = atom.object3d.position.z / _this.cellParameters.scaleZ ;
           var newPos = ratio * aScale ;
           atom.object3d.position.z = newPos; 
           _this.translateCellAtoms("z", newPos ,atom.getID());
-
+        }
+            
       }); 
+
+
       if(this.newSphere !== undefined){
-        var ratio = this.newSphere.object3d.position.z / this.cellParameters.scaleZ ;
-        var newPos = ratio * aScale ;
-        this.newSphere.object3d.position.z = newPos; 
-        this.translateCellAtoms("z", newPos ,this.newSphere.getID());
+        if(this.latticeName === 'hexagonal'){
+          var rp = this.newSphere.uiRelPosition.clone();
+
+          var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
+          var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
+          bPos.add(aPos);
+
+          this.translateCellAtoms("x", bPos.x ,this.newSphere.getID());
+          this.translateCellAtoms("z", bPos.z ,this.newSphere.getID());
+               
+          this.newSphere.object3d.position.x = bPos.x; 
+          this.newSphere.object3d.position.z = bPos.z; 
+        } 
+        else{ 
+          var ratio = this.newSphere.object3d.position.z / this.cellParameters.scaleZ ;
+          var newPos = ratio * aScale ;
+          this.newSphere.object3d.position.z = newPos; 
+          this.translateCellAtoms("z", newPos ,this.newSphere.getID());
+        }
+         
       } 
 
     }
     else if(bScale != undefined){ 
 
-      _.each(_this.motifsAtoms, function(atom, r) { 
-        var ratio = atom.object3d.position.x / _this.cellParameters.scaleX ;
-        var newPos = ratio * bScale ;
-        atom.object3d.position.x = newPos;
-        _this.translateCellAtoms("x", newPos ,atom.getID());
+      _.each(this.motifsAtoms, function(atom, r) { 
+        if(_this.latticeName === 'hexagonal'){
+          var rp = atom.uiRelPosition.clone();
+
+          var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
+          var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
+          bPos.add(aPos);
+
+          _this.translateCellAtoms("x", bPos.x ,atom.getID());
+          _this.translateCellAtoms("z", bPos.z ,atom.getID());
+               
+          atom.object3d.position.x = bPos.x; 
+          atom.object3d.position.z = bPos.z; 
+        } 
+        else{
+          var ratio = atom.object3d.position.x / _this.cellParameters.scaleX ;
+          var newPos = ratio * bScale ;
+          atom.object3d.position.x = newPos;
+          _this.translateCellAtoms("x", newPos ,atom.getID());
+        }
       });
+
       if(this.newSphere !== undefined){
-        var ratio = this.newSphere.object3d.position.x / this.cellParameters.scaleX ;
-        var newPos = ratio * bScale ;
-        this.newSphere.object3d.position.x = newPos; 
-        this.translateCellAtoms("x", newPos ,this.newSphere.getID());
+        if(this.latticeName === 'hexagonal'){
+          var rp = this.newSphere.uiRelPosition.clone();
+
+          var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
+          var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
+          bPos.add(aPos);
+
+          this.translateCellAtoms("x", bPos.x ,this.newSphere.getID());
+          this.translateCellAtoms("z", bPos.z ,this.newSphere.getID());
+               
+          this.newSphere.object3d.position.x = bPos.x; 
+          this.newSphere.object3d.position.z = bPos.z; 
+        } 
+        else{ 
+          var ratio = this.newSphere.object3d.position.x / this.cellParameters.scaleX ;
+          var newPos = ratio * bScale ;
+          this.newSphere.object3d.position.x = newPos; 
+          this.translateCellAtoms("x", newPos ,this.newSphere.getID());
+        } 
       } 
     } 
     else if(cScale != undefined){ 
 
-      _.each(_this.motifsAtoms, function(atom, r) { 
+      _.each(this.motifsAtoms, function(atom, r) { 
         var ratio = atom.object3d.position.y / _this.cellParameters.scaleY ;
         var newPos = ratio * cScale ;
         atom.object3d.position.y = newPos;
@@ -838,6 +908,7 @@ define([
         this.translateCellAtoms("y", newPos ,this.newSphere.getID());
       }  
     }
+ 
    
   };
   Motifeditor.prototype.setManuallyCellLengthsNoTangency = function(aScale, bScale, cScale){
