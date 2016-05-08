@@ -3,21 +3,25 @@
 define([
   'three',
   'explorer',
-  'underscore'
+  'underscore',
+  'tween'
 ], function(
   THREE,
   Explorer,
-  _
+  _,
+  TWEEN
 ) { 
 
-  function Narrative_system( lattice, orbit) { 
+  function Narrative_system( lattice, orbit, animationMachine, crystalScene ) { 
     
     this.orbit = orbit ; 
     this.lattice = lattice ; 
     this.cameraData = {};
     this.planeData = {};
     this.dirData = {};
-  
+    this.animationMachine = animationMachine; 
+    this.crystalScene = crystalScene; 
+
   };
    
   Narrative_system.prototype.saveNoteState = function(arg){
@@ -126,20 +130,70 @@ define([
     
   };   
   Narrative_system.prototype.enableNoteState = function(arg){
-  
-    if(arg.id !== undefined && this.cameraData[arg.id] !== undefined){ 
-      var c = this.orbit.camera ;
-      var t = this.orbit.control.target ;
+    
+    var _this = this;
+    var camera = this.orbit.camera ;
+    var t = this.orbit.control.target ;
+    var control = this.orbit.control ;
 
-      t.x = this.cameraData[arg.id].target.x;
-      t.y = this.cameraData[arg.id].target.y;
-      t.z = this.cameraData[arg.id].target.z;
+    if(arg.id !== undefined && this.cameraData[arg.id] !== undefined ){ 
+        
+      var finalPos = new THREE.Vector3(this.cameraData[arg.id].position.x,this.cameraData[arg.id].position.y,this.cameraData[arg.id].position.z);
+      var finalTarget = new THREE.Vector3(this.cameraData[arg.id].target.x,this.cameraData[arg.id].target.y,this.cameraData[arg.id].target.z);
+      
+      var from = {
+          x: camera.position.x,
+          y: camera.position.y,
+          z: camera.position.z
+      };
 
-      c.position.x = this.cameraData[arg.id].position.x;
-      c.position.y = this.cameraData[arg.id].position.y;
-      c.position.z = this.cameraData[arg.id].position.z;
+      var to = {
+          x: finalPos.x,
+          y: finalPos.y,
+          z: finalPos.z
+      };
+     
+      var times = 0;
+
+      var tween = new TWEEN.Tween({x : from.x, y : from.y, z : from.z, timer : 0 })
+        .to({x : to.x, y : to.y, z : to.z, timer : 200}, 2000)
+        .easing(TWEEN.Easing.Quintic.InOut)
+        .onUpdate(function () {
+          var v = new THREE.Vector3(this.x, this.y, this.z);
+          var newP = v.setLength(v.length()*(1+times)); 
+          camera.position.copy(newP); 
+          camera.lookAt(t); 
+           
+          if(this.timer>150){
+            times-=0.01;
+          }
+          else if(this.timer>100){
+            times-=0.01;
+          }
+          else{
+            times+=0.01;
+          }
+          
+        })
+        .onComplete(function () { 
+          camera.position.copy(new THREE.Vector3(this.x, this.y, this.z)); 
+        })
+        .start();
+      
+      var tweenT = new TWEEN.Tween(t)
+        .to(finalTarget, 2000)
+        .easing(TWEEN.Easing.Quintic.InOut)
+        .onUpdate(function () {  
+        })
+        .onComplete(function () {   
+        })
+        .start();
+ 
+
     }
 
+    //////////
+ 
     var l = this.lattice, _this = this; 
     var indexes;
   
@@ -185,8 +239,7 @@ define([
       grid.grid.applyNoteState(arg.id); 
     });
 
-     _.each(l.faces, function(face, reference) {
-       
+    _.each(l.faces, function(face, reference) { 
       face.applyNoteState(arg.id); 
     });
 
@@ -201,7 +254,30 @@ define([
       
       atom.deleteNoteState(arg.id);
       
+    }); 
+
+    for (var prop in l.points) {
+
+      l.points[prop].deleteNoteState(arg.id); 
+    }
+
+    _.each(l.grids, function(grid, reference) {
+        
+      grid.grid.deleteNoteState(arg.id);  
     });
+
+     _.each(l.faces, function(face, reference) { 
+      face.deleteNoteState(arg.id); 
+    });
+
+
+    //////
+    _this.planeData[arg.id] = {};
+
+    
+    _this.dirData[arg.id] = {};
+
+     
 
   }; 
   return Narrative_system;

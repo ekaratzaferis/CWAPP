@@ -262,6 +262,7 @@ THREE.OrbitControls = function ( object, domElement, deactivate, onlyRotation, w
 		}
 	 
 		scale *= dollyScale;
+		
 		this.lastPosition = this.object.position.clone();
 	}; 
 	this.update = function () {

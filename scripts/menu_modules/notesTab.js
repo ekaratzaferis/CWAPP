@@ -33,7 +33,7 @@ define([
     var $menuRibbon = undefined;
     var $stringEditor = undefined;
     var html = undefined; 
-    var intervalTime = 1000;
+    var intervalTime = 3000;
     var timer;
 
 

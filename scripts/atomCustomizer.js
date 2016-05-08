@@ -18,7 +18,7 @@ define([
     this.dollEditor = dollEditor;
     this.multiAtomIDs = [];
     this.singleAtom;
-    this.editMode = 'single';
+    this.editMode = 'multi';
     this.menuIsOpen = false;
     this.crystalOrbit = crystalOrbit;
     this.crystalScene = crystalScene;

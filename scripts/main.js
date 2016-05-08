@@ -56,12 +56,14 @@ require.config({
     'html2canvas': '../vendor/html2canvas',
     'jszip': '../vendor/jszip',
     'jszip-utils': '../vendor/jszip-utils',
-    'deviceOrientationControls': '../vendor/DeviceOrientationControls'
+    'deviceOrientationControls': '../vendor/DeviceOrientationControls',
+    'tween': '../vendor/Tween'
 
   },
   shim: {
     'three': { exports: 'THREE' },
     'threejs-controls/OrbitControls': { deps: [ 'three' ] },
+    'tween': { deps: [ 'three' ] },
     'keyboardState': { deps: [ 'three' ] },
     'threejs-controls/OrbitAndPanControls': { deps: [ 'three' ] },
     'scg': { deps: [ 'three' ] },
@@ -161,7 +163,7 @@ require([
   'LOD',
   'multitouch',
   'cwState',
-  'narrative_system'
+  'narrative_system' 
 
 ], function(
   PubSub, 
@@ -219,12 +221,12 @@ require([
   LOD,
   Multitouch,
   CwState,
-  Narrative_system
+  Narrative_system 
 
 ) {
   
   var menu = new Menu();
-   
+ 
   var bSupport = (function () { 
       try { 
         var canvas = document.createElement( 'canvas' ); return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) ); 
@@ -289,6 +291,7 @@ require([
   var soundMachine = new Sound(animationMachine); 
   animationMachine.soundMachine = soundMachine;
   crystalRenderer.externalFunctions.push(animationMachine.animation.bind(animationMachine));
+  crystalRenderer.externalFunctions.push(TWEEN.update.bind(TWEEN));
   
   var lattice = new Lattice(cwState, menu, soundMachine);
   soundMachine.lattice = lattice;
@@ -363,7 +366,7 @@ require([
  
   // handel keyboard keys
   var keyboardControl = new THREEx.KeyboardState();
-  var keyboard = new KeyboardKeys(keyboardControl, crystalScene, orbitCrystal, motifEditor, crystalRenderer);
+  var keyboard = new KeyboardKeys(keyboardControl, crystalScene, orbitCrystal, motifEditor, crystalRenderer, lattice);
   animationMachine.keyboard = keyboard;
   crystalRenderer.externalFunctions.push(keyboard.handleKeys.bind(keyboard));
   crystalRenderer.externalFunctions.push(crystalScene.updateXYZlabelPos.bind(crystalScene, crystalRenderer.getMainCamera()));
@@ -383,7 +386,8 @@ require([
 
   // atom customizer
   var atomCustomizer = new AtomCustomizer(lattice, soundMachine, dollEditor, menu, orbitCrystal, crystalScene);
-
+  keyboard.atomCustomizer = atomCustomizer;
+  
   // mouse events happen in crytal screen 
   var crystalScreenEvents = new CrystalMouseEvents(lattice, crystalRenderer.getMainCamera(), 'crystalRendererMouse', 'default', dollEditor, atomCustomizer, keyboardControl);
 
@@ -443,7 +447,7 @@ require([
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
   dollGearBarME.multitouch = mtEvents;
 
-  var narrative_system = new Narrative_system(lattice, orbitCrystal );
+  var narrative_system = new Narrative_system(lattice, orbitCrystal, animationMachine, crystalScene );
   storeMechanism.narrative_system = narrative_system;
   restoreMechanism.narrative_system = narrative_system;
 

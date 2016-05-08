@@ -4,12 +4,14 @@ define([
   'three',
   'explorer',
   'underscore',
-  'atomMaterialManager'
+  'atomMaterialManager',
+  'tween'
 ], function(
   THREE,
   Explorer,
   _,
-  AtomMaterialManager
+  AtomMaterialManager,
+  TWEEN
 ) {
   
   //var globGeometry = new THREE.SphereGeometry(1,32, 32);
@@ -138,13 +140,53 @@ define([
      
   };
   CrystalAtom.prototype.applyNoteState = function( noteID ) {
+    
     if(this.notStates[noteID] === undefined){
       return;
     }
-     
-    this.setVisibility(this.notStates[noteID].visible);
+    
+    var opacityLimit = this.notStates[noteID].opacity;
+    var _this = this;
+
+    if(this.notStates[noteID].visible !== this.visibility ){ 
+      
+      var sign;
+
+      if(this.visibility === true){
+        // animate towards invisibility
+        sign = -1;
+        this.setOpacity(1);
+        //this.setVisibility(true)
+        
+      }
+      else{
+        // animate towards visibility
+        sign = 1; 
+        this.setOpacity(0);
+        this.setVisibility(true);
+      }
+
+      var tweenO = new TWEEN.Tween({opacity : 0})
+        .to({opacity : 1}, 2000)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(function () { 
+          if(sign === -1) { 
+            _this.setOpacity(1-this.opacity);
+          }
+          else{ 
+            _this.setOpacity(this.opacity);
+          }
+        })
+        .onComplete(function () {
+          _this.setVisibility(_this.notStates[noteID].visible);   
+        })
+        .start();
+       
+      
+    }
+    
     this.setColorMaterial(this.notStates[noteID].color);
-    this.setOpacity(this.notStates[noteID].opacity);
+   
   };
   CrystalAtom.prototype.setVisibility = function( bool) {
 

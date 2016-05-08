@@ -74,7 +74,7 @@ define([
           filteredAtom = _.findWhere(_this.client.cachedAtoms, {uniqueID : obj.parent.uniqueID}); 
         } 
 
-        if(filteredAtom !== undefined){
+        if(filteredAtom !== undefined){ 
           this.atomCustomizer.atomJustClicekd(filteredAtom, this.keyboard.pressed("ctrl"));
         } 
       } 

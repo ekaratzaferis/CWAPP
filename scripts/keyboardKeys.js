@@ -27,7 +27,7 @@ define([
   };
   var clock = new THREE.Clock();
 
-  function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal, crystalRendererTemporal) { 
+  function KeyboardKeys(keyboard, crystalScene, orbitCrystal, meTemporal, crystalRendererTemporal, lattice) { 
 
     this.keyboard = keyboard;  
     this.crystalScene = crystalScene;  
@@ -38,6 +38,8 @@ define([
     this.meTemporal = meTemporal;
     this.lastCameraPosition = {cam : new THREE.Vector3(), cube : new THREE.Vector3()};
     this.crystalRendererTemporal = crystalRendererTemporal; 
+    this.atomCustomizer ; 
+    this.lattice = lattice; 
   };
 
   KeyboardKeys.prototype.handleKeys = function(leapArg, speed, passport){  
@@ -183,6 +185,18 @@ define([
 
     ///// Secret Features
     
+    if ( this.keyboard.pressed("A") && this.keyboard.pressed("ctrl") ){
+      if(this.mutex === false){ 
+        this.mutex = true;
+        this.atomCustomizer.menuIsOpen = false;
+        for (var i = this.lattice.actualAtoms.length - 1; i >= 0; i--) {
+          this.atomCustomizer.atomJustClicekd(this.lattice.actualAtoms[i], true);
+        };
+        setTimeout(function(){ _this.mutex = false;}, 400 );
+
+      }
+    }
+
     if ( this.keyboard.pressed("C") && this.keyboard.pressed("alt") && this.keyboard.pressed("ctrl") ){
       //delete cookie 
       document.cookie = "hasVisited=; expires=Thu, 01 Jan 1970 00:00:00 UTC";  
