@@ -17,29 +17,32 @@ define([
     this.color = ( color.charAt(0) !== '#' ) ? '#'+color : color ;
     this.tubeMesh = { 'object3d' : undefined } ; 
     this.notStates = {};
-    
+    this.distance = 1;
+
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end,  start).normalize();
     var arrow = new THREE.ArrowHelper( direction , start, length , this.color, length/8, length/20);
+    arrow.children[0].material = new THREE.MeshPhongMaterial({ shininess : 100, transparent : true, opacity : 1, color : this.color }) ;
+    arrow.children[1].material = new THREE.MeshPhongMaterial({ shininess : 100, transparent : true, opacity : 1, color : this.color }) ;
     arrow.name = 'direction' ;
     arrow.visible = (visible === undefined) ? true : visible ;
+    this.opacity = (arrow.visible) ? 1 : 0 ;
     arrow.receiveShadow = true; 
     arrow.castShadow = true; 
     this.object3d = arrow;
     Explorer.add(this);
-
+    this.visible = visible;
     this.addTube(start , end);
 
   }; 
   MillerVector.prototype.updateTubeRadius = function(radius ) { 
- 
     this.radius = parseInt(radius)  ; 
-    this.tubeMesh.object3d.scale.x = this.radius*2.5;
-    this.tubeMesh.object3d.scale.z = this.radius*2.5;
+    this.tubeMesh.object3d.scale.x = this.radius*2.5*(1+this.distance/10);  
+    this.tubeMesh.object3d.scale.z = this.radius*2.5*(1+this.distance/10); 
 
   };
   MillerVector.prototype.updateDirectionPos = function(start, end) {   
-     
+     console.log(99);
     var length =  start.distanceTo(end) ; 
     var direction = new THREE.Vector3().subVectors( end, start).normalize();
  
@@ -52,10 +55,13 @@ define([
   };
   MillerVector.prototype.updateTube = function(start , end ) {      
 
+
     var pointA = start.clone(); 
     var pointB = getPointInBetweenByLen(end, start, start.distanceTo(end)/8);  
     var distance = pointA.distanceTo(pointB) ;
-      
+    
+    this.distance = distance;
+
     var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
 
     var newPoint =  pointA.clone().add(dir) ;  
@@ -67,6 +73,8 @@ define([
  
     this.tubeMesh.object3d.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
     this.tubeMesh.object3d.scale.y = distance/0.001;  
+    this.tubeMesh.object3d.scale.z = this.radius*2.5*(1+distance/10);  
+    this.tubeMesh.object3d.scale.x = this.radius*2.5*(1+distance/10);  
     this.tubeMesh.object3d.position.set(newPoint.x,newPoint.y,newPoint.z);
     
   }; 
@@ -79,14 +87,16 @@ define([
   MillerVector.prototype.addTube = function(start , end) {     
  
     var color =  this.color ;
-     
+   
     var meshGeometry = new THREE.CylinderGeometry( 0.001, 0.001, 0.001, 4, 1 ); 
-    var mesh = new THREE.Mesh( meshGeometry, new THREE.MeshBasicMaterial({color : color })  );  
+    var mesh = new THREE.Mesh( meshGeometry, new THREE.MeshPhongMaterial({specular: 0x050505, shininess : 100, transparent : true, opacity : 1, color : color })  );  
 
     var pointA = start.clone();  
     var pointB = getPointInBetweenByLen(end, start, start.distanceTo(end)/8); 
     var distance = pointA.distanceTo(pointB) ;
-      
+    
+    this.distance = distance;
+
     var dir = pointB.clone().sub(pointA).normalize().multiplyScalar(distance/2);
 
     var newPoint =  pointA.clone().add(dir) ;  
@@ -99,8 +109,9 @@ define([
     mesh.rotation.set(arrow.rotation.x,arrow.rotation.y,arrow.rotation.z);
     mesh.scale.y = distance /0.001;   
     mesh.position.set(newPoint.x,newPoint.y,newPoint.z);
-    mesh.scale.x = this.radius*2.5;
-    mesh.scale.z = this.radius*2.5;
+    mesh.scale.x = this.radius*2.5*(1+distance/10);
+    mesh.scale.z = this.radius*2.5*(1+distance/10);
+    
     mesh.name = 'dirLine';
     mesh.receiveShadow = true; 
     mesh.castShadow = true; 
@@ -109,7 +120,9 @@ define([
     Explorer.add(this.tubeMesh);
 
   };
-  MillerVector.prototype.setVisible = function(bool) {     
+  MillerVector.prototype.setVisible = function(bool) {  
+    this.visible = bool;
+
     this.object3d.visible = bool ;
     this.tubeMesh.object3d.visible = bool ;
   };
@@ -120,6 +133,15 @@ define([
     this.object3d.children[0].material.color.setHex( color ); 
     this.object3d.children[1].material.color.setHex( color );  
     this.tubeMesh.object3d.material.color.setHex( color );
+  };
+
+  MillerVector.prototype.setOpacity = function(opacity) { 
+   
+    this.opacity = opacity;     
+    this.object3d.children[0].material.opacity = opacity;  
+    this.object3d.children[1].material.opacity = opacity;  
+    this.tubeMesh.object3d.material.opacity = opacity;  
+   
   };
   MillerVector.prototype.setNoteState = function( noteID, arg) {
 
@@ -135,6 +157,7 @@ define([
     }
      
   };
+
   MillerVector.prototype.applyNoteState = function( noteID ) {
     if(this.notStates[noteID] === undefined){
       return;

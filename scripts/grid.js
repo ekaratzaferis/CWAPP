@@ -9,8 +9,8 @@ define([
   var meshGeometry = new THREE.CylinderGeometry( 0.01, 0.01, 0.001, 3, 1 ); 
 
   function Grid(scene, pointA, pointB, visibility) {
-    
-    var mesh = new THREE.Mesh( meshGeometry,  new THREE.MeshBasicMaterial( { color: 0xA19EA1 } ) ); 
+  
+    var mesh = new THREE.Mesh( meshGeometry,new THREE.MeshPhongMaterial({transparent : true, opacity : 1, shininess : 100,  color : 0xA19EA1 })) ;     
     mesh.visible = visibility;
     mesh.name = 'grid';
     mesh.scale.x = 2;

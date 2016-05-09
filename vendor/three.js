@@ -35970,7 +35970,12 @@ THREE.MorphBlendMesh.prototype.update = function ( delta ) {
 
 };
 
-// add ons 
+
+
+///////////////
+// add ons by me 
+///////////////
+
 THREE.AnaglyphEffect = function ( renderer, width, height ) {
 
 	var eyeRight = new THREE.Matrix4();
@@ -36363,3 +36368,19 @@ THREE.StereoEffect = function ( renderer ) {
 	};
 
 };
+
+THREE.hexToRgb = function(hex) 
+{ 
+    if( !hex ) hex="000000";
+    if( hex.charAt(0)=="#" ) hex=hex.substring(1,hex.length);
+     
+    r = hex.substring(0,2);
+    g = hex.substring(2,4);
+    b = hex.substring(4,6);
+     
+    return {
+        r: parseInt(r, 16),
+        g: parseInt(g, 16),
+        b: parseInt(b, 16)
+    } ;
+}

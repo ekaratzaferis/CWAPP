@@ -1710,7 +1710,7 @@ define([
                 PubSub.publish(events.ATOM_PARAMETER_CHANGE, value);
                 break;
             }
-            case 'atomColor':{
+            case 'atomColor':{ 
                 PubSub.publish(events.ATOM_PARAMETER_CHANGE, value);
                 break;
             }

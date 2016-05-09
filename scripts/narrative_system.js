@@ -12,6 +12,8 @@ define([
   TWEEN
 ) { 
 
+  var animationTime = 2500;
+
   function Narrative_system( lattice, orbit, animationMachine, crystalScene ) { 
     
     this.orbit = orbit ; 
@@ -60,7 +62,7 @@ define([
         var noteState = {
           visible : atom.visibility,
           opacity : atom.opacity,
-          color : atom.color
+          color : {r : atom.object3d.children[0].material.color.r, g : atom.object3d.children[0].material.color.g, b : atom.object3d.children[0].material.color.b}
         } 
 
         atom.setNoteState(id, noteState); 
@@ -121,7 +123,7 @@ define([
         _this.dirData[id][dir.id] = {
           visible : dir.direction.object3d.visible, 
           radius : r, 
-          color :  dir.direction.object3d.children[0].material.color.getHex() 
+          color :  dir.direction.color  
         } 
           
       });
@@ -153,26 +155,17 @@ define([
           z: finalPos.z
       };
      
-      var times = 0;
+      var factor = 0;
 
-      var tween = new TWEEN.Tween({x : from.x, y : from.y, z : from.z, timer : 0 })
-        .to({x : to.x, y : to.y, z : to.z, timer : 200}, 2000)
-        .easing(TWEEN.Easing.Quintic.InOut)
+      var tween = new TWEEN.Tween({x : from.x, y : from.y, z : from.z, par : 0 })
+        .to({x : to.x, y : to.y, z : to.z, par : 1}, animationTime)
+        .easing(TWEEN.Easing.Exponential.InOut)
         .onUpdate(function () {
           var v = new THREE.Vector3(this.x, this.y, this.z);
-          var newP = v.setLength(v.length()*(1+times)); 
+          var newP = v.setLength(v.length()*(1+factor)); 
           camera.position.copy(newP); 
-          camera.lookAt(t); 
-           
-          if(this.timer>150){
-            times-=0.01;
-          }
-          else if(this.timer>100){
-            times-=0.01;
-          }
-          else{
-            times+=0.01;
-          }
+          camera.lookAt(t);    
+          factor = 2*Math.sin(this.par*3.14);
           
         })
         .onComplete(function () { 
@@ -181,7 +174,7 @@ define([
         .start();
       
       var tweenT = new TWEEN.Tween(t)
-        .to(finalTarget, 2000)
+        .to(finalTarget, animationTime)
         .easing(TWEEN.Easing.Quintic.InOut)
         .onUpdate(function () {  
         })
@@ -205,32 +198,210 @@ define([
   
     for (var prop in this.dirData[arg.id]) {
       l.millerDirections.forEach(function(dir, i) { 
-        if(dir.id === prop  ){ 
-          dir.direction.setVisible(_this.dirData[arg.id][prop].visible);
-          dir.direction.setColor(_this.dirData[arg.id][prop].color);
-          dir.direction.updateTubeRadius(_this.dirData[arg.id][prop].radius);
+        if(dir.id === prop  ){  
+
+          if(_this.dirData[arg.id][prop].visible !== dir.direction.visible ){ 
+      
+            var sign;
+
+            if(dir.direction.visible === true){
+              // animate towards invisibility
+              sign = -1;
+              dir.direction.setOpacity(1);
+              
+            }
+            else{
+              // animate towards visibility
+              sign = 1; 
+              dir.direction.setOpacity(0); 
+              dir.direction.setVisible(true);
+            }
+             
+            var tweenO = new TWEEN.Tween({opacity : 0})
+              .to({opacity : 1}, animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(function () { 
+                
+                if(sign === -1) { 
+                  dir.direction.setOpacity(1-this.opacity);
+                }
+                else{ 
+                  dir.direction.setOpacity(this.opacity);
+                }
+              })
+              .onComplete(function () { 
+                if(_this.dirData[arg.id][prop]){
+                  dir.direction.setVisible(_this.dirData[arg.id][prop].visible);
+                }
+                   
+              })
+              .start();
+              
+          }
+ 
+
+          if(_this.dirData[arg.id][prop].color !== dir.direction.color ){ 
+
+            
+
+            var newColor =  _this.dirData[arg.id][prop].color  ;  
+            
+            var tweenC = new TWEEN.Tween(  dir.direction.tubeMesh.object3d.material.color )
+              .to({r : newColor.r , g : newColor.g , b : newColor.b } , animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(
+                  function(){
+                  dir.direction.object3d.children[0].material.color.setRGB(this.r, this.g, this.b);
+                  dir.direction.object3d.children[1].material.color.setRGB(this.r, this.g, this.b);
+                }
+              )
+              .onComplete(function () { 
+                dir.direction.setColor( (new THREE.Color( newColor.r, newColor.g, newColor.b )).getHex());   
+              })
+              .start();
+ 
+          }
+
+          
+
+          if(_this.dirData[arg.id][prop].radius !== dir.direction.radius ){ 
+
+            var newRadius = _this.dirData[arg.id][prop].radius ;  
+            
+            var sign;
+
+            if(dir.direction.radius >= newRadius){ 
+              sign = -1; 
+            }
+            else{ 
+              sign = 1;  
+            }
+
+
+            var tweenC = new TWEEN.Tween(  {scale : dir.direction.tubeMesh.object3d.scale.x} )
+              .to({ scale : newRadius*2.5 } , animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(
+                  function(){  
+                    dir.direction.tubeMesh.object3d.scale.z = this.scale;
+                    dir.direction.tubeMesh.object3d.scale.x = this.scale;
+                }
+              )
+              .onComplete(function () { 
+                dir.direction.updateTubeRadius(newRadius );  
+              })
+              .start();
+ 
+          }
         }
         
       }); 
     }
 
-    for (var prop in this.planeData[arg.id]) {
+    for (var prop2 in this.planeData[arg.id]) {
 
       l.millerPlanes.forEach(function(plane, i) { 
-        
-        if(plane.id === prop && plane.parallelIndex === 1){
-          plane.plane.setVisible(_this.planeData[arg.id][prop].visible);
-          plane.plane.setColor(_this.planeData[arg.id][prop].color);
-          plane.plane.setOpacity(_this.planeData[arg.id][prop].opacity);
-        }
+        var that = _this;
+        if(plane.id === prop2 && plane.parallelIndex === 1){ 
+ 
+          if(_this.planeData[arg.id][prop2].visible !== plane.plane.visible ){ 
+      
+            var sign;
+
+            if(plane.plane.visible === true){
+              // animate towards invisibility
+              sign = -1;
+              plane.plane.setOpacity(10);
+              
+            }
+            else{
+              // animate towards visibility
+              sign = 1; 
+              plane.plane.setOpacity(0); 
+              plane.plane.setVisible(true);
+            }
+             
+            var tweenO = new TWEEN.Tween({opacity : 0})
+              .to({opacity : 10}, animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(function () { 
+          
+                if(sign === -1) { 
+                  plane.plane.setOpacity(10-this.opacity);
+                }
+                else{ 
+                  plane.plane.setOpacity(this.opacity);
+                }
+              })
+              .onComplete(function () { 
+                if(_this.planeData[arg.id][prop2]){
+                  plane.plane.setVisible(that.planeData[arg.id][prop2].visible);  
+                }
+                 
+              })
+              .start();
+              
+          }
+
+          if(_this.planeData[arg.id][prop2].opacity !== plane.plane.opacity ){ 
+      
+            var sign;
+            var difference = Math.abs(plane.plane.opacity - _this.planeData[arg.id][prop2].opacity);
+            var currentOp = plane.plane.opacity;
+
+            if(plane.plane.opacity <= _this.planeData[arg.id][prop2].opacity){ 
+              sign = 1; 
+            }
+            else{ 
+              sign = -1;  
+            }
+          
+
+            var tweenO = new TWEEN.Tween({opacity : 0})
+              .to({opacity : difference}, animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(function () { 
+                if(sign === -1) { 
+                   plane.plane.setOpacity(currentOp-this.opacity);
+                }
+                else{ 
+                   plane.plane.setOpacity(currentOp+this.opacity);
+                }
+              })
+              .onComplete(function () {  
+              })
+              .start();
+ 
+          }
+
+          if(_this.planeData[arg.id][prop2].color !== plane.plane.color ){ 
+             console.log(_this.planeData[arg.id][prop2].color);
+            var newColor = THREE.hexToRgb(_this.planeData[arg.id][prop2].color);  
+            var tweenC = new TWEEN.Tween(plane.plane.object3d.material.color)
+              .to({r : newColor.r/255, g : newColor.g/255, b : newColor.b/255} , animationTime)
+              .easing(TWEEN.Easing.Linear.None)
+              .onUpdate(
+                  function(){}
+              )
+              .onComplete(function () {
+                if(_this.planeData[arg.id][prop2]){
+                  plane.plane.setColor(_this.planeData[arg.id][prop2].color);  
+                }
+                 
+              })
+              .start();
+ 
+          }
+ 
+        } 
          
       }); 
     }
 
-    for (var prop in l.points) {
-      if (l.points.hasOwnProperty(prop)) {  
+    for (var prop3 in l.points) {
+      if (l.points.hasOwnProperty(prop3)) {  
 
-        l.points[prop].applyNoteState(arg.id);
+        l.points[prop3].applyNoteState(arg.id);
 
       }
     }

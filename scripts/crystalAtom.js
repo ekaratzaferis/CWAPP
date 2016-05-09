@@ -18,6 +18,7 @@ define([
   var globalGeometries = [new THREE.OctahedronGeometry(1,0), new THREE.OctahedronGeometry(1,1), new THREE.OctahedronGeometry(1,2), new THREE.OctahedronGeometry(1,3), new THREE.OctahedronGeometry(1,4), new THREE.OctahedronGeometry(1,5) ];
   var globalMaterials = {} ;
   var uniqueId = -1; 
+  var animationTime = 2500;
 
   function CrystalAtom(position, radius, color, elementName, id, offsetX, offsetY, offsetZ, centerOfMotif, lod, opacity, renderingMode, latticeIndex, ionicIndex, labeling, visible) { 
         
@@ -144,8 +145,7 @@ define([
     if(this.notStates[noteID] === undefined){
       return;
     }
-    
-    var opacityLimit = this.notStates[noteID].opacity;
+     
     var _this = this;
 
     if(this.notStates[noteID].visible !== this.visibility ){ 
@@ -156,7 +156,6 @@ define([
         // animate towards invisibility
         sign = -1;
         this.setOpacity(1);
-        //this.setVisibility(true)
         
       }
       else{
@@ -167,7 +166,7 @@ define([
       }
 
       var tweenO = new TWEEN.Tween({opacity : 0})
-        .to({opacity : 1}, 2000)
+        .to({opacity : 1}, animationTime)
         .easing(TWEEN.Easing.Linear.None)
         .onUpdate(function () { 
           if(sign === -1) { 
@@ -181,12 +180,51 @@ define([
           _this.setVisibility(_this.notStates[noteID].visible);   
         })
         .start();
-       
-      
+        
     }
     
-    this.setColorMaterial(this.notStates[noteID].color);
-   
+    if(this.notStates[noteID].opacity !== this.opacity ){
+      var sign;
+      var difference = Math.abs(this.opacity - this.notStates[noteID].opacity);
+      var currentOp = this.opacity;
+
+      if(this.opacity <= this.notStates[noteID].opacity){ 
+        sign = 1; 
+      }
+      else{ 
+        sign = -1;  
+      }
+
+      var tweenO = new TWEEN.Tween({opacity : 0})
+        .to({opacity : difference}, animationTime)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(function () { 
+          if(sign === -1) { 
+            _this.setOpacity(currentOp-this.opacity);
+          }
+          else{ 
+            _this.setOpacity(currentOp+this.opacity);
+          }
+        })
+        .onComplete(function () {  
+        })
+        .start();
+    }
+    
+    if(this.notStates[noteID].color !== this.color ){
+      console.log(this.notStates[noteID].color);
+      var newColor = this.notStates[noteID].color ;  
+      var tweenC = new TWEEN.Tween(this.object3d.children[0].material.color)
+        .to({r : newColor.r , g : newColor.g , b : newColor.b } , animationTime)
+        .easing(TWEEN.Easing.Linear.None)
+        .onUpdate(
+            function(){}
+        )
+        .onComplete(function () {
+          _this.setColorMaterial((new THREE.Color( _this.notStates[noteID].color.r, _this.notStates[noteID].color.g, _this.notStates[noteID].color.b)).getHex() );   
+        })
+        .start();
+    }
   };
   CrystalAtom.prototype.setVisibility = function( bool) {
 
