@@ -1356,10 +1356,8 @@ require([
         orbitCrystal.orientationCam.position.set(5,5,5);
         orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
         orbitCrystal.orientationCam.updateProjectionMatrix();
-        orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
-
-
-
+        //orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
+ 
       },2000);
     }
   }
