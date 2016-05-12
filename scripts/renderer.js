@@ -246,9 +246,7 @@ define([
     for (var i = 0; i < this.externalFunctions.length ; i++) {
       this.externalFunctions[i]();
     };
-
-  
-
+ 
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
 
@@ -302,8 +300,8 @@ define([
             
             this.composer.render();
           }
-          else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){  
-            
+          else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){ 
+    
             this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
           }
           else{
