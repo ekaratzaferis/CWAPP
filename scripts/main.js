@@ -1336,8 +1336,8 @@ require([
       $('#logg').text('mobile');
       setTimeout(function(){ 
 
-        crystalScene.remove( crystalRenderer.cameras[0] );
-        
+        crystalScene.remove( {object3d : crystalRenderer.cameras[0] });
+
         crystalScene.add({object3d:orbitCrystal.orientationCam});
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
