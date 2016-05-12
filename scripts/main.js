@@ -1294,8 +1294,9 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 600 || $(window).height() < 600){
+          if($(window).width() < 700 || $(window).height() < 700){
           // mobile  
+
             setTimeout(function(){ 
               crystalScene.add({object3d:orbitCrystal.orientationCam});
               orbitCrystal.deviceOrientationControlsActive = true;
@@ -1321,15 +1322,18 @@ require([
               orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
             },2000);
           }
+          else{
+            $('#logg').text('pc');
+          }
         }]
         );  
       } 
     }); 
   } 
   else{
-    if($(window).width() < 450 || $(window).height() < 450){
+    if($(window).width() < 700 || $(window).height() < 700){
       // mobile
-    
+      $('#logg').text('mobile');
       setTimeout(function(){ 
 
         crystalScene.add({object3d:orbitCrystal.orientationCam});
