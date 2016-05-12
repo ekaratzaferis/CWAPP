@@ -301,7 +301,7 @@ define([
             this.composer.render();
           }
           else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){ 
- 
+
             this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
           }
           else{
@@ -491,9 +491,7 @@ define([
 
     var currentLookAt = this.cameras[0].getWorldDirection();
     var currentPosition = this.cameras[0].position.clone();
-
-    console.log(currentLookAt);
-    console.log(currentPosition);
+ 
 
   };
   Renderer.prototype.getHudCameraCube = function() {

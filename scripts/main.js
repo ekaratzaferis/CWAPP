@@ -318,7 +318,7 @@ require([
   crystalRenderer.startAnimation();  
    
   var orbitCrystal = new Orbit(
-    new THREE.PerspectiveCamera(2, 1, 0.1 , 5000), 
+    crystalRenderer.getMainCamera(), 
     '#crystalRendererMouse',   
     "perspective",  
     false, 
@@ -1344,15 +1344,15 @@ require([
         hudCube.setVisibility(false);
         hudArrows.setVisibility(false);
         CubeEvent.enableCubeEvents = false ;
-        sceneResizer.resize('oculusCrystal');
+        //sceneResizer.resize('oculusCrystal');
          
         crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
 
-        crystalScreenEvents.state = 'oculusCrystal';
+        //crystalScreenEvents.state = 'oculusCrystal';
         
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
    
-        crystalRenderer.initOculusEffect({oculus : true}); 
+        //crystalRenderer.initOculusEffect({oculus : true}); 
         orbitCrystal.orientationCam.position.set(5,5,5);
         orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
         orbitCrystal.orientationCam.updateProjectionMatrix();
