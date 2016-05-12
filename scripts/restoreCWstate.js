@@ -505,15 +505,17 @@ define([
     var latticeParams = this.cwObj.system.latticeParams.lattice.defaults ;
     
     var anglesScales =  { 'alpha': cell.initialLatticeParams.alpha, 'beta': cell.initialLatticeParams.beta, 'gamma': cell.initialLatticeParams.gamma, 'scaleX': cell.initialLatticeParams.scaleX, 'scaleY': cell.initialLatticeParams.scaleY, 'scaleZ':cell.initialLatticeParams.scaleZ  };
+    this.motifEditor.editorState = cell.editorState;
+     
+    this.motifEditor.editorState_({state : "initial"});
+
     this.motifEditor.cellParameters = { 'alpha': latticeParams.alpha, 'beta': latticeParams.beta, 'gamma': latticeParams.gamma, 'scaleX': latticeParams.scaleX, 'scaleY': latticeParams.scaleY, 'scaleZ':latticeParams.scaleZ  };
 
     if(this.motifEditor.newSphere){ 
       this.motifEditor.newSphere.destroy();
       this.motifEditor.newSphere = undefined ;
     }
-  
-    this.motifEditor.editorState_("initial");
- 
+     
     this.motifEditor.leastCellLengths = {'x' : cell.leastCellLengths.x, 'y' : cell.leastCellLengths.y, 'z' : cell.leastCellLengths.z } ;
     
     this.motifEditor.padlockMode({padlock : !cell.padlock}, true ) ;
@@ -542,9 +544,13 @@ define([
     this.motifEditor.offsetMotifsPointsScaling(true);
 
     var helperMotif = [];
+    var  uiRelPosition;
 
     for (var i = 0; i < atoms.length; i++) { 
-        
+      
+      uiRelPosition = {};
+     _.extend(uiRelPosition, atoms[i].uiRelPosition);
+
       var atom = new AtomSphere( 
         atoms[i].visible, 
         new THREE.Vector3(atoms[i].position.x,atoms[i].position.y,atoms[i].position.z), 
@@ -556,7 +562,9 @@ define([
         atoms[i].opacity*10, 
         atoms[i].wireframe,
         atoms[i].ionicIndex,
-        this.motifEditor.labeling
+        this.motifEditor.labeling,
+        uiRelPosition
+        
       );
 
       this.motifEditor.motifsAtoms.push(atom); 
@@ -595,7 +603,7 @@ define([
         atoms[i].opacity*10,
         false,
         true,
-        atoms[i].ionicIndex
+        atoms[i].ionicIndex 
       ); 
    
       if(atoms[i].id == cell.lastSphereAdded) {

@@ -452,7 +452,7 @@ define([
                 this.createJsonVisualizationParams()+ 
                 this.getNotesState()+
                 end ;
-
+ 
             return (text); 
 
         } 
@@ -471,13 +471,13 @@ define([
       var cameraData = JSON.stringify(this.narrative_system.cameraData);
       var planeData = JSON.stringify(this.narrative_system.planeData);
       var dirData = JSON.stringify(this.narrative_system.dirData);
-      var gridNotes = (this.lattice.grids[0] === undefined) ? {} : JSON.stringify(this.lattice.grids[0].grid.notStates);
-      var faceNotes = (this.lattice.faces[0] === undefined) ? {} : JSON.stringify(this.lattice.faces[0].notStates);
+      var gridNotes = (this.lattice.grids[0] === undefined) ? JSON.stringify({}) : JSON.stringify(this.lattice.grids[0].grid.notStates);
+      var faceNotes = (this.lattice.faces[0] === undefined) ? JSON.stringify({}) : JSON.stringify(this.lattice.faces[0].notStates);
 
       var randomKey = Object.keys(this.lattice.points)[0];
       var randomPoint = (randomKey === undefined) ? undefined : this.lattice.points[Object.keys(this.lattice.points)[0]];
 
-      var pointNotes = ( randomPoint === undefined) ? {} : JSON.stringify(randomPoint.notStates);
+      var pointNotes = ( randomPoint === undefined) ? JSON.stringify({}) : JSON.stringify(randomPoint.notStates);
       
       var text = ', "notesSettings" : {  "gridNotes" : '+gridNotes+' , "pointNotes" : '+pointNotes+' , "faceNotes" : '+faceNotes+' , "cameraData" :  '+cameraData+', "planeData" : '+planeData+' , "dirData" : '+ dirData+', "atoms" : [';
 
@@ -508,7 +508,7 @@ define([
 
         var lastSpAd = (this.motifeditor.lastSphereAdded === undefined) ? undefined : this.motifeditor.lastSphereAdded.getID();
         var tangentTothis = (this.motifeditor.tangentToThis === undefined) ? 'undefined' : this.motifeditor.tangentToThis.id;
-        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : "'+this.motifeditor.editorState.state+'", "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'},"angles" : { "alpha" : '+this.motifeditor.cellParameters.alpha+', "beta" :'+this.motifeditor.cellParameters.beta+', "gamma" : '+this.motifeditor.cellParameters.gamma+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "cellVolume" : { "xInitVal" : '+this.motifeditor.cellVolume.xInitVal+', "yInitVal" :'+this.motifeditor.cellVolume.yInitVal+', "zInitVal" : '+this.motifeditor.cellVolume.zInitVal+' }, "initialLatticeParams" : { "alpha" : '+this.motifeditor.initialLatticeParams.alpha+' , "beta" : '+this.motifeditor.initialLatticeParams.beta+', "gamma" : '+this.motifeditor.initialLatticeParams.gamma+' ,"scaleX" : '+this.motifeditor.initialLatticeParams.scaleX+', "scaleY" :'+this.motifeditor.initialLatticeParams.scaleY+', "scaleZ" : '+this.motifeditor.initialLatticeParams.scaleZ+' }, "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
+        var start = '"unitCell" :{ "padlock" : '+this.motifeditor.padlock+', "viewState":"'+this.motifeditor.viewState+'" , "dragMode" : '+this.motifeditor.dragMode+',"editorState" : '+JSON.stringify(this.motifeditor.editorState)+', "dimensions" : { "x" : '+this.motifeditor.cellParameters.scaleX+', "y" :'+this.motifeditor.cellParameters.scaleY+', "z" : '+this.motifeditor.cellParameters.scaleZ+'},"angles" : { "alpha" : '+this.motifeditor.cellParameters.alpha+', "beta" :'+this.motifeditor.cellParameters.beta+', "gamma" : '+this.motifeditor.cellParameters.gamma+'}, "lastSphereAdded" : "'+lastSpAd+'", "tangentToThis" : "'+tangentTothis+'", "tangency" : '+this.motifeditor.globalTangency+', "cellVolume" : { "xInitVal" : '+this.motifeditor.cellVolume.xInitVal+', "yInitVal" :'+this.motifeditor.cellVolume.yInitVal+', "zInitVal" : '+this.motifeditor.cellVolume.zInitVal+' }, "initialLatticeParams" : { "alpha" : '+this.motifeditor.initialLatticeParams.alpha+' , "beta" : '+this.motifeditor.initialLatticeParams.beta+', "gamma" : '+this.motifeditor.initialLatticeParams.gamma+' ,"scaleX" : '+this.motifeditor.initialLatticeParams.scaleX+', "scaleY" :'+this.motifeditor.initialLatticeParams.scaleY+', "scaleZ" : '+this.motifeditor.initialLatticeParams.scaleZ+' }, "leastCellLengths" : { "x" : '+this.motifeditor.leastCellLengths.x+', "y" :'+this.motifeditor.leastCellLengths.y+', "z" : '+this.motifeditor.leastCellLengths.z+' }, "newSphere": {';
 
         var newSphere = [];
          
@@ -593,6 +593,11 @@ define([
 
             motif.push('"opacity" : ');
             motif.push(atom.opacity/10);
+
+            motif.push(','); 
+
+            motif.push('"uiRelPosition" : ');
+            motif.push(JSON.stringify(atom.uiRelPosition));
 
             motif.push(','); 
 

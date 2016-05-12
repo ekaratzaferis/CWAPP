@@ -825,7 +825,7 @@ define([
 
       if(this.newSphere !== undefined){
         if(this.latticeName === 'hexagonal'){
-          var rp = this.newSphere.uiRelPosition.clone();
+          var rp = new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
 
           var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
           var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
@@ -873,7 +873,7 @@ define([
 
       if(this.newSphere !== undefined){
         if(this.latticeName === 'hexagonal'){
-          var rp = this.newSphere.uiRelPosition.clone();
+          var rp = new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
 
           var aPos = v.clone().setLength(_this.cellParameters.scaleZ*rp.z);
           var bPos = new THREE.Vector3( _this.cellParameters.scaleZ*rp.x, 0, 0 );  
@@ -2050,7 +2050,7 @@ define([
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
            
-          pos =  this.newSphere.uiRelPosition.clone();
+          pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
  
         } 
          
@@ -2097,7 +2097,7 @@ define([
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
      
-          pos =  this.newSphere.uiRelPosition.clone();
+          pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
 
         }  
         this.menu.disableMEButtons(
@@ -2565,7 +2565,7 @@ define([
     var x = this.cellParameters.scaleX;
     var y = this.cellParameters.scaleY;
     var z = this.cellParameters.scaleZ;
-
+ 
     this.menu.disableMEInputs(
     { 
       'atomPositioningXYZ' : false,
@@ -2693,7 +2693,7 @@ define([
 
       if(this.editorState.atomPosMode === 'relative'){   
 
-        pos = this.newSphere.uiRelPosition.clone();
+        pos = new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
       
       }
       else{
