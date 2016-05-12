@@ -93,8 +93,8 @@ THREE.DeviceOrientationControls = function( object ) {
 
 		var v = scope.object.rotation.clone();
         //scope.object.position.copy(v.setLength(v.length()-0.01));
- 
-         document.getElementById('logg').innerHTML =  v.z  ;
+ 		 
+         document.getElementById('logg').innerHTML =  v.x  ;
 
 
 	};

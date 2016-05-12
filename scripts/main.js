@@ -1335,10 +1335,10 @@ require([
       // mobile
       $('#logg').text('mobile');
       setTimeout(function(){ 
-
-        crystalScene.remove( {object3d : crystalRenderer.cameras[0] });
-
+ 
+       
         crystalScene.add({object3d:orbitCrystal.orientationCam});
+        orbitCrystal.orientationCam.up = new THREE.Vector3(0,0,1);
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
@@ -1356,7 +1356,7 @@ require([
         orbitCrystal.orientationCam.position.set(5,5,5);
         orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
         orbitCrystal.orientationCam.updateProjectionMatrix();
-        //orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
+        orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
  
       },2000);
     }
