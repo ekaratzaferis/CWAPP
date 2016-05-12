@@ -1003,9 +1003,7 @@ require([
 
     orbitCrystal.disableUpdate = arg.stereo;
  
-    if(arg.onTop){
-      //deviceOrientationControls.connect();
-      //crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+    if(arg.onTop){ 
       dollEditor.setVisibility(!arg.onTop); 
       hudCube.setVisibility(!arg.onTop);
       hudArrows.setVisibility(!arg.onTop);
@@ -1298,8 +1296,8 @@ require([
           // mobile  
 
             setTimeout(function(){ 
-              crystalScene.add({object3d:orbitCrystal.orientationCam});
-              orbitCrystal.deviceOrientationControlsActive = true;
+              
+              //orbitCrystal.deviceOrientationControlsActive = true;
               
               dollEditor.setVisibility(false); 
               hudCube.setVisibility(false);
@@ -1338,7 +1336,7 @@ require([
  
        
         crystalScene.add({object3d:orbitCrystal.orientationCam});
-        orbitCrystal.orientationCam.up = new THREE.Vector3(0,0,1);
+        
         orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);

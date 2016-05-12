@@ -36,8 +36,8 @@ define([
       else{
         this.orientationCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000) ;
         
-        this.deviceOrientationControls = new THREE.DeviceOrientationControls(this.orientationCam);
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
+        this.deviceOrientationControls = {};//new THREE.DeviceOrientationControls(this.orientationCam);
+        this.control = new THREE.DeviceOrientationControls(this.orientationCam);
       }
     }
     else if (type === "orthographic"){
@@ -45,7 +45,7 @@ define([
     }  
   };
   Orbit.prototype.dollOnDocumentMouseDown = function(onDocumentMouseDown){ 
-    this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
+    //this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
   }; 
   Orbit.prototype.setSyncedCamControl = function(control){ 
     this.control.syncedControl = control;
@@ -85,10 +85,10 @@ define([
   };
   Orbit.prototype.update = function() {
 
-    if(this.deviceOrientationControlsActive === true){
-      this.deviceOrientationControls.update();
-      return;
-    }
+    // if(this.deviceOrientationControlsActive === true){
+    //   this.deviceOrientationControls.update();
+    //   return;
+    // }
 
     if(this.disableUpdate === true){
       return;
