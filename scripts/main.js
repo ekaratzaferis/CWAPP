@@ -1294,7 +1294,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 450 || $(window).height() < 450){
+          if($(window).width() < 600 || $(window).height() < 600){
           // mobile  
             setTimeout(function(){ 
               crystalScene.add({object3d:orbitCrystal.orientationCam});
