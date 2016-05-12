@@ -318,7 +318,7 @@ require([
   crystalRenderer.startAnimation();  
    
   var orbitCrystal = new Orbit(
-    crystalRenderer.getMainCamera(), 
+    new THREE.PerspectiveCamera(2, 1, 0.1 , 5000), 
     '#crystalRendererMouse',   
     "perspective",  
     false, 
