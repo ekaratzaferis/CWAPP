@@ -301,7 +301,7 @@ define([
             this.composer.render();
           }
           else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){ 
-    
+            this.cameras[0].updateProjectionMatrix();
             this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
           }
           else{
