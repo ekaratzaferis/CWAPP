@@ -301,8 +301,7 @@ define([
             this.composer.render();
           }
           else if(this.oculusEffectActive === true && this.oculusEffect !== undefined){ 
-            this.cameras[0].position.y +=0.1;
-            console.log(this.cameras[0].position.y);
+            
             this.oculusEffect.render( this.explorer.object3d, this.cameras[0] );
           }
           else{
