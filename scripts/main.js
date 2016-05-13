@@ -1352,7 +1352,11 @@ require([
         
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
    
-        crystalRenderer.initOculusEffect({oculus : true});  
+        crystalRenderer.initOculusEffect({oculus : true}); 
+     
+        orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
+        orbitCrystal.orientationCam.updateProjectionMatrix();
+        orbitCrystal.orientationCam.lookAt(new THREE.Vector3(0,0,0));
  
       },2000);
     }
