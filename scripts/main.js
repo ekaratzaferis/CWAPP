@@ -354,8 +354,8 @@ require([
    
   var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRendererMouse',  "perspective",  false, 'cell');
  
-  // orbitUnitCell.setSyncedCamControl(orbitCrystal);
-  // orbitCrystal.setSyncedCamControl(orbitUnitCell); 
+  orbitUnitCell.setSyncedCamControl(orbitCrystal);
+  orbitCrystal.setSyncedCamControl(orbitUnitCell); 
 
 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
@@ -364,7 +364,7 @@ require([
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
 
-  // unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
+  unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
 
   motifRenderer.onAnimationUpdate(motifCamX.update.bind(motifCamX));
   motifRenderer.onAnimationUpdate(motifCamY.update.bind(motifCamY));
@@ -474,8 +474,8 @@ require([
   restoreMechanism.narrative_system = narrative_system;
 
   // experimental feature  
-  // orbitCrystal.syncCams(true);
-  // orbitUnitCell.syncCams(true);
+  orbitCrystal.syncCams(true);
+  orbitUnitCell.syncCams(true);
  
   
   // lattice events binding
@@ -1318,7 +1318,7 @@ require([
         restoreMechanism.configureState(res.data, [function(){
           if($(window).width() < 700 || $(window).height() < 700){
           // mobile  
-
+            return;
             setTimeout(function(){ 
               crystalScene.add({object3d:orbitCrystal.orientationCam});
               orbitCrystal.deviceOrientationControlsActive = true;
@@ -1331,8 +1331,8 @@ require([
                
               
               
-              crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
-              crystalScreenEvents.state = 'oculusCrystal';
+               crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
+               crystalScreenEvents.state = 'oculusCrystal';
               crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
          
               crystalRenderer.initOculusEffect({oculus : true}); 
@@ -1368,9 +1368,7 @@ require([
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
 
         crystalRenderer.initOculusEffect({oculus : true}); 
-
-        return;
-        
+ 
  
       },2000);
     }

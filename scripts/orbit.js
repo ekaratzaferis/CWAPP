@@ -108,7 +108,6 @@ define([
       if(offset.equals(this.currPos)){
         return;
       }
-      
       this.currPos.copy(offset);
  
       var targ = this.getTarget() ; 

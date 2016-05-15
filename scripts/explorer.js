@@ -33,7 +33,7 @@ define([
     this.movingCube = new THREE.Mesh(new THREE.OctahedronGeometry(0.0025,3), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
     this.movingCube.name = 'movingCube'; 
     this.movingCube.visible = false; 
-    this.movingCube.position.set(0, 0, 0);
+    this.movingCube.position.set(29.9, 29.9, 59.9);
     this.object3d.add(this.movingCube);
 
     this.labelSize = 120 ; //reversed
@@ -113,8 +113,8 @@ define([
     );
      
     this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
-    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#FF0000" }) );
-    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#FFFFFF" }) ); 
+    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
+    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
 
     this.object3d.add(this.bAxisLine);
     this.object3d.add(this.cAxisLine);
@@ -136,20 +136,7 @@ define([
     this.plane.object3d.visible = false;  
  
     this.object3d.add(this.plane.object3d);
-
-    var geometryC = new THREE.BoxGeometry( 100, 100, 100 );
-    for ( var i = 0; i < geometryC.faces.length; i ++ ) {
-        geometryC.faces[ i ].color.setHex( i/10 * 0xffffff );
-    }
-
-    var materialC = new THREE.MeshBasicMaterial( { side :THREE.BackSide, color: 0xffffff, vertexColors: THREE.FaceColors } );
     
-    // mesh
-    var meshS = new THREE.Mesh( geometryC, materialC );
- 
-
-    this.object3d.add(meshS);
-
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
     });
@@ -261,7 +248,7 @@ define([
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
       
       // x real
-      var asa = ' '+frustum.planes[i].normal.x+' '+frustum.planes[i].normal.y+' '+frustum.planes[i].normal.z+' ';
+      var asa = frustum.planes[i].normal.x;
 
       document.getElementById('logg').innerHTML =  asa ;
       // y

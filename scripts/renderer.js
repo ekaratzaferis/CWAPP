@@ -37,7 +37,7 @@ define([
     this.atom;
 
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: true }); 
-    this.backgroundColor =  '#ffffff' ; 
+    this.backgroundColor =  '#000000' ; 
     this.renderer.setSize( width, height);
     this.renderer.setPixelRatio( window.devicePixelRatio );
 
@@ -90,7 +90,7 @@ define([
   };
   Renderer.prototype.createPerspectiveCamera = function(lookAt,xPos, yPos, zPos, fov){  
     var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 5000);
-    //camera.lookAt(lookAt);
+    camera.lookAt(lookAt);
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);
     
@@ -511,8 +511,7 @@ define([
   Renderer.prototype.onAnimationUpdate = function(callback) { 
     PubSub.subscribe(events.ANIMATION_UPDATE + '_' + this.rType, callback);
   }; 
-  Renderer.prototype.renderHud = function(mode) {   
-    // preserveDrawingBuffer: true
+  Renderer.prototype.renderHud = function(mode) {   // preserveDrawingBuffer: true
     //this.renderer.render( this.hudScene, this.hudCamera);
   };
 

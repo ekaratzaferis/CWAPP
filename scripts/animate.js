@@ -42,7 +42,7 @@ define([
 
   Animate.prototype.animation = function(){
     var timeNow = new Date().getTime();
-    return;
+
     if (lastTime != 0) {
       var elapsed = timeNow - lastTime ;
        
