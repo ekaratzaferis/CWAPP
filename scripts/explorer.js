@@ -137,6 +137,23 @@ define([
  
     this.object3d.add(this.plane.object3d);
 
+     // geometry
+    var geometryS = new THREE.SphereGeometry( 100, 12, 8 );
+    
+    // material
+    var materialS = new THREE.MeshLambertMaterial( {
+        color: 0x00ffff, 
+        ambient: 0x00ffff,
+        shading: THREE.FlatShading,
+        wireframe : true
+    } );
+    
+    // mesh
+    var meshS = new THREE.Mesh( geometryS, materialS );
+ 
+
+    this.object3d.add(meshS);
+
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
     });
