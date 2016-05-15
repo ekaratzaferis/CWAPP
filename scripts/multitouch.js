@@ -11,9 +11,9 @@ define([
     var touchmove  = this.touchmove.bind(this) ;  
     var touchend   = this.touchend.bind(this) ;  
 
-    document.getElementById('crystalRendererMouse').addEventListener( 'touchstart', touchstart, true ); 
-    document.getElementById('crystalRendererMouse').addEventListener( 'touchmove' , touchmove,  true ); 
-    document.getElementById('crystalRendererMouse').addEventListener( 'touchend'  , touchend,   true ); 
+    // document.getElementById('crystalRendererMouse').addEventListener( 'touchstart', touchstart, true ); 
+    // document.getElementById('crystalRendererMouse').addEventListener( 'touchmove' , touchmove,  true ); 
+    // document.getElementById('crystalRendererMouse').addEventListener( 'touchend'  , touchend,   true ); 
     
     this.keyboard = keyboard;
     this.lastFingersPosition = { x : 0, y : 0 };

@@ -1331,8 +1331,8 @@ require([
                
               
               
-               crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
-               crystalScreenEvents.state = 'oculusCrystal';
+              crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
+              crystalScreenEvents.state = 'oculusCrystal';
               crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
          
               crystalRenderer.initOculusEffect({oculus : true}); 
