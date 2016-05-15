@@ -91,7 +91,7 @@ THREE.DeviceOrientationControls = function( object ) {
 		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 		this.alpha = alpha;
 
-		var v = scope.object.rotation.clone();
+		var v = scope.object.position.clone();
         //scope.object.position.copy(v.setLength(v.length()-0.01));
  		 
         document.getElementById('logg').innerHTML =  v.x  ;
