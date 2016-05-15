@@ -265,7 +265,7 @@ define([
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
       
       // x real
-      var asa = ' '+camera.position.x+' '+camera.position.y+' '+camera.position.z+' ';
+      var asa = ' '+frustum.planes[i].normal.x+' '+frustum.planes[i].normal.y+' '+frustum.planes[i].normal.z+' ';
 
       document.getElementById('logg').innerHTML =  asa ;
       // y

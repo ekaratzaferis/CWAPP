@@ -243,7 +243,9 @@ define([
     if (this.animationIsActive === false) {
       return;
     }
-    
+    for (var i = 0; i < this.externalFunctions.length ; i++) {
+      this.externalFunctions[i]();
+    };
  
     window.requestAnimationFrame(this.animate.bind(this));
     PubSub.publish(events.ANIMATION_UPDATE + '_' + this.rType, true);
@@ -437,10 +439,6 @@ define([
       this.rS().update();
       this.rS( 'rStats' ).end();
     } 
-
-    for (var i = 0; i < this.externalFunctions.length ; i++) {
-      this.externalFunctions[i]();
-    };
   };
   Renderer.prototype.setUCviewport = function(bool) { 
     this.ucViewport = bool;

@@ -44,7 +44,7 @@ define([
 
   KeyboardKeys.prototype.handleKeys = function(leapArg, speed, passport){  
     var _this = this;
-     
+     return;
     if(this.dollmode === true || passport !== undefined){ 
       
       // set limits of world
