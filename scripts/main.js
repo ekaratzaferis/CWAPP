@@ -316,17 +316,39 @@ require([
   motifRenderer.createPerspectiveCamera(new THREE.Vector3(0,0,0), 0,50,0, 15);
 
   crystalRenderer.startAnimation();  
-   
-  var orbitCrystal = new Orbit(
-    crystalRenderer.getMainCamera(), 
-    '#crystalRendererMouse',   
-    "perspective",  
-    false, 
-    'crystal', 
-    undefined,
-    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
-    crystalScene
-  ); 
+  
+   var orbitCrystal;
+
+  if($(window).width() < 700 || $(window).height() < 700){
+    // mobile
+    $('#logg').text('mobile'); 
+
+    orbitCrystal = new Orbit(
+      crystalRenderer.getMainCamera(), 
+      '#crystalRendererMouse',   
+      "perspective",  
+      false, 
+      'crystal', 
+      undefined,
+      [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
+      'cardBoard'
+    ); 
+
+    orbitCrystal.deviceOrientationControlsActive = true;
+     
+  }
+  else{
+    orbitCrystal = new Orbit(
+      crystalRenderer.getMainCamera(), 
+      '#crystalRendererMouse',   
+      "perspective",  
+      false, 
+      'crystal', 
+      undefined,
+      [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] 
+    ); 
+  }
+  
     
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
@@ -1335,32 +1357,23 @@ require([
       // mobile
       $('#logg').text('mobile');
       setTimeout(function(){ 
- 
-        crystalScene.add({object3d:orbitCrystal.orientationCam});
-        orbitCrystal.deviceOrientationControlsActive = true;
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
         hudArrows.setVisibility(false);
         CubeEvent.enableCubeEvents = false ;
         sceneResizer.resize('oculusCrystal');
-         
-        crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
-
         crystalScreenEvents.state = 'oculusCrystal';
         
         crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
-   
+
         crystalRenderer.initOculusEffect({oculus : true}); 
-        orbitCrystal.orientationCam.position.set(5,5,5);
-        orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
-        orbitCrystal.orientationCam.updateProjectionMatrix();
-        orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
+
+        return;
+        
  
       },2000);
     }
-  }
-
-
+  } 
    
 });
  

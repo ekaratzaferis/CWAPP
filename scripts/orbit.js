@@ -11,7 +11,7 @@ define([
 ) {
   var mutualCamPosParam = new THREE.Vector3();
 
-  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras ) {
+  function Orbit(camera, domElement, type, deactivate, camName, syncedCamera, hudCameras, cardBoard ) {
     var $rendererContainer = jQuery(domElement);
     this.sync = false;
     this.camera = camera; 
@@ -23,8 +23,7 @@ define([
     this.disableUpdate = false;
     this.deviceOrientationControls;
     this.deviceOrientationControlsActive = false;
-    this.externalFunctions = []; 
-    this.orientationCam;
+    this.externalFunctions = [];  
 
     if(type == "perspective" ) {
       if( camName === 'hud') { 
@@ -33,11 +32,13 @@ define([
       else if( camName === 'motif'){
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
-      else{
-        this.orientationCam = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000) ;
-        
-        this.deviceOrientationControls = new THREE.DeviceOrientationControls(this.orientationCam);
-        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
+      else{ 
+        if(cardBoard !== undefined){
+          this.control = new THREE.DeviceOrientationControls(camera);
+        }
+        else{
+          this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
+        } 
       }
     }
     else if (type === "orthographic"){
@@ -45,7 +46,10 @@ define([
     }  
   };
   Orbit.prototype.dollOnDocumentMouseDown = function(onDocumentMouseDown){ 
-    this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
+    if(this.control.dollOnDocumentMouseDown){
+      this.control.dollOnDocumentMouseDown(onDocumentMouseDown);
+    }
+    
   }; 
   Orbit.prototype.setSyncedCamControl = function(control){ 
     this.control.syncedControl = control;
@@ -86,7 +90,7 @@ define([
   Orbit.prototype.update = function() {
 
     if(this.deviceOrientationControlsActive === true){
-      this.deviceOrientationControls.update();
+      this.control.update(); 
       return;
     }
 
