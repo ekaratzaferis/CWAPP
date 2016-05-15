@@ -354,8 +354,8 @@ require([
    
   var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRendererMouse',  "perspective",  false, 'cell');
  
-  orbitUnitCell.setSyncedCamControl(orbitCrystal);
-  orbitCrystal.setSyncedCamControl(orbitUnitCell); 
+  // orbitUnitCell.setSyncedCamControl(orbitCrystal);
+  // orbitCrystal.setSyncedCamControl(orbitUnitCell); 
 
 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
