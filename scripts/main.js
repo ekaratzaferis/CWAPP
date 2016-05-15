@@ -1357,6 +1357,7 @@ require([
       // mobile
       $('#logg').text('mobile');
       setTimeout(function(){ 
+        return;
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
         hudArrows.setVisibility(false);
