@@ -227,7 +227,7 @@ define([
     };
 
   };
-  Explorer.prototype.updateXYZlabelPos = function(camera,manuallyUpdate){
+  Explorer.prototype.updateXYZlabelPos = function(camera, manuallyUpdate){
 
     // positioning
      
@@ -248,7 +248,9 @@ define([
     for (var i = frustum.planes.length - 1; i >= 0; i--) { 
       
       // x real
+      var asa = frustum.planes[i].normal.x;
 
+      document.getElementById('logg').innerHTML =  asa ;
       // y
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(100000,0,0)));
        

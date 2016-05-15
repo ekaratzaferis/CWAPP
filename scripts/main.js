@@ -225,7 +225,6 @@ require([
 
 ) {
   
-  try {
   var menu = new Menu();
  
   var bSupport = (function () { 
@@ -1376,9 +1375,6 @@ require([
       },2000);
     }
   } 
-  }
-  catch(err) {
-    document.getElementById("logg").innerHTML = err.message;
-  }
+   
 });
  
