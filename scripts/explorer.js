@@ -33,7 +33,7 @@ define([
     this.movingCube = new THREE.Mesh(new THREE.OctahedronGeometry(0.0025,3), new THREE.MeshBasicMaterial( { color: 0x00ff00} ) );  
     this.movingCube.name = 'movingCube'; 
     this.movingCube.visible = false; 
-    this.movingCube.position.set(29.9, 29.9, 59.9);
+    this.movingCube.position.set(2.9, 3.9, 0.9);
     this.object3d.add(this.movingCube);
 
     this.labelSize = 120 ; //reversed
