@@ -364,7 +364,7 @@ require([
 
   crystalRenderer.onAnimationUpdate(orbitCrystal.update.bind(orbitCrystal));
 
-  unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
+  // unitCellRenderer.onAnimationUpdate(orbitUnitCell.update.bind(orbitUnitCell)); 
 
   motifRenderer.onAnimationUpdate(motifCamX.update.bind(motifCamX));
   motifRenderer.onAnimationUpdate(motifCamY.update.bind(motifCamY));
@@ -474,8 +474,8 @@ require([
   restoreMechanism.narrative_system = narrative_system;
 
   // experimental feature  
-  orbitCrystal.syncCams(true);
-  orbitUnitCell.syncCams(true);
+  // orbitCrystal.syncCams(true);
+  // orbitUnitCell.syncCams(true);
  
   
   // lattice events binding
