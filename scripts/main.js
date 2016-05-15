@@ -319,7 +319,7 @@ require([
   
    var orbitCrystal;
 
-  if($(window).width() < 700 || $(window).height() < 700){
+  if($(window).width() < 550 || $(window).height() < 550){
     // mobile
     $('#logg').text('mobile'); 
 
@@ -1316,7 +1316,7 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 700 || $(window).height() < 700){
+          if($(window).width() < 550 || $(window).height() < 550){
           // mobile  
             return;
             setTimeout(function(){ 
@@ -1353,7 +1353,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 700 || $(window).height() < 700){
+    if($(window).width() < 550 || $(window).height() < 550){
       // mobile
       $('#logg').text('mobile');
       setTimeout(function(){ 
