@@ -1342,7 +1342,7 @@ require([
               orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
               orbitCrystal.orientationCam.updateProjectionMatrix();
               orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
-            },2000);
+            },4000);
           }
           else{
             $('#logg').text('pc');
