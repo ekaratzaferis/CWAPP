@@ -90,7 +90,7 @@ define([
   };
   Renderer.prototype.createPerspectiveCamera = function(lookAt,xPos, yPos, zPos, fov){  
     var camera = new THREE.PerspectiveCamera(fov, 1, 0.1 , 5000);
-    camera.lookAt(lookAt);
+    //camera.lookAt(lookAt);
     camera.position.set(xPos, yPos, zPos); 
     this.cameras.push(camera);
     
