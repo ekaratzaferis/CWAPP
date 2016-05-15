@@ -137,19 +137,15 @@ define([
  
     this.object3d.add(this.plane.object3d);
 
-     // geometry
-    var geometryS = new THREE.SphereGeometry( 100, 12, 8 );
-    
-    // material
-    var materialS = new THREE.MeshLambertMaterial( {
-        color: 0x00ffff, 
-        ambient: 0x00ffff,
-        shading: THREE.FlatShading,
-        wireframe : true
-    } );
+    var geometryC = new THREE.BoxGeometry( 100, 100, 100 );
+    for ( var i = 0; i < geometryC.faces.length; i ++ ) {
+        geometryC.faces[ i ].color.setHex( i/10 * 0xffffff );
+    }
+
+    var materialC = new THREE.MeshBasicMaterial( { side :THREE.BackSide, color: 0xffffff, vertexColors: THREE.FaceColors } );
     
     // mesh
-    var meshS = new THREE.Mesh( geometryS, materialS );
+    var meshS = new THREE.Mesh( geometryC, materialC );
  
 
     this.object3d.add(meshS);
