@@ -113,8 +113,8 @@ define([
     );
      
     this.bAxisLine = new THREE.Line( bAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
-    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) );
-    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#6F6299" }) ); 
+    this.cAxisLine = new THREE.Line( cAxis, new THREE.LineBasicMaterial({ color: "#FF0000" }) );
+    this.aAxisLine = new THREE.Line( aAxis, new THREE.LineBasicMaterial({ color: "#FFFFFF" }) ); 
 
     this.object3d.add(this.bAxisLine);
     this.object3d.add(this.cAxisLine);
