@@ -37,7 +37,7 @@ define([
     this.atom;
 
     this.renderer = new THREE.WebGLRenderer({ alpha:true, antialias: true, preserveDrawingBuffer: true }); 
-    this.backgroundColor =  '#000000' ; 
+    this.backgroundColor =  '#ffffff' ; 
     this.renderer.setSize( width, height);
     this.renderer.setPixelRatio( window.devicePixelRatio );
 
