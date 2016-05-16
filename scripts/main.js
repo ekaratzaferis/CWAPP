@@ -467,7 +467,7 @@ require([
   // multi touch events for tablets,mobiles etc.
   var domElTOTouch = document;
   var mtEvents = new Multitouch(domElTOTouch, keyboard, crystalScene, orbitCrystal, crystalRenderer.getMainCamera());
-  dollGearBarME.multitouch = mtEvents;
+  //dollGearBarME.multitouch = mtEvents;
 
   var narrative_system = new Narrative_system(lattice, orbitCrystal, animationMachine, crystalScene );
   storeMechanism.narrative_system = narrative_system;

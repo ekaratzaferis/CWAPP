@@ -55,6 +55,7 @@ define([
     
     var _this = this;
     try{
+      console.log(9);
     this.touchDevice = true;
 
     switch ( event.touches.length ) {

@@ -136,7 +136,7 @@ define([
     this.plane.object3d.visible = false;  
  
     this.object3d.add(this.plane.object3d);
-    
+
     PubSub.subscribe(events.ADD, function(message, object) {
       _this.add(object);
     });
@@ -250,7 +250,7 @@ define([
       // x real
       var asa = frustum.planes[i].normal.x;
 
-      document.getElementById('logg').innerHTML =  asa ;
+      //document.getElementById('logg').innerHTML =  asa ;
       // y
       var py = frustum.planes[i].intersectLine( new THREE.Line3( new THREE.Vector3(0,0,0), new THREE.Vector3(100000,0,0)));
        
