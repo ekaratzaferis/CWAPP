@@ -319,10 +319,8 @@ require([
   
    var orbitCrystal;
 
-  if($(window).width() < 550 || $(window).height() < 550){
-    // mobile
-    $('#logg').text('mobile'); 
-
+  if($(window).width() < 500 || $(window).height() < 500){
+    // mobile 
     orbitCrystal = new Orbit(
       crystalRenderer.getMainCamera(), 
       '#crystalRendererMouse',   
@@ -1025,9 +1023,7 @@ require([
 
     orbitCrystal.disableUpdate = arg.stereo;
  
-    if(arg.onTop){
-      //deviceOrientationControls.connect();
-      //crystalRenderer.cardBoardRender = deviceOrientationControls.update.bind(deviceOrientationControls);
+    if(arg.onTop){ 
       dollEditor.setVisibility(!arg.onTop); 
       hudCube.setVisibility(!arg.onTop);
       hudArrows.setVisibility(!arg.onTop);
@@ -1316,33 +1312,23 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 550 || $(window).height() < 550){
+          if($(window).width() < 500 || $(window).height() < 500){
           // mobile  
-            return;
             setTimeout(function(){ 
-              crystalScene.add({object3d:orbitCrystal.orientationCam});
-              orbitCrystal.deviceOrientationControlsActive = true;
-              
+
               dollEditor.setVisibility(false); 
               hudCube.setVisibility(false);
               hudArrows.setVisibility(false);
               CubeEvent.enableCubeEvents = false ;
               sceneResizer.resize('oculusCrystal');
-               
-              
-              
-              crystalRenderer.cameras[0] = orbitCrystal.orientationCam;
               crystalScreenEvents.state = 'oculusCrystal';
+              
               crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
-         
-              crystalRenderer.initOculusEffect({oculus : true}); 
 
               crystalRenderer.initOculusEffect({oculus : true}); 
-              orbitCrystal.orientationCam.position.set(5,5,5);
-              orbitCrystal.orientationCam.aspect = jQuery('#app-container').width() /$(window).height();
-              orbitCrystal.orientationCam.updateProjectionMatrix();
-              orbitCrystal.orientationCam.lookAt(new THREE.Vector3(1,1,1));
-            },4000);
+       
+       
+            },3000);
           }
           else{
             $('#logg').text('pc');
@@ -1353,11 +1339,11 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 550 || $(window).height() < 550){
+    if($(window).width() < 500 || $(window).height() < 500){
       // mobile
-      $('#logg').text('mobile');
+       
       setTimeout(function(){ 
-        return;
+
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
         hudArrows.setVisibility(false);
@@ -1370,7 +1356,7 @@ require([
         crystalRenderer.initOculusEffect({oculus : true}); 
  
  
-      },2000);
+      },3000);
     }
   } 
    
