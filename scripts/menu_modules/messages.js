@@ -64,8 +64,8 @@ define([
         orthorhombic_body_centered:'Orthorhombic Body Centered',
         orthorhombic_face_centered:'Orthorhombic Face Centered',
         orthorhombic_base_centered:'Orthorhombic Base Centered',
-        hexagonal_primitive:'Hexagonal',
-        hexagonal:'Hexagonal Strange',
+        hexagonal_primitive:'Hexagonal Primitive',
+        hexagonal:'Hexagonal',
         rhombohedral_primitive:'Rhombohedral / Trigonal',
         monoclinic_primitive:'Monoclinic Simple',
         monoclinic_base_centered:'Monoclinic Base Centered',
@@ -216,7 +216,8 @@ define([
         oculusTracker: "CLICK TO ENABLE/DISABLE OCULUS RIFT MOTION TRACKER",
         cardboard: "CLICK TO ENABLE/DISABLE CARDBOARD VIEW AND TRACKERS",
         saveCamera: "CLICK TO ENABLE / DISABLE SAVING CAMERA POSITION",
-        enableParameters: "CLICK TO ENABLE / DISABLE SAVING CRYSTAL SCENE PARAMETERS"
+        enableParameters: "CLICK TO ENABLE / DISABLE SAVING CRYSTAL SCENE PARAMETERS",
+        showIcon: "Hide / Unhide"
     };
     
     // Contructor //
