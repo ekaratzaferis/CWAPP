@@ -150,7 +150,10 @@ define([
         // Top Menu Button //
         html.interface.sidebar.toggler.on('click', function(){
             if (html.interface.sidebar.menu.hasClass('controls-open')) $interfaceResizer.closeMenu();
-            else openFirstActiveTab();
+            else $interfaceResizer.hideMenu(true);
+        });
+        html.interface.canvas.showIcon.on('click',function(){
+             $interfaceResizer.hideMenu(false);
         });
         
         // Toggle Buttons Initiation //

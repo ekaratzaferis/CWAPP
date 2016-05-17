@@ -162,7 +162,8 @@ define([
         'oculusTracker':'top',
         'cardboard':'top',
         'saveCamera':'top',
-        'enableParameters':'top'
+        'enableParameters':'top',
+        'showIcon':'left'
     };
     
     var $messageList = undefined;

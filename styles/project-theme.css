@@ -3745,6 +3745,15 @@ input.disabled[type="text"]{ background-color: black; }
     cursor: pointer;
 }
 
+#showIcon{
+    position: absolute;
+    display: none;
+    top: 2%;
+    right: 0%;
+    z-index: 20;
+    cursor: pointer;
+}
+
 .bravais-lattice-modal-container .modal .modal-dialog .modal-content .modal-footer {background: #25272b; }
       .bravais-lattice-modal-container .modal .modal-dialog .modal-content .modal-footer .btn {
         padding: 13px 30px;
