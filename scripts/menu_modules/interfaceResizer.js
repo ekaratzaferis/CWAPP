@@ -115,7 +115,7 @@ define([
         };
         
         jQuery(window).on('load',function(){
-            if(window.mobileAndTabletcheck()) {
+            if($(window).width() < 800 || $(window).height() < 800){
                 menuHidden = true;
                 html.interface.sidebar.menu.hide();
                 html.interface.canvas.showIcon.show();

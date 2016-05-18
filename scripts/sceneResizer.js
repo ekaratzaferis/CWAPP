@@ -29,16 +29,16 @@ define([
     var fullHeight =  $(window).height();
     
     var _this = this;
- 
+    
+    console.log('aa');
+
     if( state === 'oculusCrystal'){
       
       this.crystalRenderer.changeContainerDimensions(fullWidth , fullHeight );
       this.unitCellRenderer.changeContainerDimensions(0,0);
       this.motifRenderer.changeContainerDimensions(0,0);
       $('#appLogo').css('display','none');
-      $('#mCSB_1_scrollbar_vertical').css('right',-1000);
-      $('#main_controls_container').css('right',(-1*$('#main_controls_container').width()));
-
+       
       $('.axesLabel').addClass('hiddenLabel');
 
       $('#topRowTableCaption').css('display','none');
@@ -54,8 +54,7 @@ define([
 
       $('#unitCellRendererCaption').width(0);
       $('#unitCellRendererCaption').height(0);
-        
-
+         
       $('#motifRenderer').width(0); 
       $('#motifRenderer').height(0);
 
@@ -232,8 +231,7 @@ define([
 
       // for oculus exit
       if(this.lastState === 'oculusCrystal'){
-        $('#mCSB_1_scrollbar_vertical').css('right',0);
-        $('#main_controls_container').css('right',0);
+        
       }
        
       this.crystalRenderer.changeContainerDimensions(width, height);

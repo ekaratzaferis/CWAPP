@@ -54,8 +54,7 @@ define([
   Multitouch.prototype.touchstart = function( event ) {
     
     var _this = this;
-    try{
-      console.log(9);
+    
     this.touchDevice = true;
 
     switch ( event.touches.length ) {
@@ -110,10 +109,7 @@ define([
         break;
 
     }
-  }
-  catch(e){
-     $('#logg').text(e); 
-  }
+   
   
   };
   Multitouch.prototype.touchmove = function( event ) {
