@@ -1074,7 +1074,9 @@ define([
     Menu.prototype.onNoteDeleteForSystem = function(callback){
         PubSub.subscribe(events.DELETE_NOTE_FOR_SYSTEM, callback);
     }
-
+    Menu.prototype.closeMenu = function(arg){
+        menuRibbonModule.closeMenu(arg);
+    };
     /* TO BE DELETED SOON
     $( "#sliderWS" ).slider({
         value:32,

@@ -447,6 +447,14 @@ define([
             blockTab({'tab':k,'value':value});
         });
     };
+    menuRibbon.prototype.closeMenu = function(arg){
+        if (arg.close === true) {
+            $interfaceResizer.closeMenu();
+        }
+        else if (arg.close === false) {
+            $interfaceResizer.hideMenu(true);
+        }
+    };
     menuRibbon.prototype.resetTabs = function(){
         this.switchTab('latticeTab');
         _.each(html.menu.tabs, function($parameter,k){

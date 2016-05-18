@@ -29,9 +29,7 @@ define([
     var fullHeight =  $(window).height();
     
     var _this = this;
-    
-    console.log('aa');
-
+     
     if( state === 'oculusCrystal'){
       
       this.crystalRenderer.changeContainerDimensions(fullWidth , fullHeight );

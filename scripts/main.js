@@ -319,7 +319,7 @@ require([
   
    var orbitCrystal;
 
-  if($(window).width() < 500 || $(window).height() < 500){
+  if($(window).width() < 600 || $(window).height() < 600){
     // mobile 
     orbitCrystal = new Orbit(
       crystalRenderer.getMainCamera(), 
@@ -1299,7 +1299,7 @@ require([
    
   var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ; 
-  
+  console.log($(window).height());
   if(hash.length>0){ 
     var slug = hash.replace(/^#/, '');
     
@@ -1312,9 +1312,10 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-          if($(window).width() < 500 || $(window).height() < 500){
+ 
+          if($(window).width() < 600 || $(window).height() < 600){
           // mobile  
-            setTimeout(function(){ 
+            jQuery(document).ready(function(){ 
 
               dollEditor.setVisibility(false); 
               hudCube.setVisibility(false);
@@ -1326,23 +1327,23 @@ require([
               crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
 
               crystalRenderer.initOculusEffect({oculus : true}); 
-       
-       
-            },3000);
-          }
-          else{
-            $('#logg').text('pc');
-          }
+        
+            });
+ 
+          } 
+
+          menu.closeMenu({close : true});
+          menu.hideMenu(true);
         }]
         );  
       } 
     }); 
   } 
   else{
-    if($(window).width() < 500 || $(window).height() < 500){
+    if($(window).width() < 600 || $(window).height() < 600){
       // mobile
        
-      setTimeout(function(){ 
+      jQuery(document).ready(function(){ 
 
         dollEditor.setVisibility(false); 
         hudCube.setVisibility(false);
@@ -1356,7 +1357,7 @@ require([
         crystalRenderer.initOculusEffect({oculus : true}); 
  
  
-      },3000);
+      });
     }
   } 
    
