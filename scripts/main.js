@@ -237,7 +237,7 @@ require([
   if(!bSupport){ 
     menu.showWarningDialog({message : '<p> Oops, :-(<br />It seems that your browser does not support WebGL.</p><br/><p>Check out <a href="http://get.webgl.org/">WebGL</a>, or try installing the latest version of: </p><br/></p> <a href="https://www.google.com/chrome">Chrome</a> [ https://www.google.com/chrome ] </p></p><a href="https://www.mozilla.org/en-US/firefox">Firefox</a> [ https://www.mozilla.org/en-US/firefox ]</p>'});
     return; 
-  }    
+  }     
   
 
   // app's state
@@ -319,7 +319,7 @@ require([
   
    var orbitCrystal;
 
-  if($(window).width() < 600 || $(window).height() < 600){
+  if($(window).width() < 450 || $(window).height() < 450){
     // mobile 
     orbitCrystal = new Orbit(
       crystalRenderer.getMainCamera(), 
@@ -1313,7 +1313,7 @@ require([
       if(res){
         restoreMechanism.configureState(res.data, [function(){
  
-          if($(window).width() < 600 || $(window).height() < 600){
+          if($(window).width() < 450 || $(window).height() < 450){
           // mobile  
             jQuery(document).ready(function(){ 
 
@@ -1340,7 +1340,7 @@ require([
     }); 
   } 
   else{
-    if($(window).width() < 600 || $(window).height() < 600){
+    if($(window).width() < 450 || $(window).height() < 450){
       // mobile
        
       jQuery(document).ready(function(){ 

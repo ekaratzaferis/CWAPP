@@ -108,7 +108,7 @@ define([
             init_dimensions();
             resizeScene();
 
-            if($(window).width() < 600 || $(window).height() < 600){
+            if($(window).width() < 450 || $(window).height() < 450){
                 menuHidden = true;
                 html.interface.sidebar.menu.hide();
                 html.interface.canvas.showIcon.show();
