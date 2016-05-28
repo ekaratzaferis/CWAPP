@@ -3745,13 +3745,31 @@ input.disabled[type="text"]{ background-color: black; }
     cursor: pointer;
 }
 
-#showIcon{
+#showIcon, #cardBoardCanvas{
+    cursor: pointer;
+    z-index: 20;
+}
+#showIcon img {
+    background-color: #1f2227;
+    padding-top: 34.5px;
+    padding-bottom: 34.5px;
+    padding-right: 22px;
+    padding-left: 22px;
+}
+#cardBoardCanvas img {
+    background-color: #1f2227;
+    padding-top: 34.5px;
+    padding-bottom: 34.5px;
+    padding-right: 18px;
+    padding-left: 18px;
+}
+
+#menuMobile {
     position: absolute;
     display: none;
-    top: 2%;
-    right: 0%;
+    top: 0;
+    right: -28px;
     z-index: 20;
-    cursor: pointer;
 }
 
 .bravais-lattice-modal-container .modal .modal-dialog .modal-content .modal-footer {background: #25272b; }

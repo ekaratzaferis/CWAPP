@@ -155,6 +155,19 @@ define([
         html.interface.canvas.showIcon.on('click',function(){
              $interfaceResizer.hideMenu(false);
         });
+        html.interface.canvas.cardBoard.on('click', function(){
+            var state = html.interface.canvas.cardBoard.hasClass('active');
+            if (state) {
+                html.interface.canvas.cardBoard.removeClass('active');
+                html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
+                PubSub.publish('menu.cardboard', state);
+            }
+            else {
+                html.interface.canvas.cardBoard.addClass('active');
+                html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-purple.png');
+                PubSub.publish('menu.cardboard', state);
+            }
+        });
         
         // Toggle Buttons Initiation //
         _.each(html.menu.toggles, function($parameter, k){

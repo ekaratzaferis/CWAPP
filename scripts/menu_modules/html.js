@@ -460,7 +460,9 @@ define([
         // Interface //
         this.interface = {};
         this.interface.canvas = {
+            menuMobile: jQuery('#menuMobile'),
             showIcon: jQuery('#showIcon'),
+            cardBoard: jQuery('#cardBoardCanvas'),
             tooltip: jQuery('#canvasTooltip'),
             appLogo: jQuery('#appLogo'),
             unitCellRenderer: jQuery('#unitCellRenderer'),

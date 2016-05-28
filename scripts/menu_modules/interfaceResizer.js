@@ -111,7 +111,7 @@ define([
             if($(window).width() < 450 || $(window).height() < 450){
                 menuHidden = true;
                 html.interface.sidebar.menu.hide();
-                html.interface.canvas.showIcon.show();
+                html.interface.canvas.menuMobile.show();
                 window.dispatchEvent(new Event('resize'));
             }
 
@@ -209,10 +209,10 @@ define([
         // Update scrollbar //
         updateScrollbar();
         var iconH = percentage * 0.7;
-        html.interface.canvas.showIcon.css('-webkit-transform','scale('+iconH+')');
-        html.interface.canvas.showIcon.css('-webkit-transform-origin','0 0');
-        html.interface.canvas.showIcon.css('transform','scale('+iconH+')');
-        html.interface.canvas.showIcon.css('transform-origin','0 0');
+        html.interface.canvas.menuMobile.css('-webkit-transform','scale('+iconH+')');
+        html.interface.canvas.menuMobile.css('-webkit-transform-origin','0 0');
+        html.interface.canvas.menuMobile.css('transform','scale('+iconH+')');
+        html.interface.canvas.menuMobile.css('transform-origin','0 0');
         // Calculate key values //
         switch(percentage){
             case 0.7:
@@ -221,6 +221,7 @@ define([
                 $menuShiftRight = -455.5;
                 $menuShiftLeft = -168;
                 if(open === true) html.interface.sidebar.menuContainer.css('right','-168px');
+                html.interface.canvas.menuMobile.css('right','-47px');
                 break;
             case 0.8:
                 $menuWidthOpen = 400;
@@ -228,6 +229,7 @@ define([
                 $menuShiftRight = -448;
                 $menuShiftLeft = -118;
                 if(open === true)  html.interface.sidebar.menuContainer.css('right','-118px');
+                html.interface.canvas.menuMobile.css('right','-40px');
                 break;
             case 0.9:
                 $menuWidthOpen = 450;
@@ -235,6 +237,7 @@ define([
                 $menuShiftRight = -441.5;
                 $menuShiftLeft = -68;
                 if(open === true) html.interface.sidebar.menuContainer.css('right','-68px');
+                html.interface.canvas.menuMobile.css('right','-34px');
                 break;
             case 1:
                 $menuWidthOpen = 500;
@@ -242,6 +245,7 @@ define([
                 $menuShiftRight = -435;
                 $menuShiftLeft = -18;
                 if(open === true) html.interface.sidebar.menuContainer.css('right','-18px');
+                html.interface.canvas.menuMobile.css('right','-28px');
                 break;
         };
     };
@@ -432,13 +436,13 @@ define([
             if (state === false) {
                 menuHidden = false;
                 html.interface.sidebar.menu.show();
-                html.interface.canvas.showIcon.hide();
+                html.interface.canvas.menuMobile.hide();
                 window.dispatchEvent(new Event('resize'));
             }
             else if (state === true) {
                 menuHidden = true;
                 html.interface.sidebar.menu.hide();
-                html.interface.canvas.showIcon.show();
+                html.interface.canvas.menuMobile.show();
                 window.dispatchEvent(new Event('resize'));
             }
 
