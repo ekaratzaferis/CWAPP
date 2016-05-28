@@ -112,6 +112,7 @@ define([
                 if ( $(window).width() < $(window).height() ){
                     html.interface.canvas.cardBoard.hide();
                     flipped = false;
+
                 }
                 else flipped = true;
                 jQuery('#controls_toggler').tooltip('destroy');
@@ -204,9 +205,10 @@ define([
                 // Get off cardboard mode //
                 html.interface.canvas.cardBoard.removeClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
-                PubSub.publish('menu.cardboard',false);
+                PubSub.publish('menu.cardboard', {toggle : false});
                 
                 flipped = false;
+ 
             }
         }
         else {

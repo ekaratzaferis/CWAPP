@@ -104,6 +104,7 @@ function NavCube( scene, latticeParams) {
 };
 NavCube.prototype.setVisibility = function(bool){
   if(this.cube !== undefined){ 
+    console.log(bool);
     this.cube.visible = bool;
     this.arHead.visible = bool;
     this.arLine.visible = bool; 

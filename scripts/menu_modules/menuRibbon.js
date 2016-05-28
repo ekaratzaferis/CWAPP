@@ -162,14 +162,14 @@ define([
                 html.interface.canvas.cardBoard.removeClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
                 html.interface.canvas.showIcon.show();
-                PubSub.publish('menu.cardboard', state);
+                PubSub.publish('menu.cardboard', {toggle : !state});
             }
             // on //
             else {
                 html.interface.canvas.cardBoard.addClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-purple.png');
                 html.interface.canvas.showIcon.hide();
-                PubSub.publish('menu.cardboard', state);
+                PubSub.publish('menu.cardboard',  {toggle : !state});
             }
         });
         

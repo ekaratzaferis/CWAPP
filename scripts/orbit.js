@@ -33,12 +33,10 @@ define([
         this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'motif' );
       }
       else{ 
-        if(cardBoard !== undefined){
-          this.control = new THREE.DeviceOrientationControls(camera);
-        }
-        else{
-          this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
-        } 
+       
+        this.controlCardboard = new THREE.DeviceOrientationControls(camera); 
+        this.control = new THREE.OrbitControls(camera, $rendererContainer[0], deactivate, undefined, 'crystal' );
+        
       }
     }
     else if (type === "orthographic"){
@@ -90,7 +88,7 @@ define([
   Orbit.prototype.update = function() {
 
     if(this.deviceOrientationControlsActive === true){
-      this.control.update(); 
+      this.controlCardboard.update(); 
       return;
     }
 

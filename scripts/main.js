@@ -317,45 +317,27 @@ require([
 
   crystalRenderer.startAnimation();  
   
-   var orbitCrystal;
-
-  if($(window).width() < 450 || $(window).height() < 450){
-    // mobile 
-    orbitCrystal = new Orbit(
-      crystalRenderer.getMainCamera(), 
-      '#crystalRendererMouse',   
-      "perspective",  
-      false, 
-      'crystal', 
-      undefined,
-      [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
-      'cardBoard'
-    ); 
-
-    orbitCrystal.deviceOrientationControlsActive = true;
-     
-  }
-  else{
-    orbitCrystal = new Orbit(
-      crystalRenderer.getMainCamera(), 
-      '#crystalRendererMouse',   
-      "perspective",  
-      false, 
-      'crystal', 
-      undefined,
-      [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()] 
-    ); 
-  }
-  
-    
+  var orbitCrystal;
+ 
+  orbitCrystal = new Orbit(
+    crystalRenderer.getMainCamera(), 
+    '#crystalRendererMouse',   
+    "perspective",  
+    false, 
+    'crystal', 
+    undefined,
+    [crystalRenderer.getHudCameraCube(), crystalRenderer.getHudCamera()],
+    'cardBoard'
+  ); 
+ 
+   
   soundMachine.crystalCameraOrbit = orbitCrystal ;
    
   var orbitUnitCell = new Orbit(unitCellRenderer.getMainCamera(), '#unitCellRendererMouse',  "perspective",  false, 'cell');
  
   orbitUnitCell.setSyncedCamControl(orbitCrystal);
   orbitCrystal.setSyncedCamControl(orbitUnitCell); 
-
-
+ 
   var motifCamX = new Orbit(motifRenderer.getSpecificCamera(0), '#motifPosX', "perspective", true, 'motif'   );
   var motifCamY = new Orbit(motifRenderer.getSpecificCamera(1), '#motifPosY', "perspective", true, 'motif'   );
   var motifCamZ = new Orbit(motifRenderer.getSpecificCamera(2), '#motifPosZ', "perspective", true, 'motif'   );
@@ -1104,6 +1086,34 @@ require([
     narrative_system.saveNoteState(arg);
   });
 
+  menu.onCardBoard(function(message, arg) { 
+    
+    if(arg.toggle === true){
+       
+
+      orbitCrystal.deviceOrientationControlsActive = true;
+       
+      crystalScreenEvents.state = 'oculusCrystal';
+      
+      crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, true);
+
+      crystalRenderer.initOculusEffect({oculus : true}); 
+      sceneResizer.resize('oculusCrystal');
+    }
+    else if(arg.toggle === false){
+       
+      orbitCrystal.deviceOrientationControlsActive = false;
+        
+      crystalScreenEvents.state = 'default';
+      
+      crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
+
+      crystalRenderer.initOculusEffect({oculus : false}); 
+      sceneResizer.resize('crystal');
+  
+    }
+  });
+
   // menu.aNoteWasJustSavedDearSystem(function(message, arg) {  
   //   var p = crystalRenderer.getMainCamera().position.clone();
   //   var t = orbitCrystal.control.target.clone();
@@ -1299,7 +1309,7 @@ require([
    
   var hash = window.location.hash.substr(1);
   var service = 'https://cwgl.herokuapp.com' ; 
-  console.log($(window).height());
+  
   if(hash.length>0){ 
     var slug = hash.replace(/^#/, '');
     
@@ -1312,54 +1322,34 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
- 
-          if($(window).width() < 450 || $(window).height() < 450){
-          // mobile  
-            jQuery(document).ready(function(){ 
-
-              dollEditor.setVisibility(false); 
-              hudCube.setVisibility(false);
-              hudArrows.setVisibility(false);
-              CubeEvent.enableCubeEvents = false ;
-              sceneResizer.resize('oculusCrystal');
-              crystalScreenEvents.state = 'oculusCrystal';
-              
-              crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
-
-              crystalRenderer.initOculusEffect({oculus : true}); 
-        
-            });
- 
-          } 
-
+   
           menu.closeMenu({close : true});
-          menu.hideMenu(true);
+          //menu.hideMenu(true);
+          if($(window).width() < 450 || $(window).height() < 450){
+            
+            dollEditor.setVisibility(false); 
+            hudCube.setVisibility(false);
+            hudArrows.setVisibility(false);
+            CubeEvent.enableCubeEvents = false ;
+
+          }
         }]
         );  
       } 
     }); 
   } 
-  else{
-    if($(window).width() < 450 || $(window).height() < 450){
-      // mobile
-       
-      jQuery(document).ready(function(){ 
-
-        dollEditor.setVisibility(false); 
-        hudCube.setVisibility(false);
-        hudArrows.setVisibility(false);
-        CubeEvent.enableCubeEvents = false ;
-        sceneResizer.resize('oculusCrystal');
-        crystalScreenEvents.state = 'oculusCrystal';
-        
-        crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
-
-        crystalRenderer.initOculusEffect({oculus : true}); 
- 
- 
-      });
-    }
+  else{ 
   } 
-   
+  
+  jQuery(document).ready(function(){ 
+    if($(window).width() < 450 || $(window).height() < 450){
+      
+      dollEditor.setVisibility(false); 
+      hudCube.setVisibility(false);
+      hudArrows.setVisibility(false);
+      CubeEvent.enableCubeEvents = false ;
+
+    }
+  });
 });
  
