@@ -157,14 +157,18 @@ define([
         });
         html.interface.canvas.cardBoard.on('click', function(){
             var state = html.interface.canvas.cardBoard.hasClass('active');
+            // off //
             if (state) {
                 html.interface.canvas.cardBoard.removeClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
+                html.interface.canvas.showIcon.show();
                 PubSub.publish('menu.cardboard', state);
             }
+            // on //
             else {
                 html.interface.canvas.cardBoard.addClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-purple.png');
+                html.interface.canvas.showIcon.hide();
                 PubSub.publish('menu.cardboard', state);
             }
         });
