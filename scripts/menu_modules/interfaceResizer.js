@@ -34,6 +34,7 @@ define([
     var $animating2 = undefined;
     var autoZoom = true;
     var menuHidden = false;
+    var flipped = false;
     
     // How many pixels does the menu occupy on screen //
     var $menuWidthOpen;
@@ -107,12 +108,13 @@ define([
         jQuery(document).ready(function(){
             init_dimensions();
             resizeScene();
-
             if($(window).width() < 450 || $(window).height() < 450){
-                menuHidden = true;
-                html.interface.sidebar.menu.hide();
-                html.interface.canvas.menuMobile.show();
-                window.dispatchEvent(new Event('resize'));
+                if ( $(window).width() < $(window).height() ){
+                    html.interface.canvas.cardBoard.hide();
+                    flipped = false;
+                }
+                else flipped = true;
+                jQuery('#controls_toggler').tooltip('destroy');
             }
 
         });
@@ -190,7 +192,29 @@ define([
             $parameter.css('width',screenWidth*0.015); 
             $parameter.css('height',screenWidth*0.015); 
         });
-
+        
+        // Cardboard//
+        if (flipped){
+            // Go to Vertical //
+            if (screenHeight > screenWidth) {
+                menuHidden = false;
+                html.interface.sidebar.menu.show();
+                html.interface.canvas.menuMobile.show();
+                html.interface.canvas.cardBoard.hide();
+                html.interface.canvas.cardBoard.removeClass('active');
+                html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
+                PubSub.publish('menu.cardboard',false);
+                flipped = false;
+            }
+        }
+        else {
+            // Go to Horizontal //
+            if (screenHeight < screenWidth){
+                if (menuHidden)html.interface.canvas.cardBoard.show();
+                flipped = true;
+            }
+        }
+                
         // Render unit cell viewport //
         if ($viewport === true ) {
             html.interface.canvas.unitCellRenderer.width(html.interface.screen.appContainer.width()/5);
