@@ -197,20 +197,22 @@ define([
         if (flipped){
             // Go to Vertical //
             if (screenHeight > screenWidth) {
-                menuHidden = false;
-                html.interface.sidebar.menu.show();
-                html.interface.canvas.menuMobile.show();
-                html.interface.canvas.cardBoard.hide();
+                
+               html.interface.canvas.cardBoard.hide();
+               html.interface.canvas.showIcon.show();
+                
+                // Get off cardboard mode //
                 html.interface.canvas.cardBoard.removeClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
                 PubSub.publish('menu.cardboard',false);
+                
                 flipped = false;
             }
         }
         else {
             // Go to Horizontal //
             if (screenHeight < screenWidth){
-                if (menuHidden)html.interface.canvas.cardBoard.show();
+                html.interface.canvas.cardBoard.show();
                 flipped = true;
             }
         }
