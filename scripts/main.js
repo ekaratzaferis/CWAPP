@@ -1324,7 +1324,8 @@ require([
         restoreMechanism.configureState(res.data, [function(){
    
           menu.closeMenu({close : true});
-          //menu.hideMenu(true);
+          menu.hideMenu(true);
+          
           if($(window).width() < 450 || $(window).height() < 450){
             
             dollEditor.setVisibility(false); 
