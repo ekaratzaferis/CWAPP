@@ -12,7 +12,7 @@ define([
 ) { 
 var counter = 0;
 
-function NavCube( scene, latticeParams) {
+function NavCube( scene, latticeParams, visible) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.length =  10.5;//(height + width)/250; 
@@ -30,32 +30,32 @@ function NavCube( scene, latticeParams) {
     var textureLoader = new THREE.TextureLoader(); 
     textureLoader.load("Images/0.png",
       function(tex){  
-        _this.addMaterial(tex,0) ;
+        _this.addMaterial(tex,0, visible) ;
       }
     );
     textureLoader.load("Images/1.png",
       function(tex){  
-        _this.addMaterial(tex,1) ;
+        _this.addMaterial(tex,1, visible) ;
       }
     );
     textureLoader.load("Images/2.png",
       function(tex){  
-        _this.addMaterial(tex,2) ;
+        _this.addMaterial(tex,2, visible) ;
       }
     );
     textureLoader.load("Images/3.png",
       function(tex){  
-        _this.addMaterial(tex,3) ;
+        _this.addMaterial(tex,3, visible) ;
       }
     );
     textureLoader.load("Images/4.png",
       function(tex){  
-        _this.addMaterial(tex,4) ;
+        _this.addMaterial(tex,4, visible) ;
       }
     );
     textureLoader.load("Images/5.png",
       function(tex){  
-        _this.addMaterial(tex,5) ;
+        _this.addMaterial(tex,5, visible) ;
       }
     );
  
@@ -98,19 +98,23 @@ function NavCube( scene, latticeParams) {
     );
     this.arLine = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color : 0xBDBDBD }));
     this.arLine.name = 'arrowLine' ;
+ 
+    this.arHead.visible = visible;
+    this.arLine.visible = visible;
+
     scene.add(this.arHead);
     scene.add(this.arLine);
 
 };
 NavCube.prototype.setVisibility = function(bool){
   if(this.cube !== undefined){ 
-    console.log(bool);
+
     this.cube.visible = bool;
     this.arHead.visible = bool;
     this.arLine.visible = bool; 
   }
 };  
-NavCube.prototype.addMaterial = function(text, index) {
+NavCube.prototype.addMaterial = function(text, index, visible) {
   var _this = this ; 
   this.texts[index] = text;
   this.materialArray[index] = new THREE.MeshBasicMaterial( { map: text });  
@@ -127,6 +131,7 @@ NavCube.prototype.addMaterial = function(text, index) {
       var cubeG = new THREE.BoxGeometry( this.length-1, this.length-1, this.length-1, 3,3,3 );
       this.cube = new THREE.Mesh( cubeG, this.cubeMats );
       this.cube.name = 'cube' ;  
+      this.cube.visible = visible;  
       
       this.scene.add(this.cube);
       counter = undefined;

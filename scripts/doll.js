@@ -18,7 +18,7 @@ define([
   var yPosGearSlider = [-7.05, -5.7 , -4.35 , -3 , -1.65 , -0.30];
   var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
   
-  function Doll(camera, crystalScene, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour, menu) {
+  function Doll(camera, crystalScene, crystalOrbit, lattice, animationMachine , keyboard, soundMachine, gearTour, menu, visible) {
 
     this.plane = {'object3d' : undefined} ;
     var _this = this;
@@ -57,6 +57,7 @@ define([
     /// doll icon  
  
     this.dollHolder = createDollHolder();
+    this.dollHolder.visible = visible;
     
     this.dollHolder.position.y = 4;  
 
@@ -72,10 +73,14 @@ define([
     this.objsToIntersect.push(this.dollHolder);
 
     this.gearBar = createGearBar();  
+    this.gearBar.visible = visible;
+
     this.gearBarSlider = createGearBarSlider(); 
+    this.gearBarSlider.visible = visible;
     this.gearBarSlider.position.y = -7.05;
 
     this.gearBarSliderLevels = createLevels();  
+    this.gearBarSliderLevels.visible = visible;  
     
     DollExplorer.add( { object3d :this.gearBarSliderLevels });
 

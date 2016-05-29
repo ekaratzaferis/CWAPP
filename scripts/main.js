@@ -57,7 +57,8 @@ require.config({
     'jszip': '../vendor/jszip',
     'jszip-utils': '../vendor/jszip-utils',
     'deviceOrientationControls': '../vendor/DeviceOrientationControls',
-    'tween': '../vendor/Tween'
+    'tween': '../vendor/Tween',
+    'screenfull': '../vendor/screenfull'
 
   },
   shim: {
@@ -163,7 +164,8 @@ require([
   'LOD',
   'multitouch',
   'cwState',
-  'narrative_system' 
+  'narrative_system',
+  'screenfull' 
 
 ], function(
   PubSub, 
@@ -221,9 +223,12 @@ require([
   LOD,
   Multitouch,
   CwState,
-  Narrative_system 
+  Narrative_system,
+  Screenfull
 
 ) {
+  
+  var wereOnMobile = ($(window).width() < 450 || $(window).height() < 450) ? true : false;
   
   var menu = new Menu();
  
@@ -298,10 +303,11 @@ require([
 
   // HUD  
   var navArrowsScene = NavArrowsHud.getInstance();  
-  var hudArrows = new NavArrows(navArrowsScene.object3d, lattice);
-  
+  var hudArrows = new NavArrows(navArrowsScene.object3d, lattice, !wereOnMobile);
+    
+
   var navCubeScene = NavCubeHud.getInstance();  
-  var hudCube = new NavCube(navCubeScene.object3d, lattice);
+  var hudCube = new NavCube(navCubeScene.object3d, lattice, !wereOnMobile);
  
   //  WebGL Renderers and cameras
   var displayFactor = 6 ; // changes how big or small will be the Hud 
@@ -359,7 +365,8 @@ require([
 
   // navigation cube
   var CubeEvent = new MouseEvents(lattice, 'navCubeDetect', crystalRenderer.hudCameraCube, 'hudRendererCube',  [orbitUnitCell,orbitCrystal], soundMachine, hudCube );
-  
+  CubeEvent.enableCubeEvents = !wereOnMobile ;
+
   // Gear Bar Tour
   var gearTour = new GearTour(crystalScene, motifEditor, lattice, menu);
 
@@ -376,7 +383,7 @@ require([
   // CW Doll
   var dollScene = DollExplorer.getInstance();  
   crystalRenderer.setDoll(dollScene.object3d ); 
-  var dollEditor = new Doll(crystalRenderer.dollCamera, crystalScene, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu);
+  var dollEditor = new Doll(crystalRenderer.dollCamera, crystalScene, orbitCrystal, lattice, animationMachine, keyboard, soundMachine, gearTour, menu, !wereOnMobile);
   crystalRenderer.setDoll(undefined, dollEditor.doll);  
   //dollEditor.rePosition(); 
   
@@ -1088,9 +1095,13 @@ require([
 
   menu.onCardBoard(function(message, arg) { 
     
+    
+
     if(arg.toggle === true){
        
-
+      if (screenfull.enabled) {
+        screenfull.request();
+      } 
       orbitCrystal.deviceOrientationControlsActive = true;
        
       crystalScreenEvents.state = 'oculusCrystal';
@@ -1101,7 +1112,11 @@ require([
       sceneResizer.resize('oculusCrystal');
     }
     else if(arg.toggle === false){
-       
+      
+      if (screenfull.enabled) {
+        screenfull.exit();
+      } 
+
       orbitCrystal.deviceOrientationControlsActive = false;
         
       crystalScreenEvents.state = 'default';
@@ -1325,15 +1340,12 @@ require([
    
           menu.closeMenu({close : true});
           menu.hideMenu(true);
-          
-          if($(window).width() < 450 || $(window).height() < 450){
-            
-            dollEditor.setVisibility(false); 
-            hudCube.setVisibility(false);
-            hudArrows.setVisibility(false);
-            CubeEvent.enableCubeEvents = false ;
+           
+          dollEditor.setVisibility(!wereOnMobile); 
+          hudCube.setVisibility(!wereOnMobile);
+          hudArrows.setVisibility(!wereOnMobile);
+          CubeEvent.enableCubeEvents = !wereOnMobile ;
 
-          }
         }]
         );  
       } 
@@ -1342,15 +1354,5 @@ require([
   else{ 
   } 
   
-  jQuery(document).ready(function(){ 
-    if($(window).width() < 450 || $(window).height() < 450){
-      
-      dollEditor.setVisibility(false); 
-      hudCube.setVisibility(false);
-      hudArrows.setVisibility(false);
-      CubeEvent.enableCubeEvents = false ;
-
-    }
-  });
 });
  

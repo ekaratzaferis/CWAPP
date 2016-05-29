@@ -11,7 +11,7 @@ define([
   _
 ) { 
 
-  function NavArrows( scene, latticeParams) {
+  function NavArrows( scene, latticeParams, visible) {
     var width = jQuery('#app-container').width() ;
     var height = jQuery(window).height() ; 
     this.arrowLength = 8 ;  
@@ -159,6 +159,8 @@ define([
     this.gamma.position.set(medianGamma.x + 2.5, medianGamma.y - 3, medianGamma.z + 2);
     scene.add( this.gamma );
 
+    this.setVisibility(visible);
+    
 };
 NavArrows.prototype.setVisibility = function(bool) {
     if(bool === undefined){

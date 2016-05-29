@@ -71,6 +71,7 @@ define([
     }
 
     this.globalReset();
+ 
 
   };
   RestoreCWstate.prototype.beginRestoring = function(cwObj) { 
