@@ -110,7 +110,7 @@ define([
             resizeScene();
             if($(window).width() < 450 || $(window).height() < 450){
                 if ( $(window).width() < $(window).height() ){
-                    html.interface.canvas.cardBoard.hide();
+                    // html.interface.canvas.cardBoard.hide();
                     flipped = false;
 
                 }
@@ -199,12 +199,12 @@ define([
             // Go to Vertical //
             if (screenHeight > screenWidth) {
                 
-               html.interface.canvas.cardBoard.hide();
-               html.interface.canvas.showIcon.show();
+                // html.interface.canvas.cardBoard.hide();
+                html.interface.canvas.showIcon.show();
                 
                 // Get off cardboard mode //
-                html.interface.canvas.cardBoard.removeClass('active');
-                html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
+                // html.interface.canvas.cardBoard.removeClass('active');
+                // html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
                 PubSub.publish('menu.cardboard', {toggle : false});
                 
                 flipped = false;
@@ -215,6 +215,10 @@ define([
             // Go to Horizontal //
             if (screenHeight < screenWidth){
                 html.interface.canvas.cardBoard.show();
+                if(html.interface.canvas.cardBoard.hasClass('active')){
+                   
+                    PubSub.publish('menu.cardboard', {toggle : true});
+                }
                 flipped = true;
             }
         }

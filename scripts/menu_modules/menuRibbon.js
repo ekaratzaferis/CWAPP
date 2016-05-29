@@ -156,6 +156,10 @@ define([
              $interfaceResizer.hideMenu(false);
         });
         html.interface.canvas.cardBoard.on('click', function(){
+
+            var screenHeight = jQuery(window).height();
+            var screenWidth = jQuery(window).width();
+
             var state = html.interface.canvas.cardBoard.hasClass('active');
             // off //
             if (state) {
@@ -169,7 +173,9 @@ define([
                 html.interface.canvas.cardBoard.addClass('active');
                 html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-purple.png');
                 html.interface.canvas.showIcon.hide();
-                PubSub.publish('menu.cardboard',  {toggle : !state});
+                if (screenHeight < screenWidth) {
+                    PubSub.publish('menu.cardboard',  {toggle : !state});
+                }
             }
         });
         
