@@ -508,7 +508,13 @@ define([
         newCamPos.z - cameraPos.z 
       )
     }; 
-    this.rePosition();
+
+    $( document ).ready( 
+      function(){
+        this.rePosition();
+      }
+    );
+    
   };
   function makeTextSprite( message, parameters ) { 
     if ( parameters === undefined ) parameters = {};

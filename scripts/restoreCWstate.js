@@ -39,15 +39,17 @@ define([
     this.dollGearBarME = dollGearBarME; 
     this.lod = lod; 
     this.cwObj; 
+    this.wereOnMobile; 
   }; 
-  RestoreCWstate.prototype.configureState = function(cwObj, callbacks) { 
+  RestoreCWstate.prototype.configureState = function(cwObj, callbacks, wereOnMobile) { 
       
     var _this = this; 
-    var latticeName = cwObj.system.latticeParams.lattice.latticeName;
-
-    this.lattice.latticeName = latticeName; 
+    this.wereOnMobile = wereOnMobile;
 
     if(cwObj.system.latticeParams.lattice){ 
+      var latticeName = cwObj.system.latticeParams.lattice.latticeName;
+      this.lattice.latticeName = latticeName;
+
       require(['lattice/' + latticeName], function(lattice) {
         _this.lattice.lattice = lattice; 
         _this.lattice.latticeSystem = _this.lattice.lattice.latticeSystem ;
@@ -467,8 +469,17 @@ define([
     this.gearTour.crystalHasChanged = true;
     this.gearTour.state = this.cwObj.system.latticeParams.gearTourState ;
     
+    if(this.cwObj.system.motif.length >0){
+      this.gearTour.state = 6;
+    } 
+    else if(this.cwObj.system.latticeParams.lattice){
+      this.gearTour.state = 2;
+    }
+    else{
+      this.gearTour.state = 1;
+    }
 
-    if(this.cwObj.system.latticeParams.walkStep>3){
+    if(this.cwObj.system.motif.length >0){
       this.dollEditor.levelLabels[1].allowed = true;  
       this.dollEditor.levelLabels[2].allowed = true;  
       this.dollEditor.levelLabels[3].allowed = true;
@@ -482,7 +493,17 @@ define([
     }
     
     this.dollGearBarME.setWalkStep(this.cwObj.system.latticeParams.walkStep) ;
- 
+
+    var levelNames = [ '1. Lattice Points', '2. Motif', '3. Constructive Unit Cell', '4. Unit cell', '5. Cropped unit cell', '6. Crystal' ];
+    
+    if(this.wereOnMobile === false){ 
+      this.menu.canvasTooltip({
+        'message':levelNames[this.gearTour.state-1],
+        'x': this.dollEditor.levelLabels[this.gearTour.state-1].position.x,
+        'y':this.dollEditor.levelLabels[this.gearTour.state-1].position.y,
+        'show':true
+      }); 
+    }
 
     if(this.gearTour.state > 2){
       for (var i = 0; i <= 5; i++) {

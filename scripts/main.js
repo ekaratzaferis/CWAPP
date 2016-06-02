@@ -474,15 +474,12 @@ require([
     dollGearBarME.setWalkStep(2); 
      
     dollEditor.gearState = 2;
-    
-
+     
   });
   menu.onLatticeParameterChange(function(message, latticeParameters) {  
-    if(gearTour.state !== 1){
-      gearTour.crystalHasChanged = true;
-      gearTour.setState(1, true);
-      dollEditor.gearBarSlider.position.y = -7.05;
-    }
+     
+    gearTour.crystalHasChanged = true;  
+    
     lattice.setParameters(latticeParameters); 
     motifEditor.updateFixedDimensions(latticeParameters);
 
@@ -1345,9 +1342,12 @@ require([
             hudCube.setVisibility(!wereOnMobile);
             hudArrows.setVisibility(!wereOnMobile);
             CubeEvent.enableCubeEvents = !wereOnMobile ;
+
+
           }
 
-        }]
+        }],
+        wereOnMobile
         );  
       } 
     }); 
