@@ -11,39 +11,12 @@ THREE.StereoEffect = function ( renderer ) {
 
 	// API
 
-	var scope = this;
+	this.separation = 3;
 
-	this.eyeSeparation = 3;
-	this.focalLength = 15; 	// Distance to the non-parallax or projection plane
-
-	Object.defineProperties( this, {
-		separation: {
-			get: function () {
-
-				return scope.eyeSeparation;
-
-			},
-			set: function ( value ) {
-
-				console.warn( 'THREE.StereoEffect: .separation is now .eyeSeparation.' );
-				scope.eyeSeparation = value;
-
-			}
-		},
-		targetDistance: {
-			get: function () {
-
-				return scope.focalLength;
-
-			},
-			set: function ( value ) {
-
-				console.warn( 'THREE.StereoEffect: .targetDistance is now .focalLength.' );
-				scope.focalLength = value;
-
-			}
-		}
-	} );
+	/*
+	 * Distance to the non-parallax or projection plane
+	 */
+	this.focalLength = 15;
 
 	// internals
 
@@ -78,21 +51,22 @@ THREE.StereoEffect = function ( renderer ) {
 
 		scene.updateMatrixWorld();
 
-		if ( camera.parent === null ) camera.updateMatrixWorld();
-
+		if ( camera.parent === undefined ) camera.updateMatrixWorld();
+	
 		camera.matrixWorld.decompose( _position, _quaternion, _scale );
 
-		// Effective fov of the camera
+		// Stereo frustum calculation
 
-		_fov = THREE.Math.radToDeg( 2 * Math.atan( Math.tan( THREE.Math.degToRad( camera.fov ) * 0.5 ) / camera.zoom ) );
+		// Effective fov of the camera
+		_fov = THREE.Math.radToDeg( 2 * Math.atan( Math.tan( THREE.Math.degToRad( camera.fov ) * 0.5 ) ) );
 
 		_ndfl = camera.near / this.focalLength;
 		_halfFocalHeight = Math.tan( THREE.Math.degToRad( _fov ) * 0.5 ) * this.focalLength;
 		_halfFocalWidth = _halfFocalHeight * 0.5 * camera.aspect;
 
 		_top = _halfFocalHeight * _ndfl;
-		_bottom = - _top;
-		_innerFactor = ( _halfFocalWidth + this.eyeSeparation / 2.0 ) / ( _halfFocalWidth * 2.0 );
+		_bottom = -_top;
+		_innerFactor = ( _halfFocalWidth + this.separation / 2.0 ) / ( _halfFocalWidth * 2.0 );
 		_outerFactor = 1.0 - _innerFactor;
 
 		_outer = _halfFocalWidth * 2.0 * _ndfl * _outerFactor;
@@ -101,7 +75,7 @@ THREE.StereoEffect = function ( renderer ) {
 		// left
 
 		_cameraL.projectionMatrix.makeFrustum(
-			- _outer,
+			-_outer,
 			_inner,
 			_bottom,
 			_top,
@@ -111,12 +85,12 @@ THREE.StereoEffect = function ( renderer ) {
 
 		_cameraL.position.copy( _position );
 		_cameraL.quaternion.copy( _quaternion );
-		_cameraL.translateX( - this.eyeSeparation / 2.0 );
+		_cameraL.translateX( - this.separation / 2.0 );
 
 		// right
 
 		_cameraR.projectionMatrix.makeFrustum(
-			- _inner,
+			-_inner,
 			_outer,
 			_bottom,
 			_top,
@@ -126,22 +100,18 @@ THREE.StereoEffect = function ( renderer ) {
 
 		_cameraR.position.copy( _position );
 		_cameraR.quaternion.copy( _quaternion );
-		_cameraR.translateX( this.eyeSeparation / 2.0 );
+		_cameraR.translateX( this.separation / 2.0 );
 
 		//
 
+		renderer.setViewport( 0, 0, _width * 2, _height );
 		renderer.clear();
-		renderer.enableScissorTest( true );
 
-		renderer.setScissor( 0, 0, _width, _height );
 		renderer.setViewport( 0, 0, _width, _height );
 		renderer.render( scene, _cameraL );
 
-		renderer.setScissor( _width, 0, _width, _height );
 		renderer.setViewport( _width, 0, _width, _height );
 		renderer.render( scene, _cameraR );
-
-		renderer.enableScissorTest( false );
 
 	};
 

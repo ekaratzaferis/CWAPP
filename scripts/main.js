@@ -1107,7 +1107,7 @@ require([
       
       crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, true);
 
-      crystalRenderer.initOculusEffect({oculus : true}); 
+      crystalRenderer.initCardBoard({onTop : true}); 
       sceneResizer.resize('oculusCrystal');
     }
     else if(arg.toggle === false){
@@ -1122,7 +1122,7 @@ require([
       
       crystalRenderer.renderer.domElement.addEventListener('click', fullScreen.fs, false);
 
-      crystalRenderer.initOculusEffect({oculus : false}); 
+      crystalRenderer.initCardBoard({onTop : false}); 
       sceneResizer.resize('crystal');
   
     }
