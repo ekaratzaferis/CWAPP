@@ -371,7 +371,7 @@ define([
     };
 
     // Tooltips //
-    Menu.prototype.canvasTooltip = function(argument){
+    Menu.prototype.canvasTooltip = function(argument){ 
         toolTipGeneratorModule.canvasTooltip(argument); 
     };
     Menu.prototype.showTooltip = function(argument){

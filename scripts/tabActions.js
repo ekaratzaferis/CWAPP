@@ -26,11 +26,12 @@ define([
  
   };
 
-  TabActions.prototype.tabClick = function(tabId) {
+  TabActions.prototype.tabClick = function(tabId, wereOnMobile) {
     
     var height = $(window).height() ;
-    var  width = $('#app-container').width(); ;
-   
+    var width = $('#app-container').width();   
+
+
     if(tabId === "millerPI" ){ 
       if(this.lattice.latticeName === 'hexagonal'){
         $(".hexagonalMiller").css('display','block');
@@ -66,11 +67,11 @@ define([
       if(tabId === "latticeTab" && (this.motifEditor.motifsAtoms.length > 0 || this.motifEditor.newSphere !== undefined)){
         this.lattice.updateLatticeUI(this.motifEditor.cellParameters);
       }
-      
-      this.dollEditor.setVisibility(true);
-      this.hudCube.setVisibility(true);
-      this.hudArrows.setVisibility(true);
-      this.CubeEvent.enableCubeEvents = true ;
+       
+      this.dollEditor.setVisibility(!wereOnMobile);
+      this.hudCube.setVisibility(!wereOnMobile);
+      this.hudArrows.setVisibility(!wereOnMobile);
+      this.CubeEvent.enableCubeEvents = !wereOnMobile ;
        
       this.sceneResizer.resize('crystal');
          

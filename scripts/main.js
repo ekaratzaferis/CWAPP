@@ -231,7 +231,8 @@ require([
   var wereOnMobile = ($(window).width() < 450 || $(window).height() < 450) ? true : false;
   
   var menu = new Menu();
- 
+     
+
   var bSupport = (function () { 
       try { 
         var canvas = document.createElement( 'canvas' ); return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) ); 
@@ -562,7 +563,7 @@ require([
     stlExporter.saveSTL(crystalScene.object3d, 'stl_FIle', arg.resolution);
   });
   menu.onSwapScreen(function(message, arg) {  
-    tabActionsManager.tabClick(arg.swap);
+    tabActionsManager.tabClick(arg.swap, wereOnMobile);
     if(arg.swap === 'latticeTab'){ 
       crystalScreenEvents.state = 'default';
     }
@@ -604,7 +605,7 @@ require([
   
   // motif editor events binding
   $("#list li").click(function(e) {
-    tabActionsManager.tabClick($(this).attr('id'));
+    tabActionsManager.tabClick($(this).attr('id'), wereOnMobile);
   }); 
   menu.atomSelection(function(message , arg) {
     

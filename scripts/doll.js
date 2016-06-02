@@ -1,4 +1,4 @@
-'use strict';
+ 
 define([
   'jquery', 
   'three', 
@@ -44,6 +44,7 @@ define([
     this.levelLabels = [];
     this.enablemouseEvents = true;
     this.menu = menu;
+    this.wereOnMobile = !visible;
 
     this.plane.object3d = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10000, 10000, 2, 2 ),
@@ -358,7 +359,7 @@ define([
   };
  
   Doll.prototype.setVisibility = function(bool) {
-    
+ 
     this.gearBar.visible = bool;
     this.gearBarSlider.visible = bool; 
     this.dollHolder.visible = bool;
@@ -384,7 +385,7 @@ define([
 
   Doll.prototype.rePosition = function(){  
     var _this = this;
-     
+    
     var xFromCubeScaled = (($('#hudRendererCube').width()/2)/$('#app-container').width())*2 - 1;
     var newX = this.findPlanePoint(new THREE.Vector2(xFromCubeScaled, 0 ));
     this.dollHolder.position.x = newX;
@@ -406,7 +407,8 @@ define([
     this.gearBarSliderLevels.position.x = newX;
 
     oneTimeVar++;
-    if(oneTimeVar === 3){ 
+
+    if(oneTimeVar === 2 && this.wereOnMobile === false){ 
       this.menu.canvasTooltip({
         'message':levelNames[0],
         'x': _this.levelLabels[0].position.x,
