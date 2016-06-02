@@ -1095,9 +1095,7 @@ require([
   });
 
   menu.onCardBoard(function(message, arg) { 
-    
-    
-
+     
     if(arg.toggle === true){
        
       if (screenfull.enabled) {

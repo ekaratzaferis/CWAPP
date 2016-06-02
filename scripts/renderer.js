@@ -230,9 +230,9 @@ define([
       this.oculusEffect.setSize( this.containerWidth, this.containerHeight  );
 
       // Right Oculus Parameters are yet to be determined
-      this.oculusEffect.separation = 20;
-      this.oculusEffect.distortion = 0.1;
-      this.oculusEffect.fov = 60;
+      // this.oculusEffect.separation = 20;
+      // this.oculusEffect.distortion = 0.1;
+      // this.oculusEffect.fov = 60;
     } 
   };
   Renderer.prototype.stopAnimation = function() {

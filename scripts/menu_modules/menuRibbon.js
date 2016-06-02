@@ -159,8 +159,7 @@ define([
 
             var screenHeight = jQuery(window).height();
             var screenWidth = jQuery(window).width();
-            console.log(screenWidth);
-            console.log(screenHeight);
+         
             if(screenHeight >= 450 && screenWidth >= 450) { 
                 return;
             }

@@ -32,9 +32,12 @@ THREE.OculusRiftEffect = function ( renderer ) {
 	this.preRightRender = function() {};
 
 	renderer.autoClear = false;
-
+	
+	var screenHeight = jQuery(window).height();
+    var screenWidth = jQuery(window).width();
+         
 	var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
-	var _renderTarget = new THREE.WebGLRenderTarget( 800, 600, _params );
+	var _renderTarget = new THREE.WebGLRenderTarget( screenHeight, screenWidth, _params );
 	var _material = new THREE.ShaderMaterial( {
 		uniforms: {
 			"tex": { type: "t", value: _renderTarget },
