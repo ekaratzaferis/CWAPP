@@ -1338,14 +1338,16 @@ require([
     .done(function(res) {  
       if(res){
         restoreMechanism.configureState(res.data, [function(){
-   
-          menu.closeMenu({close : true});
-          menu.hideMenu(true);
-           
-          dollEditor.setVisibility(!wereOnMobile); 
-          hudCube.setVisibility(!wereOnMobile);
-          hudArrows.setVisibility(!wereOnMobile);
-          CubeEvent.enableCubeEvents = !wereOnMobile ;
+          
+          if(wereOnMobile === true){ 
+            menu.closeMenu({close : true});
+            menu.hideMenu(true);
+          
+            dollEditor.setVisibility(!wereOnMobile); 
+            hudCube.setVisibility(!wereOnMobile);
+            hudArrows.setVisibility(!wereOnMobile);
+            CubeEvent.enableCubeEvents = !wereOnMobile ;
+          }
 
         }]
         );  

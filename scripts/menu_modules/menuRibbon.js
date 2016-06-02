@@ -155,10 +155,15 @@ define([
         html.interface.canvas.showIcon.on('click',function(){
              $interfaceResizer.hideMenu(false);
         });
-        html.interface.canvas.cardBoard.on('click', function(){
+        html.interface.canvas.cardBoard.on('click', function(){ 
 
             var screenHeight = jQuery(window).height();
             var screenWidth = jQuery(window).width();
+            console.log(screenWidth);
+            console.log(screenHeight);
+            if(screenHeight >= 450 && screenWidth >= 450) { 
+                return;
+            }
 
             var state = html.interface.canvas.cardBoard.hasClass('active');
             // off //
