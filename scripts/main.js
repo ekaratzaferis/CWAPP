@@ -166,7 +166,8 @@ require([
   'multitouch',
   'cwState',
   'narrative_system',
-  'screenfull' 
+  'screenfull', 
+  'cookies_policy' 
 
 ], function(
   PubSub, 
@@ -225,7 +226,8 @@ require([
   Multitouch,
   CwState,
   Narrative_system,
-  Screenfull
+  Screenfull,
+  cookies_policy
 
 ) {
   
