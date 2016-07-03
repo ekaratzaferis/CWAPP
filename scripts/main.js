@@ -59,7 +59,7 @@ require.config({
     'deviceOrientationControls': '../vendor/DeviceOrientationControls',
     'tween': '../vendor/Tween',
     'screenfull': '../vendor/screenfull',
-    'cookie_text' : '../../cookies_policy'
+    'cookie_text' : '../cookies_policy'
 
   },
   shim: {
@@ -167,7 +167,7 @@ require([
   'cwState',
   'narrative_system',
   'screenfull', 
-  'cookies_policy' 
+  'cookie_text' 
 
 ], function(
   PubSub, 
@@ -227,7 +227,7 @@ require([
   CwState,
   Narrative_system,
   Screenfull,
-  cookies_policy
+  cookie_text
 
 ) {
   
