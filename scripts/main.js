@@ -58,7 +58,8 @@ require.config({
     'jszip-utils': '../vendor/jszip-utils',
     'deviceOrientationControls': '../vendor/DeviceOrientationControls',
     'tween': '../vendor/Tween',
-    'screenfull': '../vendor/screenfull'
+    'screenfull': '../vendor/screenfull',
+    'cookie_text' : '../cookies_policy'
 
   },
   shim: {
