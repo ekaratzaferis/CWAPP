@@ -166,7 +166,7 @@ require([
   'cwState',
   'narrative_system',
   'screenfull', 
-  'cookies_policy' 
+  'cp' 
 
 ], function(
   PubSub, 
@@ -226,7 +226,7 @@ require([
   CwState,
   Narrative_system,
   Screenfull,
-  cookies_policy
+  cp
 
 ) {
   
