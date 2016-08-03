@@ -491,10 +491,13 @@ require([
 
   });
   menu.onLatticeParameterChangeForHud(function(message, latticeParameters) {  
+  
     hudArrows.updateLengths(latticeParameters);
     hudArrows.updateAngles(latticeParameters);  
     hudCube.updateAngles(latticeParameters);
     crystalScene.updateAbcAxes(latticeParameters, crystalRenderer.getMainCamera());
+    motifScene.updateAbcAxes(latticeParameters, motifRenderer.getMainCamera());
+    unitCellScene.updateAbcAxes(latticeParameters, unitCellRenderer.getMainCamera());
   });
   // grade
   menu.onGradeParameterChange(function(message, gradeParameters) {  
@@ -636,13 +639,12 @@ require([
     var t = orbitCrystal.control.target.clone();
 
     fitToCrystal.fit({ target : t}); 
- 
-
+  
     var storeBoll = orbitCrystal.control.syncCams; 
     orbitCrystal.syncCams(storeBoll);
     orbitUnitCell.syncCams(storeBoll);
 
-
+    hudArrows.updateLengths(params); 
   }); 
   motifEditor.onEditorStateChange(function(message, state) {
     motifEditor.editorState_(state);
@@ -669,6 +671,8 @@ require([
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+      motifScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+      unitCellScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
       motifEditor.submitAtom(atomParam); 
     }
     else if(atomParam.button === 'deleteAtom'){
@@ -689,6 +693,8 @@ require([
       hudArrows.setVisibility();
       hudCube.updateAngles(params);
       crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+      motifScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+      unitCellScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
     } 
 
     motifEditor.checkCellForCollisions();
@@ -784,12 +790,15 @@ require([
       scaleX : parameters.x,
       scaleY : parameters.y,
       scaleZ : parameters.z,
-    }
+    };
+
     hudArrows.updateLengths(params);
     hudArrows.updateAngles(params); 
     hudArrows.setVisibility();
     hudCube.updateAngles(params);
     crystalScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+    motifScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
+    unitCellScene.updateAbcAxes(params, crystalRenderer.getMainCamera());
 
     atomRelationshipManager.checkCrystalforOverlap();
     motifEditor.checkCellForCollisions();
@@ -887,6 +896,8 @@ require([
   }); 
   menu.onAxisModeChange(function(message, arg) { 
     crystalScene.axisMode(arg);
+    motifScene.axisMode(arg);
+    unitCellScene.axisMode(arg);
   });  
   menu.onLeapTrackingSystemChange(function(message, arg) { 
     leapM.selectTS(arg);

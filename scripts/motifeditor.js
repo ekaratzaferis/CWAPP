@@ -499,7 +499,7 @@ define([
       var vecHelper = this.transformHelper(new THREE.Vector3(sliderXVal, sliderYVal, sliderZVal));
        
       this.newSphere.object3d.position.set(vecHelper.x, vecHelper.y, vecHelper.z); 
-  
+     
       this.translateCellAtoms("x", vecHelper.x ,this.newSphere.getID());
       this.translateCellAtoms("y", vecHelper.y ,this.newSphere.getID());
       this.translateCellAtoms("z", vecHelper.z ,this.newSphere.getID());
@@ -635,7 +635,7 @@ define([
 
     this.menu.setLatticeCollision({ scaleX: false, scaleY: false,  scaleZ: false  });
     this.snapData.snapVal = { 'aScale' : undefined,  'bScale' : undefined,  'cScale' : undefined};
- 
+     
   }; 
   
   Motifeditor.prototype.check = function(axis){
@@ -1905,8 +1905,7 @@ define([
           this.newSphere.blinkMode(false); 
           this.newSphere = undefined ;
           this.dragMode = false; 
-
-
+ 
           break;
         case "deleteAtom": 
           this.removeFromUnitCell(this.newSphere.getID());
@@ -2062,9 +2061,9 @@ define([
         );  
         this.menu.editMEInputs(
           {
-            'atomPosX' : (Math.floor(pos.x * 100) / 100),
-            'atomPosY' : (Math.floor(pos.y * 100) / 100),
-            'atomPosZ' : (Math.floor(pos.z * 100) / 100), 
+            'atomPosX' :  pos.x  ,
+            'atomPosY' : pos.y  ,
+            'atomPosZ' : pos.z , 
             'atomColor' : color,  
             'atomOpacity' : 10,   
             'scaleZ' : this.cellParameters.scaleZ,
@@ -2108,9 +2107,9 @@ define([
         );   
         this.menu.editMEInputs(
           {
-            'atomPosX' : (Math.floor(pos.x * 100) / 100),
-            'atomPosY' : (Math.floor(pos.y * 100) / 100),
-            'atomPosZ' : (Math.floor(pos.z * 100) / 100),  
+            'atomPosX' :  pos.x  ,
+            'atomPosY' : pos.y  ,
+            'atomPosZ' : pos.z ,   
             'atomColor' : color,  
             'atomOpacity' : arg.opacity, 
             'ionicIndex' : arg.ionicIndex, 
@@ -2138,6 +2137,7 @@ define([
   Motifeditor.prototype.updateAtomList = function(pos, id, radius, name, action, classColor, chainLevel, atomColor, ionicIndex) {
  
     var _this = this ;  
+
     if(action === 'delete'){
        this.menu.editSavedAtom({
         'action':action,
@@ -2145,13 +2145,13 @@ define([
       });
     }
     else{ 
-      pos = (pos.x === '-') ? pos : (new THREE.Vector3(
-        (Math.floor(pos.x * 10) / 10),
-        (Math.floor(pos.y * 10) / 10),
-        (Math.floor(pos.z * 10) / 10)
-        )
-      );
-
+      // pos = (pos.x === '-') ? pos : (new THREE.Vector3(
+      //   (Math.floor(pos.x * 10) / 10),
+      //   (Math.floor(pos.y * 10) / 10),
+      //   (Math.floor(pos.z * 10) / 10)
+      //   )
+      // );
+     
       var atomPos;
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
@@ -2160,9 +2160,12 @@ define([
         var z = this.cellParameters.scaleZ  ;
         
         var posForHex = { x : pos.x,  y : pos.y,  z : pos.z };
-
+       
         pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
-         
+        if(isEpsilon(pos.x)) pos.x =0;
+        if(isEpsilon(pos.y)) pos.y =0;
+        if(isEpsilon(pos.z)) pos.z =0;
+
         pos.x = pos.x/ x ;
         pos.y = pos.y/ y ;
         pos.z = pos.z/ z ;
@@ -2183,19 +2186,18 @@ define([
           pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
         } 
 
-        var xAdj = (Math.floor(pos.x * 100) / 100);
-        var yAdj = (Math.floor(pos.y * 100) / 100);
-        var zAdj = (Math.floor(pos.z * 100) / 100);
+        var xAdj = toFixedDown(pos.x, 2); 
+        var yAdj = toFixedDown(pos.y, 2);
+        var zAdj = toFixedDown(pos.z, 2);
 
         atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
 
-        this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj ); 
+        this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj );  
       }  
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
-       
-
+        
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -2214,6 +2216,18 @@ define([
       }
     } 
   }; 
+  function toFixedDown(num, digits) {
+    var n = num - Math.pow(10, -digits)/2;
+    n += n / Math.pow(2, 53);  
+    return n.toFixed(digits);
+  }
+  function isEpsilon(number){
+    // checks if close to 0
+    if(Math.abs(number) < 1e-10)
+      return true;
+    else
+      return false; 
+  }
   Motifeditor.prototype.setTangentAngle = function(azimuthal, polar, r, tangentToThis){
      
     var _this = this ;  
@@ -2408,8 +2422,8 @@ define([
 
         this.menu.editMEInputs(
           { 
-            'rotAngleTheta' : (Math.floor(angles.theta * 10) / 10)  , 
-            'rotAnglePhi' : (Math.floor(angles.phi * 10) / 10)   
+            'rotAngleTheta' : toFixedDown(angles.theta , 2), 
+            'rotAnglePhi' : toFixedDown(angles.phi , 2)    
           }
         );
       }
@@ -2610,8 +2624,8 @@ define([
 
       this.menu.editMEInputs(
         { 
-          'rotAngleTheta' : (Math.floor(angles.theta * 10) / 10), 
-          'rotAnglePhi' : (Math.floor(angles.phi * 10) / 10)  
+          'rotAngleTheta' : toFixedDown(angles.theta, 2),  
+          'rotAnglePhi' : toFixedDown(angles.phi, 2) 
         }
       );
 

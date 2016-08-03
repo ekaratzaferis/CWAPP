@@ -19,7 +19,7 @@ define([
     this.object3d = mesh; 
     this.scene.add(this.object3d);
     this.scale = 2;
-    this.color;
+    this.color ='#ffffff';
     this.notStates = {};
 
   }
@@ -66,7 +66,7 @@ define([
   Grid.prototype.setColor = function(color) {
 
     if(_.isUndefined(color)) return;
-  
+    
     this.color = color;
  
     if(this.color[0] === '#'){

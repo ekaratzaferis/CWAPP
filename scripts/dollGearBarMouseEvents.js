@@ -129,7 +129,7 @@ define([
           this.crystalOrbit.control.enabled = true;
 
         } 
-        else if(this.multitouch.touchDevice === false)
+        else // if(this.multitouch.touchDevice === false)
         {  
           var pos = this.crystalOrbit.camera.position.clone();
           pos.setLength(pos.length() - 1);

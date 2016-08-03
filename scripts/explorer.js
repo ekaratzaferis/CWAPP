@@ -457,7 +457,7 @@ define([
 
   }
   Explorer.prototype.axisMode = function(arg){
-    
+     
     var _this = this;
     
     if(arg.xyzAxes !== undefined){

@@ -1592,7 +1592,7 @@ define([
 
     // TEMP FEATURE
 
-        var gridPoints = this.lattice.gridPoints;
+    var gridPoints = this.lattice.gridPoints;
     var usedGridOrigins = [];
       
     if (_.isUndefined(gridPoints) && (this.latticeName !== 'hexagonal')) { 
@@ -2865,14 +2865,14 @@ define([
       grid.grid.setRadius(_this.gradeParameters.radius);
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
-
+  
     _.each(this.motifSceneGrids, function(grid) { 
-      grid.grid.setRadius(_this.gradeParameters.radius);
+      grid.grid.setRadius(_this.gradeParameters.radius); 
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
-    
+
     _.each(this.unitCellSceneGrids, function(grid) { 
-      grid.grid.setRadius(_this.gradeParameters.radius);
+      grid.grid.setRadius(_this.gradeParameters.radius); 
       grid.grid.setColor( _this.gradeParameters.cylinderColor); 
     });
 
