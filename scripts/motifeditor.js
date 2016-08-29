@@ -1,5 +1,5 @@
  
-define([
+define([ 
   'jquery', 
   'pubsub', 
   'three', 
@@ -2047,6 +2047,7 @@ define([
       case "creating":
       
         var pos = arg.atomPos;
+
         if(this.editorState.atomPosMode === 'relative'){
            
           pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
@@ -2096,7 +2097,7 @@ define([
         var pos = arg.atomPos;
         if(this.editorState.atomPosMode === 'relative'){
      
-          pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
+          pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);
 
         }  
         this.menu.disableMEButtons(
@@ -2185,19 +2186,22 @@ define([
 
           pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
         } 
+ 
 
-        var xAdj = toFixedDown(pos.x, 2); 
-        var yAdj = toFixedDown(pos.y, 2);
-        var zAdj = toFixedDown(pos.z, 2);
+        var xAdj = toFixedDown(pos.x, 3); 
+        var yAdj = toFixedDown(pos.y, 3);
+        var zAdj = toFixedDown(pos.z, 3);
 
         atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
-
+        
+        console.log(toFixedDown(1,2));
         this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj );  
       }  
       else{
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
       }
         
+
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -2217,6 +2221,8 @@ define([
     } 
   }; 
   function toFixedDown(num, digits) {
+
+    if(num === 0) return 0;
     var n = num - Math.pow(10, -digits)/2;
     n += n / Math.pow(2, 53);  
     return n.toFixed(digits);
