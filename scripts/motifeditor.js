@@ -175,7 +175,9 @@ define([
     PubSub.subscribe(events.VIEW_STATE, callback);
   };
   Motifeditor.prototype.selectElem = function(params) {
-      
+    
+    var _this = this;
+
     // late feature
     if(this.newSphere !== undefined){
        
@@ -247,6 +249,10 @@ define([
       params.ionicIndex
     ); 
     
+    // bad additions in 30/8/2016
+    setTimeout(function(){_this.atomPosModeBAD({abc : true});},2000);
+    //
+
   };
   Motifeditor.prototype.findNewAtomsPos = function(lastAtom, newAtomRadius, flag, elName ) {  
 
@@ -394,6 +400,34 @@ define([
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
      
   };
+  Motifeditor.prototype.atomPosModeBAD = function(arg){ 
+    var x = this.cellParameters.scaleX;
+    var y = this.cellParameters.scaleY;
+    var z = this.cellParameters.scaleZ;
+    this.editorState.atomPosMode = (arg.xyz !== undefined) ? 'absolute' : 'relative';
+    var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
+ 
+    this.padlock = bool;
+    this.globalTangency = bool;
+
+    if(this.editorState.atomPosMode === 'relative' && this.newSphere ){ 
+ 
+      var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
+
+      this.menu.setSliderMin('atomPosX', -4);
+      this.menu.setSliderMax('atomPosX', 4); 
+      this.menu.setSliderValue('atomPosX', pos.x/x);
+
+      this.menu.setSliderMin('atomPosY', -4);
+      this.menu.setSliderMax('atomPosY', 4);
+      this.menu.setSliderValue('atomPosY', pos.y/y);
+
+      this.menu.setSliderMin('atomPosZ', -4);
+      this.menu.setSliderMax('atomPosZ', 4);
+      this.menu.setSliderValue('atomPosZ', pos.z/z);
+    } 
+
+  };  
   Motifeditor.prototype.atomPosMode = function(arg){   
        
     var x = this.cellParameters.scaleX;
@@ -1985,6 +2019,11 @@ define([
           break; 
       }
     }  
+
+    // additions in 30/8/2016
+    this.atomPosModeBAD({xyz : true}); 
+
+    //
   };
   Motifeditor.prototype.deleteTangentChild = function (id){
     // todo na feugei kai to tanngent icon apo to child kai na ginetai free
@@ -2033,7 +2072,7 @@ define([
           {
             'atomPosX' : true,
             'atomPosY' : true,
-            'atomPosZ' : true,  
+            'atomPosZ' : true,     
             'atomColor' : true,  
             'atomOpacity' : true,  
             'atomPositioningXYZ' : true,
@@ -2042,12 +2081,13 @@ define([
             'rotAnglePhi' : false,
             'tangentR' : false 
           }
-        ); 
-        break;
+        );        
+        break;    
       case "creating":
       
         var pos = arg.atomPos;
 
+            
         if(this.editorState.atomPosMode === 'relative'){
            
           pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
@@ -2139,6 +2179,12 @@ define([
  
     var _this = this ;  
 
+    // additions in 30/8/2016
+    var storeForAwhile = this.editorState.atomPosMode;
+    this.editorState.atomPosMode = 'relative';
+    //
+
+
     if(action === 'delete'){
        this.menu.editSavedAtom({
         'action':action,
@@ -2153,7 +2199,7 @@ define([
       //   )
       // );
      
-      var atomPos;
+      var atomPos;  toFixedDown
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
         var x = this.cellParameters.scaleX  ;
@@ -2192,13 +2238,16 @@ define([
         var yAdj = toFixedDown(pos.y, 3);
         var zAdj = toFixedDown(pos.z, 3);
 
-        atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
-        
-        console.log(toFixedDown(1,2));
-        this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj );  
+        atomPos = '('+zAdj+', '+xAdj+', '+yAdj+')';
+         
+        this.newSphere.uiRelPosition = new THREE.Vector3(+xAdj, +yAdj, +zAdj );  
       }  
       else{
-        atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
+        var xAdj = toFixedDown(pos.x, 3); 
+        var yAdj = toFixedDown(pos.y, 3);
+        var zAdj = toFixedDown(pos.z, 3);
+
+        atomPos = '['+zAdj+', '+xAdj+', '+yAdj+']'; 
       }
         
 
@@ -2219,12 +2268,17 @@ define([
         this.menu.hideChainIcon({id : id, hide : false});
       }
     } 
+
+    // additions in 30/8/2016 
+    this.editorState.atomPosMode = storeForAwhile;
+    //
+
   }; 
   function toFixedDown(num, digits) {
 
     if(num === 0) return 0;
     var n = num - Math.pow(10, -digits)/2;
-    n += n / Math.pow(2, 53);  
+    n += n / Math.pow(2, 53);   
     return n.toFixed(digits);
   }
   function isEpsilon(number){
@@ -2579,7 +2633,13 @@ define([
     }
     this.whichToConfirm = undefined;
   };
-  Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState, afterConfirm){ 
+  Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState, afterConfirm){
+
+    // additions in 30/8/2016 
+    var storeForAwhile = this.editorState.atomPosMode;
+    this.editorState.atomPosMode = 'relative';
+    //
+
     var _this = this;
     var doNotDestroy = false;
     var x = this.cellParameters.scaleX;
@@ -2721,7 +2781,7 @@ define([
         pos.y = this.newSphere.object3d.position.y;
         pos.z = this.newSphere.object3d.position.z;
       }
-       
+
       this.menu.setSliderValue('atomPosZ',  (pos.z).toFixed(10));  
       this.menu.setSliderValue('atomPosX',  (pos.x).toFixed(10));
       this.menu.setSliderValue('atomPosY',  (pos.y).toFixed(10));
@@ -2741,7 +2801,17 @@ define([
       if(doNotChangeState === undefined){ 
         PubSub.publish(events.EDITOR_STATE,{ 'state' : 'editing', 'ionicIndex' : this.newSphere.ionicIndex,'atomName' : this.newSphere.getName(), 'atomPos' : pos, 'opacity' : this.newSphere.opacity*10, 'atomColor' : this.newSphere.color });
       }
+
+      // additions in 30/8/2016
+      this.atomPosModeBAD({abc : true}); 
+
+      //
+    
     } 
+
+    // additions in 30/8/2016  
+    this.editorState.atomPosMode = storeForAwhile;
+    //
   };
   Motifeditor.prototype.configureCellPoints = function(manual){  
   
@@ -4103,9 +4173,9 @@ define([
   Motifeditor.prototype.translateCellAtoms = function(axes, val, id){    
     var _this = this;   
     var val = parseFloat(val);
-
+  
     _.each(_this.unitCellAtoms, function(a, k) {  
-      if(a.getID() === id ){
+      if(a.getID && a.getID() === id ){
         switch(axes) {
           case "x":  
             a.object3d.position.x = val ;
