@@ -2199,7 +2199,7 @@ define([
       //   )
       // );
      
-      var atomPos;  toFixedDown
+      var atomPos; 
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
         var x = this.cellParameters.scaleX  ;
@@ -2274,12 +2274,12 @@ define([
     //
 
   }; 
-  function toFixedDown(num, digits) {
+  function toFixedDown(figure, decimals) {
 
-    if(num === 0) return 0;
-    var n = num - Math.pow(10, -digits)/2;
-    n += n / Math.pow(2, 53);   
-    return n.toFixed(digits);
+    console.log(' i get '+figure);
+    if (!decimals) decimals = 3;
+    var d = Math.pow(10,decimals);
+    return (parseInt(figure*d)/d).toFixed(decimals);
   }
   function isEpsilon(number){
     // checks if close to 0
