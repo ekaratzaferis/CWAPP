@@ -2233,19 +2233,18 @@ define([
           pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
         } 
  
-
-        var xAdj = toFixedDown(pos.x, 3); 
-        var yAdj = toFixedDown(pos.y, 3);
-        var zAdj = toFixedDown(pos.z, 3);
+        var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
+        var yAdj = toFixedDown((pos.y).toFixed(6), 3);
+        var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
         atomPos = '('+zAdj+', '+xAdj+', '+yAdj+')';
          
         this.newSphere.uiRelPosition = new THREE.Vector3(+xAdj, +yAdj, +zAdj );  
       }  
       else{
-        var xAdj = toFixedDown(pos.x, 3); 
-        var yAdj = toFixedDown(pos.y, 3);
-        var zAdj = toFixedDown(pos.z, 3);
+        var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
+        var yAdj = toFixedDown((pos.y).toFixed(6), 3);
+        var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
         atomPos = '['+zAdj+', '+xAdj+', '+yAdj+']'; 
       }
@@ -2277,6 +2276,7 @@ define([
   function toFixedDown(figure, decimals) {
 
     console.log(' i get '+figure);
+ 
     if (!decimals) decimals = 3;
     var d = Math.pow(10,decimals);
     return (parseInt(figure*d)/d).toFixed(decimals);
@@ -6915,13 +6915,13 @@ define([
 
     var vec;
 
-    if(actions['revertShearing'] !== undefined){
+    if(actions['revertShearing'] !== undefined){ 
       vec = this.transformMeGeneric(reverseShearing,vector, function(value) {  
         return -value;
       });
     }
 
-    if(actions['revertScaling'] !== undefined){
+    if(actions['revertScaling'] !== undefined){ console.log(99999);
       if(vec === undefined){
         vec = vector;
       }
