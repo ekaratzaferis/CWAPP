@@ -2153,15 +2153,7 @@ define([
       //   )
       // );
      
-<<<<<<< HEAD
-<<<<<<< HEAD
-      var atomPos; 
-=======
       var atomPos;
->>>>>>> parent of 372c136... dd
-=======
-      var atomPos;
->>>>>>> parent of 372c136... dd
        
       if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
         var x = this.cellParameters.scaleX  ;
@@ -2195,36 +2187,22 @@ define([
           pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
         } 
  
+
         var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
         var yAdj = toFixedDown((pos.y).toFixed(6), 3);
         var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
-<<<<<<< HEAD
-=======
-        var xAdj = toFixedDown(pos.x, 3); 
-        var yAdj = toFixedDown(pos.y, 3);
-        var zAdj = toFixedDown(pos.z, 3);
-
->>>>>>> parent of 372c136... dd
         atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
-        
-        console.log(toFixedDown(1,2));
-        this.newSphere.uiRelPosition = new THREE.Vector3(xAdj, yAdj, zAdj );  
+         
+        this.newSphere.uiRelPosition = new THREE.Vector3(+xAdj, +yAdj, +zAdj );
       }  
       else{
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
         var yAdj = toFixedDown((pos.y).toFixed(6), 3);
         var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
-        atomPos = '['+zAdj+', '+xAdj+', '+yAdj+']'; 
-=======
-        atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
->>>>>>> parent of 372c136... dd
-=======
-        atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
->>>>>>> parent of 372c136... dd
+        atomPos = '['+zAdj+','+xAdj+','+yAdj+']';
       }
         
 
@@ -2247,19 +2225,10 @@ define([
     } 
   }; 
   function toFixedDown(figure, decimals) {
-
-<<<<<<< HEAD
-    console.log(' i get '+figure);
  
     if (!decimals) decimals = 3;
     var d = Math.pow(10,decimals);
     return (parseInt(figure*d)/d).toFixed(decimals);
-=======
-    if(num === 0) return 0;
-    var n = num - Math.pow(10, -digits)/2;
-    n += n / Math.pow(2, 53);  
-    return n.toFixed(digits);
->>>>>>> parent of 372c136... dd
   }
   function isEpsilon(number){
     // checks if close to 0
@@ -2755,7 +2724,8 @@ define([
         pos.y = this.newSphere.object3d.position.y;
         pos.z = this.newSphere.object3d.position.z;
       }
-       
+      
+      console.log(pos);
       this.menu.setSliderValue('atomPosZ',  (pos.z).toFixed(10));  
       this.menu.setSliderValue('atomPosX',  (pos.x).toFixed(10));
       this.menu.setSliderValue('atomPosY',  (pos.y).toFixed(10));
@@ -6885,7 +6855,7 @@ define([
       });
     }
 
-    if(actions['revertScaling'] !== undefined){ console.log(99999);
+    if(actions['revertScaling'] !== undefined){  
       if(vec === undefined){
         vec = vector;
       }
