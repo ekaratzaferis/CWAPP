@@ -2154,7 +2154,11 @@ define([
       // );
      
 <<<<<<< HEAD
+<<<<<<< HEAD
       var atomPos; 
+=======
+      var atomPos;
+>>>>>>> parent of 372c136... dd
 =======
       var atomPos;
 >>>>>>> parent of 372c136... dd
@@ -2195,6 +2199,13 @@ define([
         var yAdj = toFixedDown((pos.y).toFixed(6), 3);
         var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
+<<<<<<< HEAD
+=======
+        var xAdj = toFixedDown(pos.x, 3); 
+        var yAdj = toFixedDown(pos.y, 3);
+        var zAdj = toFixedDown(pos.z, 3);
+
+>>>>>>> parent of 372c136... dd
         atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
         
         console.log(toFixedDown(1,2));
@@ -2202,11 +2213,15 @@ define([
       }  
       else{
 <<<<<<< HEAD
+<<<<<<< HEAD
         var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
         var yAdj = toFixedDown((pos.y).toFixed(6), 3);
         var zAdj = toFixedDown((pos.z).toFixed(6), 3);
 
         atomPos = '['+zAdj+', '+xAdj+', '+yAdj+']'; 
+=======
+        atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
+>>>>>>> parent of 372c136... dd
 =======
         atomPos = '['+(pos.z)+','+(pos.x)+','+(pos.y)+']';
 >>>>>>> parent of 372c136... dd
