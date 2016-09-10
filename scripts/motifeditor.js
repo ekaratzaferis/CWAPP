@@ -437,18 +437,19 @@ define([
       this.translateCellAtoms("y", pos.y ,this.newSphere.getID());
       this.translateCellAtoms("z", pos.z ,this.newSphere.getID());
       */
+ 
 
       this.menu.setSliderMin('atomPosX', -4);
       this.menu.setSliderMax('atomPosX', 4); 
-      this.menu.setSliderValue('atomPosX', pos.x/x);
+      this.menu.setSliderValue('atomPosX', toFixedDown((pos.x/x).toFixed(6), 3));
 
       this.menu.setSliderMin('atomPosY', -4);
       this.menu.setSliderMax('atomPosY', 4);
-      this.menu.setSliderValue('atomPosY', pos.y/y);
+      this.menu.setSliderValue('atomPosY', toFixedDown((pos.y/y).toFixed(6), 3));
 
       this.menu.setSliderMin('atomPosZ', -4);
       this.menu.setSliderMax('atomPosZ', 4);
-      this.menu.setSliderValue('atomPosZ', pos.z/z);
+      this.menu.setSliderValue('atomPosZ', toFixedDown((pos.z/z).toFixed(6), 3));
 
     }
     else if(this.editorState.atomPosMode === 'absolute'){
@@ -2153,9 +2154,10 @@ define([
       //   )
       // );
      
-      var atomPos;
-       
-      if(this.editorState.atomPosMode === 'relative' && pos.x !== '-'){
+      var atomPos, posCache = new THREE.Vector3(pos.x, pos.y, pos.z);
+      
+      if( pos.x !== '-'){
+
         var x = this.cellParameters.scaleX  ;
         var y = this.cellParameters.scaleY  ;
         var z = this.cellParameters.scaleZ  ;
@@ -2163,6 +2165,7 @@ define([
         var posForHex = { x : pos.x,  y : pos.y,  z : pos.z };
        
         pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
+
         if(isEpsilon(pos.x)) pos.x =0;
         if(isEpsilon(pos.y)) pos.y =0;
         if(isEpsilon(pos.z)) pos.z =0;
@@ -2188,24 +2191,19 @@ define([
         } 
  
 
-        var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
-        var yAdj = toFixedDown((pos.y).toFixed(6), 3);
-        var zAdj = toFixedDown((pos.z).toFixed(6), 3);
-
-        atomPos = '('+zAdj+','+xAdj+','+yAdj+')';
+        var xAdjR = toFixedDown((pos.x).toFixed(6), 2); 
+        var yAdjR = toFixedDown((pos.y).toFixed(6), 2);
+        var zAdjR = toFixedDown((pos.z).toFixed(6), 2);
          
-        this.newSphere.uiRelPosition = new THREE.Vector3(+xAdj, +yAdj, +zAdj );
-      }  
-      else{
-
-        var xAdj = toFixedDown((pos.x).toFixed(6), 3); 
-        var yAdj = toFixedDown((pos.y).toFixed(6), 3);
-        var zAdj = toFixedDown((pos.z).toFixed(6), 3);
-
-        atomPos = '['+zAdj+','+xAdj+','+yAdj+']';
+        this.newSphere.uiRelPosition = new THREE.Vector3(+xAdjR, +yAdjR, +zAdjR );
+      
+        var xAdjA = toFixedDown((posCache.x).toFixed(6), 2); 
+        var yAdjA = toFixedDown((posCache.y).toFixed(6), 2);
+        var zAdjA = toFixedDown((posCache.z).toFixed(6), 2);
+ 
+        atomPos = '('+zAdjR+','+xAdjR+','+yAdjR+')  ['+zAdjA+','+xAdjA+','+yAdjA+']';
       }
-        
-
+         
       this.menu.editSavedAtom({
         'action':action,
         'id':id, 
@@ -2585,6 +2583,7 @@ define([
   Motifeditor.prototype.selectAtom = function (which, doNotRepos, doNotChangeState, afterConfirm){ 
     var _this = this;
     var doNotDestroy = false;
+
     var x = this.cellParameters.scaleX;
     var y = this.cellParameters.scaleY;
     var z = this.cellParameters.scaleZ;
@@ -2724,8 +2723,7 @@ define([
         pos.y = this.newSphere.object3d.position.y;
         pos.z = this.newSphere.object3d.position.z;
       }
-      
-      console.log(pos);
+       
       this.menu.setSliderValue('atomPosZ',  (pos.z).toFixed(10));  
       this.menu.setSliderValue('atomPosX',  (pos.x).toFixed(10));
       this.menu.setSliderValue('atomPosY',  (pos.y).toFixed(10));
