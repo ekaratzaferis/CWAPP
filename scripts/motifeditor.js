@@ -2191,17 +2191,17 @@ define([
         } 
  
 
-        var xAdjR = toFixedDown((pos.x).toFixed(6), 2); 
-        var yAdjR = toFixedDown((pos.y).toFixed(6), 2);
-        var zAdjR = toFixedDown((pos.z).toFixed(6), 2);
+        var xAdjR = toFixedDown((pos.x).toFixed(6), 3); 
+        var yAdjR = toFixedDown((pos.y).toFixed(6), 3);
+        var zAdjR = toFixedDown((pos.z).toFixed(6), 3);
          
         this.newSphere.uiRelPosition = new THREE.Vector3(+xAdjR, +yAdjR, +zAdjR );
       
-        var xAdjA = toFixedDown((posCache.x).toFixed(6), 2); 
-        var yAdjA = toFixedDown((posCache.y).toFixed(6), 2);
-        var zAdjA = toFixedDown((posCache.z).toFixed(6), 2);
+        var xAdjA = toFixedDown((posCache.x).toFixed(6), 3); 
+        var yAdjA = toFixedDown((posCache.y).toFixed(6), 3);
+        var zAdjA = toFixedDown((posCache.z).toFixed(6), 3);
  
-        atomPos = '('+zAdjR+','+xAdjR+','+yAdjR+')  ['+zAdjA+','+xAdjA+','+yAdjA+']';
+        atomPos = 'V : ('+zAdjR+','+xAdjR+','+yAdjR+')<br> A : ['+zAdjA+','+xAdjA+','+yAdjA+']';
       }
          
       this.menu.editSavedAtom({
