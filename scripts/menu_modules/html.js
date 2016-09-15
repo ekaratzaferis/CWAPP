@@ -419,6 +419,7 @@ define([
             selectLink: jQuery('#selectLinkQR')
         };
         this.modals.periodicTable = {
+            modal: jQuery('#periodic_table_modal'),
             element: jQuery('.ch'),
             ionicValues: jQuery('.property-block'),
             ionicPreview: jQuery('#tempSelection').find('p'),

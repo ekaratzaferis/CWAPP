@@ -195,8 +195,7 @@ define([
         PLAYER_REPEAT: 'menu.player_repeat',
         PLAYER_REWIND: 'menu.player_rewind'
     };
-            
-
+    
     function Menu() {
 
         var _this = this;
@@ -304,6 +303,8 @@ define([
             disableUIElement: disableUIElementModule,
             latticeTab: latticeTabModule,
             messages: messagesModule,
+            stringEditor: stringEditorModule,
+            tooltip: toolTipGeneratorModule,
             html: html
         });
         motifTabModule = new motifTab({

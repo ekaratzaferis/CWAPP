@@ -2201,7 +2201,7 @@ define([
         var yAdjA = toFixedDown((posCache.y).toFixed(6), 3);
         var zAdjA = toFixedDown((posCache.z).toFixed(6), 3);
  
-        atomPos = 'V : ('+zAdjR+','+xAdjR+','+yAdjR+')<br> A : ['+zAdjA+','+xAdjA+','+yAdjA+']';
+        atomPos = zAdjR+','+xAdjR+','+yAdjR+'&'+zAdjA+','+xAdjA+','+yAdjA;
       }
          
       this.menu.editSavedAtom({
