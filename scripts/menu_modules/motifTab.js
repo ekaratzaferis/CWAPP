@@ -546,6 +546,7 @@ define([
         });
         html.motif.other.atomTable.hide();
     };
+    
     // Get Position of the atom in the parent/child chain //
     function getChainLevel(id){
         var level = 0;
@@ -790,8 +791,13 @@ define([
             constructor.btnState = constructor.current.find('.btn-tangent').attr('class');
         }
 
+        
+        // Beautify Atom Position
+        constructor.atomPos = constructor.atomPos.split('&'); 
+        
+        
         // Construct HTML Query //
-        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td element="'+constructor.elementCode+'" class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+constructor.atomPos+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td element="'+constructor.elementCode+'" class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+'<b><span id="bfont">(</span>'+constructor.atomPos[0]+'<span id="bfont">)</span></b><br>'+'<span id="sfont">['+constructor.atomPos[1]+'] &Aring;</span>'+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
         // Add, Remove, Edit Entry
         switch(argument['action']){

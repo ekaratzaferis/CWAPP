@@ -30,6 +30,8 @@ define([
     var $messages = undefined;
     var $latticeTab = undefined;
     var $atomsData = undefined;
+    var $stringEditor = undefined;
+    var tooltip = undefined;
     var html = undefined;
     
     // Contructor //
@@ -50,11 +52,24 @@ define([
         else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
+        if (!(_.isUndefined(argument.stringEditor))) $stringEditor = argument.stringEditor;
+        else return false;
+        if (!(_.isUndefined(argument.tooltip))) tooltip = argument.tooltip;
+        else return false;
         
         // Atom Ionic Values //
         require(['atoms'], function(atomsInfo) {
             $atomsData = atomsInfo;
         });
+        
+        $('#hexagonal').hover(
+            function(){
+                $('#hexagonal .bravais-lattice-block').show();
+            },
+            function(){
+                $('#hexagonal .bravais-lattice-block').hide();
+            }
+        );
         
         // Handlers //
         html.modals.lattice.block.on('click',function(){
@@ -149,83 +164,23 @@ define([
                         }
                         else hideIonicOption($parameter); 
                     }
-                    else hideIonicOption($parameter); 
+                    else hideIonicOption($parameter);
+                    
+                    // Add Custom Option
+                    if (ionicIndex === 'Custom') showCustomOption($parameter,'');
                 });
             }
         });
-        html.modals.periodicTable.ionicValues.click(function(){
+        html.modals.periodicTable.ionicValues.click(function(event){
+            // Handle custom radii addition //
+            if (jQuery(this).find('.serial p').html() === 'Custom') {
+                insertCustomRadii('',this);
+                event.stopPropagation();
+                return true;
+            };
             
-            // Selected Element //
-            var selected = jQuery('td.ch.selected');
-            
-            // Collect values
-            var ionicValue = jQuery(this).find('.resolution p').html().split(" ");
-            var tangency = $getUIValue.getValue({
-                'tangency':
-                    {'id':'tangency'}
-            });
-            
-            // Publish Object //
-            var publish = {};
-            publish.element = selected.html();
-            publish.atomTexture = 'None';
-            publish.wireframe = false;
-            publish.atomColor = $atomsData[publish.element]['color'];
-            publish.atomOpacity = html.motif.atomParameters.atomOpacity.val();
-            publish.ionicIndex = jQuery(this).find('.serial p').html();
-            publish.ionicValue = ionicValue[0];
-            publish.tangency = tangency.tangency;
-            PubSub.publish('menu.atom_selection', publish);
-            
-            // Show Element Indicator in Motif Tab //
-            $setUIValue.setValue({
-                elementContainer:{
-                    other: selected,
-                    value: publish.ionicIndex
-                }
-            });
-            
-            // Enable motif padlock //
-            if (!(html.lattice.padlocks.lattice.hasClass('disabled'))){
-                $disableUIElement.disableElement({
-                    motifPadlock:{
-                        value: false   
-                    }
-                });
-            }
-            
-            // Disable lattice parameters //
-            if (!(html.lattice.padlocks.motif.find('a').hasClass('active'))){
-                $disableUIElement.disableElement({
-                    latticeParameters:{
-                        value: true
-                    }
-                });
-            }
-            
-            // Reset periodic modal //
-            html.modals.periodicTable.ionicValues.addClass('disabled');
-            html.modals.periodicTable.ionicPreview.hide('fast');
-            html.modals.periodicTable.footer.hide('fast');
-            
-            // Update Lattice Tab Conditions
-            $latticeTab.updateCondition({
-                atomAdded: true, 
-                autoRefresh: true
-            });
-            
-            // Show refresh button on lattice tab //
-            $disableUIElement.disableElement({
-                latticeRefreshButtons:{
-                    value: false   
-                },
-                select_lattice:{
-                    value: true
-                }
-            });
-            
-            // Show swap //
-            $menuRibbon.setSwapButtonState(true);
+            // Send Data to System
+            sendAtomData(this);
         });
         html.modals.qr.modal.on('click', function(){
             html.modals.qr.download.attr('href',html.modals.qr.image.find('img').attr('src'));
@@ -248,6 +203,122 @@ define([
         jQuery(option).show();
         jQuery(option).removeClass('disabled');
         jQuery(option).find('.resolution p').html((value/100).toFixed(3) + ' &Aring;');
+    };
+    // Show custom ionic field //
+    function showCustomOption(option,value){
+        jQuery(option).show();
+        jQuery(option).removeClass('disabled');
+        jQuery(option).find('.resolution p').html(value);
+        jQuery(option).find('.resolution p').css('cursor','text');
+        jQuery(option).find('.resolution p').focus();
+        jQuery(option).find('.resolution p').select();
+        jQuery(option).find('.resolution p').keyup(event,function(){
+            insertCustomRadii(event.key,option);
+        });
+    };
+    // Check if user data are correct //
+    function insertCustomRadii(key,target){
+        if (key === 'Enter') {
+            if (!($stringEditor.inputIsNumber(jQuery(target).find('.resolution p').html()))){
+                jQuery(target).find('.resolution p').html('');
+                tooltip.showTempTooltip({
+                    other: html.modals.periodicTable.footer,
+                    message: 'Insert number & press Enter',
+                    placement: 'top'
+                });
+            }
+            else {
+                sendAtomData(target);
+                jQuery(target).find('.resolution p').html('');
+                html.modals.periodicTable.modal.modal('hide');
+            }
+        }
+        else {
+            if (!($stringEditor.inputIsNumber(jQuery(target).find('.resolution p').html()))){
+                jQuery(target).find('.resolution p').html('');
+                tooltip.showTempTooltip({
+                    other: html.modals.periodicTable.footer,
+                    message: 'Insert number & press Enter',
+                    placement: 'top'
+                });
+            }
+        }
+    };
+    // Send atom data to system //
+    function sendAtomData(target){
+        
+        // Selected Element //
+        var selected = jQuery('td.ch.selected');
+
+        // Collect values
+        var ionicValue = jQuery(target).find('.resolution p').html().split(" ");
+        var tangency = $getUIValue.getValue({
+            'tangency':
+                {'id':'tangency'}
+        });
+
+        // Publish Object //
+        var publish = {};
+        publish.element = selected.html();
+        publish.atomTexture = 'None';
+        publish.wireframe = false;
+        publish.atomColor = $atomsData[publish.element]['color'];
+        publish.atomOpacity = html.motif.atomParameters.atomOpacity.val();
+        publish.ionicIndex = jQuery(target).find('.serial p').html();
+        if (publish.ionicIndex === 'Custom') publish.ionicIndex = 'c';
+        publish.ionicValue = ionicValue[0];
+        publish.tangency = tangency.tangency;
+        PubSub.publish('menu.atom_selection', publish);
+
+        // Show Element Indicator in Motif Tab //
+        $setUIValue.setValue({
+            elementContainer:{
+                other: selected,
+                value: publish.ionicIndex
+            }
+        });
+
+        // Enable motif padlock //
+        if (!(html.lattice.padlocks.lattice.hasClass('disabled'))){
+            $disableUIElement.disableElement({
+                motifPadlock:{
+                    value: false   
+                }
+            });
+        }
+
+        // Disable lattice parameters //
+        if (!(html.lattice.padlocks.motif.find('a').hasClass('active'))){
+            $disableUIElement.disableElement({
+                latticeParameters:{
+                    value: true
+                }
+            });
+        }
+
+        // Reset periodic modal //
+        html.modals.periodicTable.ionicValues.addClass('disabled');
+        html.modals.periodicTable.ionicPreview.hide('fast');
+        html.modals.periodicTable.footer.hide('fast');
+
+        // Update Lattice Tab Conditions
+        $latticeTab.updateCondition({
+            atomAdded: true, 
+            autoRefresh: true
+        });
+
+        // Show refresh button on lattice tab //
+        $disableUIElement.disableElement({
+            latticeRefreshButtons:{
+                value: false   
+            },
+            select_lattice:{
+                value: true
+            }
+        });
+
+        // Show swap //
+        $menuRibbon.setSwapButtonState(true);
     };
     
     return modals;
