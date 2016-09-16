@@ -62,74 +62,36 @@ define([
             $atomsData = atomsInfo;
         });
         
-        $('#hexagonal').hover(
+        $('#hexagonal_primitive').hover(
             function(){
                 $('#hexagonal .bravais-lattice-block').show();
+                $('#hexagonal .bravais-lattice-block').css('cursor','pointer');
+                $('#hexagonal').addClass('visible');
+                tooltip.addOnHoverTooltip({
+                    other: $('#hexagonal'),
+                    message: 'CLICK TO CHOOSE A HEXAGONAL STRANGE LATTICE TO YOUR CRYSTAL STRUCTURE.',
+                    placement: 'top'
+                });
             },
             function(){
-                $('#hexagonal .bravais-lattice-block').hide();
+                setTimeout(function(){
+                    $('#hexagonal .bravais-lattice-block').hide();
+                    $('#hexagonal').removeClass('visible');
+                    $('#hexagonal .bravais-lattice-block').css('cursor','not-allowed');
+                    $('#hexagonal').tooltip('destroy');
+                },4000);
             }
         );
         
         // Handlers //
         html.modals.lattice.block.on('click',function(){
-            
-            // Update Button and publish event //
-            $setUIValue.setValue({
-                 selectedLattice:{
-                    value: $messages.getMessage(jQuery(this).attr('id')) 
-                 }
-            });
-            PubSub.publish('menu.lattice_change', jQuery(this).attr('id'));
-            
-            // Enable Motif Tab //
-            $menuRibbon.disableTab({ 'motifTab': false });
-            $menuRibbon.blockTab({ 'motifTab': false });
-            $menuRibbon.disableTab({ 'pndTab': false });
-            $menuRibbon.blockTab({ 'pndTab': false });
-            $menuRibbon.disableTab({ 'visualTab': false });
-            $menuRibbon.blockTab({ 'visualTab': false });
-            
-            // Enable Lattice Padlock //
-            $disableUIElement.disableElement({
-                latticePadlock:{
-                    value: false
+            if (jQuery(this).attr('id') === 'hexagonal'){
+                if (!(jQuery(this).hasClass('visible'))) {
+                    event.stopPropagation();
+                    return false;
                 }
-            });
-            
-            // Reset Values in case user is choosing lattice for the 2nd+ time //
-            $setUIValue.setValue({
-                latticePadlock:{
-                    value: false
-                },
-                repeatX:{
-                    value: 1,
-                    publish: {
-                        repeatX: 1   
-                    }
-                },
-                repeatY:{
-                    value: 1,
-                    publish: {
-                        repeatY: 1   
-                    }
-                },
-                repeatZ:{
-                    value: 1,
-                    publish: {
-                        repeatZ: 1   
-                    }
-                }
-            });
-            
-            // In case a hexagonal lattice is chosen, we're changing the Sub-Menu title in PnD tab //
-            if ( (jQuery(this).attr('id') === 'hexagonal') || (jQuery(this).attr('id') === 'hexagonal_primitive') ){
-                html.pnd.other.planesSubmenuTitle.html($messages.getMessage('subPlaneHex'));
-                html.pnd.other.directionsSubmenuTitle.html($messages.getMessage('subDirectionHex'));
             }
-            else {
-                
-            }
+            sendLatticeData(this);
         });
         html.modals.periodicTable.element.on('click',function(){
             // Element is not disabled or is the preview on footer //
@@ -319,6 +281,64 @@ define([
 
         // Show swap //
         $menuRibbon.setSwapButtonState(true);
+    };
+    function sendLatticeData(target){
+        // Update Button and publish event //
+        $setUIValue.setValue({
+             selectedLattice:{
+                value: $messages.getMessage(jQuery(target).attr('id')) 
+             }
+        });
+        PubSub.publish('menu.lattice_change', jQuery(target).attr('id'));
+
+        // Enable Motif Tab //
+        $menuRibbon.disableTab({ 'motifTab': false });
+        $menuRibbon.blockTab({ 'motifTab': false });
+        $menuRibbon.disableTab({ 'pndTab': false });
+        $menuRibbon.blockTab({ 'pndTab': false });
+        $menuRibbon.disableTab({ 'visualTab': false });
+        $menuRibbon.blockTab({ 'visualTab': false });
+
+        // Enable Lattice Padlock //
+        $disableUIElement.disableElement({
+            latticePadlock:{
+                value: false
+            }
+        });
+
+        // Reset Values in case user is choosing lattice for the 2nd+ time //
+        $setUIValue.setValue({
+            latticePadlock:{
+                value: false
+            },
+            repeatX:{
+                value: 1,
+                publish: {
+                    repeatX: 1   
+                }
+            },
+            repeatY:{
+                value: 1,
+                publish: {
+                    repeatY: 1   
+                }
+            },
+            repeatZ:{
+                value: 1,
+                publish: {
+                    repeatZ: 1   
+                }
+            }
+        });
+
+        // In case a hexagonal lattice is chosen, we're changing the Sub-Menu title in PnD tab //
+        if ( (jQuery(target).attr('id') === 'hexagonal') || (jQuery(target).attr('id') === 'hexagonal_primitive') ){
+            html.pnd.other.planesSubmenuTitle.html($messages.getMessage('subPlaneHex'));
+            html.pnd.other.directionsSubmenuTitle.html($messages.getMessage('subDirectionHex'));
+        }
+        else {
+
+        }
     };
     
     return modals;

@@ -179,7 +179,7 @@ define([
         orthorhombic_face_centered:'Orthorhombic Face Centered',
         orthorhombic_base_centered:'Orthorhombic Base Centered',
         hexagonal_primitive:'Hexagonal',
-        hexagonal:'Hexagonal Strange',
+        //hexagonal:'Hexagonal Strange',
         rhombohedral_primitive:'Rhombohedral / Trigonal',
         monoclinic_primitive:'Monoclinic Simple',
         monoclinic_base_centered:'Monoclinic Base Centered',

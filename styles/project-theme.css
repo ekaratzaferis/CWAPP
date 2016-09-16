@@ -4239,6 +4239,7 @@ margin-left: 200px;
     padding-left: 33px;
     padding-right: 33px;
 }
+#xsfont { font-size: 9px; }
 #sfont { font-size: 11px; }
 #bfont { font-size: 15px; }
 #hexagonal .bravais-lattice-block { display: none; }
