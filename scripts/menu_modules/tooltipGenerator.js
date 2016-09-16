@@ -178,8 +178,8 @@ define([
         orthorhombic_body_centered:'Orthorhombic Body Centered',
         orthorhombic_face_centered:'Orthorhombic Face Centered',
         orthorhombic_base_centered:'Orthorhombic Base Centered',
-        hexagonal_primitive:'Hexagonal',
-        //hexagonal:'Hexagonal Strange',
+        hexagonal_primitive:'Hexagonal Primitive',
+        hexagonal:'Hexagonal',
         rhombohedral_primitive:'Rhombohedral / Trigonal',
         monoclinic_primitive:'Monoclinic Simple',
         monoclinic_base_centered:'Monoclinic Base Centered',
@@ -338,7 +338,8 @@ define([
         
         // Lattices Tooltips //
         _.each(lattices, function($parameter,k){
-            if ( restrictions[k] === undefined ) tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE.', placement: 'top' });
+            if (k.toString() === 'hexagonal') tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE. *NOT A BRAVAIS LATTICE.', placement: 'top' });
+            else if ( restrictions[k] === undefined ) tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE.', placement: 'top' });
             else tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE. RESTRICTIONS FOR YOUR LATTICE ARE ' + restrictions[k], placement: 'top' });
         });
 

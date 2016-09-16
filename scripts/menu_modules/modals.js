@@ -62,35 +62,18 @@ define([
             $atomsData = atomsInfo;
         });
         
-        $('#hexagonal_primitive').hover(
+        // Adjust Hex Strange Opacity //
+        $('#hexagonal .bravais-lattice-block').hover(
             function(){
-                $('#hexagonal .bravais-lattice-block').show();
-                $('#hexagonal .bravais-lattice-block').css('cursor','pointer');
-                $('#hexagonal').addClass('visible');
-                tooltip.addOnHoverTooltip({
-                    other: $('#hexagonal'),
-                    message: 'CLICK TO CHOOSE A HEXAGONAL STRANGE LATTICE TO YOUR CRYSTAL STRUCTURE.',
-                    placement: 'top'
-                });
+                $('#hexagonal .bravais-lattice-block').css('opacity','1');
             },
             function(){
-                setTimeout(function(){
-                    $('#hexagonal .bravais-lattice-block').hide();
-                    $('#hexagonal').removeClass('visible');
-                    $('#hexagonal .bravais-lattice-block').css('cursor','not-allowed');
-                    $('#hexagonal').tooltip('destroy');
-                },4000);
+                $('#hexagonal .bravais-lattice-block').css('opacity','0.2');
             }
         );
         
         // Handlers //
         html.modals.lattice.block.on('click',function(){
-            if (jQuery(this).attr('id') === 'hexagonal'){
-                if (!(jQuery(this).hasClass('visible'))) {
-                    event.stopPropagation();
-                    return false;
-                }
-            }
             sendLatticeData(this);
         });
         html.modals.periodicTable.element.on('click',function(){
