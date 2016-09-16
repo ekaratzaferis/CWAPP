@@ -1117,6 +1117,7 @@ width: 70px;}
       transition: none 0s linear; }
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block {
         max-height: 122px;
+        min-width: 127px;
         padding: 10px;
         border: 3px solid transparent; }
         .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table tbody tr td .bravais-lattice-block .block-image {
@@ -1151,7 +1152,7 @@ width: 70px;}
             background: #6f6299; }
     @media (max-width: 1600px) {
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
-        padding: 20px 60px;
+        padding: 20px 45px;
         padding-bottom: 5px;} }
 
 /*==========  Periodic Modal  ==========*/
@@ -4242,4 +4243,4 @@ margin-left: 200px;
 #xsfont { font-size: 9px; }
 #sfont { font-size: 11px; }
 #bfont { font-size: 15px; }
-#hexagonal .bravais-lattice-block { display: none; }
+#hexagonal .bravais-lattice-block { opacity: 0.2; }
