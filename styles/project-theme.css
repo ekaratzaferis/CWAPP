@@ -1092,7 +1092,10 @@ width: 70px;}
   margin: 10px auto;
   padding: 0; }
   .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
-    padding: 30px 115px; }
+    padding-top: 20px;
+          padding-right: 45px;
+          padding-left: 45px;
+        padding-bottom: 5px; }
     .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container table.bravais-lattice-table thead tr th {
       border: 0;
       width: 140px;
