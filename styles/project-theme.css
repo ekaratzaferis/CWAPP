@@ -1152,7 +1152,9 @@ width: 70px;}
             background: #6f6299; }
     @media (max-width: 1600px) {
       .bravais-lattice-modal-container .bravais-lattice-modal .modal-dialog .modal-content .modal-body .bravais-lattice-table-container {
-        padding: 20px 45px;
+        padding-top: 20px;
+          padding-right: 45px;
+          padding-left: 45px;
         padding-bottom: 5px;} }
 
 /*==========  Periodic Modal  ==========*/
@@ -4243,4 +4245,4 @@ margin-left: 200px;
 #xsfont { font-size: 9px; }
 #sfont { font-size: 11px; }
 #bfont { font-size: 15px; }
-#hexagonal .bravais-lattice-block { opacity: 0.2; }
+#hexagonal_primitive .bravais-lattice-block { opacity: 0.15; }
