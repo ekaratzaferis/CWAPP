@@ -13,7 +13,7 @@ define([
 ], function(
   jQuery, 
   PubSub, 
-  THREE, 
+  THREE,   
   _,
   AtomSphere,  
   UnitCellAtom, 
