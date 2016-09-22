@@ -2146,13 +2146,7 @@ define([
         'id':id
       });
     }
-    else{ 
-      // pos = (pos.x === '-') ? pos : (new THREE.Vector3(
-      //   (Math.floor(pos.x * 10) / 10),
-      //   (Math.floor(pos.y * 10) / 10),
-      //   (Math.floor(pos.z * 10) / 10)
-      //   )
-      // );
+    else{  
      
       var atomPos, posCache = new THREE.Vector3(pos.x, pos.y, pos.z);
       
@@ -2161,47 +2155,90 @@ define([
         var x = this.cellParameters.scaleX  ;
         var y = this.cellParameters.scaleY  ;
         var z = this.cellParameters.scaleZ  ;
-        
-        var posForHex = { x : pos.x,  y : pos.y,  z : pos.z };
+        var iStr='';
+        var posForHex = new THREE.Vector3(pos.x, pos.y, pos.z);  
        
         pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
 
-        if(isEpsilon(pos.x)) pos.x =0;
-        if(isEpsilon(pos.y)) pos.y =0;
-        if(isEpsilon(pos.z)) pos.z =0;
-
-        pos.x = pos.x/ x ;
-        pos.y = pos.y/ y ;
-        pos.z = pos.z/ z ;
-        
-        if(this.latticeName === 'hexagonal'){  
-
-          // deprecated
-          var v = new THREE.Vector3( z, 0, 0 );
-          var axis = new THREE.Vector3( 0, 1, 0 );
-          var angle = (Math.PI / 3) * 4 ; 
-          v.applyAxisAngle( axis, angle );
-           
-          pos.x = posForHex.x/ z ;
-          pos.y = posForHex.y/ y ;
-          pos.z = posForHex.z/ z ;
-          //
-
-          pos = { x : parseFloat($('#atomPosX').val()),  y :parseFloat($('#atomPosY').val()),  z : parseFloat($('#atomPosZ').val()) } ;
-        } 
+        if(isEpsilon(pos.x)) pos.x = 0;
+        if(isEpsilon(pos.y)) pos.y = 0;
+        if(isEpsilon(pos.z)) pos.z = 0;
  
+        var xAdjR; 
+        var yAdjR;
+        var zAdjR;
 
-        var xAdjR = toFixedDown((pos.x).toFixed(6), 3); 
-        var yAdjR = toFixedDown((pos.y).toFixed(6), 3);
-        var zAdjR = toFixedDown((pos.z).toFixed(6), 3);
-         
+        if(this.latticeName === 'hexagonal'){  
+ 
+          var v = new THREE.Vector3( z, 0, 0 );
+          var v2 = v.clone();
+          var v4 = v.clone();
+          var v5 = v.clone();
+
+          var axis = new THREE.Vector3( 0, 1, 0 );
+          var angle = (Math.PI / 3) * 1 ; 
+          v.applyAxisAngle( axis, angle );
+          var hexSideLength = v.length();
+          var v3;
+          var zl = Math.abs(posForHex.z);
+
+          // Z hex vector (4*PI/3)
+          if(posForHex.z !== 0){ 
+             
+            var hypotenuse = zl / Math.sin(Math.PI/3); 
+
+            zAdjR = toFixedDown((hypotenuse/hexSideLength ).toFixed(6), 3);
+            zAdjR = (pos.z >0) ? (zAdjR) : (zAdjR * -1); 
+          } 
+          else {
+            zAdjR = toFixedDown((0).toFixed(6), 3);
+          }
+
+          // X hex vector  
+          if(posForHex.x !=0){ 
+            if(posForHex.z !== 0) {
+              angle = selectAngle({z : posForHex.z});
+              v2.applyAxisAngle( axis, angle );
+              v2.setLength(zl / Math.sin(Math.PI/3));
+              v3 = posForHex.clone().add(v2);
+              console.log(zl / Math.sin(Math.PI/3));
+              console.log(pos);
+              console.log(v3);
+              xAdjR = toFixedDown((v3.x/hexSideLength).toFixed(6), 3);
+            }
+            else{  
+               xAdjR = toFixedDown((posForHex.x/x).toFixed(6), 3); 
+            } 
+          }
+          else{
+            xAdjR = toFixedDown((0).toFixed(6), 3);
+          }
+ 
+          yAdjR = toFixedDown((posForHex.y/y).toFixed(6), 3); 
+
+          var xInv = v4.applyAxisAngle( axis, (Math.PI) ).setLength(xAdjR*hexSideLength);
+          var zInv = v5.applyAxisAngle( axis, (Math.PI/3) ).setLength(zAdjR*hexSideLength);
+          xInv.add(zInv);
+
+          iStr = toFixedDown((xInv.length()/hexSideLength).toFixed(6), 3); 
+        } 
+        else{
+          pos.x = pos.x/ x ;
+          pos.y = pos.y/ y ;
+          pos.z = pos.z/ z ;
+
+          xAdjR = toFixedDown((pos.x).toFixed(6), 3); 
+          yAdjR = toFixedDown((pos.y).toFixed(6), 3);
+          zAdjR = toFixedDown((pos.z).toFixed(6), 3);
+        }
+   
         this.newSphere.uiRelPosition = new THREE.Vector3(+xAdjR, +yAdjR, +zAdjR );
       
         var xAdjA = toFixedDown((posCache.x).toFixed(6), 3); 
         var yAdjA = toFixedDown((posCache.y).toFixed(6), 3);
         var zAdjA = toFixedDown((posCache.z).toFixed(6), 3);
  
-        atomPos = zAdjR+','+xAdjR+','+yAdjR+'&'+zAdjA+','+xAdjA+','+yAdjA;
+        atomPos = zAdjR+','+xAdjR+','+yAdjR+','+iStr+'&'+zAdjA+','+xAdjA+','+yAdjA;
       }
          
       this.menu.editSavedAtom({
@@ -2222,6 +2259,14 @@ define([
       }
     } 
   }; 
+  function selectAngle(arg){
+    if(arg.z > 0){
+      return Math.PI/3;
+    }
+    else{
+      return 4*Math.PI/3;
+    }
+  }
   function toFixedDown(figure, decimals) {
  
     if (!decimals) decimals = 3;
