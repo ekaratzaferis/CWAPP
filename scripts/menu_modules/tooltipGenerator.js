@@ -338,8 +338,7 @@ define([
         
         // Lattices Tooltips //
         _.each(lattices, function($parameter,k){
-            if (k.toString() === 'hexagonal') tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE. *NOT A BRAVAIS LATTICE.', placement: 'top' });
-            else if ( restrictions[k] === undefined ) tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE.', placement: 'top' });
+            if ( restrictions[k] === undefined ) tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE.', placement: 'top' });
             else tooltipOnHover({ target: k.toString(), message: 'CLICK TO CHOOSE A ' + $parameter + ' LATTICE TO YOUR CRYSTAL STRUCTURE. RESTRICTIONS FOR YOUR LATTICE ARE ' + restrictions[k], placement: 'top' });
         });
 

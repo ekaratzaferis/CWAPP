@@ -63,12 +63,12 @@ define([
         });
         
         // Adjust Hex Strange Opacity //
-        $('#hexagonal .bravais-lattice-block').hover(
+        $('#hexagonal_primitive .bravais-lattice-block').hover(
             function(){
-                $('#hexagonal .bravais-lattice-block').css('opacity','1');
+                $('#hexagonal_primitive .bravais-lattice-block').css('opacity','1');
             },
             function(){
-                $('#hexagonal .bravais-lattice-block').css('opacity','0.2');
+                $('#hexagonal_primitive .bravais-lattice-block').css('opacity','0.15');
             }
         );
         
