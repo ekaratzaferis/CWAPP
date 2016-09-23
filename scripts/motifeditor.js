@@ -2153,7 +2153,7 @@ define([
         var x = this.cellParameters.scaleX  ;
         var y = this.cellParameters.scaleY  ;
         var z = this.cellParameters.scaleZ  ;
-        var iStr='';
+        var iStr;
         var posForHex = new THREE.Vector3(pos.x, pos.y, pos.z);  
        
         pos = this.transformGeneric(pos.clone(), {'revertShearing' : true});
@@ -2162,9 +2162,9 @@ define([
         if(isEpsilon(pos.y)) pos.y = 0;
         if(isEpsilon(pos.z)) pos.z = 0;
  
-        var xAdjR; 
-        var yAdjR;
-        var zAdjR;
+        var xAdjR = 0; 
+        var yAdjR = 0;
+        var zAdjR = 0;
 
         if(this.latticeName === 'hexagonal'){  
  
@@ -2198,10 +2198,7 @@ define([
               angle = selectAngle({z : posForHex.z});
               v2.applyAxisAngle( axis, angle );
               v2.setLength(zl / Math.sin(Math.PI/3));
-              v3 = posForHex.clone().add(v2);
-              console.log(zl / Math.sin(Math.PI/3));
-              console.log(pos);
-              console.log(v3);
+              v3 = posForHex.clone().add(v2); 
               xAdjR = toFixedDown((v3.x/hexSideLength).toFixed(6), 3);
             }
             else{  
@@ -2217,8 +2214,11 @@ define([
           var xInv = v4.applyAxisAngle( axis, (Math.PI) ).setLength(xAdjR*hexSideLength);
           var zInv = v5.applyAxisAngle( axis, (Math.PI/3) ).setLength(zAdjR*hexSideLength);
           xInv.add(zInv);
-
-          iStr = toFixedDown((xInv.length()/hexSideLength).toFixed(6), 3); 
+ 
+          var temp = -1*(+(zAdjR) + +(xAdjR));
+         
+          iStr = toFixedDown((temp).toFixed(6), 3);  
+         
         } 
         else{
           pos.x = pos.x/ x ;
@@ -2235,8 +2235,13 @@ define([
         var xAdjA = toFixedDown((posCache.x).toFixed(6), 3); 
         var yAdjA = toFixedDown((posCache.y).toFixed(6), 3);
         var zAdjA = toFixedDown((posCache.z).toFixed(6), 3);
- 
-        atomPos = zAdjR+','+xAdjR+','+yAdjR+','+iStr+'&'+zAdjA+','+xAdjA+','+yAdjA;
+        
+        if(iStr === undefined){
+          atomPos = zAdjR+','+xAdjR+','+yAdjR+'&'+zAdjA+','+xAdjA+','+yAdjA;
+        }
+        else{
+          atomPos = zAdjR+','+xAdjR+','+iStr+','+yAdjR+'&'+zAdjA+','+xAdjA+','+yAdjA;
+        }
       }
          
       this.menu.editSavedAtom({
