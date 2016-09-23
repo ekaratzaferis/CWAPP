@@ -409,7 +409,7 @@ define([
 
       var bool = (this.editorState.atomPosMode === 'absolute') ? true : false ;
 
-      this.padlockMode({padlock : !bool}); 
+      this.padlockMode({padlock : !bool, manually : arg.manually}); 
 
       this.menu.editMEInputs(
         {
@@ -417,7 +417,7 @@ define([
          'tangency' : bool 
         }
       );
-      
+      return;
       var pos = this.transformGeneric(this.newSphere.object3d.position.clone(), {'revertShearing' : true});
 
       /*
@@ -468,6 +468,8 @@ define([
     }
      
   };
+
+  var firstTimeAndLast = true;
   Motifeditor.prototype.setAtomsPosition = function(param){ 
     
     var _this = this;  
@@ -477,7 +479,12 @@ define([
     var xFactor = 1;
     var yFactor = 1;
     var zFactor = 1;
-      
+    
+    if(firstTimeAndLast){
+      this.atomPosMode({abc: true, manually : true});
+      firstTimeAndLast = false;
+    }
+     
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
@@ -2049,7 +2056,7 @@ define([
       
         var pos = arg.atomPos;
 
-        if(this.editorState.atomPosMode === 'relative'){
+        if(true /* this.editorState.atomPosMode === 'relative' */){
            
           pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);;
  
@@ -2076,11 +2083,7 @@ define([
             'cellGamma' : this.cellParameters.gamma
           }
         );   
-         var padD = false ;
-
-        if(this.padlock === true){
-          padD = true;
-        }
+         
         this.menu.disableMEInputs(
           {
             'atomPosX' : false,
@@ -2096,7 +2099,7 @@ define([
       case "editing": 
      
         var pos = arg.atomPos;
-        if(this.editorState.atomPosMode === 'relative'){
+        if(true /* this.editorState.atomPosMode === 'relative' */){
      
           pos =  new THREE.Vector3(this.newSphere.uiRelPosition.x, this.newSphere.uiRelPosition.y, this.newSphere.uiRelPosition.z);
 
@@ -2118,12 +2121,7 @@ define([
             'atomName' : arg.atomName.toLowerCase()
           }
         );   
-
-        var padD = false ;
-
-        if(this.padlock === true){
-          padD = true;
-        }
+ 
         this.menu.disableMEInputs(
           {
             'atomPosX' : false,
@@ -6306,7 +6304,7 @@ define([
 
     if(this.padlock === false) {  
 
-      this.menu.setMotifPadlock('unlock');
+      if(arg.manually === undefined) this.menu.setMotifPadlock('unlock');
   
       this.configureCellPoints();
  
