@@ -28,7 +28,7 @@ define([
     VIEW_STATE: 'motifeditor.view_state'
   }; 
 
-  function Motifeditor(cwState, menu, soundMachine) {
+  function Motifeditor(cwState, menu, soundMachine) { 
     this.motifeditor = null;
     this.cwState = cwState;
 
@@ -6293,7 +6293,18 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.setTangency = function(arg){ 
-    this.globalTangency =  arg.tangency ; 
+     
+    this.globalTangency = true;
+    this.editorState.atomPosMode = 'absolute';
+    this.leastVolume();
+    this.globalTangency = false;
+
+    this.menu.setSliderValue("cellVolume", 100 );  
+
+    this.cellVolume.xInitVal = this.cellParameters.scaleX;
+    this.cellVolume.yInitVal = this.cellParameters.scaleY;
+    this.cellVolume.zInitVal = this.cellParameters.scaleZ;
+ 
   };
   Motifeditor.prototype.padlockMode = function(arg, restore){
     var _this = this, i = 0;   
