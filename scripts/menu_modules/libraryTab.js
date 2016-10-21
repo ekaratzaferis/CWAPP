@@ -411,6 +411,7 @@ define([
         // Gather App UI State //
         details.app = $getUIValue.getAppState();
         details.notes = $notesTab.getNotes();
+        console.log(details.notes);
         details.atomList = menu.getAtomList();
         
         // Require project name before moving on //
