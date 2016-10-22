@@ -6292,11 +6292,34 @@ define([
     var r = _.min(this.motifsAtoms, function(atom){ return (atom.getRadius()); });  
     return r.getRadius() ;
   };
+  Motifeditor.prototype.leastVolume2 = function(restore){ 
+
+    if(restore !== undefined || /*to remove this during restr*/ this.latticeName === 'hexagonal'/*to remove this during restr*/ ){
+      return;
+    }
+
+    var coll = false;
+    var step = 100;   
+      
+    this.menu.resetProgressBar('Constructing cell...');
+    var temp = {mode : this.editorState.atomPosMode};
+    this.editorState.atomPosMode = 'relative';
+    while(coll === false && this.unitCellAtoms.length !== 0){  
+      step -= 0.25; 
+      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'});
+      if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
+        coll = true;
+      }
+    }   
+    this.editorState.atomPosMode = temp.mode;
+    this.menu.progressBarFinish();
+ 
+  };
   Motifeditor.prototype.setTangency = function(arg){ 
      
     this.globalTangency = true;
     this.editorState.atomPosMode = 'absolute';
-    this.leastVolume();
+    this.leastVolume2();
     this.globalTangency = false;
 
     this.menu.setSliderValue("cellVolume", 100 );  
