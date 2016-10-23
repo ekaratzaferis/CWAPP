@@ -484,7 +484,7 @@ define([
       this.atomPosMode({abc: true, manually : true});
       firstTimeAndLast = false;
     }
-     
+    
     this.menu.breakChain({ id : this.newSphere.getID(), remove : false});
       
     if(this.editorState.atomPosMode === 'relative'){  
@@ -690,13 +690,22 @@ define([
     return coll;
 
   };
- 
-  Motifeditor.prototype.setManuallyCellVolume = function(par){ 
+
+  var firstTimeAndLast3 = true;
+
+  Motifeditor.prototype.setManuallyCellVolume = function(par, systemCall){ 
       
     var val = (par.step === undefined) ? parseFloat(par.cellVolume) : parseFloat(par.step);
     
     if(val <= 0 ) {
       return;
+    }
+
+    if(firstTimeAndLast3 && systemCall===undefined){ 
+
+      this.atomPosMode({abc: true, manually : true});
+      firstTimeAndLast3 = false; 
+
     }
 
     var newVals = {x : 1, y : 1, z : 1};
@@ -3945,7 +3954,7 @@ define([
     while(coll === false && this.unitCellAtoms.length !== 0){ 
     
       step -= 0.25; 
-      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'});
+      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'}, true);
       if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         coll = true;
       }
@@ -6293,32 +6302,32 @@ define([
     return r.getRadius() ;
   };
   Motifeditor.prototype.leastVolume2 = function(restore){ 
-
-    if(restore !== undefined || /*to remove this during restr*/ this.latticeName === 'hexagonal'/*to remove this during restr*/ ){
-      return;
-    }
-
+ 
     var coll = false;
-    var step = 100;   
-      
+    var step = 100;    
+
     this.menu.resetProgressBar('Constructing cell...');
-    var temp = {mode : this.editorState.atomPosMode};
-    this.editorState.atomPosMode = 'relative';
-    while(coll === false && this.unitCellAtoms.length !== 0){  
+
+    while(coll === false && this.unitCellAtoms.length !== 0){ 
+    
       step -= 0.25; 
-      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'});
+      this.setManuallyCellVolume({ 'step' : step, 'trigger' : 'reducer'}, true);
       if( this.cellVolume.aCol !== undefined || this.cellVolume.bCol !== undefined || this.cellVolume.cCol !== undefined  ){  
         coll = true;
       }
     }   
-    this.editorState.atomPosMode = temp.mode;
+    
     this.menu.progressBarFinish();
  
   };
+  var firstTimeAndLast2 = true;
   Motifeditor.prototype.setTangency = function(arg){ 
+    
+    if(firstTimeAndLast2){
+      this.atomPosMode({abc: true, manually : true});
+      firstTimeAndLast2 = false; 
+    }
      
-    this.globalTangency = true;
-    this.editorState.atomPosMode = 'absolute';
     this.leastVolume2();
     this.globalTangency = false;
 
@@ -6380,7 +6389,7 @@ define([
     if(this.padlock === true || this.globalTangency === true){
       this.leastVolume();
             
-      this.menu.setSliderValue("cellVolume", 100 );  
+      this.menu.setSliderValue("cellVolume", 100);  
 
       this.cellVolume.xInitVal = this.cellParameters.scaleX;
       this.cellVolume.yInitVal = this.cellParameters.scaleY;
