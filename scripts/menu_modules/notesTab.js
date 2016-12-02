@@ -630,7 +630,7 @@ define([
         var atomNote = false;
         
         // Clear Forms //
-        html.notes.properties.opacity.val('');
+        html.notes.properties.opacity.val('10');
         html.notes.other.body.val('');
         html.notes.properties.opacity.selectpicker('val','10');
         html.notes.properties.color.children().css('background','white');
@@ -791,11 +791,13 @@ define([
         
         html.interface.screen.wrapper.find('#'+notes.activeEntry).css('left', note.x+'px');
         html.interface.screen.wrapper.find('#'+notes.activeEntry).css('top',note.y+'px');
-        $setUIValue.setValue({
-            noteMovement:{
-                publish: { id: notes.activeEntry, x: note.x, y: note.y }   
-            }
-        });
+        if(note.atomNote) {
+            $setUIValue.setValue({
+                noteMovement:{
+                    publish: { id: notes.activeEntry, x: note.x, y: note.y }   
+                }
+            });
+        }
 
         // Body //
         if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
@@ -805,7 +807,6 @@ define([
         // Clear Forms //
         html.notes.properties.title.val('');
         html.notes.other.body.val('');
-        html.notes.properties.opacity.selectpicker('val','10');
         html.notes.properties.color.children().css('background','transparent');
     };
     // Delete note //
@@ -905,8 +906,8 @@ define([
     };
     // Show/Hide on Canvas //
     function showCanvasNote(id,value){
-        if (value === true) html.interface.screen.wrapper.find('#'+id).show('slow');
-        else html.interface.screen.wrapper.find('#'+id).hide('slow');
+        if (value === true) html.interface.screen.wrapper.find('#'+id).show();
+        else html.interface.screen.wrapper.find('#'+id).hide();
     };
     // Create note on Canvas //
     function createCanvasNote(id){
@@ -1176,11 +1177,13 @@ define([
                     y: parseInt($parameter.y)
                 });
 
-                 $setUIValue.setValue({
-                    saveNoteForSystem:{
-                        publish: {id:k, cameraToggle : true, sceneObjsToggle : true }
-                    }
-                });
+                if (atomConnection) {
+                    $setUIValue.setValue({
+                        saveNoteForSystem:{
+                            publish: {id:k, cameraToggle : true, sceneObjsToggle : true }
+                        }
+                    });
+                }
             }
         });
     };
