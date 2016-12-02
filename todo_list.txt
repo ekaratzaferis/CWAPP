@@ -1,0 +1,21 @@
+    git push https://github.com/ekaratzaferis/CWAPP master
+    
+    git pull https://github.com/gvcm/CWAPP master
+    
+--------------------------------------------------------------------
+
+1) PULL GVCM MASTER                  git pull https://github.com/gvcm/CWAPP master
+
+2) NEW BRANCH                       UI
+
+3) COMMIT                           UI
+
+4) PUSH TO REMOTE    (SYNC)         UI or git push https://github.com/ekaratzaferis/CWAPP BRANCH-NAME
+
+5) MERGE WITH GCVM MASTER           GITHUB SITE
+
+6) PULL GVCM MASTER                  git pull https://github.com/gvcm/CWAPP master
+
+--------------------------------------------------------------------
+
+alexkinems
