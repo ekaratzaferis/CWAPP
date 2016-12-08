@@ -383,11 +383,11 @@ define([
     }; 
 
     // Progress Bar //
-    Menu.prototype.resetProgressBar = function(title) {
-        interfaceResizerModule.resetProgressBar(title);
+    Menu.prototype.resetProgressBar = function(title,force) {
+        interfaceResizerModule.resetProgressBar(title,force);
     };
-    Menu.prototype.progressBarFinish = function(){
-        interfaceResizerModule.progressBarFinish();
+    Menu.prototype.progressBarFinish = function(force){
+        interfaceResizerModule.progressBarFinish(force);
     };
     Menu.prototype.editProgressTitle = function(title){
         interfaceResizerModule.editProgressBarTitle(title);

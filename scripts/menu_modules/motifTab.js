@@ -730,7 +730,7 @@ define([
                 level: current.find('#level').html(),
                 element: current.find('.element').attr('element'),
                 sup: current.find('.element sup').html(),
-                atomPos: current.find('.element-serial a').html()
+                atomPos: current.find('.element-serial a').html().replace(/"/g, "'")
             };
         });
         return result;
@@ -797,7 +797,7 @@ define([
         
         
         // Construct HTML Query //
-        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td element="'+constructor.elementCode+'" class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+'<b><span id="bfont">(</span>'+constructor.atomPos[0]+'<span id="bfont">)</span></b><br>'+'<span id="sfont">['+constructor.atomPos[1]+'] <span id="xsfont">&Aring;</span></span>'+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
+        var HTMLQuery = '<tr id="'+argument['id']+'" role="'+constructor.role+'" tangentTo="'+constructor.tangentTo+'" class="bg-light-gray"><td class="visibility atomButton '+constructor.visible+'"><a><img src="Images/'+constructor.eyeButton+'-icon-sm.png" class="img-responsive" alt=""/></a></td"><td class="hiddenIcon blank"></td><td class="'+constructor.chain+'"><a id="level">'+constructor.level+'</a><img src="Images/chain-icon.png" class="img-responsive" alt=""/></td><td element="'+constructor.elementCode+'" class="element ch-'+constructor.elementCode+'">'+constructor.elementName+'</td><td  class="element-serial '+constructor.small+' selectable"><a>'+'<b><span id=\'bfont\'>(</span>'+constructor.atomPos[0]+'<span id=\'bfont\'>)</span></b><br>'+'<span id=\'sfont\'>['+constructor.atomPos[1]+'] <span id=\'xsfon\'>&Aring;</span></span>'+'</a></td><td class="'+constructor.btnState+'"><a href="#"><img src="Images/tangent-icon.png" class="img-responsive" alt=""/></a></td></tr>';
 
         // Add, Remove, Edit Entry
         switch(argument['action']){
