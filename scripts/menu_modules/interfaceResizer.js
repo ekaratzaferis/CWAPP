@@ -43,6 +43,9 @@ define([
     var $menuShiftRight;
     var $menuShiftLeft;
     
+    // FORCE LOADING SCREEN //
+    var $force = false;
+    
     // Module References //
     var $tooltipGenerator = undefined;
     var $messages = undefined;
@@ -92,7 +95,7 @@ define([
         // Window //
         jQuery(window).ready(function(){
             // Hide Progress bar and then show canvas and menu //
-            html.interface.progress.wrapper.hide(2000);
+            //if($force === false) html.interface.progress.wrapper.hide(2000);
             html.interface.screen.body.css('background-color','black');
             html.interface.screen.wrapper.show();
             html.interface.sidebar.menu.show();
@@ -380,13 +383,19 @@ define([
         $viewport = state;
     };
     // Reset and show Progress Bar //
-    interfaceResizer.prototype.resetProgressBar = function(title) {
+    interfaceResizer.prototype.resetProgressBar = function(title,force) {
         html.interface.progress.wrapper.find('.progressLabel').text(title);
         html.interface.progress.wrapper.show();
+        if (!(_.isUndefined(force))) $force = force;
     };
     // Hide Progress Bar //
-    interfaceResizer.prototype.progressBarFinish = function(){
-        html.interface.progress.wrapper.fadeOut('slow');
+    interfaceResizer.prototype.progressBarFinish = function(force){
+        if (!(_.isUndefined(force))) {
+            $force = false;
+            if (force === 'force') html.interface.progress.wrapper.fadeOut('slow');
+            else if (force === 'ready') jQuery(window).ready(function(){ html.interface.progress.wrapper.hide(2000); });
+        }
+        else if ($force === false) html.interface.progress.wrapper.fadeOut('slow');
     };
     // Highlight HTML element (creates a white pulse around it) //
     interfaceResizer.prototype.highlightElement = function(argument){

@@ -1345,8 +1345,9 @@ require([
     })
     .done(function(res) {  
       if(res){
-        restoreMechanism.configureState(res.data, [function(){
-          
+        menu.resetProgressBar('Loading JSON from database...',true);
+        restoreMechanism.configureState(res.data, [
+        function(){
           if(wereOnMobile === true){ 
             menu.closeMenu({close : true});
             menu.hideMenu(true);
@@ -1355,17 +1356,17 @@ require([
             hudCube.setVisibility(!wereOnMobile);
             hudArrows.setVisibility(!wereOnMobile);
             CubeEvent.enableCubeEvents = !wereOnMobile ;
-
-
           }
-
-        }],
+        },
+        function(){ menu.progressBarFinish('force'); },
+        ],
         wereOnMobile
         );  
-      } 
+      }
     }); 
   } 
-  else{ 
+  else{
+      menu.progressBarFinish('ready');
   } 
   
 });
