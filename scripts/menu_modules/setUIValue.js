@@ -2346,16 +2346,21 @@ define([
         $menu.reset('motifCollisions');
         
         // Library
-        takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
-        takeAction('qrCode',appUI.libraryTab.pngOptions.qrCode);
-        takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
+        if (appUI.hasOwnProperty('libraryTab')) {
+            takeAction('frameIT',appUI.libraryTab.pngOptions.frameIT);
+            takeAction('qrCode',appUI.libraryTab.pngOptions.qrCode);
+            takeAction('printMode',appUI.libraryTab.pngOptions.printMode);
+        }
 
         // Visual //
-        takeAction('lod', appUI.visualTab.visualParameters.lod.lod.toString());
-        takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
-        takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
-        takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
-        takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);
+        if (appUI.visualTab.visualParameters.hasOwnProperty('lod')) 
+            takeAction('lod', appUI.visualTab.visualParameters.lod.lod.toString());
+        if (appUI.visualTab.visualParameters.hasOwnProperty('renderizationQuality')) {
+            takeAction('autoQuality',appUI.visualTab.visualParameters.renderizationQuality.autoQuality);
+            takeAction('lowQuality',appUI.visualTab.visualParameters.renderizationQuality.lowQuality);
+            takeAction('mediumQuality',appUI.visualTab.visualParameters.renderizationQuality.mediumQuality);
+            takeAction('highQuality',appUI.visualTab.visualParameters.renderizationQuality.highQuality);
+        }
         takeAction('wireframe',appUI.visualTab.visualParameters.renderizationMode.wireframe);
         takeAction('toon',appUI.visualTab.visualParameters.renderizationMode.toon);
         takeAction('flat',appUI.visualTab.visualParameters.renderizationMode.flat);
@@ -2369,10 +2374,12 @@ define([
         takeAction('oculus',appUI.visualTab.visualParameters.stereoscopicEffect.oculus);
         takeAction('sideBySide',appUI.visualTab.visualParameters.stereoscopicEffect.sideBySide3D);
         takeAction('onTop',appUI.visualTab.visualParameters.stereoscopicEffect.OnTop3D);
-        takeAction('anaglyphCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.anaglyphCell);
-        takeAction('oculusCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.oculusCell);
-        takeAction('sideBySideCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.sideBySide3DCell);
-        takeAction('onTopCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.OnTop3DCell);
+        if (appUI.visualTab.visualParameters.hasOwnProperty('stereoscopicCellEffect')) {
+            takeAction('anaglyphCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.anaglyphCell);
+            takeAction('oculusCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.oculusCell);
+            takeAction('sideBySideCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.sideBySide3DCell);
+            takeAction('onTopCell',appUI.visualTab.visualParameters.stereoscopicCellEffect.OnTop3DCell);
+        }
         takeAction('crystalCamTargetOn',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOn);
         takeAction('crystalCamTargetOff',appUI.visualTab.visualParameters.focalPoint.crystalCamTargetOff);
         takeAction('leapMotion',appUI.visualTab.visualParameters.leapMotion);
