@@ -2353,7 +2353,6 @@ define([
         }
 
         // Visual //
-        console.log(appUI)
         if (appUI.visualTab.visualParameters.hasOwnProperty('lod')) 
             takeAction('lod', appUI.visualTab.visualParameters.lod.lod.toString());
         if (appUI.visualTab.visualParameters.hasOwnProperty('renderizationQuality')) {
