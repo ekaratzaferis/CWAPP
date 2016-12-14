@@ -1346,22 +1346,25 @@ require([
     .done(function(res) {  
       if(res){
         menu.resetProgressBar('Loading JSON from database...',true);
-        restoreMechanism.configureState(res.data, [
-        function(){
-          if(wereOnMobile === true){ 
-            menu.closeMenu({close : true});
-            menu.hideMenu(true);
-          
-            dollEditor.setVisibility(!wereOnMobile); 
-            hudCube.setVisibility(!wereOnMobile);
-            hudArrows.setVisibility(!wereOnMobile);
-            CubeEvent.enableCubeEvents = !wereOnMobile ;
-          }
-        },
-        function(){ menu.progressBarFinish('force'); },
-        ],
-        wereOnMobile
-        );  
+        if (res.data !== null) {
+            restoreMechanism.configureState(res.data, [
+            function(){
+            if(wereOnMobile === true){ 
+                menu.closeMenu({close : true});
+                menu.hideMenu(true);
+            
+                dollEditor.setVisibility(!wereOnMobile); 
+                hudCube.setVisibility(!wereOnMobile);
+                hudArrows.setVisibility(!wereOnMobile);
+                CubeEvent.enableCubeEvents = !wereOnMobile ;
+            }
+            },
+            function(){ menu.progressBarFinish('force'); },
+            ],
+            wereOnMobile
+            );  
+        }
+        else menu.progressBarFinish('ready');
       }
     }); 
   } 
