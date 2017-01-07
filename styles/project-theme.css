@@ -3276,6 +3276,12 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     right: 5%;
     color: #6f6299;
 }
+@media (max-width: 700px){
+    .progressLabel{
+        font-size: 15px;
+        font-weight: 800;
+    }
+}
 html,body {
     height: 100%;
     overflow: visible;
@@ -3450,6 +3456,11 @@ html,body {
     line-height: 19.2px;
     display: inline;
     background-color: #7F8289;
+}
+@media (max-width: 700px){
+    .motifBorderTop h1{
+        font-size: 14px;
+    }
 }
 .selectable{ cursor: pointer; overflow:hidden; }
 input.disabled[type="text"]{ background-color: black; }
@@ -3809,7 +3820,10 @@ input.disabled[type="text"]{ background-color: black; }
 #infoModalDialog { max-width: 580px; }
 #infoLabel{ padding: 13px 15px !important; }
 #iacLabel{ padding: 13px 15px !important; }
-#infoMessage{ padding: 20px;}
+#infoMessage{ 
+    padding: 20px;
+    font-size: 10px;    
+}
 
 #warningIcon {
     margin-left: 20px; 
@@ -4249,3 +4263,11 @@ margin-left: 200px;
 #sfont { font-size: 11px; }
 #bfont { font-size: 15px; }
 #hexagonal_primitive .bravais-lattice-block { opacity: 0.15; }
+@media (max-width: 700px){
+    .bravais-lattice-table, .periodic-table{
+        -webkit-transform: scale(0.6);
+        -webkit-transform-origin: 0 0;
+        transform: scale(0.6);
+        transform-origin : 0 0;
+    }
+}
