@@ -131,6 +131,7 @@ define([
             cellVolume: jQuery('#cellVolume'),
             cellVolumeSlider: jQuery('#cellVolumeSlider'),
             name: jQuery('.element-symbol-container').find('a'),
+            radii: jQuery('#custom_radii'),
             nameContainer: jQuery('.element-symbol-container')
         };
         this.motif.atomParameters = {

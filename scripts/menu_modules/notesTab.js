@@ -531,7 +531,6 @@ define([
             selectNote(nextID);  
             
         });
- 
     };
     var playerTimerFunction = function(){ 
 
@@ -631,7 +630,7 @@ define([
         var atomNote = false;
         
         // Clear Forms //
-        html.notes.properties.opacity.val('');
+        html.notes.properties.opacity.val('10');
         html.notes.other.body.val('');
         html.notes.properties.opacity.selectpicker('val','10');
         html.notes.properties.color.children().css('background','white');
@@ -770,14 +769,37 @@ define([
         // Update Database //
         if (notes.activeEntry !== false) notes[notes.activeEntry] = note;
         else return false;
-         
 
-        // Update Entry //
+        // Update Title //
         if (note.title !== '') {
             html.notes.other.table.find('#'+notes.activeEntry).find('.note-name').html(note.title);
             html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.noteTitle').html(note.title);
         }
 
+        // Color, opacity and position //
+        $setUIValue.setValue({
+            noteColor:{
+                publish: { id: notes.activeEntry, color: note.color },
+                value: note.color
+            }
+        });
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('background-color',note.color);
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').css('background-color',note.color);
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('-ms-filter','progid:DXImageTransform.Microsoft.Alpha(Opacity='+$stringEditor.multiply10(note.opacity)+')');
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('filter','alpha(opacity='+$stringEditor.multiply10(note.opacity)+')');
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('opacity',$stringEditor.divide10(note.opacity));
+        
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('left', note.x+'px');
+        html.interface.screen.wrapper.find('#'+notes.activeEntry).css('top',note.y+'px');
+        if(note.atomNote) {
+            $setUIValue.setValue({
+                noteMovement:{
+                    publish: { id: notes.activeEntry, x: note.x, y: note.y }   
+                }
+            });
+        }
+
+        // Body //
         if (note.body !== '') html.interface.screen.wrapper.find('#'+notes.activeEntry).find('.notes').html(note.body);
         html.notes.other.table.find('#'+notes.activeEntry).find('.color').css('background',note.color);
         highlightNote(notes.activeEntry,false);
@@ -785,7 +807,6 @@ define([
         // Clear Forms //
         html.notes.properties.title.val('');
         html.notes.other.body.val('');
-        html.notes.properties.opacity.selectpicker('val','10');
         html.notes.properties.color.children().css('background','transparent');
     };
     // Delete note //
@@ -885,8 +906,8 @@ define([
     };
     // Show/Hide on Canvas //
     function showCanvasNote(id,value){
-        if (value === true) html.interface.screen.wrapper.find('#'+id).show('slow');
-        else html.interface.screen.wrapper.find('#'+id).hide('slow');
+        if (value === true) html.interface.screen.wrapper.find('#'+id).show();
+        else html.interface.screen.wrapper.find('#'+id).hide();
     };
     // Create note on Canvas //
     function createCanvasNote(id){
@@ -896,11 +917,11 @@ define([
         notepad.draggable({
             scroll: false,
             drag: function(event, ui){
+                var x = parseInt(ui.position.left) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
+                var y = parseInt(ui.position.top) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
+                notes[id].x = x;
+                notes[id].y = y;
                 if (notes[id].atomNote === true){
-                    var x = parseInt(ui.position.left) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
-                    var y = parseInt(ui.position.top) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
-                    notes[id].x = x;
-                    notes[id].y = y;
                     $setUIValue.setValue({
                         noteMovement:{
                             publish: { id: id, x: x, y: y }   
@@ -1154,13 +1175,15 @@ define([
                     atomNote: atomConnection,
                     x: parseInt($parameter.x),
                     y: parseInt($parameter.y)
-                }); 
-
-                 $setUIValue.setValue({
-                    saveNoteForSystem:{
-                        publish: {id:k, cameraToggle : true, sceneObjsToggle : true }
-                    }
                 });
+
+                if (atomConnection) {
+                    $setUIValue.setValue({
+                        saveNoteForSystem:{
+                            publish: {id:k, cameraToggle : true, sceneObjsToggle : true }
+                        }
+                    });
+                }
             }
         });
     };
