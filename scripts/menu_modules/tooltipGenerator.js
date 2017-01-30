@@ -317,6 +317,28 @@ define([
         Uus: 'Ununseptium',
         Uuo: 'Ununoctium'  
     };
+
+    // MOBILE DETECTOR //
+    var isMobile = {
+        Android: function() {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry: function() {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS: function() {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera: function() {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows: function() {
+            return navigator.userAgent.match(/IEMobile/i);
+        },
+        any: function() {
+            return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+        }
+    };
     
     // Contructor //
     function tooltipGenerator(argument) {
@@ -324,6 +346,8 @@ define([
         // Acquire Module References
         if (!(_.isUndefined(argument.messages))) $messageList = argument.messages;
         else return false;
+
+        if (isMobile.any()) return false;
         
         // UI Tooltips //
         _.each(elementList, function($element, k){
