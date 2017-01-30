@@ -178,7 +178,7 @@ define([
             jsonText = jsonText + '"level":"' + $parameter.level + '",';
             jsonText = jsonText + '"element":"' + $parameter.element + '",';
             jsonText = jsonText + '"sup":"' + $parameter.sup + '",';
-            jsonText = jsonText + '"atomPos":"' + $parameter.atomPos + '"},';
+            jsonText = jsonText + '"atomPos": "' + 0.0 /*$parameter.atomPos*/ + '"},';
             checkIteration = true;
         });
         // Remove last comma //
