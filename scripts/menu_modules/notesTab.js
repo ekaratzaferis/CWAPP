@@ -875,13 +875,6 @@ define([
             }
         });
 
-        $setUIValue.setValue({
-            noteVisibility:{
-                value: true,
-                other: html.notes.other.table.find('#'+id)
-            }
-        });
-
         if (notes[id].atomNote === true) {
             var x = parseInt(html.interface.screen.wrapper.find('#'+id).css('left'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('width'),10) / 2;
             var y = parseInt(html.interface.screen.wrapper.find('#'+id).css('top'),10) + parseInt(html.interface.screen.wrapper.find('#'+id).css('height'),10) / 2;
@@ -894,7 +887,17 @@ define([
             });
         }
 
-        showCanvasNote(id,true);
+        Object.keys(notes).forEach(function (key) {
+            var visibility = (key === id);
+            $setUIValue.setValue({
+                noteVisibility:{
+                    value: visibility,
+                    other: html.notes.other.table.find('#'+key)
+                }
+            });
+            showCanvasNote(key,visibility);
+        })
+        
     };
     // Highlight Table Entry //
     function highlightNote(id,state){

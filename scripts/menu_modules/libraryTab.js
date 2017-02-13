@@ -215,6 +215,7 @@ define([
                 }
             });
         });
+
         // Tooltips //
         $tooltipGenerator.addOnHoverTooltip({
             'target': 'lowPNG',
@@ -291,6 +292,7 @@ define([
                 }
             });
         });
+
         // Tooltips //
         $tooltipGenerator.addOnHoverTooltip({
             'target': 'lowSTL',
@@ -514,6 +516,20 @@ define([
         html.modals.qr.link.val(link);
         // Hide user dialog //
         menu.hideInfoDialog();
+    };
+    libraryTab.prototype.restoreQR = function () {
+        var slug = window.location.href.split('#')[1];
+        html.library.saveOnline.link.val('cw.gl/' + slug);
+        html.modals.qr.link.val('cw.gl/' + slug);
+        html.library.saveOnline.target.slideDown('fast');
+        jQuery(this).addClass('active');
+        html.modals.qr.image.empty();
+        html.modals.qr.image.qrcode({
+            render: 'image',
+            size: 174,
+            fill: '#6f6299',
+            text: 'cw.gl/' + slug
+        });
     };
     
     return libraryTab;
