@@ -741,6 +741,7 @@ define([
         disableUIElementModule.restoreUI(data.appUI);
         notesTabModule.restoreNotes(data.notes);
         motifTabModule.restoreTable(data.atomList);
+        libraryTabModule.restoreQR();
     };
     Menu.prototype.reset = function(argument){
         switch(argument){
