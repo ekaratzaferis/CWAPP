@@ -369,8 +369,9 @@ define([
                 break;
             }
             case 'rotAngleSection':{
-                if (value === true) html.motif.rotatingAngles.section.show('slow');
-                else html.motif.rotatingAngles.section.hide('slow');
+                if (value === true) html.motif.rotatingAngles.section.show(0);
+                else html.motif.rotatingAngles.section.hide(0);
+                html.interface.screen.scrollBars.getNiceScroll().resize();
                 break;   
             }
             case 'hideChainIcon':{

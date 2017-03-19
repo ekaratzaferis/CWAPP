@@ -33,7 +33,8 @@ define([
     'notesTab',
     'tag-it',
     'jquery.qrcode-0.12.0.min',
-    'menu_html'
+    'menu_html',
+    'niceScroll'
 ], function(
     jQuery,
     jQuery_ui,
@@ -64,7 +65,8 @@ define([
     notesTab,
     tagIt,
     qrCode,
-    menu_html
+    menu_html,
+    niceScroll
 ) 
 {
 
