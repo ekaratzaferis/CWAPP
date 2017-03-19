@@ -910,7 +910,7 @@ define([
     // Hide/Show Table Entry //
     motifTab.prototype.setAtomEntryVisibility = function(argument){
         $disableUIElement.disableElement({
-            entryVisibity:{
+            entryVisibility:{
                 value: argument.action,
                 other: html.motif.other.atomTable.find('#'+argument['id']).find('.atomButton')
             }
