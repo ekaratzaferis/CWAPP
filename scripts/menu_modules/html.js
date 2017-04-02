@@ -491,6 +491,8 @@ define([
         this.interface.sidebar = {
             toggler: jQuery('#controls_toggler'),
             menu: jQuery('#main_controls_container'),
+            contents: jQuery('#controls_tabs_container'),
+            navi: jQuery('.controls-controller'),
             menuContainer: jQuery('.main-controls-container'),
             menuInner: jQuery('.main-controls-inner'),
             tabList: jQuery('.main-tab-nav-container')

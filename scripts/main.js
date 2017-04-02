@@ -21,7 +21,7 @@ require.config({
     'jquery.matchHeight': '../vendor/jquery-match-height/jquery.matchHeight-min',
     'bootstrap-select': '../vendor/bootstrap-select/dist/js/bootstrap-select',
     'jquery.mCustomScrollbar.concat.min': '../vendor/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min',
-    'niceScroll': '../vendor/jquery.nicescroll.min',
+    'niceScroll': '../vendor/jquery.nicescroll-latest',
     'bootstrap': '../vendor/bootstrap/assets/javascripts/bootstrap',
     'jColor': '../vendor/colorpicker/spectrum',
     'STLExporter': '../vendor/STLExporter',

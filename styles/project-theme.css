@@ -303,6 +303,7 @@ body {
   font-weight: 400;
   line-height: 19.2px;
   color: #000;
+  /*touch-action: auto;*/
 }
 /*==========  Button  ==========*/
 .btn {
@@ -723,8 +724,9 @@ body {
   bottom:0;
   position: relative;
   width: 500px;
-    float:right;
-    zoom: 100%;
+  right: 0;
+  float:right;
+  zoom: 100%;
   background: #34373e; }
   .main-controls-container .main-controls-wrapper {
     position: relative; }
@@ -740,20 +742,6 @@ body {
   
     .main-controls-container.controls-close .controls-toggler-container .btn .img-close {
       display: none; }
-.main-controls-container.controls-close { 
-    right:-435px;}
-@media (max-width: 1400px) {
-  .main-controls-container.controls-close { 
-    right:-441.5px;}
-}
-@media (max-width: 1200px) {
-  .main-controls-container.controls-close { 
-    right:-448px;}
-}
-@media (max-width: 1000px) {
-  .main-controls-container.controls-close { 
-    right:-455.5px;}
-}
 /*==========  Tab Pane  ==========*/
 .tab-pane {
   background: #2c2e33; }
@@ -943,43 +931,6 @@ width: 70px;}
     width: 100%;
     padding: 15px;
     display: block; }
-
-/*==========  Custom Scrollbar  ==========*/
-.custom_scrollbar .mCSB_scrollTools {
-  -webkit-transition: all 0.3s linear;
-  -moz-transition: all 0.3s linear;
-  -ms-transition: all 0.3s linear;
-  -o-transition: all 0.3s linear;
-  transition: all 0.3s linear;
-  -webkit-opacity: 0.5;
-  -khtml-opacity: 0.5;
-  -moz-opacity: 0.5;
-  -ms-opacity: 0.5;
-  -o-opacity: 0.5;
-  opacity: 0.5; }
-  .custom_scrollbar .mCSB_scrollTools .mCSB_draggerContainer {
-    top: 7px; }
-    .custom_scrollbar .mCSB_scrollTools .mCSB_draggerContainer .mCSB_dragger .mCSB_dragger_bar {
-      width: 5px;
-      background: #36383d;
-      -webkit-border-radius: 3px;
-      border-radius: 3px;
-      background-clip: padding-box; }
-    .custom_scrollbar .mCSB_scrollTools .mCSB_draggerContainer .mCSB_draggerRail {
-      width: 7px;
-      background: #919293;
-      -webkit-border-radius: 4px;
-      border-radius: 4px;
-      background-clip: padding-box; }
-.custom_scrollbar .mCSB_inside > .mCSB_container {
-  margin-right: 20px; }
-.custom_scrollbar:hover .mCSB_scrollTools, .custom_scrollbar:active .mCSB_scrollTools, .custom_scrollbar:focus .mCSB_scrollTools {
-  -webkit-opacity: 1;
-  -khtml-opacity: 1;
-  -moz-opacity: 1;
-  -ms-opacity: 1;
-  -o-opacity: 1;
-  opacity: 1; }
 
 /*==========  Color Picker  ==========*/
 .color-picker-container {
@@ -1435,6 +1386,7 @@ width: 70px;}
         color: #fff; }
 
 .controls-controller {
+    /*touch-action: auto;*/
   background: #34373e; }
 
 /*==========  Controls Toggler  ==========*/
@@ -3251,7 +3203,7 @@ table.table tr:hover.bg-light-purple td, table.table tr:active.bg-light-purple t
     position: relative;
     display: none;
 }
-#main_controls_container{ display: none; }
+#main_controls_container{ display: none; /*touch-action: auto;*/}
 #progressBarWrapper{
     width: 100%;
     height: 100%;

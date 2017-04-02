@@ -31,21 +31,18 @@ define([
     var canvasWidth = undefined;
     var screenHeight = undefined;
     var screenWidth = undefined;
-    var scrollWidth = undefined;
-    var scrollWidthFirstTime = undefined;
+    var resizedOnce = false;
     var $viewport = false;
     var $animating = undefined;
     var $animating2 = undefined;
     var autoZoom = true;
     var menuHidden = false;
     var flipped = false;
-    
-    // How many pixels does the menu occupy on screen //
-    var $menuWidthOpen;
-    var $menuWidthClose;
-    // How many pixels is the menu shifted when it's toggled //
-    var $menuShiftRight;
-    var $menuShiftLeft;
+
+    // Menu //
+    var $menuWidth = undefined;
+    var $naviWidth = undefined;
+    var $scrollBarWidth = undefined;
     
     // FORCE LOADING SCREEN //
     var $force = false;
@@ -58,12 +55,6 @@ define([
     // Contructor //
     function interfaceResizer(argument) {
         
-        // Initiation values //
-        $menuWidthOpen = 500;
-        $menuWidthClose = 65;
-        $menuShiftRight = -435;
-        $menuShiftLeft = -18;
-        
         // Acquire Module References //
         if (!(_.isUndefined(argument.tooltipGenerator))) $tooltipGenerator = argument.tooltipGenerator;
         else return false;
@@ -71,6 +62,20 @@ define([
         else return false;
         if (!(_.isUndefined(argument.html))) html = argument.html;
         else return false;
+
+        // Initiation values //
+        $menuWidth = html.interface.sidebar.contents.width();
+        $naviWidth = html.interface.sidebar.navi.width();
+        $scrollBarWidth = html.interface.sidebar.menu.width() - $menuWidth - $naviWidth;
+
+        // Create scrollbars //
+        html.interface.screen.scrollBars.niceScroll({
+            cursorcolor: "#999",
+            cursorwidth: "10px",
+            cursorborder: "0px solid black",
+            cursoropacitymax: 0.5,
+            horizrailenabled: false
+        });
         
         // Cancel Animation (Highlight Effect) //
         html.interface.screen.body.on('click', function(){
@@ -121,14 +126,6 @@ define([
                 else flipped = true;
                 jQuery('#controls_toggler').tooltip('destroy');
             }
-            // Create scrollbars //
-            html.interface.screen.scrollBars.niceScroll({
-                cursorcolor: "#999",
-                cursorwidth: "10px",
-                cursorborder: "0px solid black",
-                cursoropacitymax: 0.5,
-                horizrailenabled: false
-            });
         });
         // window.mobileAndTabletcheck = function() {
         //   var check = false;
@@ -147,9 +144,6 @@ define([
     };
     // Refresh canvas and screen width/height //
     function refreshDimensions(){
-        if (screenWidth) {
-            scrollWidthFirstTime = screenWidth - jQuery(window).width();
-        }
         screenHeight = jQuery(window).height();
         screenWidth = jQuery(window).width();
         canvasHeight = html.interface.screen.appContainer.height();
@@ -169,31 +163,24 @@ define([
         // Calculate current screen size.
         refreshDimensions();
         // Calculate canvas resizing amount and adjust menu if auto-zoom is enabled //
+        var canvasResize = 0;
         var x = 0;
         if (html.interface.sidebar.menu.hasClass('controls-open')) {
             adjustMenu(true);
-            x = $menuWidthOpen;
+            canvasResize = screenWidth - ($naviWidth + $menuWidth);
+            x = ($naviWidth + $menuWidth);
         }
         else if (menuHidden) {
             adjustMenu(false);
+            canvasResize = screenWidth;
             x = 0;
         }
         else {
             adjustMenu(false);
-            x = $menuWidthClose;
+            canvasResize = screenWidth - $naviWidth;
+            x = $naviWidth;
         }
-        
-        var canvasResize = screenWidth-x;
-        if ( (menuHidden === false) && !(html.interface.sidebar.menu.hasClass('controls-open')) ) {
-            if (scrollWidthFirstTime > 0) {
-                canvasResize-=scrollWidthFirstTime;
-                scrollWidth = scrollWidthFirstTime;
-            } else {
-                canvasResize-=scrollWidth * 2;
-            }
-            
-        }
-        
+
         // Resize canvasses and slowly fade in.
         html.interface.screen.wrapper.width(canvasResize);
         html.interface.screen.wrapper.fadeIn(800);
@@ -228,7 +215,6 @@ define([
                 // html.interface.canvas.cardBoard.removeClass('active');
                 // html.interface.canvas.cardBoard.find('img').attr('src','Images/stereoscope-switch-icon-03-hover.png');
                 PubSub.publish('menu.cardboard', {toggle : false});
-                
                 flipped = false;
  
             }
@@ -267,41 +253,12 @@ define([
         html.interface.canvas.menuMobile.css('-webkit-transform-origin','0 0');
         html.interface.canvas.menuMobile.css('transform','scale('+iconH+')');
         html.interface.canvas.menuMobile.css('transform-origin','0 0');
+
         // Calculate key values //
-        switch(percentage){
-            case 0.7:
-                $menuWidthOpen = 333;
-                $menuWidthClose = 12;
-                $menuShiftRight = -455.5;
-                $menuShiftLeft = -168;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','-168px');
-                html.interface.canvas.menuMobile.css('right','-47px');
-                break;
-            case 0.8:
-                $menuWidthOpen = 383;
-                $menuWidthClose = 18;
-                $menuShiftRight = -448;
-                $menuShiftLeft = -118;
-                if(open === true)  html.interface.sidebar.menuContainer.css('right','-118px');
-                html.interface.canvas.menuMobile.css('right','-40px');
-                break;
-            case 0.9:
-                $menuWidthOpen = 433;
-                $menuWidthClose = 25;
-                $menuShiftRight = -441.5;
-                $menuShiftLeft = -68;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','-68px');
-                html.interface.canvas.menuMobile.css('right','-34px');
-                break;
-            case 1:
-                $menuWidthOpen = 483;
-                $menuWidthClose = 32;
-                $menuShiftRight = -435;
-                $menuShiftLeft = -18;
-                if(open === true) html.interface.sidebar.menuContainer.css('right','-18px');
-                html.interface.canvas.menuMobile.css('right','-28px');
-                break;
-        };
+        $menuWidth = html.interface.sidebar.contents.width() * percentage;
+        $naviWidth = html.interface.sidebar.navi.width() * percentage;
+        $scrollBarWidth = html.interface.sidebar.menu.width() - $menuWidth - $naviWidth;
+        if(open !== true) html.interface.sidebar.menu.css('right', -($menuWidth + $scrollBarWidth));
     };
     // Choose a zoom value depending on the current screen width //
     function adjustMenu(open){
@@ -319,7 +276,7 @@ define([
         elem.parents(".mCSB_container").css({
             "height": elem.outerHeight()!==scaledHeight ? scaledHeight : "auto"
         }); 
-        html.interface.screen.body.mCustomScrollbar('update'); */ 
+        html.interface.screen.body.mCustomScrollbar('update'); */
         html.interface.screen.scrollBars.getNiceScroll().resize();
     };
     
@@ -358,7 +315,8 @@ define([
             html.interface.sidebar.toggler.find('.img-open').fadeIn('fast')
         });
         html.interface.screen.wrapper.fadeOut('slow');
-        html.interface.sidebar.menu.animate({'right': $menuShiftRight}, 500, function()
+        var shiftRight = $menuWidth - $naviWidth;
+        html.interface.sidebar.menu.animate({'right': -shiftRight }, 500, function()
         {
             html.interface.sidebar.menu.removeClass('controls-open');
             html.interface.sidebar.menu.addClass('controls-close');
@@ -375,7 +333,7 @@ define([
                 });
                 if (! (html.interface.sidebar.menu.hasClass('controls-open')) ) {
                     html.interface.screen.wrapper.fadeOut('slow');
-                    html.interface.sidebar.menu.animate({'right': $menuShiftLeft}, 500, function()
+                    html.interface.sidebar.menu.animate({'right': -$scrollBarWidth}, 500, function()
                     {
                         html.interface.sidebar.menu.removeClass('controls-close');
                         html.interface.sidebar.menu.addClass('controls-open');
